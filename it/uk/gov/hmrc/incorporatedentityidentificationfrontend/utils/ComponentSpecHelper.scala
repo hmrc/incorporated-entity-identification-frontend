@@ -73,7 +73,7 @@ trait ComponentSpecHelper extends WordSpec with MustMatchers
     )
   }
 
-  val baseUrl: String = "/sole-trader-identification"
+  val baseUrl: String = "/incorporated-entity-identification"
 
   private def buildClient(path: String): WSRequest =
     ws.url(s"http://localhost:$port$baseUrl$path").withFollowRedirects(false)
