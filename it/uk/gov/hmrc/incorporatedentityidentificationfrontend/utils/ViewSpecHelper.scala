@@ -4,13 +4,13 @@ import org.jsoup.nodes.Element
 import org.jsoup.select.Elements
 import org.scalatest.matchers.{HavePropertyMatchResult, HavePropertyMatcher}
 
-import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 object ViewSpecHelper {
 
   implicit class ElementExtensions(element: Element) {
 
-    lazy val content: Element = element.getElementsByTag("article").head
+    lazy val content: Element = element.getElementsByTag("article").asScala.head
 
     lazy val getParagraphs: Elements = element.getElementsByTag("p")
 
@@ -58,14 +58,11 @@ object ViewSpecHelper {
   }
 
   def text(text: String): HavePropertyMatcher[Elements, String] =
-    new HavePropertyMatcher[Elements, String] {
-      def apply(element: Elements) =
-        HavePropertyMatchResult(
-          element.text() == text,
-          "text",
-          text,
-          element.text()
-        )
-    }
+    (element: Elements) => HavePropertyMatchResult(
+      element.text() == text,
+      "text",
+      text,
+      element.text()
+    )
 
 }

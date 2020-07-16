@@ -1,4 +1,4 @@
-import uk.gov.hmrc.DefaultBuildSettings.integrationTestSettings
+import uk.gov.hmrc.DefaultBuildSettings.{addTestReportOption, integrationTestSettings}
 import uk.gov.hmrc.SbtArtifactory
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
@@ -9,9 +9,9 @@ val silencerVersion = "1.7.0"
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtGitVersioning, SbtDistributablesPlugin, SbtArtifactory)
   .settings(
-    majorVersion                     := 0,
-    scalaVersion                     := "2.12.11",
-    libraryDependencies              ++= AppDependencies.compile ++ AppDependencies.test ++ AppDependencies.it,
+    majorVersion := 0,
+    scalaVersion := "2.12.11",
+    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.it,
     // ***************
     // Use the silencer plugin to suppress warnings
     // You may turn it on for `views` too to suppress warnings from unused imports in compiled twirl templates, but this will hide other warnings.
@@ -24,5 +24,16 @@ lazy val microservice = Project(appName, file("."))
   )
   .settings(publishingSettings: _*)
   .configs(IntegrationTest)
-  .settings(integrationTestSettings(): _*)
+  .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
   .settings(resolvers += Resolver.jcenterRepo)
+
+TwirlKeys.templateImports ++= Seq(
+  "uk.gov.hmrc.govukfrontend.views.html.components._",
+  "uk.gov.hmrc.govukfrontend.views.html.helpers._"
+)
+
+Keys.fork in IntegrationTest := true
+unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value
+javaOptions in IntegrationTest += "-Dlogger.resource=logback-test.xml"
+addTestReportOption(IntegrationTest, "int-test-reports")
+parallelExecution in IntegrationTest := false

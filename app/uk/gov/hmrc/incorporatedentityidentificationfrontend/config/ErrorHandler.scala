@@ -22,12 +22,16 @@ import play.api.i18n.MessagesApi
 import play.api.mvc.Request
 import play.twirl.api.Html
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.error_template
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.error_template
 
 @Singleton
-class ErrorHandler @Inject()(error_template: error_template, val messagesApi: MessagesApi)(implicit appConfig: AppConfig)
-    extends FrontendErrorHandler {
+class ErrorHandler @Inject()(view: error_template,
+                             val messagesApi: MessagesApi
+                            )(implicit appConfig: AppConfig) extends FrontendErrorHandler {
 
-  override def standardErrorTemplate(pageTitle: String, heading: String, message: String)(implicit request: Request[_]): Html =
-    error_template(pageTitle, heading, message)
+  override def standardErrorTemplate(pageTitle: String,
+                                     heading: String,
+                                     message: String
+                                    )(implicit request: Request[_]): Html = view(pageTitle, heading, message)
+
 }
