@@ -26,16 +26,12 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.hello_wor
 import scala.concurrent.Future
 
 @Singleton
-class HelloWorldController @Inject()(
-  appConfig: AppConfig,
-  mcc: MessagesControllerComponents,
-  hello_world: hello_world)
-    extends FrontendController(mcc) {
+class HelloWorldController @Inject()(mcc: MessagesControllerComponents,
+                                     view: hello_world
+                                    )(implicit appConfig: AppConfig) extends FrontendController(mcc) {
 
-  implicit val config: AppConfig = appConfig
-
-  val helloWorld: Action[AnyContent] = Action.async { implicit request =>
-    Future.successful(Ok(hello_world()))
+  val show: Action[AnyContent] = Action.async { implicit request =>
+    Future.successful(Ok(view()))
   }
 
 }

@@ -17,21 +17,26 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.config
 
 import javax.inject.{Inject, Singleton}
-import play.api.Configuration
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
-class AppConfig @Inject()(config: Configuration, servicesConfig: ServicesConfig) {
-  private val contactBaseUrl = servicesConfig.baseUrl("contact-frontend")
+class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
-  private val assetsUrl         = config.get[String]("assets.url")
-  private val serviceIdentifier = "MyService"
+  private lazy val contactBaseUrl = servicesConfig.baseUrl("contact-frontend")
 
-  val assetsPrefix: String   = assetsUrl + config.get[String]("assets.version")
-  val analyticsToken: String = config.get[String](s"google-analytics.token")
-  val analyticsHost: String  = config.get[String](s"google-analytics.host")
+  private lazy val assetsUrl = servicesConfig.getString("assets.url")
+  private lazy val serviceIdentifier = "MyService"
 
-  val reportAProblemPartialUrl: String = s"$contactBaseUrl/contact/problem_reports_ajax?service=$serviceIdentifier"
-  val reportAProblemNonJSUrl: String   = s"$contactBaseUrl/contact/problem_reports_nonjs?service=$serviceIdentifier"
+  lazy val assetsPrefix: String = assetsUrl + servicesConfig.getString("assets.version")
+  lazy val analyticsToken: String = servicesConfig.getString(s"google-analytics.token")
+  lazy val analyticsHost: String = servicesConfig.getString(s"google-analytics.host")
+
+  lazy val reportAProblemPartialUrl: String = s"$contactBaseUrl/contact/problem_reports_ajax?service=$serviceIdentifier"
+  lazy val reportAProblemNonJSUrl: String = s"$contactBaseUrl/contact/problem_reports_nonjs?service=$serviceIdentifier"
+
+  lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
+  lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
+  lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
+  lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
 
 }

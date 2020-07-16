@@ -1,6 +1,8 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.utils
 
-import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach, MustMatchers, WordSpec}
+import org.scalatest.matchers.must.Matchers
+import org.scalatest.wordspec.AnyWordSpec
+import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.PortNumber
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
@@ -9,7 +11,7 @@ import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
 
-trait ComponentSpecHelper extends WordSpec with MustMatchers
+trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with CustomMatchers
   with WiremockHelper
   with BeforeAndAfterAll
