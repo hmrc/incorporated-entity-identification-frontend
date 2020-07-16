@@ -1,7 +1,5 @@
 import play.core.PlayVersion.current
-import play.sbt.PlayImport._
-import sbt.Keys.libraryDependencies
-import sbt._
+import sbt.{ModuleID, _}
 
 object AppDependencies {
 
@@ -19,4 +17,10 @@ object AppDependencies {
     "com.vladsch.flexmark"    %  "flexmark-all"             % "0.35.10"               % "test, it",
     "org.scalatestplus.play"  %% "scalatestplus-play"       % "4.0.3"                 % "test, it"
   )
+
+  val it = Seq(
+    "com.github.tomakehurst" % "wiremock-jre8" % "2.26.3" % IntegrationTest
+  )
+
+
 }
