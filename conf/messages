@@ -4,7 +4,7 @@ footer.links.cookies.text                                   = Cookies
 footer.links.privacy_policy.text                            = Privacy policy
 footer.links.terms_and_conditions.text                      = Terms and conditions
 
-service.name                                                = incorporated-entity-identification-frontend
+service.name                                                = Register for VAT
 
 getpagehelp.linkText                                        = Get help with this page
 
@@ -21,3 +21,9 @@ ct-utr.title                                                = What is {0}’s Un
 ct-utr.line                                                 = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’.
 ct-utr.lost_utr                                             = Lost the company’s UTR number
 ct-utr.error                                                = Enter a Unique Taxpayer Reference in the correct format
+
+# Confirm Business Page
+confirm-business.title = What is the Company Name?
+confirm-business.heading = Confirm the company name
+confirm-business.change_company = Change company
+

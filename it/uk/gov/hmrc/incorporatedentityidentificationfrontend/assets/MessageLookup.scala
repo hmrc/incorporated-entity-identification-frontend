@@ -43,4 +43,10 @@ object MessageLookup {
 
   }
 
+  object ConfirmBusinessName {
+    val title = "What is the Company Name?"
+    val heading = "Confirm the company name"
+    val change_company = "Change company"
+  }
+
 }

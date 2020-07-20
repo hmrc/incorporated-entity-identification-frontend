@@ -7,4 +7,9 @@ GET         /hello-world                                     uk.gov.hmrc.incorpo
 GET         /ct-utr                                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.show()
 POST        /ct-utr                                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.submit()
 
+GET         /confirm-business-name                           uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.show
+POST        /confirm-business-name                           uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.submit
+
 ->          /govuk-frontend                                  govuk.Routes
+
+
