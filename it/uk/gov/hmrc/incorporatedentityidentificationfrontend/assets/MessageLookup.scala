@@ -28,8 +28,15 @@ object MessageLookup {
       val title = "There is a problem"
       val error = "Error: "
     }
-
   }
+
+  object CaptureCompanyNumber {
+    val title = "What is the company registration number?"
+    val line_1 = "You can"
+    val line_2 = "search Companies House for the company registration number (opens in a new tab)."
+    val hint = "For example, 01234567"
+  }
+
 
   object CaptureCtutr {
     val title = "What is John Smith’s Unique Taxpayer Reference?"

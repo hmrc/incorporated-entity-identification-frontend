@@ -1,4 +1,4 @@
-/*
+@*
  * Copyright 2020 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -12,15 +12,15 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- */
+ *@
 
-package uk.gov.hmrc.incorporatedentityidentificationfrontend.views.utils
+@(alternativeText: Option[String] = None, gaEventString: Option[String] = None)(implicit messages: Messages)
 
-import play.api.data.Form
-import play.api.i18n.Messages
-
-object TitleHelper {
-  def title(titleMessage: String, form: Form[_])(implicit messages: Messages): String =
-    if(form.hasErrors) messages("error.title-prefix") + titleMessage
-    else titleMessage
+@gaEventString match {
+    case Some(eventString) => {
+        <input id="continue-button" class="button" type="submit" value="@alternativeText.getOrElse(Messages("base.continue"))" data-journey-click="@eventString" data-journey-target>
+    }
+    case _ => {
+        <input id="continue-button" class="button" type="submit" value="@alternativeText.getOrElse(Messages("base.continue"))">
+    }
 }

@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.incorporatedentityidentificationfrontend.views.utils
+package uk.gov.hmrc.incorporatedentityidentificationfrontend.forms
 
 import play.api.data.Form
-import play.api.i18n.Messages
+import play.api.data.Forms._
 
-object TitleHelper {
-  def title(titleMessage: String, form: Form[_])(implicit messages: Messages): String =
-    if(form.hasErrors) messages("error.title-prefix") + titleMessage
-    else titleMessage
+object CaptureCompanyNumberForm {
+  val form: Form[String] =
+    Form(
+      "companyNumber" -> text
+    )
+
+
 }
