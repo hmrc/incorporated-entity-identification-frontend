@@ -7,3 +7,17 @@ footer.links.terms_and_conditions.text                      = Terms and conditio
 service.name                                                = incorporated-entity-identification-frontend
 
 getpagehelp.linkText                                        = Get help with this page
+
+## Error
+error.summary.title                                         = There is a problem
+error.title-prefix                                          = 'Error: '
+
+## Base
+base.save_and_continue                                      = Save and continue
+base.save_and_come_back                                     = Save and come back later
+
+## CT-UTR Page
+ct-utr.title                                                = What is {0}’s Unique Taxpayer Reference?
+ct-utr.line                                                 = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’.
+ct-utr.lost_utr                                             = Lost the company’s UTR number
+ct-utr.error                                                = Enter a Unique Taxpayer Reference in the correct format
