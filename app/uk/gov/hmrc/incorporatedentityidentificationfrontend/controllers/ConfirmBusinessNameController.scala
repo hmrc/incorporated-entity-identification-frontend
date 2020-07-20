@@ -36,8 +36,8 @@ class ConfirmBusinessNameController @Inject()(mcc: MessagesControllerComponents,
       Future.successful(Ok(view(routes.ConfirmBusinessNameController.submit(), companyName)))
   }
 
-  val submit: Action[AnyContent] = Action {
-    implicit request => NotImplemented
-
+  val submit: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(Redirect(routes.CaptureCtutrController.show()))
   }
 }

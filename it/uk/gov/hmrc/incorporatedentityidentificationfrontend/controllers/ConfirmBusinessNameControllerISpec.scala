@@ -28,7 +28,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
     "return OK" in {
       result.status mustBe OK
     }
-    "return a view which" should{
+    "return a view which" should {
       testConfirmBusinessNameView(result)
     }
   }
@@ -37,8 +37,12 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
     lazy val result = post("/confirm-business-name")()
 
     "return NotImplemented" in {
-      result.status mustBe NOT_IMPLEMENTED
+      result must have(
+        httpStatus(SEE_OTHER),
+        redirectUri(routes.CaptureCtutrController.show().url)
+      )
     }
   }
 
 }
+

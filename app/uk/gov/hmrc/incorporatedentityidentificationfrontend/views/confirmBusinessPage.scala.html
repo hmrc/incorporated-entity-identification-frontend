@@ -21,8 +21,7 @@
 @this(govukLayout: govuk_template,
         govUkHeader: GovukHeader,
         govukButton : GovukButton,
-        h1: utils.h1,
-        h2: utils.h2,
+        h1: helpers.h1,
         formWithCSRF: FormWithCSRF)
 
 @(formAction: Call, companyName: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
