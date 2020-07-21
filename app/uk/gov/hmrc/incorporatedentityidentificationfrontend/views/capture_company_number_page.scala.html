@@ -1,0 +1,72 @@
+@*
+ * Copyright 2020 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ *@
+
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.inputText
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.utils.TitleHelper.title
+
+@this(layout: govuk_template,
+        govukFieldset: GovukFieldset,
+        govukInput: GovukInput,
+        govukDetails: GovukDetails,
+        govukButton: GovukButton,
+        formWithCSRF: FormWithCSRF,
+        inputText: inputText,
+)
+
+@(formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+
+@layout(title = title(messages("company-number.title"), form)) {
+    @govukFieldset(Fieldset(
+        legend = Some(Legend(
+            content = Text(Messages("company-number.title")),
+            classes = "govuk-fieldset__legend--xl",
+            isPageHeading = true
+        )),
+        html = html
+    ))
+
+}
+
+@html = {
+@formWithCSRF(action = formAction) {
+
+    <div class = "govuk-body">
+        <p>
+            @messages("company-number.line_1") <a class="govuk-link" href="https://beta.companieshouse.gov.uk/" >@messages("company-number.line_2")</a></p>
+    </div>
+
+    @inputText(
+        form = form,
+        id = "company-number",
+        name = "company-number",
+        isPageHeading = false,
+        label = "",
+        hint = Some(Html(s"""<p style="color:#626a6e" class="govuk-body">${messages("company-number.hint")}</p>""")),
+    )
+
+    @govukButton(Button(
+        attributes = Map("id" -> "save-and-continue"),
+        classes = "govuk-!-margin-right-1",
+        content = Text(Messages("base.save_and_continue"))
+    ))
+    @govukButton(Button(
+        classes = "govuk-button--secondary",
+        content = Text(Messages("base.save_and_come_back"))
+    ))
+}
+}
