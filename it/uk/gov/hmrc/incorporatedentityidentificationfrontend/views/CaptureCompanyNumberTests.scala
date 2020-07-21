@@ -19,6 +19,14 @@ trait CaptureCompanyNumberTests {
       doc.title mustBe messages.title
     }
 
+    "have the correct first line" in {
+      doc.getParagraphs.first.text mustBe messages.line_1
+    }
+
+    "have a correct details hint" in {
+      doc.getParagraphs.get(1).text mustBe messages.hint
+    }
+
     "have a save and confirm button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
