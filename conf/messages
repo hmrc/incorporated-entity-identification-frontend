@@ -9,18 +9,20 @@ service.name                                                = Register for VAT
 getpagehelp.linkText                                        = Get help with this page
 
 ## Base
-base.save_and_continue = Save and continue
-base.save_and_come_back = Save and come back later
-
-## Company Number
-company-number.title = What is the company registration number?
-company-number.line_1 = You can
-company-number.line_2 = search Companies House for the company registration number (opens in a new tab).
-company-number.hint = For example, 01234567
+base.save_and_continue                                      = Save and continue
+base.confirm_and_continue                                   = Confirm and continue
+base.save_and_come_back                                     = Save and come back later
+base.change                                                 = Change
 
 ## Error
 error.summary.title                                         = There is a problem
 error.title-prefix                                          = 'Error: '
+
+## Company Number
+company-number.title                                        = What is the company registration number?
+company-number.line_1                                       = You can
+company-number.line_2                                       = search Companies House for the company registration number (opens in a new tab).
+company-number.hint                                         = For example, 01234567
 
 ## CT-UTR Page
 ct-utr.title                                                = What is {0}â€™s Unique Taxpayer Reference?
@@ -29,7 +31,12 @@ ct-utr.lost_utr                                             = Lost the companyâ€
 ct-utr.error                                                = Enter a Unique Taxpayer Reference in the correct format
 
 # Confirm Business Page
-confirm-business.title = What is the Company Name?
-confirm-business.heading = Confirm the company name
-confirm-business.change_company = Change company
+confirm-business.title                                      = What is the Company Name?
+confirm-business.heading                                    = Confirm the company name
+confirm-business.change_company                             = Change company
 
+# Check Your Answerss Page
+check-your-answers.title                                    = Check your answers
+check-your-answers.heading                                  = Check your answers
+check-your-answers.company_number                           = Company number
+check-your-answers.ctutr                                    = Unique Taxpayers Reference number

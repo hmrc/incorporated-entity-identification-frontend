@@ -10,7 +10,7 @@ object ViewSpecHelper {
 
   implicit class ElementExtensions(element: Element) {
 
-    lazy val content: Element = element.getElementsByTag("article").asScala.head
+    lazy val content: Element = element.getElementsByTag("article").iterator().asScala.toList.head
 
     lazy val getParagraphs: Elements = element.getElementsByTag("p")
 

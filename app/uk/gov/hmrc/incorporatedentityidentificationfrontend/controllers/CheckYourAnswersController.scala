@@ -17,27 +17,33 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
-import play.api.mvc._
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirmBusinessPage
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ConfirmBusinessNameController @Inject()(mcc: MessagesControllerComponents,
-                                              view: confirmBusinessPage)
-                                             (implicit val config: AppConfig, executionContext: ExecutionContext) extends FrontendController(mcc) {
-  val companyName = "Acme Ltd" // TODO this will be pre-pop data
+class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
+                                           view: check_your_answers_page)
+                                          (implicit val config: AppConfig,
+                                           executionContext: ExecutionContext) extends FrontendController(mcc) {
 
+  val companyNumber = "12345678"
+  val ctutr = "1234567890"
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.ConfirmBusinessNameController.submit(), companyName)))
+      Future.successful(
+        Ok(view(routes.CheckYourAnswersController.submit(), ctutr, companyNumber))
+      )
   }
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Redirect(routes.CaptureCtutrController.show()))
+      Future.successful(
+        NotImplemented
+      )
   }
 }

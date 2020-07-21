@@ -36,10 +36,11 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
   }
 
   "POST /ct-utr" should {
-    "return Not Implemented" in {
+    "redirect to Check Your Answers page" in {
       val result = post("/ct-utr")("ct-utr" -> testCtutr)
       result must have(
-        httpStatus(NOT_IMPLEMENTED)
+        httpStatus(SEE_OTHER),
+        redirectUri(routes.CheckYourAnswersController.show().url)
       )
     }
 
