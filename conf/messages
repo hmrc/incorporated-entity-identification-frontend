@@ -18,15 +18,9 @@ company-number.line_1 = You can
 company-number.line_2 = search Companies House for the company registration number (opens in a new tab).
 company-number.hint = For example, 01234567
 
-
-
 ## Error
 error.summary.title                                         = There is a problem
 error.title-prefix                                          = 'Error: '
-
-## Base
-base.save_and_continue                                      = Save and continue
-base.save_and_come_back                                     = Save and come back later
 
 ## CT-UTR Page
 ct-utr.title                                                = What is {0}’s Unique Taxpayer Reference?
