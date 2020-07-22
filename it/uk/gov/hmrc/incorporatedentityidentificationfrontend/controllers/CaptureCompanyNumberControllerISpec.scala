@@ -23,8 +23,11 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
   "POST /company-number" should {
     lazy val result = post("/company-number")()
 
-    "return NotImplemented" in {
-      result.status mustBe NOT_IMPLEMENTED
+    "redirect to Confirm Business Name page" in {
+      result must have(
+        httpStatus(SEE_OTHER),
+        redirectUri(routes.ConfirmBusinessNameController.show().url)
+      )
     }
   }
 

@@ -21,7 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCompanyNumberForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_company_number_page
-import uk.gov.hmrc.play.bootstrap.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.Future
 
@@ -32,11 +32,16 @@ class CaptureCompanyNumberController @Inject()(mcc: MessagesControllerComponents
 
   def show: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.CaptureCompanyNumberController.submit(), CaptureCompanyNumberForm.form)))
+      Future.successful(
+        Ok(view(routes.CaptureCompanyNumberController.submit(), CaptureCompanyNumberForm.form))
+      )
   }
 
-  def submit: Action[AnyContent] = Action {
-    implicit request => NotImplemented
+  def submit: Action[AnyContent] = Action.async {
+    implicit request =>
+      Future.successful(
+        Redirect(routes.ConfirmBusinessNameController.show())
+      )
   }
 
 

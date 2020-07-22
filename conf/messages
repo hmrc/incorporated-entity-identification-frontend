@@ -19,10 +19,10 @@ error.summary.title                                         = There is a problem
 error.title-prefix                                          = 'Error: '
 
 ## Company Number
-company-number.title                                        = What is the company registration number?
-company-number.line_1                                       = You can
-company-number.line_2                                       = search Companies House for the company registration number (opens in a new tab).
-company-number.hint                                         = For example, 01234567
+capture-company-number.title                                = What is the company registration number?
+capture-company-number.line_1                               = You can
+capture-company-number.link_text                            = search Companies House for the company registration number (opens in a new tab).
+capture-company-number.hint                                 = For example, 01234567
 
 # Confirm Business Page
 confirm-business.title                                      = What is the Company Name?
@@ -30,11 +30,11 @@ confirm-business.heading                                    = Confirm the compan
 confirm-business.change_company                             = Change company
 
 ## CT-UTR Page
-ct-utr.title                                                = What is the company’s Unique Taxpayer Reference?
-ct-utr.line                                                 = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.
-ct-utr.lost_utr                                             = Lost the company’s UTR number
-ct-utr.error.no-entry                                       = Enter your company’s Unique Taxpayer Reference
-ct-utr.error.incorrect-format                               = Unique Taxpayer Reference number must be 10 numbers
+capture-ctutr.title                                         = What is the company’s Unique Taxpayer Reference?
+capture-ctutr.line                                          = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.
+capture-ctutr.lost_utr                                      = Lost the company’s UTR number
+capture-ctutr.error.no-entry                                = Enter your company’s Unique Taxpayer Reference
+capture-ctutr.error.incorrect-format                        = Unique Taxpayer Reference number must be 10 numbers
 
 # Check Your Answerss Page
 check-your-answers.title                                    = Check your answers

@@ -41,6 +41,7 @@ trait ConfirmBusinessNameViewTests {
     "Have the correct link" in {
       doc.getLink("change-company").text mustBe messages.change_company
     }
+
     "have a save and confirm button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }

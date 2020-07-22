@@ -20,11 +20,15 @@ trait CaptureCompanyNumberTests {
     }
 
     "have the correct first line" in {
-      doc.getParagraphs.first.text mustBe messages.line_1
+      doc.getParagraphs.first.text mustBe messages.line_1 + " " + messages.linktext
+    }
+
+    "have the correct link" in {
+      doc.getLink("companies-house").text mustBe messages.linktext
     }
 
     "have a correct details hint" in {
-      doc.getParagraphs.get(1).text mustBe messages.hint
+      doc.getHintText mustBe messages.hint
     }
 
     "have a save and confirm button" in {

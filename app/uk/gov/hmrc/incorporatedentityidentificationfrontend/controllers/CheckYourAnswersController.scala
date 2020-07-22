@@ -30,11 +30,11 @@ class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
                                           (implicit val config: AppConfig,
                                            executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  val companyNumber = "12345678"
-  val ctutr = "1234567890"
-
   val show: Action[AnyContent] = Action.async {
     implicit request =>
+      val companyNumber = "12345678"
+      val ctutr = "1234567890"
+
       Future.successful(
         Ok(view(routes.CheckYourAnswersController.submit(), ctutr, companyNumber))
       )
