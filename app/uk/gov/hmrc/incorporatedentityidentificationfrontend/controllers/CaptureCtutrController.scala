@@ -34,17 +34,22 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(Ok(view(routes.CaptureCtutrController.submit(), name, CaptureCtutrForm.form))
+      Future.successful(
+        Ok(view(routes.CaptureCtutrController.submit(), name, CaptureCtutrForm.form))
       )
   }
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
       CaptureCtutrForm.form.bindFromRequest().fold(
-        formWithErrors => Future.successful(
-          BadRequest(view(routes.CaptureCtutrController.submit(), name, formWithErrors))
-        ),
-        _ => Future.successful(NotImplemented)
+        formWithErrors =>
+          Future.successful(
+            BadRequest(view(routes.CaptureCtutrController.submit(), name, formWithErrors))
+          ),
+        _ =>
+          Future.successful(
+            Redirect(routes.CheckYourAnswersController.show())
+          )
 
       )
   }
