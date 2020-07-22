@@ -36,11 +36,16 @@ object MessageLookup {
     val hint = "For example, 01234567"
   }
 
+  object ConfirmBusinessName {
+    val title = "What is the Company Name?"
+    val heading = "Confirm the company name"
+    val change_company = "Change company"
+  }
 
   object CaptureCtutr {
-    val title = "What is John Smith’s Unique Taxpayer Reference?"
-    val heading = "What is John Smith’s Unique Taxpayer Reference?"
-    val line = "This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Self Assessment. It may be called ‘reference’, ‘UTR’ or ‘official use’."
+    val title = "What is the company’s Unique Taxpayer Reference?"
+    val heading = "What is the company’s Unique Taxpayer Reference?"
+    val line = "This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’."
     val lostUtr = "Lost the company’s UTR number"
 
     object Error {
@@ -48,12 +53,6 @@ object MessageLookup {
       val invalidCtutrEntered = "Unique Taxpayer Reference number must be 10 numbers"
     }
 
-  }
-
-  object ConfirmBusinessName {
-    val title = "What is the Company Name?"
-    val heading = "Confirm the company name"
-    val change_company = "Change company"
   }
 
   object CheckYourAnswers {
