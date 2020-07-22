@@ -18,17 +18,34 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.forms
 
 import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.validation.Constraint
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ConstraintUtil._
 
 import scala.util.matching.Regex
 
 object CaptureCtutrForm {
 
-  val ctutrErrorKey: String = "ct-utr.error"
   val ctutrRegex: Regex = "[0-9]{10}".r
+  val ctutr = "ctutr"
+
+  private val noCtutrEntered: Constraint[String] = Constraint("ct-utr_not_entered")(
+    ctutr => validate(
+      constraint = ctutr.isEmpty,
+      errMsg = "ct-utr.error.no-entry"
+    )
+  )
+
+  private val ctutrInvalid: Constraint[String] = Constraint("ct-utr_invalid")(
+    ctutr => validateNot(
+      constraint = ctutr.matches(ctutrRegex.regex),
+      errMsg = "ct-utr.error.incorrect-format"
+    )
+  )
 
   val form: Form[String] =
     Form(
-      "ct-utr" -> text.verifying(ctutrErrorKey, _.matches(ctutrRegex.regex))
+      "ctutr" -> text.verifying(noCtutrEntered andThen ctutrInvalid)
     )
 
 }

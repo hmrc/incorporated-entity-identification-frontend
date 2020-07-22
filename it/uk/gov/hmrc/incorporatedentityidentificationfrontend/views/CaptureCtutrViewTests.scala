@@ -56,7 +56,20 @@ trait CaptureCtutrViewTests {
     }
   }
 
-  def testCaptureCtutrErrorMessages(result: => WSResponse): Unit = {
+  def testCaptureCtutrErrorMessagesNoCtutr(result: => WSResponse): Unit = {
+    lazy val doc: Document = Jsoup.parse(result.body)
+
+    "correctly display the error summary" in {
+      doc.getErrorSummaryTitle.text mustBe Base.Error.title
+      doc.getErrorSummaryBody.text mustBe messages.Error.noCtutrEntered
+    }
+
+    "correctly display the field errors" in {
+      doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.noCtutrEntered
+    }
+  }
+
+  def testCaptureCtutrErrorMessagesInvalidCtutr(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "correctly display the error summary" in {
