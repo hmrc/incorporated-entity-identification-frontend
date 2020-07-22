@@ -30,12 +30,11 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                                        view: capture_ctutr_page)
                                       (implicit val config: AppConfig,
                                        executionContext: ExecutionContext) extends FrontendController(mcc) {
-  val name = "John Smith"
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(
-        Ok(view(routes.CaptureCtutrController.submit(), name, CaptureCtutrForm.form))
+        Ok(view(routes.CaptureCtutrController.submit(), CaptureCtutrForm.form))
       )
   }
 
@@ -44,7 +43,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
       CaptureCtutrForm.form.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(routes.CaptureCtutrController.submit(), name, formWithErrors))
+            BadRequest(view(routes.CaptureCtutrController.submit(), formWithErrors))
           ),
         _ =>
           Future.successful(

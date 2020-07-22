@@ -43,8 +43,8 @@ trait CaptureCtutrViewTests {
       doc.getParagraphs.first.text mustBe messages.line
     }
 
-    "have a correct details element" in {
-      doc.getParagraphs.get(1).text mustBe messages.lostUtr
+    "have a correct link" in {
+      doc.getLink("lost-utr").text mustBe messages.lostUtr
     }
 
     "have a continue and confirm button" in {
