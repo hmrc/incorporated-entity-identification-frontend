@@ -37,7 +37,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
 
   "POST /ct-utr" should {
     "redirect to Check Your Answers page" in {
-      val result = post("/ct-utr")("ct-utr" -> testCtutr)
+      val result = post("/ct-utr")("ctutr" -> testCtutr)
       result must have(
         httpStatus(SEE_OTHER),
         redirectUri(routes.CheckYourAnswersController.show().url)
@@ -45,23 +45,23 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
     }
 
     "no ctutr is submitted" should {
-      lazy val result = post("/ct-utr")("ct-utr" -> "")
+      lazy val result = post("/ct-utr")("ctutr" -> "")
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
 
-      testCaptureCtutrErrorMessages(result)
+      testCaptureCtutrErrorMessagesNoCtutr(result)
     }
 
     "an invalid ctutr is submitted" should {
-      lazy val result = post("/ct-utr")("ct-utr" -> "123456789")
+      lazy val result = post("/ct-utr")("ctutr" -> "123456789")
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
 
-      testCaptureCtutrErrorMessages(result)
+      testCaptureCtutrErrorMessagesInvalidCtutr(result)
     }
   }
 

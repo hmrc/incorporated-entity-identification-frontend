@@ -44,7 +44,8 @@ object MessageLookup {
     val lostUtr = "Lost the company’s UTR number"
 
     object Error {
-      val invalidCtutrEntered = "Enter a Unique Taxpayer Reference in the correct format"
+      val noCtutrEntered = "Enter your company’s Unique Taxpayer Reference"
+      val invalidCtutrEntered = "Unique Taxpayer Reference number must be 10 numbers"
     }
 
   }
