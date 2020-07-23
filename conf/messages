@@ -25,7 +25,7 @@ capture-company-number.link_text                            = search Companies H
 capture-company-number.hint                                 = For example, 01234567
 
 # Confirm Business Page
-confirm-business.title                                      = What is the Company Name?
+confirm-business.title                                      = Confirm the company name
 confirm-business.heading                                    = Confirm the company name
 confirm-business.change_company                             = Change company
 
