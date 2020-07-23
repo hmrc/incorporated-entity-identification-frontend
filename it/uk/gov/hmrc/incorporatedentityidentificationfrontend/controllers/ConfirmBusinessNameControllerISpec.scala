@@ -25,9 +25,11 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
 
   "GET /confirm-business-name" should {
     lazy val result: WSResponse = get("/confirm-business-name")
+
     "return OK" in {
       result.status mustBe OK
     }
+
     "return a view which" should {
       testConfirmBusinessNameView(result)
     }

@@ -20,10 +20,10 @@ import play.api.data.Form
 import play.api.data.Forms._
 
 object CaptureCompanyNumberForm {
+
   val form: Form[String] =
     Form(
       "companyNumber" -> text
     )
-
 
 }

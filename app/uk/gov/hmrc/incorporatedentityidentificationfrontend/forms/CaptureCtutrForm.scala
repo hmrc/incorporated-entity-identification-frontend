@@ -29,17 +29,17 @@ object CaptureCtutrForm {
   val ctutrRegex: Regex = "[0-9]{10}".r
   val ctutr = "ctutr"
 
-  private val noCtutrEntered: Constraint[String] = Constraint("ct-utr_not_entered")(
+  private val noCtutrEntered: Constraint[String] = Constraint("ctutr_not_entered")(
     ctutr => validate(
       constraint = ctutr.isEmpty,
-      errMsg = "ct-utr.error.no-entry"
+      errMsg = "capture-ctutr.error.no-entry"
     )
   )
 
-  private val ctutrInvalid: Constraint[String] = Constraint("ct-utr_invalid")(
+  private val ctutrInvalid: Constraint[String] = Constraint("ctutr_invalid")(
     ctutr => validateNot(
       constraint = ctutr.matches(ctutrRegex.regex),
-      errMsg = "ct-utr.error.incorrect-format"
+      errMsg = "capture-ctutr.error.incorrect-format"
     )
   )
 

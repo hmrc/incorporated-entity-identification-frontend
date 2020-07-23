@@ -50,21 +50,21 @@ trait CheckYourAnswersViewTests {
       }
 
       "have a company number row" in {
-        val firstNameRow = summaryListRows.head
+        val companyNumberRow = summaryListRows.head
 
-        firstNameRow.getSummaryListQuestion mustBe messages.companyNumber
-        firstNameRow.getSummaryListAnswer mustBe "12345678"
-        firstNameRow.getSummaryListChangeLink mustBe routes.CaptureCompanyNumberController.show().url
-        firstNameRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.companyNumber}"
+        companyNumberRow.getSummaryListQuestion mustBe messages.companyNumber
+        companyNumberRow.getSummaryListAnswer mustBe "12345678"
+        companyNumberRow.getSummaryListChangeLink mustBe routes.CaptureCompanyNumberController.show().url
+        companyNumberRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.companyNumber}"
       }
 
-      "have a last name row" in {
-        val lastNameRow = summaryListRows(1)
+      "have a ctutr row" in {
+        val ctutrRow = summaryListRows.last
 
-        lastNameRow.getSummaryListQuestion mustBe messages.ctutr
-        lastNameRow.getSummaryListAnswer mustBe "1234567890"
-        lastNameRow.getSummaryListChangeLink mustBe routes.CaptureCtutrController.show().url
-        lastNameRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.ctutr}"
+        ctutrRow.getSummaryListQuestion mustBe messages.ctutr
+        ctutrRow.getSummaryListAnswer mustBe "1234567890"
+        ctutrRow.getSummaryListChangeLink mustBe routes.CaptureCtutrController.show().url
+        ctutrRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.ctutr}"
       }
 
       "have a continue and confirm button" in {
