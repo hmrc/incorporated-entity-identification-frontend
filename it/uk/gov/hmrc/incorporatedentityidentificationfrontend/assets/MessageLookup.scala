@@ -36,6 +36,12 @@ object MessageLookup {
     val line_1 = "You can"
     val linktext = "search Companies House for the company registration number (opens in a new tab)."
     val hint = "For example, 01234567"
+
+    object Error {
+      val emptyCompanyNumber = "Enter a Company Registration number"
+      val lengthCompanyNumber = "Enter a Company Registration number using 8 characters or fewer"
+      val formatCompanyNumber = "Enter a Company Number in the correct format"
+    }
   }
 
   object ConfirmBusinessName {

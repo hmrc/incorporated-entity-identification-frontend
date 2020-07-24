@@ -30,17 +30,23 @@ class CaptureCompanyNumberController @Inject()(mcc: MessagesControllerComponents
                                                view: capture_company_number_page)
                                               (implicit val config: AppConfig) extends FrontendController(mcc) {
 
-  def show: Action[AnyContent] = Action.async {
+
+  val show: Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(
         Ok(view(routes.CaptureCompanyNumberController.submit(), CaptureCompanyNumberForm.form))
       )
   }
 
-  def submit: Action[AnyContent] = Action.async {
+  val submit: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(
-        Redirect(routes.ConfirmBusinessNameController.show())
+      CaptureCompanyNumberForm.form.bindFromRequest().fold(
+        formWithErrors => Future.successful(
+          BadRequest(view(routes.CaptureCompanyNumberController.submit(), formWithErrors))
+        ),
+        _ => Future.successful(
+          Redirect(routes.ConfirmBusinessNameController.show())
+        )
       )
   }
 

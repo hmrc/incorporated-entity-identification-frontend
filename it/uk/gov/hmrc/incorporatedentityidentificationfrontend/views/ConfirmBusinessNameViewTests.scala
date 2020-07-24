@@ -35,7 +35,7 @@ trait ConfirmBusinessNameViewTests {
     }
 
     "have the correct heading" in {
-      doc.getH1Elements.text mustBe messages.heading
+      doc.getH1Elements.first.text mustBe messages.heading
     }
 
     "Have the correct link" in {
