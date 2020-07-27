@@ -15,9 +15,11 @@
  *@
 
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.inputText
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.errorSummary
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.inputText
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
+
 
 @this(layout: govuk_template,
         govukFieldset: GovukFieldset,
@@ -26,36 +28,39 @@
         govukButton: GovukButton,
         formWithCSRF: FormWithCSRF,
         inputText: inputText,
+        errorSummary: errorSummary
 )
 
 @(formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(title = title(messages("capture-company-number.title"), form)) {
-    @govukFieldset(Fieldset(
-        legend = Some(Legend(
-            content = Text(Messages("capture-company-number.title")),
-            classes = "govuk-fieldset__legend--xl",
-            isPageHeading = true
-        )),
-        html = html
-    ))
+    @errorSummary(form.errors)
 
-}
+        @govukFieldset(Fieldset(
+            legend = Some(Legend(
+                content = Text(Messages("capture-company-number.title")),
+                classes = "govuk-fieldset__legend--xl",
+                isPageHeading = true
+            )),
+            html = html
+        ))
 
-@html = {
+    }
+
+    @html= {
     @formWithCSRF(action = formAction) {
 
         <p class="govuk-body">
             @messages("capture-company-number.line_1")
             <a class="govuk-link" href="https://beta.companieshouse.gov.uk/" id="companies-house">
-                @messages("capture-company-number.link_text")
+            @messages("capture-company-number.link_text")
             </a>
         </p>
 
         @inputText(
             form = form,
-            id = "company-number",
-            name = "company-number",
+            id = "companyNumber",
+            name = "companyNumber",
             isPageHeading = false,
             label = "",
             hint = Some(Html(s"""<p style="color:#626a6e" class="govuk-body">${messages("capture-company-number.hint")}</p>""")),
@@ -73,4 +78,5 @@
             content = Text(Messages("base.save_and_come_back"))
         ))
     }
-}
+    }
+
