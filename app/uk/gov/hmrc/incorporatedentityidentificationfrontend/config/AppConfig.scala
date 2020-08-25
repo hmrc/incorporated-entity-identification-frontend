@@ -22,10 +22,10 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig) {
 
-  private lazy val contactBaseUrl = servicesConfig.baseUrl("contact-frontend")
+  private lazy val contactBaseUrl: String = servicesConfig.baseUrl("contact-frontend")
 
-  private lazy val assetsUrl = servicesConfig.getString("assets.url")
-  private lazy val serviceIdentifier = "MyService"
+  private lazy val assetsUrl: String = servicesConfig.getString("assets.url")
+  private lazy val serviceIdentifier: String = "MyService"
 
   lazy val assetsPrefix: String = assetsUrl + servicesConfig.getString("assets.version")
   lazy val analyticsToken: String = servicesConfig.getString(s"google-analytics.token")
@@ -38,5 +38,4 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
-
 }
