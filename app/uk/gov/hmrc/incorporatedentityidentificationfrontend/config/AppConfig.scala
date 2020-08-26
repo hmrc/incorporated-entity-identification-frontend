@@ -17,10 +17,11 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.config
 
 import javax.inject.{Inject, Singleton}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
-class AppConfig @Inject()(servicesConfig: ServicesConfig) {
+class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
 
   private lazy val contactBaseUrl: String = servicesConfig.baseUrl("contact-frontend")
 
@@ -38,4 +39,11 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) {
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
+
+  def incorporationInformationUrl: String =
+    if (isEnabled(CompaniesHouseStub))
+      servicesConfig.getString("microservice.services.incorporation-information.stub-url")
+    else
+      servicesConfig.getString("microservice.services.incorporation-information.url")
+
 }
