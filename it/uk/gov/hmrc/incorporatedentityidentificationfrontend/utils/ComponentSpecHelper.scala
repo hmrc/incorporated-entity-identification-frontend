@@ -21,6 +21,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   override lazy val app: Application = new GuiceApplicationBuilder()
     .in(Environment.simple(mode = Mode.Dev))
     .configure(config)
+    .configure("application.router" -> "testOnlyDoNotUseInAppConf.Routes")
     .build
 
   val mockHost: String = WiremockHelper.wiremockHost
