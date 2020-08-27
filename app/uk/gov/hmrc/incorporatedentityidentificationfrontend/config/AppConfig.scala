@@ -40,10 +40,10 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
 
-  def incorporationInformationUrl: String =
+  def retrieveCompanyInformationUrl(companyNumber: String): String =
     if (isEnabled(CompaniesHouseStub))
-      servicesConfig.getString("microservice.services.incorporation-information.stub-url")
+      s"${servicesConfig.getString("microservice.services.incorporation-information.stub-url")}/test-only/incorporation-information/$companyNumber/incorporated-company-profile"
     else
-      servicesConfig.getString("microservice.services.incorporation-information.url")
+      s"${servicesConfig.getString("microservice.services.incorporation-information.url")}/test-only/incorporation-information/$companyNumber/incorporated-company-profile"
 
 }
