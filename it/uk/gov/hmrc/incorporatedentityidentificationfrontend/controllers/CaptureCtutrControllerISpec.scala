@@ -17,11 +17,11 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.test.Helpers._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testCtutr
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCtutrViewTests
 
 class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrViewTests {
-  val testCtutr = "1234567890"
 
   "GET /ct-utr" should {
     lazy val result = get("/ct-utr")

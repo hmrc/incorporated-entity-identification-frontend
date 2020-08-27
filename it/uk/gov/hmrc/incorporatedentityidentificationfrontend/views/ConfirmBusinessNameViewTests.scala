@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.views
 
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.matchers.must.Matchers
@@ -27,8 +28,11 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup
 trait ConfirmBusinessNameViewTests {
   this: AnyWordSpec with Matchers =>
 
-  def testConfirmBusinessNameView(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
+  def testConfirmBusinessNameView(result: => WSResponse, stub: => StubMapping, testCompanyName: String): Unit = {
+    lazy val doc: Document = {
+      stub
+      Jsoup.parse(result.body)
+    }
 
     "have the correct title" in {
       doc.title mustBe messages.title
@@ -36,6 +40,10 @@ trait ConfirmBusinessNameViewTests {
 
     "have the correct heading" in {
       doc.getH1Elements.first.text mustBe messages.heading
+    }
+
+    "display the company name" in {
+      doc.getParagraphs.first.text mustBe testCompanyName
     }
 
     "Have the correct link" in {

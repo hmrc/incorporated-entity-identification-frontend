@@ -19,24 +19,26 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_page
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompanyInformationRetrievalService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ConfirmBusinessNameController @Inject()(mcc: MessagesControllerComponents,
-                                              view: confirm_business_page)
-                                             (implicit val config: AppConfig,
+                                              view: confirm_business_name_page,
+                                              companyInformationRetrievalService: CompanyInformationRetrievalService
+                                             )(implicit val config: AppConfig,
                                               executionContext: ExecutionContext) extends FrontendController(mcc) {
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      val companyName = "Acme Ltd" // TODO this will be pre-pop data
-
-      Future.successful(
-        Ok(view(routes.ConfirmBusinessNameController.submit(), companyName))
-      )
+      val companyNumber = "12345678"
+      companyInformationRetrievalService.retrieveCompanyInformation(companyNumber).map {
+        companyInformation =>
+          Ok(view(routes.ConfirmBusinessNameController.submit(), companyInformation.companyName))
+      }
   }
 
   val submit: Action[AnyContent] = Action.async {

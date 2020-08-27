@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers
+package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
-import javax.inject.Singleton
-import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, InjectedController}
+import play.api.libs.json._
 
-import scala.concurrent.Future
+case class CompanyInformation(companyName: String)
 
-@Singleton
-class CompaniesHouseStubController extends InjectedController {
-
+object CompanyInformation {
   private val companyNameKey = "company_name"
-  private val stubCompanyName = "Test Company Ltd"
 
-  def getCompanyInformation(companyNumber: String): Action[AnyContent] = Action.async {
-    Future.successful(Ok(Json.obj(companyNameKey -> stubCompanyName)))
-  }
+  implicit val reads: Reads[CompanyInformation] = (json: JsValue) =>
+    (json \ companyNameKey).validate[String].map {
+      companyName => CompanyInformation(companyName)
+    }
 }

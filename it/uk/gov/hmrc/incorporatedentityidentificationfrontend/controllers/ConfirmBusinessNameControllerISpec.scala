@@ -16,29 +16,43 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.CompaniesHouseApiStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.ConfirmBusinessNameViewTests
 
-class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with ConfirmBusinessNameViewTests {
+class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with ConfirmBusinessNameViewTests with CompaniesHouseApiStub {
 
-  "GET /confirm-business-name" should {
-    lazy val result: WSResponse = get("/confirm-business-name")
+  "GET /confirm-business-name" when {
+    "the company exists in Companies House" should {
+      "return ok" in {
+        stubRetrieveCompanyInformation(testCompanyNumber)(status = OK, body = Json.obj(coHoCompanyNameKey -> testCompanyName))
+        lazy val result: WSResponse = get("/confirm-business-name")
+        result.status mustBe OK
+      }
 
-    "return OK" in {
-      result.status mustBe OK
+      "return a view which" should {
+        lazy val stub = stubRetrieveCompanyInformation(testCompanyNumber)(status = OK, body = Json.obj(coHoCompanyNameKey -> testCompanyName))
+        lazy val result: WSResponse = get("/confirm-business-name")
+        testConfirmBusinessNameView(result, stub, testCompanyName)
+      }
     }
 
-    "return a view which" should {
-      testConfirmBusinessNameView(result)
+    "the company doesn't exist in Companies House" should {
+      "show technical difficulties page" in {
+        stubRetrieveCompanyInformation(testCompanyNumber)(status = NOT_FOUND)
+        lazy val result: WSResponse = get("/confirm-business-name")
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
     }
   }
 
   "POST /confirm-business-name" should {
-    lazy val result = post("/confirm-business-name")()
-
-    "return NotImplemented" in {
+    "redirect to Capture CTUTR Page" in {
+      lazy val result = post("/confirm-business-name")()
       result must have(
         httpStatus(SEE_OTHER),
         redirectUri(routes.CaptureCtutrController.show().url)

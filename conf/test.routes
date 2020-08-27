@@ -1,7 +1,7 @@
-GET        /feature-switches                                    uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.controllers.FeatureSwitchFrontendController.show
-POST       /feature-switches                                    uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit
+GET        /feature-switches                                                                uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.controllers.FeatureSwitchFrontendController.show
+POST       /feature-switches                                                                uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit
 
-GET        /api/feature-switches                                uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
-POST       /api/feature-switches                                uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
+GET        /api/feature-switches                                                            uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
+POST       /api/feature-switches                                                            uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 
-GET        /companies-house-stub/company/:companyNumber         uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers.CompaniesHouseStubController.getCompanyInformation(companyNumber: String)
+GET        /incorporation-information/:companyNumber/incorporated-company-profile           uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers.CompaniesHouseStubController.getCompanyInformation(companyNumber: String)
