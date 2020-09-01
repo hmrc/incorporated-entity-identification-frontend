@@ -6,5 +6,6 @@ object TestConstants {
   val coHoCompanyNameKey = "company_name"
   val testCompanyName = "Test Company Ltd"
   val testCtutr = "1234567890"
+  val testJourneyId = "TestJourneyId"
 
 }

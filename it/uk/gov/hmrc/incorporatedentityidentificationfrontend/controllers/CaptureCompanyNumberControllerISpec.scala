@@ -18,7 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testCompanyNumber
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyNumber, testJourneyId}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCompanyNumberTests
 
@@ -37,8 +37,14 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
   }
 
   "POST /company-number" when {
-
     "the company number is correct" should {
+      "store company number in database" in {
+        post("/company-number")("companyNumber" -> testCompanyNumber)
+
+        val storedCompanyNumber = await(repository.retrieveCompanyNumber(testJourneyId))
+
+        storedCompanyNumber mustBe Some(testCompanyNumber)
+      }
 
       "redirect to the Confirm Business Name page" in {
         lazy val result = post("/company-number")("companyNumber" -> testCompanyNumber)

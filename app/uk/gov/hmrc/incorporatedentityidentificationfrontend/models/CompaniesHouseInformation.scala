@@ -18,13 +18,17 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json._
 
-case class CompanyInformation(companyName: String)
+case class CompaniesHouseInformation(companyName: String)
 
-object CompanyInformation {
+object CompaniesHouseInformation {
   private val companyNameKey = "company_name"
 
-  implicit val reads: Reads[CompanyInformation] = (json: JsValue) =>
-    (json \ companyNameKey).validate[String].map {
-      companyName => CompanyInformation(companyName)
+  implicit val reads: Reads[CompaniesHouseInformation] =
+    (__ \ companyNameKey).read[String].map {
+      companyName => CompaniesHouseInformation(companyName)
     }
+
+  implicit val writes: OWrites[CompaniesHouseInformation] = Json.writes[CompaniesHouseInformation]
+
+  implicit val format: OFormat[CompaniesHouseInformation] = OFormat(reads, writes)
 }
