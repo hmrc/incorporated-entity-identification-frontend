@@ -26,25 +26,36 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.ConfirmBusines
 
 class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with ConfirmBusinessNameViewTests with CompaniesHouseApiStub {
 
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    await(repository.storeCompanyNumber(testJourneyId, testCompanyNumber))
+  }
+
   "GET /confirm-business-name" when {
     "the company exists in Companies House" should {
       "return ok" in {
         stubRetrieveCompanyInformation(testCompanyNumber)(status = OK, body = Json.obj(coHoCompanyNameKey -> testCompanyName))
+
         lazy val result: WSResponse = get("/confirm-business-name")
+
         result.status mustBe OK
       }
 
       "return a view which" should {
         lazy val stub = stubRetrieveCompanyInformation(testCompanyNumber)(status = OK, body = Json.obj(coHoCompanyNameKey -> testCompanyName))
         lazy val result: WSResponse = get("/confirm-business-name")
+
         testConfirmBusinessNameView(result, stub, testCompanyName)
       }
     }
 
     "the company doesn't exist in Companies House" should {
       "show technical difficulties page" in {
+        await(repository.storeCompanyNumber(testJourneyId, testCompanyNumber))
         stubRetrieveCompanyInformation(testCompanyNumber)(status = NOT_FOUND)
+
         lazy val result: WSResponse = get("/confirm-business-name")
+
         result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
@@ -53,6 +64,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
   "POST /confirm-business-name" should {
     "redirect to Capture CTUTR Page" in {
       lazy val result = post("/confirm-business-name")()
+
       result must have(
         httpStatus(SEE_OTHER),
         redirectUri(routes.CaptureCtutrController.show().url)

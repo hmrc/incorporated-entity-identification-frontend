@@ -20,16 +20,18 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCompanyNumberForm
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompanyNumberStorageService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_company_number_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CaptureCompanyNumberController @Inject()(mcc: MessagesControllerComponents,
+class CaptureCompanyNumberController @Inject()(companyNumberStorageService: CompanyNumberStorageService,
+                                               mcc: MessagesControllerComponents,
                                                view: capture_company_number_page)
-                                              (implicit val config: AppConfig) extends FrontendController(mcc) {
-
+                                              (implicit val config: AppConfig,
+                                               ec: ExecutionContext) extends FrontendController(mcc) {
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
@@ -40,15 +42,16 @@ class CaptureCompanyNumberController @Inject()(mcc: MessagesControllerComponents
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
+      val journeyId = "TestJourneyId" // TODO change when Journey Id API is implemented
       CaptureCompanyNumberForm.form.bindFromRequest().fold(
         formWithErrors => Future.successful(
           BadRequest(view(routes.CaptureCompanyNumberController.submit(), formWithErrors))
         ),
-        _ => Future.successful(
-          Redirect(routes.ConfirmBusinessNameController.show())
-        )
+        companyNumber =>
+          companyNumberStorageService.storeCompanyNumber(journeyId, companyNumber).map {
+            _ => Redirect(routes.ConfirmBusinessNameController.show())
+          }
       )
   }
-
 
 }

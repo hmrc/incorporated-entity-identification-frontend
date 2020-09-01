@@ -18,26 +18,33 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompanyInformationRetrievalService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{CompanyInformationRetrievalService, CompanyNumberStorageService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ConfirmBusinessNameController @Inject()(mcc: MessagesControllerComponents,
-                                              view: confirm_business_name_page,
-                                              companyInformationRetrievalService: CompanyInformationRetrievalService
+class ConfirmBusinessNameController @Inject()(companyNumberStorageService: CompanyNumberStorageService,
+                                              companyInformationRetrievalService: CompanyInformationRetrievalService,
+                                              mcc: MessagesControllerComponents,
+                                              view: confirm_business_name_page
                                              )(implicit val config: AppConfig,
-                                              executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                               executionContext: ExecutionContext) extends FrontendController(mcc) {
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
-      val companyNumber = "12345678"
-      companyInformationRetrievalService.retrieveCompanyInformation(companyNumber).map {
-        companyInformation =>
-          Ok(view(routes.ConfirmBusinessNameController.submit(), companyInformation.companyName))
+      val journeyId = "TestJourneyId" // TODO change when Journey Id API is implemented
+      companyNumberStorageService.retrieveCompanyNumber(journeyId).flatMap {
+        case Some(companyNumber) =>
+          companyInformationRetrievalService.retrieveCompanyInformation(companyNumber).map {
+            companyInformation =>
+              Ok(view(routes.ConfirmBusinessNameController.submit(), companyInformation.companyName))
+          }
+        case None =>
+          throw new InternalServerException(s"No company number found for $journeyId")
       }
   }
 

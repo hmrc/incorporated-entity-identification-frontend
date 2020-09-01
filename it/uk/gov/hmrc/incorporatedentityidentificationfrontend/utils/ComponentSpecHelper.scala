@@ -25,6 +25,8 @@ import play.api.libs.json.Writes
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.IncorporatedEntityInformationRepository
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with CustomMatchers
@@ -54,6 +56,8 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.incorporation-information.stub-url" -> mockUrl
   )
 
+  lazy val repository: IncorporatedEntityInformationRepository = app.injector.instanceOf[IncorporatedEntityInformationRepository]
+
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]
 
   override def beforeAll(): Unit = {
@@ -68,6 +72,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
   override def beforeEach(): Unit = {
     resetWiremock()
+    repository.drop
     super.beforeEach()
   }
 

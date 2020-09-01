@@ -20,8 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.http.Status.OK
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CompanyInformationRetrievalHttpParser._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyInformation
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompaniesHouseInformation
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,8 +29,8 @@ class CompanyInformationRetrievalConnector @Inject()(http: HttpClient,
                                                      appConfig: AppConfig
                                                     )(implicit ec: ExecutionContext) {
 
-  def retrieveCompanyInformation(companyNumber: String)(implicit hc: HeaderCarrier): Future[CompanyInformation] =
-    http.GET[CompanyInformation](appConfig.retrieveCompanyInformationUrl(companyNumber))
+  def retrieveCompanyInformation(companyNumber: String)(implicit hc: HeaderCarrier): Future[CompaniesHouseInformation] =
+    http.GET[CompaniesHouseInformation](appConfig.retrieveCompanyInformationUrl(companyNumber))
 
 }
 
@@ -39,12 +38,12 @@ object CompanyInformationRetrievalHttpParser {
 
   private val companyNameKey = "company_name"
 
-  implicit object CompanyInformationHttpReads extends HttpReads[CompanyInformation] {
-    override def read(method: String, url: String, response: HttpResponse): CompanyInformation = {
+  implicit object CompanyInformationHttpReads extends HttpReads[CompaniesHouseInformation] {
+    override def read(method: String, url: String, response: HttpResponse): CompaniesHouseInformation = {
       response.status match {
         case OK =>
           (response.json \ companyNameKey).asOpt[String] match {
-            case Some(companyName) => CompanyInformation(companyName)
+            case Some(companyName) => CompaniesHouseInformation(companyName)
             case None => throw new InternalServerException("Companies House API returned invalid JSON")
           }
         case status => throw new InternalServerException(s"Companies House API failed with status: $status")
