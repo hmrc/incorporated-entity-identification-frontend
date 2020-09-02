@@ -10,7 +10,7 @@ This is a Scala/Play frontend to allow Limited Companies to provide their inform
  `sm --stop INCORPORATED_ENTITY_IDENTIFICATION_FRONTEND`
  
 3. Run the frontend locally using
-`sbt 'run 9718 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes`
+`sbt 'run 9718 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
 
 ### License
 

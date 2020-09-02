@@ -52,6 +52,8 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.auth.port" -> mockPort,
     "microservice.services.base.host" -> mockHost,
     "microservice.services.base.port" -> mockPort,
+    "microservice.services.incorporated-entity-identification-frontend.host" -> mockHost,
+    "microservice.services.incorporated-entity-identification-frontend.port" -> mockPort,
     "microservice.services.incorporation-information.url" -> mockUrl,
     "microservice.services.incorporation-information.stub-url" -> mockUrl
   )

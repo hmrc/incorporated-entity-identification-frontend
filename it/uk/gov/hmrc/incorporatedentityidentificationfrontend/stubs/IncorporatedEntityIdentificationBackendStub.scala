@@ -20,10 +20,10 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethods
 
-trait CompaniesHouseApiStub extends WireMockMethods {
+trait IncorporatedEntityIdentificationBackendStub extends WireMockMethods {
 
-  def stubRetrieveCompanyInformation(companyNumber: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = GET, uri = s"/incorporation-information/$companyNumber/incorporated-company-profile")
+  def stubStoreCompanyName(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
+    when(method = POST, uri = s"/$journeyId/store-company-name")
       .thenReturn(
         status = status,
         body = body
