@@ -29,4 +29,11 @@ class CompanyNameStorageService @Inject()(incorporatedEntityIdentificationConnec
   def storeCompanyName(journeyId: String, companyName: String)(implicit hc: HeaderCarrier): Future[CompanyNameStored.type] =
   //incorporatedEntityIdentificationConnector.storeCompanyName(journeyId, companyName) TODO uncomment when backend API built
     Future.successful(CompanyNameStored)
+
+  def retrieveCompanyName(journeyId: String)(implicit hc: HeaderCarrier): Future[String] = {
+    //incorporatedEntityIdentificationConnector.retrieveCompanyName(journeyId) TODO uncomment when backend API built
+    val testCompanyName = "Test Company Ltd"
+    Future.successful(testCompanyName)
+  }
+
 }

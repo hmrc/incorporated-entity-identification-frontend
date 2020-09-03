@@ -27,9 +27,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext
 
 @Singleton
-class ConfirmBusinessNameController @Inject()(companyNumberStorageService: CompanyNumberStorageService,
-                                              companyNameStorageService: CompanyNameStorageService,
-                                              companyInformationRetrievalService: CompanyInformationRetrievalService,
+class ConfirmBusinessNameController @Inject()(companyNameStorageService: CompanyNameStorageService,
                                               mcc: MessagesControllerComponents,
                                               view: confirm_business_name_page
                                              )(implicit val config: AppConfig,
@@ -38,21 +36,16 @@ class ConfirmBusinessNameController @Inject()(companyNumberStorageService: Compa
   val show: Action[AnyContent] = Action.async {
     implicit request =>
       val journeyId = "TestJourneyId" // TODO change when Journey Id API is implemented
-      companyNumberStorageService.retrieveCompanyNumber(journeyId).flatMap {
-        case Some(companyNumber) =>
-          companyInformationRetrievalService.retrieveCompanyInformation(companyNumber).map {
-            companyInformation =>
-              Ok(view(routes.ConfirmBusinessNameController.submit(), companyInformation.companyName))
-          }
-        case None =>
-          throw new InternalServerException(s"No company number found for $journeyId")
+      companyNameStorageService.retrieveCompanyName(journeyId).map {
+        companyName =>
+          Ok(view(routes.ConfirmBusinessNameController.submit(), companyName))
       }
   }
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
       val journeyId = "TestJourneyId" // TODO change when Journey Id API is implemented
-      val companyName = "TestCompanyLtd" // TODO change when backend API is implemented
+      val companyName = "Test Company Ltd" // TODO change when backend API is implemented
       companyNameStorageService.storeCompanyName(journeyId, companyName).map {
         _ =>
           Redirect(routes.CaptureCtutrController.show())

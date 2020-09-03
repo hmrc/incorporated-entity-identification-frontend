@@ -16,14 +16,16 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyNumber, testJourneyId}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.CompaniesHouseApiStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCompanyNumberTests
 
 
-class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with CaptureCompanyNumberTests {
+class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with CaptureCompanyNumberTests with CompaniesHouseApiStub {
 
   "GET /company-number" should {
     lazy val result: WSResponse = get("/company-number")
@@ -38,16 +40,10 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
 
   "POST /company-number" when {
     "the company number is correct" should {
-      "store company number in database" in {
-        post("/company-number")("companyNumber" -> testCompanyNumber)
-
-        val storedCompanyNumber = await(repository.retrieveCompanyNumber(testJourneyId))
-
-        storedCompanyNumber mustBe Some(testCompanyNumber)
-      }
-
       "redirect to the Confirm Business Name page" in {
-        lazy val result = post("/company-number")("companyNumber" -> testCompanyNumber)
+        stubRetrieveCompanyInformation(testCompanyNumber)(status = OK, body = Json.obj(coHoCompanyNameKey -> testCompanyName))
+
+        lazy val result = post("/company-number")(companyNumberKey -> testCompanyNumber)
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -57,7 +53,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
     }
 
     "the company number is missing" should {
-      lazy val result = post("/company-number")("companyNumber" -> "")
+      lazy val result = post("/company-number")(companyNumberKey -> "")
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
@@ -66,7 +62,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
     }
 
     "the company number has more than 8 " should {
-      lazy val result = post("/company-number")("companyNumber" -> "0123456789")
+      lazy val result = post("/company-number")(companyNumberKey -> "0123456789")
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
@@ -74,7 +70,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
     }
 
     "company number is not in the correct format" should {
-      lazy val result = post("/company-number")("companyNumber" -> "13E!!!%")
+      lazy val result = post("/company-number")(companyNumberKey -> "13E!!!%")
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
