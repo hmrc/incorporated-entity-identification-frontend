@@ -20,14 +20,15 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{CompanyInformationRetrievalService, CompanyNumberStorageService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{CompanyInformationRetrievalService, CompanyNameStorageService, CompanyNumberStorageService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class ConfirmBusinessNameController @Inject()(companyNumberStorageService: CompanyNumberStorageService,
+                                              companyNameStorageService: CompanyNameStorageService,
                                               companyInformationRetrievalService: CompanyInformationRetrievalService,
                                               mcc: MessagesControllerComponents,
                                               view: confirm_business_name_page
@@ -50,8 +51,11 @@ class ConfirmBusinessNameController @Inject()(companyNumberStorageService: Compa
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(
-        Redirect(routes.CaptureCtutrController.show())
-      )
+      val journeyId = "TestJourneyId" // TODO change when Journey Id API is implemented
+      val companyName = "TestCompanyLtd" // TODO change when backend API is implemented
+      companyNameStorageService.storeCompanyName(journeyId, companyName).map {
+        _ =>
+          Redirect(routes.CaptureCtutrController.show())
+      }
   }
 }

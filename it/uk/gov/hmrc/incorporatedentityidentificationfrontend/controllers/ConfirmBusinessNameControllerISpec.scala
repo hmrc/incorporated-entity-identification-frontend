@@ -20,11 +20,12 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.CompaniesHouseApiStub
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{CompaniesHouseApiStub, IncorporatedEntityIdentificationBackendStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.ConfirmBusinessNameViewTests
 
-class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with ConfirmBusinessNameViewTests with CompaniesHouseApiStub {
+class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with ConfirmBusinessNameViewTests with CompaniesHouseApiStub
+  with IncorporatedEntityIdentificationBackendStub {
 
   override def beforeEach(): Unit = {
     super.beforeEach()
@@ -62,7 +63,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
   }
 
   "POST /confirm-business-name" should {
-    "redirect to Capture CTUTR Page" in {
+    "should store company name and redirect to Capture CTUTR Page" in {
+     // stubStoreCompanyName(testJourneyId)(status = OK) TODO uncomment when backend API is built
       lazy val result = post("/confirm-business-name")()
 
       result must have(
