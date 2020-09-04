@@ -14,18 +14,10 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs
+package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethods
+import play.api.libs.json.{Json, OFormat}
 
-trait IncorporatedEntityIdentificationBackendStub extends WireMockMethods {
-
-  def stubStoreCompanyName(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = POST, uri = s"/$journeyId/store-company-name")
-      .thenReturn(
-        status = status,
-        body = body
-      )
+case object CompanyNumberStored {
+  implicit val format: OFormat[CompanyNumberStored.type] = Json.format[CompanyNumberStored.type]
 }

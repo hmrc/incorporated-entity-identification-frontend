@@ -17,17 +17,21 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.IncorporatedEntityInformationRepository
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyNumberStored
 
 import scala.concurrent.Future
 
 @Singleton
-class CompanyNumberStorageService @Inject()(incorporatedEntityInformationRepository: IncorporatedEntityInformationRepository) {
+class CompanyNumberStorageService @Inject()() {
 
-  def storeCompanyNumber(journeyId: String, companyNumber: String): Future[Unit] =
-    incorporatedEntityInformationRepository.storeCompanyNumber(journeyId, companyNumber)
+  //TODO call backend API when completed
 
-  def retrieveCompanyNumber(journeyId: String): Future[Option[String]] =
-    incorporatedEntityInformationRepository.retrieveCompanyNumber(journeyId)
+  def storeCompanyNumber(journeyId: String, companyNumber: String): Future[CompanyNumberStored.type] =
+    Future.successful(CompanyNumberStored)
+
+  def retrieveCompanyNumber(journeyId: String): Future[String] = {
+    val companyNumber = "12345678"
+    Future.successful(companyNumber)
+  }
 
 }

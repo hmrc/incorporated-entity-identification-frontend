@@ -19,15 +19,18 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CompanyInformationRetrievalConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCompanyNumberForm
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompanyNumberStorageService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{CompanyInformationRetrievalService, CompanyNameStorageService, CompanyNumberStorageService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_company_number_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CaptureCompanyNumberController @Inject()(companyNumberStorageService: CompanyNumberStorageService,
+class CaptureCompanyNumberController @Inject()(companyInformationRetrievalService: CompanyInformationRetrievalService,
+                                               companyNumberStorageService: CompanyNumberStorageService,
+                                               companyNameStorageService: CompanyNameStorageService,
                                                mcc: MessagesControllerComponents,
                                                view: capture_company_number_page)
                                               (implicit val config: AppConfig,
@@ -48,9 +51,12 @@ class CaptureCompanyNumberController @Inject()(companyNumberStorageService: Comp
           BadRequest(view(routes.CaptureCompanyNumberController.submit(), formWithErrors))
         ),
         companyNumber =>
-          companyNumberStorageService.storeCompanyNumber(journeyId, companyNumber).map {
-            _ => Redirect(routes.ConfirmBusinessNameController.show())
-          }
+          for {
+            companyInformation <- companyInformationRetrievalService.retrieveCompanyInformation(companyNumber)
+            _ <- companyNumberStorageService.storeCompanyNumber(journeyId, companyNumber)
+            _ <- companyNameStorageService.storeCompanyName(journeyId, companyInformation.companyName)
+          } yield
+            Redirect(routes.ConfirmBusinessNameController.show())
       )
   }
 
