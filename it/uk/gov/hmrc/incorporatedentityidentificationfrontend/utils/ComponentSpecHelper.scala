@@ -21,10 +21,13 @@ import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Writes
+import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with CustomMatchers
@@ -56,6 +59,8 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.incorporation-information.stub-url" -> mockUrl
   )
 
+  lazy val journeyConfigRepository: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
+
   implicit val ws: WSClient = app.injector.instanceOf[WSClient]
 
   override def beforeAll(): Unit = {
@@ -70,6 +75,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
   override def beforeEach(): Unit = {
     resetWiremock()
+    journeyConfigRepository.drop
     super.beforeEach()
   }
 
@@ -83,6 +89,15 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
       buildClient(uri)
         .withHttpHeaders("Csrf-Token" -> "nocheck")
         .post(formBody)
+    )
+  }
+
+
+  def post(uri: String, json: JsValue): WSResponse = {
+    await(
+      buildClient(uri)
+        .withHttpHeaders("Content-Type" -> "application/json")
+        .post(json.toString())
     )
   }
 

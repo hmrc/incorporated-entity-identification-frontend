@@ -5,3 +5,6 @@ GET        /api/feature-switches                                                
 POST       /api/feature-switches                                                            uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 
 GET        /incorporation-information/:companyNumber/incorporated-company-profile           uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers.CompaniesHouseStubController.getCompanyInformation(companyNumber: String)
+
+GET        /create-journey                                                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestCreateJourneyController.show
+POST       /create-journey                                                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestCreateJourneyController.submit

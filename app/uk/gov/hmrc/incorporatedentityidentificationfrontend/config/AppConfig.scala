@@ -49,4 +49,5 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
     else
       s"${servicesConfig.getString("microservice.services.incorporation-information.url")}/incorporation-information/$companyNumber/incorporated-company-profile"
 
+  def createJourneyUrl = s"$backendUrl/incorporated-entity-identification/journey"
 }
