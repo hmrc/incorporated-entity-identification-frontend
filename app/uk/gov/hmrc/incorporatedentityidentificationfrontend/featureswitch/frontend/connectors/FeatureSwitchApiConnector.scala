@@ -46,7 +46,7 @@ class FeatureSwitchApiConnector @Inject()(httpClient: HttpClient)(implicit ec: E
   def updateFeatureSwitches(featureSwitchProviderUrl: String,
                             featureSwitchSettings: Seq[FeatureSwitchSetting]
                            )(implicit hc: HeaderCarrier): Future[Seq[FeatureSwitchSetting]] = {
-    httpClient.POST(featureSwitchProviderUrl, featureSwitchSettings).map { response =>
+    httpClient.POST(featureSwitchProviderUrl, featureSwitchSettings, Seq("Csrf-Token" -> "nocheck")).map { response =>
       response.status match {
         case OK =>
           response.json.validate[Seq[FeatureSwitchSetting]] match {
