@@ -18,9 +18,8 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
-import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{CompanyInformationRetrievalService, CompanyNameStorageService, CompanyNumberStorageService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompanyNameStorageService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 

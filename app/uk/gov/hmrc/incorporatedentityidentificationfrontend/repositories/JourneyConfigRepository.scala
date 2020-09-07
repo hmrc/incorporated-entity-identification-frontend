@@ -17,32 +17,30 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories
 
 import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json.{Format, JsObject, Json}
 import play.modules.reactivemongo.ReactiveMongoComponent
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
-import uk.gov.hmrc.mongo.ReactiveRepository
-import play.api.libs.json.Format
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.play.json._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.mongo.ReactiveRepository
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoComponent)
-                                       (implicit ec: ExecutionContext) extends
-  ReactiveRepository[JourneyConfig, String](
+                                       (implicit ec: ExecutionContext) extends ReactiveRepository[JourneyConfig, String](
     collectionName = "incorporated-entity-identification-frontend",
     mongo = reactiveMongoComponent.mongoConnector.db,
     domainFormat = JourneyConfig.format,
     idFormat = implicitly[Format[String]]
   ) {
+
   def insertJourneyConfig(journeyId: String, journeyConfig: JourneyConfig): Future[WriteResult] = {
     val document = Json.obj(
-      "_id" -> journeyId,
+      "_id" -> journeyId
     ) ++ Json.toJsObject(journeyConfig)
 
     collection.insert(true).one(document)
   }
+
 }
-
-
