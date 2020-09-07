@@ -2,6 +2,7 @@ GET        /feature-switches                                                    
 POST       /feature-switches                                                                uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.controllers.FeatureSwitchFrontendController.submit
 
 GET        /api/feature-switches                                                            uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.getFeatureSwitches()
++ nocsrf
 POST       /api/feature-switches                                                            uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.controllers.FeatureSwitchApiController.updateFeatureSwitches()
 
 GET        /incorporation-information/:companyNumber/incorporated-company-profile           uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers.CompaniesHouseStubController.getCompanyInformation(companyNumber: String)

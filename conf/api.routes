@@ -1,3 +1,4 @@
 # microservice specific routes
 
++ nocsrf
 POST       /journey                                         uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createJourney
