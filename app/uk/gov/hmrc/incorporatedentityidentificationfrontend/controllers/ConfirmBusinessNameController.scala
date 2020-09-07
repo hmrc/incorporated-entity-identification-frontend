@@ -32,22 +32,20 @@ class ConfirmBusinessNameController @Inject()(companyNameStorageService: Company
                                              )(implicit val config: AppConfig,
                                                executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  val show: Action[AnyContent] = Action.async {
+  def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      val journeyId = "TestJourneyId" // TODO change when Journey Id API is implemented
       companyNameStorageService.retrieveCompanyName(journeyId).map {
         companyName =>
-          Ok(view(routes.ConfirmBusinessNameController.submit(), companyName))
+          Ok(view(routes.ConfirmBusinessNameController.submit(journeyId), companyName, journeyId))
       }
   }
 
-  val submit: Action[AnyContent] = Action.async {
+  def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      val journeyId = "TestJourneyId" // TODO change when Journey Id API is implemented
       val companyName = "Test Company Ltd" // TODO change when backend API is implemented
       companyNameStorageService.storeCompanyName(journeyId, companyName).map {
         _ =>
-          Redirect(routes.CaptureCtutrController.show())
+          Redirect(routes.CaptureCtutrController.show(journeyId))
       }
   }
 }

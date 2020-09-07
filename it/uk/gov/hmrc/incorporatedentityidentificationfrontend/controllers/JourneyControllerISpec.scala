@@ -32,8 +32,6 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub {
     "return a created journey" in {
       implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
 
-      val testJourneyId = "testJourneyId"
-
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
       val testJourneyConfig = JourneyConfig(
@@ -42,7 +40,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub {
 
       lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))
 
-      (result.json \ "journeyStartUrl").as[String] must include(routes.CaptureCompanyNumberController.show().url)
+      (result.json \ "journeyStartUrl").as[String] must include(routes.CaptureCompanyNumberController.show(testJourneyId).url)
 
       await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testJourneyConfig)
     }

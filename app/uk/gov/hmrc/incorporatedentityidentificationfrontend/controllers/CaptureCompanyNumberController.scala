@@ -35,19 +35,18 @@ class CaptureCompanyNumberController @Inject()(companyInformationRetrievalServic
                                               (implicit val config: AppConfig,
                                                ec: ExecutionContext) extends FrontendController(mcc) {
 
-  val show: Action[AnyContent] = Action.async {
+  def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(
-        Ok(view(routes.CaptureCompanyNumberController.submit(), CaptureCompanyNumberForm.form))
+        Ok(view(routes.CaptureCompanyNumberController.submit(journeyId), CaptureCompanyNumberForm.form))
       )
   }
 
-  val submit: Action[AnyContent] = Action.async {
+  def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      val journeyId = "TestJourneyId" // TODO change when Journey Id API is implemented
       CaptureCompanyNumberForm.form.bindFromRequest().fold(
         formWithErrors => Future.successful(
-          BadRequest(view(routes.CaptureCompanyNumberController.submit(), formWithErrors))
+          BadRequest(view(routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
         ),
         companyNumber =>
           for {
@@ -55,7 +54,7 @@ class CaptureCompanyNumberController @Inject()(companyInformationRetrievalServic
             _ <- companyNumberStorageService.storeCompanyNumber(journeyId, companyNumber)
             _ <- companyNameStorageService.storeCompanyName(journeyId, companyInformation.companyName)
           } yield
-            Redirect(routes.ConfirmBusinessNameController.show())
+            Redirect(routes.ConfirmBusinessNameController.show(journeyId))
       )
   }
 

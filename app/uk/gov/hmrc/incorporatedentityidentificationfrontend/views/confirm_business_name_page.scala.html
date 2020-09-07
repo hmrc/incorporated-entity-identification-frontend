@@ -25,7 +25,7 @@
         h1: helpers.h1,
         formWithCSRF: FormWithCSRF)
 
-@(formAction: Call, companyName: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(formAction: Call, companyName: String, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @govukLayout(title = messages("confirm-business.title")) {
 
@@ -33,7 +33,7 @@
     <p class="govuk-body">@companyName</p>
 
     <div class="govuk-body">
-        <a class="govuk-link" href=@routes.CaptureCompanyNumberController.show().url id="change-company">
+        <a class="govuk-link" href=@routes.CaptureCompanyNumberController.show(journeyId).url id="change-company">
             @messages("confirm-business.change_company")
         </a>
     </div>

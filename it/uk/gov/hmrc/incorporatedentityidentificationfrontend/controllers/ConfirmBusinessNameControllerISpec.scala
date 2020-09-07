@@ -31,14 +31,14 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
       "return ok" in {
         stubRetrieveCompanyName(testJourneyId)(status = OK, body = Json.obj(companyNameKey -> testCompanyName))
 
-        lazy val result: WSResponse = get("/confirm-business-name")
+        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
 
         result.status mustBe OK
       }
 
       "return a view which" should {
         lazy val stub = stubRetrieveCompanyName(testJourneyId)(status = OK, body = Json.obj(companyNameKey -> testCompanyName))
-        lazy val result: WSResponse = get("/confirm-business-name")
+        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
 
         testConfirmBusinessNameView(result, stub, testCompanyName)
       }
@@ -48,7 +48,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
 //      "show technical difficulties page" in {
 //        stubRetrieveCompanyName(testJourneyId)(status = NOT_FOUND)
 //
-//        lazy val result: WSResponse = get("/confirm-business-name")
+//        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
 //
 //        result.status mustBe INTERNAL_SERVER_ERROR
 //      }
@@ -57,11 +57,11 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
 
   "POST /confirm-business-name" should {
     "should store company name and redirect to Capture CTUTR Page" in {
-      lazy val result = post("/confirm-business-name")()
+      lazy val result = post(s"/$testJourneyId/confirm-business-name")()
 
       result must have(
         httpStatus(SEE_OTHER),
-        redirectUri(routes.CaptureCtutrController.show().url)
+        redirectUri(routes.CaptureCtutrController.show(testJourneyId).url)
       )
     }
   }

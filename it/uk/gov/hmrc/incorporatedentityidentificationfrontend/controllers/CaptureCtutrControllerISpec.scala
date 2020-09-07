@@ -24,7 +24,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCtutrVi
 class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrViewTests {
 
   "GET /ct-utr" should {
-    lazy val result = get("/ct-utr")
+    lazy val result = get(s"/$testJourneyId/ct-utr")
 
     "return OK" in {
       result.status mustBe OK
@@ -37,15 +37,15 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
 
   "POST /ct-utr" should {
     "redirect to Check Your Answers page" in {
-      val result = post("/ct-utr")("ctutr" -> testCtutr)
+      val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> testCtutr)
       result must have(
         httpStatus(SEE_OTHER),
-        redirectUri(routes.CheckYourAnswersController.show().url)
+        redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
       )
     }
 
     "no ctutr is submitted" should {
-      lazy val result = post("/ct-utr")("ctutr" -> "")
+      lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
@@ -55,7 +55,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
     }
 
     "an invalid ctutr is submitted" should {
-      lazy val result = post("/ct-utr")("ctutr" -> "123456789")
+      lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
 
       "return a bad request" in {
         result.status mustBe BAD_REQUEST

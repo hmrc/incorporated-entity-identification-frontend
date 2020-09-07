@@ -19,31 +19,33 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CheckYourAnswersController @Inject()(mcc: MessagesControllerComponents,
+class CheckYourAnswersController @Inject()(journeyService: JourneyService,
+                                           mcc: MessagesControllerComponents,
                                            view: check_your_answers_page)
                                           (implicit val config: AppConfig,
                                            executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  val show: Action[AnyContent] = Action.async {
+  def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       val companyNumber = "12345678"
       val ctutr = "1234567890"
 
       Future.successful(
-        Ok(view(routes.CheckYourAnswersController.submit(), ctutr, companyNumber))
+        Ok(view(routes.CheckYourAnswersController.submit(journeyId), ctutr, companyNumber, journeyId))
       )
   }
 
-  val submit: Action[AnyContent] = Action.async {
+  def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(
-        NotImplemented
+      journeyService.getJourneyConfig(journeyId).map(
+        journeyConfig => SeeOther(journeyConfig.continueUrl)
       )
   }
 }

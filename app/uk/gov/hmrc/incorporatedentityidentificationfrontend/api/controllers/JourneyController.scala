@@ -30,9 +30,9 @@ class JourneyController @Inject()(controllerComponents: MessagesControllerCompon
   def createJourney(): Action[JourneyConfig] = Action.async(parse.json[JourneyConfig]) {
     implicit req =>
       journeyService.createJourney(req.body).map(
-        journeyId => //TODO - include this in the returned url
+        journeyId =>
           Created(Json.obj(
-            "journeyStartUrl" -> CaptureCompanyNumberController.show().absoluteURL()
+            "journeyStartUrl" -> CaptureCompanyNumberController.show(journeyId).absoluteURL()
           ))
       )
   }
