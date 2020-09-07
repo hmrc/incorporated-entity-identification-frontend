@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import javax.inject.Inject
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.JourneyConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
@@ -25,10 +25,16 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.Journey
 import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyService @Inject()(journeyConnector: JourneyConnector,
-                               journeyConfigRepository: JourneyConfigRepository){
-  def createJourney(journeyConfig: JourneyConfig)(implicit headerCarrier: HeaderCarrier, ec: ExecutionContext): Future[String] =
+                               journeyConfigRepository: JourneyConfigRepository)(implicit ec: ExecutionContext) {
+  def createJourney(journeyConfig: JourneyConfig)(implicit headerCarrier: HeaderCarrier): Future[String] =
     for {
       journeyId <- journeyConnector.createJourney()
       _ <- journeyConfigRepository.insertJourneyConfig(journeyId, journeyConfig)
     } yield journeyId
+
+  def getJourneyConfig(journeyId: String): Future[JourneyConfig] =
+    journeyConfigRepository.findById(journeyId).map {
+      case Some(journeyConfig) => journeyConfig
+      case None => throw new InternalServerException(s"Journey config was not found for journey ID $journeyId")
+    }
 }

@@ -31,7 +31,7 @@ import scala.collection.JavaConverters._
 trait CheckYourAnswersViewTests {
   this: AnyWordSpec with Matchers =>
 
-  def testCheckYourAnswersView(result: => WSResponse): Unit = {
+  def testCheckYourAnswersView(journeyId: String)(result: => WSResponse): Unit = {
     lazy val doc: Document = Jsoup.parse(result.body)
 
     "have the correct title" in {
@@ -54,7 +54,7 @@ trait CheckYourAnswersViewTests {
 
         companyNumberRow.getSummaryListQuestion mustBe messages.companyNumber
         companyNumberRow.getSummaryListAnswer mustBe "12345678"
-        companyNumberRow.getSummaryListChangeLink mustBe routes.CaptureCompanyNumberController.show().url
+        companyNumberRow.getSummaryListChangeLink mustBe routes.CaptureCompanyNumberController.show(journeyId).url
         companyNumberRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.companyNumber}"
       }
 
@@ -63,7 +63,7 @@ trait CheckYourAnswersViewTests {
 
         ctutrRow.getSummaryListQuestion mustBe messages.ctutr
         ctutrRow.getSummaryListAnswer mustBe "1234567890"
-        ctutrRow.getSummaryListChangeLink mustBe routes.CaptureCtutrController.show().url
+        ctutrRow.getSummaryListChangeLink mustBe routes.CaptureCtutrController.show(journeyId).url
         ctutrRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.ctutr}"
       }
 

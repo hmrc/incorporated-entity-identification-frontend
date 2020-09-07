@@ -27,7 +27,7 @@
         govukSummaryList: GovukSummaryList,
         formWithCSRF: FormWithCSRF)
 
-@(formAction: Call, ctutr: String, companyNumber: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(formAction: Call, ctutr: String, companyNumber: String, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(title = messages("check-your-answers.title")) {
 
@@ -51,7 +51,7 @@
                 value = Value(content = Text(companyNumber)),
                 actions = Some(Actions(items = Seq(
                     ActionItem(
-                        href = Routes.CaptureCompanyNumberController.show().url,
+                        href = Routes.CaptureCompanyNumberController.show(journeyId).url,
                         content = Text(messages("base.change")),
                         visuallyHiddenText = Some(messages("check-your-answers.company_number"))
                     )
@@ -62,7 +62,7 @@
                 value = Value(content = Text(ctutr)),
                 actions = Some(Actions(items = Seq(
                     ActionItem(
-                        href = Routes.CaptureCtutrController.show().url,
+                        href = Routes.CaptureCtutrController.show(journeyId).url,
                         content = Text(messages("base.change")),
                         visuallyHiddenText = Some(messages("check-your-answers.ctutr"))
                     )

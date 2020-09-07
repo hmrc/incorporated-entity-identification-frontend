@@ -18,6 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswersViewTests
 
@@ -25,22 +26,26 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswe
 class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests {
 
   "GET /check-your-answers-business" should {
-    lazy val result: WSResponse = get("/check-your-answers-business/")
+    lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
 
     "return OK" in {
       result.status mustBe OK
     }
 
     "return a view which" should {
-      testCheckYourAnswersView(result)
+      testCheckYourAnswersView(testJourneyId)(result)
     }
   }
 
   "POST /check-your-answers-business" should {
-    lazy val result = post("/check-your-answers-business")()
+    "return a redirect to the stored continue URL from the client service" in {
+      val testContinueUrl = "/testContinueUrl"
+      await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
 
-    "return NotImplemented" in {
-      result.status mustBe NOT_IMPLEMENTED
+      lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
+
+      result.status mustBe SEE_OTHER
+      result.header(LOCATION) mustBe Some(testContinueUrl)
     }
   }
 }

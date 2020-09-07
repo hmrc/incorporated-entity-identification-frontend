@@ -31,23 +31,23 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                                       (implicit val config: AppConfig,
                                        executionContext: ExecutionContext) extends FrontendController(mcc) {
 
-  val show: Action[AnyContent] = Action.async {
+  def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       Future.successful(
-        Ok(view(routes.CaptureCtutrController.submit(), CaptureCtutrForm.form))
+        Ok(view(routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
       )
   }
 
-  val submit: Action[AnyContent] = Action.async {
+  def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       CaptureCtutrForm.form.bindFromRequest().fold(
         formWithErrors =>
           Future.successful(
-            BadRequest(view(routes.CaptureCtutrController.submit(), formWithErrors))
+            BadRequest(view(routes.CaptureCtutrController.submit(journeyId), formWithErrors))
           ),
         _ =>
           Future.successful(
-            Redirect(routes.CheckYourAnswersController.show())
+            Redirect(routes.CheckYourAnswersController.show(journeyId))
           )
 
       )

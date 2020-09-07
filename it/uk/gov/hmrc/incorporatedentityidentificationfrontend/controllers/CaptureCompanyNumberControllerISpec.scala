@@ -28,7 +28,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCompany
 class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with CaptureCompanyNumberTests with CompaniesHouseApiStub {
 
   "GET /company-number" should {
-    lazy val result: WSResponse = get("/company-number")
+    lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
 
     "return OK" in {
       result.status mustBe OK
@@ -43,17 +43,17 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
       "redirect to the Confirm Business Name page" in {
         stubRetrieveCompanyInformation(testCompanyNumber)(status = OK, body = Json.obj(coHoCompanyNameKey -> testCompanyName))
 
-        lazy val result = post("/company-number")(companyNumberKey -> testCompanyNumber)
+        lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(routes.ConfirmBusinessNameController.show().url)
+          redirectUri(routes.ConfirmBusinessNameController.show(testJourneyId).url)
         )
       }
     }
 
     "the company number is missing" should {
-      lazy val result = post("/company-number")(companyNumberKey -> "")
+      lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
@@ -62,7 +62,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
     }
 
     "the company number has more than 8 " should {
-      lazy val result = post("/company-number")(companyNumberKey -> "0123456789")
+      lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
@@ -70,7 +70,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
     }
 
     "company number is not in the correct format" should {
-      lazy val result = post("/company-number")(companyNumberKey -> "13E!!!%")
+      lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
       "return a bad request" in {
         result.status mustBe BAD_REQUEST
       }
