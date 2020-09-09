@@ -16,14 +16,18 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
+import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.IncorporatedEntityIdentificationStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswersViewTests
 
 
-class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests {
+class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests with IncorporatedEntityIdentificationStub {
+  val testCompanyNumber = "12345678"
+  val testCtutr = "1234567890"
 
   "GET /check-your-answers-business" should {
     lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
@@ -37,15 +41,52 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
     }
   }
 
-  "POST /check-your-answers-business" should {
-    "return a redirect to the stored continue URL from the client service" in {
-      val testContinueUrl = "/testContinueUrl"
-      await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
+  "POST /check-your-answers-business" when {
+    "the company details are successfully matched" should {
+      "return a redirect to the stored continue URL from the client service" in {
+        val testContinueUrl = "/testContinueUrl"
+        await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
 
-      lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
+        stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
 
-      result.status mustBe SEE_OTHER
-      result.header(LOCATION) mustBe Some(testContinueUrl)
+        lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(testContinueUrl)
+      }
+    }
+    "the company details do not match" should {
+      "throw an exception" in { //TODO - update this to route to an error page in the future
+        val testContinueUrl = "/testContinueUrl"
+        await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
+
+        stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
+
+        lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+    "the company details do not exist" should {
+      "throw an exception" in { //TODO - handle this in the case of entities without corporation tax
+        val testContinueUrl = "/testContinueUrl"
+        await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
+
+        stubValidateIncorporatedEntityDetails(
+          testCompanyNumber,
+          testCtutr
+        )(
+          status = NOT_FOUND,
+          body = Json.obj(
+            "code" -> "NOT_FOUND",
+            "reason" -> "The back end has indicated that CT UTR cannot be returned"
+          )
+        )
+
+        lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
     }
   }
 }
