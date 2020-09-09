@@ -23,6 +23,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
 
+
   private lazy val contactBaseUrl: String = servicesConfig.baseUrl("contact-frontend")
 
   private lazy val assetsUrl: String = servicesConfig.getString("assets.url")
@@ -54,4 +55,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   }
 
   def createJourneyUrl: String = s"$backendUrl/incorporated-entity-identification/journey"
+
+  lazy val validateIncorporatedEntityDetailsUrl: String = s"$backendUrl/incorporated-entity-identification/validate-details"
 }

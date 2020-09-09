@@ -35,13 +35,15 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
     }
   }
 
-  "POST /ct-utr" should {
-    "redirect to Check Your Answers page" in {
-      val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> testCtutr)
-      result must have(
-        httpStatus(SEE_OTHER),
-        redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
-      )
+  "POST /ct-utr" when {
+    "a valid ctutr is submitted" should {
+      "redirect to Check Your Answers page" in {
+        val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> testCtutr)
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
+        )
+      }
     }
 
     "no ctutr is submitted" should {
