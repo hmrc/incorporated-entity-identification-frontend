@@ -18,8 +18,12 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.ValidateIncorporatedEntityDetailsConnector
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.DetailsMatched
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.FakeConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -27,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
+                                           validateIncorporatedEntityDetailsConnector: ValidateIncorporatedEntityDetailsConnector,
                                            mcc: MessagesControllerComponents,
                                            view: check_your_answers_page)
                                           (implicit val config: AppConfig,
@@ -34,9 +39,6 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      val companyNumber = "12345678"
-      val ctutr = "1234567890"
-
       Future.successful(
         Ok(view(routes.CheckYourAnswersController.submit(journeyId), ctutr, companyNumber, journeyId))
       )
@@ -44,8 +46,14 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      journeyService.getJourneyConfig(journeyId).map(
-        journeyConfig => SeeOther(journeyConfig.continueUrl)
-      )
+      validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(companyNumber, ctutr).flatMap {
+        case DetailsMatched =>
+          journeyService.getJourneyConfig(journeyId).map(
+            journeyConfig => SeeOther(journeyConfig.continueUrl)
+          )
+        case _ =>
+          Future.failed(new InternalServerException("Incorporated entity details failed to match"))
+      }
+
   }
 }

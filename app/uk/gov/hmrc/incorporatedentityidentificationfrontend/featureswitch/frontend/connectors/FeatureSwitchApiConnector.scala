@@ -31,30 +31,32 @@ class FeatureSwitchApiConnector @Inject()(httpClient: HttpClient)(implicit ec: E
   def retrieveFeatureSwitches(featureSwitchProviderUrl: String
                              )(implicit reads: Reads[Seq[FeatureSwitchSetting]],
                                hc: HeaderCarrier): Future[Seq[FeatureSwitchSetting]] = {
-    httpClient.GET(featureSwitchProviderUrl).map(response =>
-      response.status match {
-        case OK =>
-          response.json.validate[Seq[FeatureSwitchSetting]] match {
-            case JsSuccess(settings, _) => settings
-            case JsError(errors) => throw new Exception(errors.head.toString)
-          }
-        case _ => throw new Exception(s"Could not retrieve feature switches from $featureSwitchProviderUrl")
-      }
+    httpClient.GET(featureSwitchProviderUrl).map(
+      response =>
+        response.status match {
+          case OK =>
+            response.json.validate[Seq[FeatureSwitchSetting]] match {
+              case JsSuccess(settings, _) => settings
+              case JsError(errors) => throw new Exception(errors.head.toString)
+            }
+          case _ => throw new Exception(s"Could not retrieve feature switches from $featureSwitchProviderUrl")
+        }
     )
   }
 
   def updateFeatureSwitches(featureSwitchProviderUrl: String,
                             featureSwitchSettings: Seq[FeatureSwitchSetting]
                            )(implicit hc: HeaderCarrier): Future[Seq[FeatureSwitchSetting]] = {
-    httpClient.POST(featureSwitchProviderUrl, featureSwitchSettings).map { response =>
-      response.status match {
-        case OK =>
-          response.json.validate[Seq[FeatureSwitchSetting]] match {
-            case JsSuccess(settings, _) => settings
-            case JsError(errors) => throw new Exception(errors.head.toString)
-          }
-        case _ => throw new Exception(s"Could not retrieve feature switches from $featureSwitchProviderUrl")
-      }
+    httpClient.POST(featureSwitchProviderUrl, featureSwitchSettings).map {
+      response =>
+        response.status match {
+          case OK =>
+            response.json.validate[Seq[FeatureSwitchSetting]] match {
+              case JsSuccess(settings, _) => settings
+              case JsError(errors) => throw new Exception(errors.head.toString)
+            }
+          case _ => throw new Exception(s"Could not retrieve feature switches from $featureSwitchProviderUrl")
+        }
     }
   }
 
