@@ -30,12 +30,22 @@ class FeatureSwitchProviderConfig @Inject()(configuration: Configuration) {
 
   lazy val selfFeatureSwitchUrl = s"$selfBaseUrl/incorporated-entity-identification/test-only/api/feature-switches"
 
+  lazy val incorporatedEntityIdentificationFeatureSwitchUrl =
+    s"${servicesConfig.baseUrl("incorporated-entity-identification")}/incorporated-entity-identification/test-only/api/feature-switches"
+
   lazy val selfFeatureSwitchProvider: FeatureSwitchProvider = FeatureSwitchProvider(
     id = "incorporated-entity-identification-frontend",
     appName = "Incorporated Entity Identification Frontend",
     url = selfFeatureSwitchUrl
   )
 
+  lazy val incorporatedEntityIdentificationFeatureSwitchProvider: FeatureSwitchProvider = FeatureSwitchProvider(
+    id = "incorporated-entity-identification",
+    appName = "Incorporated Entity Identification",
+    url = incorporatedEntityIdentificationFeatureSwitchUrl
+  )
+
   lazy val featureSwitchProviders: Seq[FeatureSwitchProvider] =
-    Seq(selfFeatureSwitchProvider)
+    Seq(selfFeatureSwitchProvider, incorporatedEntityIdentificationFeatureSwitchProvider)
+
 }
