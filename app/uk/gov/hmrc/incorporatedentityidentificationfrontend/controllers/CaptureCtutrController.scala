@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCtutrForm
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtutrStorageService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_ctutr_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -27,9 +28,10 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
-                                       view: capture_ctutr_page)
-                                      (implicit val config: AppConfig,
-                                       executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                       view: capture_ctutr_page,
+                                       ctutrStorageService: CtutrStorageService
+                                      )(implicit val config: AppConfig,
+                                        executionContext: ExecutionContext) extends FrontendController(mcc) {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -45,10 +47,10 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
           Future.successful(
             BadRequest(view(routes.CaptureCtutrController.submit(journeyId), formWithErrors))
           ),
-        _ =>
-          Future.successful(
-            Redirect(routes.CheckYourAnswersController.show(journeyId))
-          )
+        ctutr =>
+          ctutrStorageService.storeCompaniesHouseProfile(journeyId, ctutr).map {
+            _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+          }
 
       )
   }

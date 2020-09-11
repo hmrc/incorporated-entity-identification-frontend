@@ -42,7 +42,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
 
   private lazy val backendUrl: String = servicesConfig.baseUrl("incorporated-entity-identification")
-  def storeCompanyNameUrl(journeyId:String): String = s"$backendUrl/$journeyId/store-company-name"
+  def backendStorageUrl(journeyId:String, uri: String): String = s"$backendUrl/incorporated-entity-identification/journey/$journeyId/$uri"
 
   def retrieveCompanyInformationUrl(companyNumber: String): String = {
     val stubUrl = servicesConfig.getString("microservice.services.incorporation-information.stub-url")

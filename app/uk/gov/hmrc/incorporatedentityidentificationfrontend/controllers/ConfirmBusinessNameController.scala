@@ -19,14 +19,14 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompanyNameStorageService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompaniesHouseProfileStorageService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ConfirmBusinessNameController @Inject()(companyNameStorageService: CompanyNameStorageService,
+class ConfirmBusinessNameController @Inject()(companiesHouseInformationStorageService: CompaniesHouseProfileStorageService,
                                               mcc: MessagesControllerComponents,
                                               view: confirm_business_name_page
                                              )(implicit val config: AppConfig,
@@ -34,18 +34,14 @@ class ConfirmBusinessNameController @Inject()(companyNameStorageService: Company
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      companyNameStorageService.retrieveCompanyName(journeyId).map {
-        companyName =>
-          Ok(view(routes.ConfirmBusinessNameController.submit(journeyId), companyName, journeyId))
+      companiesHouseInformationStorageService.retrieveCompaniesHouseProfile(journeyId).map {
+        companiesHouseInformation =>
+          Ok(view(routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))
       }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
-      val companyName = "Test Company Ltd" // TODO change when backend API is implemented
-      companyNameStorageService.storeCompanyName(journeyId, companyName).map {
-        _ =>
-          Redirect(routes.CaptureCtutrController.show(journeyId))
-      }
+    Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
   }
+
 }

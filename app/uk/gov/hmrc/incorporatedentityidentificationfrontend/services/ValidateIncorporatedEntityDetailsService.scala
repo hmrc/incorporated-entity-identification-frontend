@@ -23,8 +23,12 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.Validate
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class IncorporatedEntityIdentificationService @Inject()(validateIncorporatedEntityDetailsConnector: ValidateIncorporatedEntityDetailsConnector
-                                                       )(implicit ec: ExecutionContext) {
-  def validateIncorporatedEntityDetails(companyNumber: String, ctutr: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityDetailsValidationResult] =
+class ValidateIncorporatedEntityDetailsService @Inject()(validateIncorporatedEntityDetailsConnector: ValidateIncorporatedEntityDetailsConnector
+                                                        )(implicit ec: ExecutionContext) {
+
+  def validateIncorporatedEntityDetails(companyNumber:
+                                        String, ctutr: String
+                                       )(implicit hc: HeaderCarrier): Future[IncorporatedEntityDetailsValidationResult] =
     validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(companyNumber, ctutr)
+
 }

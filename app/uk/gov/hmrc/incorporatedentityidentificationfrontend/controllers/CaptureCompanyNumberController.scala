@@ -27,9 +27,8 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CaptureCompanyNumberController @Inject()(companyInformationRetrievalService: CompanyInformationRetrievalService,
-                                               companyNumberStorageService: CompanyNumberStorageService,
-                                               companyNameStorageService: CompanyNameStorageService,
+class CaptureCompanyNumberController @Inject()(getCompaniesHouseProfileService: GetCompaniesHouseProfileService,
+                                               companiesHouseProfileStorageService: CompaniesHouseProfileStorageService,
                                                mcc: MessagesControllerComponents,
                                                view: capture_company_number_page)
                                               (implicit val config: AppConfig,
@@ -50,9 +49,8 @@ class CaptureCompanyNumberController @Inject()(companyInformationRetrievalServic
         ),
         companyNumber =>
           for {
-            companyInformation <- companyInformationRetrievalService.retrieveCompanyInformation(companyNumber)
-            _ <- companyNumberStorageService.storeCompanyNumber(journeyId, companyNumber)
-            _ <- companyNameStorageService.storeCompanyName(journeyId, companyInformation.companyName)
+            companiesHouseProfile <- getCompaniesHouseProfileService.getCompaniesHouseProfile(companyNumber)
+            _ <- companiesHouseProfileStorageService.storeCompaniesHouseProfile(journeyId, companiesHouseProfile)
           } yield
             Redirect(routes.ConfirmBusinessNameController.show(journeyId))
       )

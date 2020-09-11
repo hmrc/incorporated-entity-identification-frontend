@@ -18,6 +18,6 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json.{Json, OFormat}
 
-case object CompanyNameStored {
-  implicit val format: OFormat[CompanyNameStored.type] = Json.format[CompanyNameStored.type]
-}
+sealed trait StorageResult
+
+case object SuccessfullyStored extends StorageResult

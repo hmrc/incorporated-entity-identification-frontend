@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
+import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testCtutr
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyNumber, testCtutr}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.IncorporatedEntityIdentificationStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCtutrViewTests
 
-class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrViewTests {
+class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrViewTests with IncorporatedEntityIdentificationStub {
 
   "GET /ct-utr" should {
     lazy val result = get(s"/$testJourneyId/ct-utr")
@@ -37,12 +39,16 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
 
   "POST /ct-utr" when {
     "a valid ctutr is submitted" should {
-      "redirect to Check Your Answers page" in {
+      "store ctutr and redirect to Check Your Answers page" in {
+        stubStoreCtutr(testJourneyId)(status = OK, body = Json.obj("ctutr" -> testCompanyNumber))
+
         val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> testCtutr)
+
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
         )
+
       }
     }
 

@@ -22,8 +22,8 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethod
 
 trait IncorporatedEntityIdentificationStub extends WireMockMethods {
 
-  def stubStoreCompanyName(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = POST, uri = s"/$journeyId/store-company-name")
+  def stubStoreCompaniesHouseProfile(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
+    when(method = PUT, uri = s"/journey/$journeyId/companies-house-profile")
       .thenReturn(
         status = status,
         body = body
@@ -36,8 +36,8 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
         body = body
       )
 
-  def stubStoreCompanyNumber(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = POST, uri = s"/$journeyId/store-company-number")
+  def stubStoreCtutr(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
+    when(method = PUT, uri = s"/journey/$journeyId/ctutr")
       .thenReturn(
         status = status,
         body = body
