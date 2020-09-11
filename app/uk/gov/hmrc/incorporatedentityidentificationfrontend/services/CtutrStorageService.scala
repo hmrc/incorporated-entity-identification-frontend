@@ -17,21 +17,18 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyNumberStored
+import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityIdentificationStorageConnector
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.StorageResult
 
 import scala.concurrent.Future
 
 @Singleton
-class CompanyNumberStorageService @Inject()() {
+class CtutrStorageService @Inject()(storageConnector: IncorporatedEntityIdentificationStorageConnector) {
 
-  //TODO call backend API when completed
-
-  def storeCompanyNumber(journeyId: String, companyNumber: String): Future[CompanyNumberStored.type] =
-    Future.successful(CompanyNumberStored)
-
-  def retrieveCompanyNumber(journeyId: String): Future[String] = {
-    val companyNumber = "12345678"
-    Future.successful(companyNumber)
-  }
+  def storeCompaniesHouseProfile(journeyId: String,
+                                 ctutr: String
+                                )(implicit hc: HeaderCarrier): Future[StorageResult] =
+    storageConnector.storeCtutr(journeyId, ctutr)
 
 }

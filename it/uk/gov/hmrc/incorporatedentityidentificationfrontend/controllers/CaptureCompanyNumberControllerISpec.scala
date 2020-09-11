@@ -20,12 +20,14 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.CompaniesHouseApiStub
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompaniesHouseProfile
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCompanyNumberTests
 
 
-class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with CaptureCompanyNumberTests with CompaniesHouseApiStub {
+class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
+  with CaptureCompanyNumberTests with CompaniesHouseApiStub with IncorporatedEntityIdentificationStub {
 
   "GET /company-number" should {
     lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
@@ -40,8 +42,9 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
 
   "POST /company-number" when {
     "the company number is correct" should {
-      "redirect to the Confirm Business Name page" in {
-        stubRetrieveCompanyInformation(testCompanyNumber)(status = OK, body = Json.obj(coHoCompanyNameKey -> testCompanyName))
+      "store company number and redirect to the Confirm Business Name page" in {
+        stubRetrieveCompaniesHouseProfile(testCompanyNumber)(status = OK, body = companiesHouseProfileJson(testCompanyNumber, testCompanyName))
+        stubStoreCompaniesHouseProfile(testJourneyId)(status = OK, Json.toJsObject(CompaniesHouseProfile(testCompanyName, testCompanyNumber)))
 
         lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
@@ -77,8 +80,5 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper with Captu
       testCaptureCompanyNumberWrongFormat(result)
     }
   }
+
 }
-
-
-
-

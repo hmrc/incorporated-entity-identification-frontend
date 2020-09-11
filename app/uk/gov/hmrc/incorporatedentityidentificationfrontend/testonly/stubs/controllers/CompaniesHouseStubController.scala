@@ -26,9 +26,16 @@ import scala.concurrent.Future
 class CompaniesHouseStubController extends InjectedController {
 
   private val companyNameKey = "company_name"
+  private val companyNumberKey = "company_number"
   private val stubCompanyName = "Test Company Ltd"
 
   def getCompanyInformation(companyNumber: String): Action[AnyContent] = Action.async {
-    Future.successful(Ok(Json.obj(companyNameKey -> stubCompanyName)))
+
+    Future.successful(Ok(Json.obj(
+      companyNameKey -> stubCompanyName,
+      companyNumberKey -> companyNumber
+    )))
+
   }
+
 }

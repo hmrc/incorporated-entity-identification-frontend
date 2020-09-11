@@ -32,8 +32,12 @@ class CompaniesHouseStubControllerISpec extends ComponentSpecHelper with Feature
     }
 
     "return valid json" in {
-      result.json mustBe Json.obj(coHoCompanyNameKey -> testCompanyName)
+      result.json mustBe Json.obj(
+        "company_name" -> testCompanyName,
+        "company_number" -> testCompanyNumber
+      )
     }
+
   }
 
 }

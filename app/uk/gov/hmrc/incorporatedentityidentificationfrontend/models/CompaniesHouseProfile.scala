@@ -16,8 +16,22 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json._
+import play.api.libs.functional.syntax._
 
-case object CompanyNumberStored {
-  implicit val format: OFormat[CompanyNumberStored.type] = Json.format[CompanyNumberStored.type]
+case class CompaniesHouseProfile(companyName: String, companyNumber: String)
+
+object CompaniesHouseProfile {
+  private val companyNameKey = "company_name"
+  private val companyNumberKey = "company_number"
+
+  implicit val reads: Reads[CompaniesHouseProfile] = (
+    (__ \ companyNameKey).read[String] and
+      (__ \ companyNumberKey).read[String]
+    )(CompaniesHouseProfile.apply _)
+
+  implicit val writes: OWrites[CompaniesHouseProfile] = Json.writes[CompaniesHouseProfile]
+
+  implicit val format: OFormat[CompaniesHouseProfile] = OFormat(reads, writes)
+
 }
