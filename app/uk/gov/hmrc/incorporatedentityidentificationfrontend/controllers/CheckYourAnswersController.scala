@@ -21,8 +21,7 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.DetailsMatched
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, ValidateIncorporatedEntityDetailsService}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.FakeConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationRetrievalService, JourneyService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -30,6 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
+                                           incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationRetrievalService,
                                            validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService,
                                            mcc: MessagesControllerComponents,
                                            view: check_your_answers_page)
@@ -38,21 +38,36 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(
-        Ok(view(routes.CheckYourAnswersController.submit(journeyId), ctutr, companyNumber, journeyId))
-      )
+      incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).map {
+        incorporatedEntityInformation =>
+          Ok(
+            view(
+              routes.CheckYourAnswersController.submit(journeyId),
+              incorporatedEntityInformation.ctutr,
+              incorporatedEntityInformation.companyNumber,
+              journeyId
+            )
+          )
+      }
+
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyNumber, ctutr).flatMap {
-        case DetailsMatched =>
-          journeyService.getJourneyConfig(journeyId).map(
-            journeyConfig => SeeOther(journeyConfig.continueUrl)
-          )
-        case _ =>
-          Future.failed(new InternalServerException("Incorporated entity details failed to match"))
-      }
+      incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).flatMap {
+        incorporatedEntityInformation =>
+          validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(
+            incorporatedEntityInformation.companyNumber,
+            incorporatedEntityInformation.ctutr).flatMap {
+            case DetailsMatched =>
+              journeyService.getJourneyConfig(journeyId).map(
+                journeyConfig => SeeOther(journeyConfig.continueUrl)
+              )
+            case _ =>
+              throw new InternalServerException("Incorporated entity details failed to match")
+          }
 
+      }
   }
+
 }

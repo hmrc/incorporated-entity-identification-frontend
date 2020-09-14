@@ -18,15 +18,15 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.GetCompaniesHouseProfileConnector
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompaniesHouseProfile
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityIdentificationRetrievalConnector
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityInformation
 
 import scala.concurrent.Future
 
 @Singleton
-class GetCompaniesHouseProfileService @Inject()(getCompaniesHouseProfileConnector: GetCompaniesHouseProfileConnector) {
+class IncorporatedEntityInformationRetrievalService @Inject()(retrievalConnector: IncorporatedEntityIdentificationRetrievalConnector) {
 
-  def getCompaniesHouseProfile(companyNumber: String)(implicit hc: HeaderCarrier): Future[CompaniesHouseProfile] =
-    getCompaniesHouseProfileConnector.getCompaniesHouseProfile(companyNumber)
+  def retrieveIncorporatedEntityInformation(journeyId: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityInformation] =
+    retrievalConnector.retrieveIncorporatedEntityInformation(journeyId)
 
 }

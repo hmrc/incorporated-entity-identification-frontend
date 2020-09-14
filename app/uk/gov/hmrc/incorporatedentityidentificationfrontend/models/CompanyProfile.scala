@@ -19,19 +19,21 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 import play.api.libs.json._
 import play.api.libs.functional.syntax._
 
-case class CompaniesHouseProfile(companyName: String, companyNumber: String)
+case class CompanyProfile(companyName: String, companyNumber: String)
 
-object CompaniesHouseProfile {
+object CompanyProfile {
   private val companyNameKey = "company_name"
   private val companyNumberKey = "company_number"
 
-  implicit val reads: Reads[CompaniesHouseProfile] = (
+  implicit val coHoReads: Reads[CompanyProfile] = (
     (__ \ companyNameKey).read[String] and
       (__ \ companyNumberKey).read[String]
-    )(CompaniesHouseProfile.apply _)
+    )(CompanyProfile.apply _)
 
-  implicit val writes: OWrites[CompaniesHouseProfile] = Json.writes[CompaniesHouseProfile]
+  val backendReads: Reads[CompanyProfile] = Json.reads[CompanyProfile]
 
-  implicit val format: OFormat[CompaniesHouseProfile] = OFormat(reads, writes)
+  implicit val writes: OWrites[CompanyProfile] = Json.writes[CompanyProfile]
+
+  implicit val format: OFormat[CompanyProfile] = OFormat(coHoReads, writes)
 
 }

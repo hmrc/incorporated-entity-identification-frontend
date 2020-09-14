@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.views
 
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, CheckYourAnswers => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyNumber, testCtutr}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
 
@@ -31,8 +33,11 @@ import scala.collection.JavaConverters._
 trait CheckYourAnswersViewTests {
   this: AnyWordSpec with Matchers =>
 
-  def testCheckYourAnswersView(journeyId: String)(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
+  def testCheckYourAnswersView(journeyId: String)(result: => WSResponse, stub: => StubMapping): Unit = {
+    lazy val doc: Document = {
+      stub
+      Jsoup.parse(result.body)
+    }
 
     "have the correct title" in {
       doc.title mustBe messages.title
@@ -53,7 +58,7 @@ trait CheckYourAnswersViewTests {
         val companyNumberRow = summaryListRows.head
 
         companyNumberRow.getSummaryListQuestion mustBe messages.companyNumber
-        companyNumberRow.getSummaryListAnswer mustBe "12345678"
+        companyNumberRow.getSummaryListAnswer mustBe testCompanyNumber
         companyNumberRow.getSummaryListChangeLink mustBe routes.CaptureCompanyNumberController.show(journeyId).url
         companyNumberRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.companyNumber}"
       }
@@ -62,7 +67,7 @@ trait CheckYourAnswersViewTests {
         val ctutrRow = summaryListRows.last
 
         ctutrRow.getSummaryListQuestion mustBe messages.ctutr
-        ctutrRow.getSummaryListAnswer mustBe "1234567890"
+        ctutrRow.getSummaryListAnswer mustBe testCtutr
         ctutrRow.getSummaryListChangeLink mustBe routes.CaptureCtutrController.show(journeyId).url
         ctutrRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.ctutr}"
       }

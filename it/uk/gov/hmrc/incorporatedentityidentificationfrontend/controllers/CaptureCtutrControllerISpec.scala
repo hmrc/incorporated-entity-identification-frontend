@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import play.api.libs.json.Json
+import play.api.libs.json.JsString
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyNumber, testCtutr}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.IncorporatedEntityIdentificationStub
@@ -40,7 +40,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
   "POST /ct-utr" when {
     "a valid ctutr is submitted" should {
       "store ctutr and redirect to Check Your Answers page" in {
-        stubStoreCtutr(testJourneyId)(status = OK, body = Json.obj("ctutr" -> testCompanyNumber))
+        stubStoreCtutr(testJourneyId)(status = OK, body = JsString(testCompanyNumber))
 
         val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> testCtutr)
 

@@ -17,27 +17,34 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsValue, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethods
 
 trait IncorporatedEntityIdentificationStub extends WireMockMethods {
 
-  def stubStoreCompaniesHouseProfile(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = PUT, uri = s"/journey/$journeyId/companies-house-profile")
+  def stubStoreCompanyProfile(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
+    when(method = PUT, uri = s"/incorporated-entity-identification/journey/$journeyId/company-profile")
       .thenReturn(
         status = status,
         body = body
       )
 
-  def stubRetrieveCompanyName(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = GET, uri = s"/$journeyId/retrieve-company-name")
+  def stubRetrieveCompanyProfileFromBE(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
+    when(method = GET, uri = s"/incorporated-entity-identification/journey/$journeyId/company-profile")
       .thenReturn(
         status = status,
         body = body
       )
 
-  def stubStoreCtutr(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = PUT, uri = s"/journey/$journeyId/ctutr")
+  def stubRetrieveIncorporatedEntityInformation(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
+    when(method = GET, uri = s"/incorporated-entity-identification/journey/$journeyId")
+      .thenReturn(
+        status = status,
+        body = body
+      )
+
+  def stubStoreCtutr(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
+    when(method = PUT, uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr")
       .thenReturn(
         status = status,
         body = body

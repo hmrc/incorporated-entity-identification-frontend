@@ -22,14 +22,21 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethod
 
 trait CompaniesHouseApiStub extends WireMockMethods {
 
-  def stubRetrieveCompaniesHouseProfile(companyNumber: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
+  def stubRetrieveCompanyProfileFromCoHo(companyNumber: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
     when(method = GET, uri = s"/incorporation-information/$companyNumber/incorporated-company-profile")
       .thenReturn(
         status = status,
         body = body
       )
 
-  def companiesHouseProfileJson(companyNumber: String, companyName: String): JsObject = {
+  def stubRetrieveCompanyProfileFromStub(companyNumber: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
+    when(method = GET, uri = s"/incorporated-entity-identification/test-only/$companyNumber/incorporated-company-profile")
+      .thenReturn(
+        status = status,
+        body = body
+      )
+
+  def companyProfileJson(companyNumber: String, companyName: String): JsObject = {
 
     val companyNameKey = "company_name"
     val companyNumberKey = "company_number"

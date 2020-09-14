@@ -19,14 +19,14 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompaniesHouseProfileStorageService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompanyProfileService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ConfirmBusinessNameController @Inject()(companiesHouseInformationStorageService: CompaniesHouseProfileStorageService,
+class ConfirmBusinessNameController @Inject()(companiesHouseInformationStorageService: CompanyProfileService,
                                               mcc: MessagesControllerComponents,
                                               view: confirm_business_name_page
                                              )(implicit val config: AppConfig,
@@ -34,7 +34,7 @@ class ConfirmBusinessNameController @Inject()(companiesHouseInformationStorageSe
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      companiesHouseInformationStorageService.retrieveCompaniesHouseProfile(journeyId).map {
+      companiesHouseInformationStorageService.retrieveStoredCompanyProfile(journeyId).map {
         companiesHouseInformation =>
           Ok(view(routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))
       }
