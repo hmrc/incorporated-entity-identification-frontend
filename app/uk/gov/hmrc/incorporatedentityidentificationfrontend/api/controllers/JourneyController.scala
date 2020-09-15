@@ -18,15 +18,17 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers
 
 import javax.inject.Inject
 import play.api.libs.json.Json
-import play.api.mvc.{Action, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationRetrievalService, JourneyService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes.CaptureCompanyNumberController
+
 import scala.concurrent.ExecutionContext
 
 class JourneyController @Inject()(controllerComponents: MessagesControllerComponents,
-                                  journeyService: JourneyService)(implicit ec: ExecutionContext) extends FrontendController(controllerComponents) {
+                                  journeyService: JourneyService,
+                                  incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationRetrievalService)(implicit ec: ExecutionContext) extends FrontendController(controllerComponents) {
   def createJourney(): Action[JourneyConfig] = Action.async(parse.json[JourneyConfig]) {
     implicit req =>
       journeyService.createJourney(req.body).map(
@@ -34,6 +36,14 @@ class JourneyController @Inject()(controllerComponents: MessagesControllerCompon
           Created(Json.obj(
             "journeyStartUrl" -> CaptureCompanyNumberController.show(journeyId).absoluteURL()
           ))
+      )
+  }
+
+  def retrieveJourneyData(journeyId: String): Action[AnyContent] = Action.async {
+    implicit req =>
+      incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).map(
+        journeyData =>
+          Ok(Json.toJson(journeyData))
       )
   }
 }
