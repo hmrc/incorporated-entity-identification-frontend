@@ -20,14 +20,15 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompaniesHouseProfile
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCompanyNumberTests
 
 
 class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
-  with CaptureCompanyNumberTests with CompaniesHouseApiStub with IncorporatedEntityIdentificationStub {
+  with CaptureCompanyNumberTests with CompaniesHouseApiStub with IncorporatedEntityIdentificationStub with FeatureSwitching {
 
   "GET /company-number" should {
     lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
@@ -41,43 +42,77 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
   }
 
   "POST /company-number" when {
-    "the company number is correct" should {
-      "store company number and redirect to the Confirm Business Name page" in {
-        stubRetrieveCompaniesHouseProfile(testCompanyNumber)(status = OK, body = companiesHouseProfileJson(testCompanyNumber, testCompanyName))
-        stubStoreCompaniesHouseProfile(testJourneyId)(status = OK, Json.toJsObject(CompaniesHouseProfile(testCompanyName, testCompanyNumber)))
+    "the feature switch is enabled" should {
+      "retrieve companies house profile from the stub" when {
+        "the company number is correct" should {
+          "store companies house profile and redirect to the Confirm Business Name page" in {
+            enable(CompaniesHouseStub)
+            stubRetrieveCompanyProfileFromStub(testCompanyNumber)(status = OK, body = companyProfileJson(testCompanyNumber, testCompanyName))
+            stubStoreCompanyProfile(testJourneyId)(status = OK, Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber)))
 
-        lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
+            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
-        result must have(
-          httpStatus(SEE_OTHER),
-          redirectUri(routes.ConfirmBusinessNameController.show(testJourneyId).url)
-        )
+            result must have(
+              httpStatus(SEE_OTHER),
+              redirectUri(routes.ConfirmBusinessNameController.show(testJourneyId).url)
+            )
+          }
+        }
       }
     }
 
-    "the company number is missing" should {
-      lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureCompanyNumberEmpty(result)
+    "the feature switch is disabled" should {
+      "retrieve companies house profile from coho" when {
+        "the company number is correct" should {
+          "store companies house profile and redirect to the Confirm Business Name page" in {
+            disable(CompaniesHouseStub)
+            stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(status = OK, body = companyProfileJson(testCompanyNumber, testCompanyName))
+            stubStoreCompanyProfile(testJourneyId)(status = OK, Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber)))
 
-    }
+            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
-    "the company number has more than 8 " should {
-      lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
-      }
-      testCaptureCompanyNumberWrongLength(result)
-    }
+            result must have(
+              httpStatus(SEE_OTHER),
+              redirectUri(routes.ConfirmBusinessNameController.show(testJourneyId).url)
+            )
+          }
+        }
 
-    "company number is not in the correct format" should {
-      lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
-      "return a bad request" in {
-        result.status mustBe BAD_REQUEST
+        "the company number is missing" should {
+          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
+          "return a bad request" in {
+            result.status mustBe BAD_REQUEST
+          }
+          testCaptureCompanyNumberEmpty(result)
+        }
+
+        "the company number is not found" should {
+          "throw an internal server error" in {
+            stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(status = NOT_FOUND)
+            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
+
+            result.status mustBe INTERNAL_SERVER_ERROR
+
+          }
+        }
+
+        "the company number has more than 8 characters" should {
+          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
+          "return a bad request" in {
+            result.status mustBe BAD_REQUEST
+          }
+          testCaptureCompanyNumberWrongLength(result)
+        }
+
+        "company number is not in the correct format" should {
+          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
+          "return a bad request" in {
+            result.status mustBe BAD_REQUEST
+          }
+          testCaptureCompanyNumberWrongFormat(result)
+        }
+
       }
-      testCaptureCompanyNumberWrongFormat(result)
     }
   }
 

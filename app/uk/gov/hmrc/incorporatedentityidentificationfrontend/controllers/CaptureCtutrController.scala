@@ -48,7 +48,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
             BadRequest(view(routes.CaptureCtutrController.submit(journeyId), formWithErrors))
           ),
         ctutr =>
-          ctutrStorageService.storeCompaniesHouseProfile(journeyId, ctutr).map {
+          ctutrStorageService.storeCtutr(journeyId, ctutr).map {
             _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
           }
 

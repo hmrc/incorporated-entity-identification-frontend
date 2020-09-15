@@ -17,37 +17,39 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import javax.inject.{Inject, Singleton}
-import play.api.http.Status.OK
+import play.api.http.Status.{OK, NOT_FOUND}
 import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.GetCompaniesHouseProfileHttpParser._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompaniesHouseProfile
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CompanyProfileHttpParser._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class GetCompaniesHouseProfileConnector @Inject()(http: HttpClient,
-                                                  appConfig: AppConfig
+class CompanyProfileConnector @Inject()(http: HttpClient,
+                                        appConfig: AppConfig
                                                  )(implicit ec: ExecutionContext) {
 
-  def getCompaniesHouseProfile(companyNumber: String)(implicit hc: HeaderCarrier): Future[CompaniesHouseProfile] =
-    http.GET[CompaniesHouseProfile](appConfig.retrieveCompanyInformationUrl(companyNumber))
+  def getCompanyProfile(companyNumber: String)(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
+    http.GET[Option[CompanyProfile]](appConfig.getCompanyProfileUrl(companyNumber))
 
 }
 
-object GetCompaniesHouseProfileHttpParser {
+object CompanyProfileHttpParser {
 
-  implicit object GetCompaniesHouseProfileHttpReads extends HttpReads[CompaniesHouseProfile] {
-    override def read(method: String, url: String, response: HttpResponse): CompaniesHouseProfile = {
+  implicit object CompanyProfileHttpReads extends HttpReads[Option[CompanyProfile]] {
+    override def read(method: String, url: String, response: HttpResponse): Option[CompanyProfile] = {
       response.status match {
         case OK =>
-          response.json.validate[CompaniesHouseProfile] match {
-            case JsSuccess(companiesHouseProfile, _) =>
-              companiesHouseProfile
+          response.json.validate[CompanyProfile] match {
+            case JsSuccess(companyProfile, _) =>
+              Some(companyProfile)
             case JsError(errors) =>
               throw new InternalServerException(s"Companies House API returned malformed JSON with errors: $errors")
           }
+        case NOT_FOUND =>
+          None
         case status =>
           throw new InternalServerException(s"Companies House API failed with status: $status")
       }

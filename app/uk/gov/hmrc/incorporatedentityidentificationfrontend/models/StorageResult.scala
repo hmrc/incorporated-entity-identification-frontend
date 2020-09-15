@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
-import play.api.libs.json.{Json, OFormat}
-
 sealed trait StorageResult
 
 case object SuccessfullyStored extends StorageResult

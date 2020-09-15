@@ -56,7 +56,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.incorporated-entity-identification.host" -> mockHost,
     "microservice.services.incorporated-entity-identification.port" -> mockPort,
     "microservice.services.incorporation-information.url" -> mockUrl,
-    "microservice.services.incorporation-information.stub-url" -> mockUrl
+    "microservice.services.incorporation-information.stub-url" -> s"$mockUrl/incorporated-entity-identification/test-only"
   )
 
   lazy val journeyConfigRepository: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]

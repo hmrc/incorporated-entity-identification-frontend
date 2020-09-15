@@ -18,6 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCompanyNumberForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services._
@@ -27,8 +28,7 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CaptureCompanyNumberController @Inject()(getCompaniesHouseProfileService: GetCompaniesHouseProfileService,
-                                               companiesHouseProfileStorageService: CompaniesHouseProfileStorageService,
+class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyProfileService,
                                                mcc: MessagesControllerComponents,
                                                view: capture_company_number_page)
                                               (implicit val config: AppConfig,
@@ -48,11 +48,12 @@ class CaptureCompanyNumberController @Inject()(getCompaniesHouseProfileService: 
           BadRequest(view(routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
         ),
         companyNumber =>
-          for {
-            companiesHouseProfile <- getCompaniesHouseProfileService.getCompaniesHouseProfile(companyNumber)
-            _ <- companiesHouseProfileStorageService.storeCompaniesHouseProfile(journeyId, companiesHouseProfile)
-          } yield
-            Redirect(routes.ConfirmBusinessNameController.show(journeyId))
+          companyProfileService.retrieveCompanyProfile(journeyId, companyNumber).map {
+            case Some(_) =>
+              Redirect(routes.ConfirmBusinessNameController.show(journeyId))
+            case None =>
+              throw new InternalServerException(s"Company Profile not found for company number: $companyNumber")
+          }
       )
   }
 

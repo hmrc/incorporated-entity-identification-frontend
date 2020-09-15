@@ -17,12 +17,11 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import javax.inject.{Inject, Singleton}
-import play.api.http.Status.OK
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsString, JsValue, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.IncorporatedEntityIdentificationHttpParser._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompaniesHouseProfile, SuccessfullyStored, StorageResult}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.IncorporatedEntityIdentificationStorageHttpParser._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, StorageResult}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -31,13 +30,15 @@ class IncorporatedEntityIdentificationStorageConnector @Inject()(http: HttpClien
                                                                  appConfig: AppConfig
                                                                 )(implicit ec: ExecutionContext) {
 
-  def storeCompaniesHouseProfile(journeyId: String,
-                                 companiesHouseInformation: CompaniesHouseProfile
+  def storeCompanyProfile(journeyId: String,
+                          companiesHouseInformation: CompanyProfile
                                 )(implicit hc: HeaderCarrier): Future[StorageResult] = {
 
-    val uri = "companies-house-profile"
+    val dataKey = "company-profile"
 
-    http.PUT[JsObject, StorageResult](appConfig.backendStorageUrl(journeyId, uri), Json.toJsObject(companiesHouseInformation))
+    http.PUT[JsObject, StorageResult](
+      url = appConfig.backendStorageUrl(journeyId = journeyId, optDataKey = Some(dataKey)),
+      body = Json.toJsObject(companiesHouseInformation))
 
   }
 
@@ -45,11 +46,10 @@ class IncorporatedEntityIdentificationStorageConnector @Inject()(http: HttpClien
                  ctutr: String
                 )(implicit hc: HeaderCarrier): Future[StorageResult] = {
 
-    val ctutrKey = "ctutr"
-    val uri = "ctutr"
-    val jsonBody = Json.obj(ctutrKey -> ctutr)
+    val dataKey = "ctutr"
+    val jsonBody = JsString(ctutr)
 
-    http.PUT[JsObject, StorageResult](appConfig.backendStorageUrl(journeyId, uri), jsonBody)
+    http.PUT[JsValue, StorageResult](appConfig.backendStorageUrl(journeyId, optDataKey = Some(dataKey)), jsonBody)
 
   }
 

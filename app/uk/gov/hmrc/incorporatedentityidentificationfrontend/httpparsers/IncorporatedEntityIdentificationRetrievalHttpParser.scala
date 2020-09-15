@@ -17,18 +17,18 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers
 
 import play.api.http.Status.OK
+import play.api.libs.json.JsValue
 import uk.gov.hmrc.http.{HttpReads, HttpResponse, InternalServerException}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{StorageResult, SuccessfullyStored}
 
-object IncorporatedEntityIdentificationHttpParser {
+object IncorporatedEntityIdentificationRetrievalHttpParser {
 
-  implicit object IncorporatedEntityIdentificationHttpReads extends HttpReads[StorageResult] {
-    override def read(method: String, url: String, response: HttpResponse): StorageResult = {
+  implicit object IncorporatedEntityIdentificationRetrievalHttpReads extends HttpReads[JsValue] {
+    override def read(method: String, url: String, response: HttpResponse): JsValue = {
       response.status match {
         case OK =>
-          SuccessfullyStored
+          response.json
         case status =>
-          throw new InternalServerException(s"Storage in Incorporated Entity Identification failed with status: $status")
+          throw new InternalServerException(s"Retrieval from storage in Incorporated Entity Identification failed with status: $status")
       }
     }
   }

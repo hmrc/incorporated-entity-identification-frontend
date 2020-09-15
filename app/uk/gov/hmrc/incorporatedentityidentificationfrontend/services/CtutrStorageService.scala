@@ -21,14 +21,17 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityIdentificationStorageConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.StorageResult
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CtutrStorageService @Inject()(storageConnector: IncorporatedEntityIdentificationStorageConnector) {
+class CtutrStorageService @Inject()(storageConnector: IncorporatedEntityIdentificationStorageConnector)
+                                   (implicit ec: ExecutionContext) {
 
-  def storeCompaniesHouseProfile(journeyId: String,
-                                 ctutr: String
-                                )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    storageConnector.storeCtutr(journeyId, ctutr)
+  def storeCtutr(journeyId: String,
+                 ctutr: String
+                )(implicit hc: HeaderCarrier): Future[String] =
+    storageConnector.storeCtutr(journeyId, ctutr).map {
+      _ => ctutr
+    }
 
 }

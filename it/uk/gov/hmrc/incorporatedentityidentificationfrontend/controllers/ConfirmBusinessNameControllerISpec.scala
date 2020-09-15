@@ -20,6 +20,7 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.IncorporatedEntityIdentificationStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.ConfirmBusinessNameViewTests
@@ -29,7 +30,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
   "GET /confirm-business-name" when {
     "the company exists in Companies House" should {
       "return ok" in {
-        stubRetrieveCompanyName(testJourneyId)(status = OK, body = Json.obj(companyNameKey -> testCompanyName))
+        val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
 
         lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
 
@@ -37,26 +39,29 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
       }
 
       "return a view which" should {
-        lazy val stub = stubRetrieveCompanyName(testJourneyId)(status = OK, body = Json.obj(companyNameKey -> testCompanyName))
+        lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber))
+        )
         lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
 
         testConfirmBusinessNameView(result, stub, testCompanyName)
       }
     }
 
-//    "the company doesn't exist in the backend database" should {
-//      "show technical difficulties page" in {
-//        stubRetrieveCompanyName(testJourneyId)(status = NOT_FOUND)
-//
-//        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
-//
-//        result.status mustBe INTERNAL_SERVER_ERROR
-//      }
-//    } TODO uncomment when backend storage API is built as currently it defaults to a success.
+    "the company doesn't exist in the backend database" should {
+      "show technical difficulties page" in {
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
+
+        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
   }
 
   "POST /confirm-business-name" should {
-    "should store company name and redirect to Capture CTUTR Page" in {
+    "redirect to Capture CTUTR Page" in {
       lazy val result = post(s"/$testJourneyId/confirm-business-name")()
 
       result must have(

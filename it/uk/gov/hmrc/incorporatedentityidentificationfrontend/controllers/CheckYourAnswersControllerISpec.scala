@@ -19,7 +19,8 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testCompanyName
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.IncorporatedEntityIdentificationStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswersViewTests
@@ -30,14 +31,22 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
   val testCtutr = "1234567890"
 
   "GET /check-your-answers-business" should {
-    lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
-
     "return OK" in {
+      stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
+        body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
+      )
+      lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
+
       result.status mustBe OK
     }
 
     "return a view which" should {
-      testCheckYourAnswersView(testJourneyId)(result)
+      lazy val stub = stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
+        body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
+      )
+      lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
+
+      testCheckYourAnswersView(testJourneyId)(result, stub)
     }
   }
 
@@ -47,6 +56,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
         val testContinueUrl = "/testContinueUrl"
         await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
 
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
+          body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
+        )
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
 
         lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
