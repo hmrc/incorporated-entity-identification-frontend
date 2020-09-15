@@ -31,10 +31,13 @@ class CompaniesHouseStubController extends InjectedController {
 
   def getCompanyInformation(companyNumber: String): Action[AnyContent] = Action.async {
 
-    Future.successful(Ok(Json.obj(
-      companyNameKey -> stubCompanyName,
-      companyNumberKey -> companyNumber
-    )))
+    Future.successful(companyNumber match{
+      case "00000001" => NotFound
+      case _ => Ok(Json.obj(
+        companyNameKey -> stubCompanyName,
+        companyNumberKey -> companyNumber
+      ))
+    })
 
   }
 
