@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
+package uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers
 
 import play.api.http.Status.CREATED
 import play.api.libs.json.Json
 import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.JourneyStub
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes.CaptureCompanyNumberController
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub {
+class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with IncorporatedEntityIdentificationStub {
   "POST /api/journey" should {
     "return a created journey" in {
       implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
@@ -40,9 +42,25 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub {
 
       lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))
 
-      (result.json \ "journeyStartUrl").as[String] must include(routes.CaptureCompanyNumberController.show(testJourneyId).url)
+      (result.json \ "journeyStartUrl").as[String] must include(CaptureCompanyNumberController.show(testJourneyId).url)
 
       await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testJourneyConfig)
+    }
+  }
+  "GET /api/journey/:journeyId" should {
+    "return captured data" when {
+      "the journeyId exists" in {
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
+          body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
+        )
+
+        lazy val result = get(s"/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+        result.json mustBe Json.obj("ctutr" -> testCtutr,
+          "companyNumber" -> testCompanyNumber,
+          "companyName" -> testCompanyName)
+      }
     }
   }
 }

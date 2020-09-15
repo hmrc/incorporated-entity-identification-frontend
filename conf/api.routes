@@ -2,3 +2,4 @@
 
 + nocsrf
 POST       /journey                                         uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createJourney
+GET        /journey/:journeyId                              uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.retrieveJourneyData(journeyId: String)
