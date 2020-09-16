@@ -48,7 +48,7 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
           BadRequest(view(routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
         ),
         companyNumber =>
-          companyProfileService.retrieveCompanyProfile(journeyId, companyNumber).map {
+          companyProfileService.retrieveAndStoreCompanyProfile(journeyId, companyNumber).map {
             case Some(_) =>
               Redirect(routes.ConfirmBusinessNameController.show(journeyId))
             case None =>

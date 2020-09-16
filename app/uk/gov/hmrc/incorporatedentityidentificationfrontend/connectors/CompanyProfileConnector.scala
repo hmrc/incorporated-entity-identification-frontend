@@ -17,8 +17,9 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import javax.inject.{Inject, Singleton}
-import play.api.http.Status.{OK, NOT_FOUND}
-import play.api.libs.json.{JsError, JsSuccess}
+import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.libs.functional.syntax._
+import play.api.libs.json.{JsError, JsSuccess, Reads, __}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CompanyProfileHttpParser._
@@ -29,20 +30,31 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CompanyProfileConnector @Inject()(http: HttpClient,
                                         appConfig: AppConfig
-                                                 )(implicit ec: ExecutionContext) {
+                                       )(implicit ec: ExecutionContext) {
 
   def getCompanyProfile(companyNumber: String)(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
-    http.GET[Option[CompanyProfile]](appConfig.getCompanyProfileUrl(companyNumber))
+    http.GET[Option[CompanyProfile]](appConfig.getCompanyProfileUrl(companyNumber))(
+      CompanyProfileHttpReads,
+      hc,
+      ec
+    )
 
 }
 
 object CompanyProfileHttpParser {
+  private val companyNameKey = "company_name"
+  private val companyNumberKey = "company_number"
+
+  val companiesHouseReads: Reads[CompanyProfile] = (
+    (__ \ companyNameKey).read[String] and
+      (__ \ companyNumberKey).read[String]
+    ) (CompanyProfile.apply _)
 
   implicit object CompanyProfileHttpReads extends HttpReads[Option[CompanyProfile]] {
     override def read(method: String, url: String, response: HttpResponse): Option[CompanyProfile] = {
       response.status match {
         case OK =>
-          response.json.validate[CompanyProfile] match {
+          response.json.validate[CompanyProfile](companiesHouseReads) match {
             case JsSuccess(companyProfile, _) =>
               Some(companyProfile)
             case JsError(errors) =>

@@ -50,7 +50,8 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
   "GET /api/journey/:journeyId" should {
     "return captured data" when {
       "the journeyId exists" in {
-        stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
           body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
         )
 
@@ -60,6 +61,17 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         result.json mustBe Json.obj("ctutr" -> testCtutr,
           "companyNumber" -> testCompanyNumber,
           "companyName" -> testCompanyName)
+      }
+    }
+    "return not found" when {
+      "the journey Id does not exist" in {
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = NOT_FOUND
+        )
+
+        lazy val result = get(s"/api/journey/$testJourneyId")
+
+        result.status mustBe NOT_FOUND
       }
     }
   }

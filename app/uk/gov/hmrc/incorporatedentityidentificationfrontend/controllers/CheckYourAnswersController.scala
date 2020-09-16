@@ -21,15 +21,15 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.DetailsMatched
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationRetrievalService, JourneyService, ValidateIncorporatedEntityDetailsService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
-                                           incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationRetrievalService,
+                                           incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
                                            validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService,
                                            mcc: MessagesControllerComponents,
                                            view: check_your_answers_page)
@@ -39,7 +39,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).map {
-        incorporatedEntityInformation =>
+        case Some(incorporatedEntityInformation) =>
           Ok(
             view(
               routes.CheckYourAnswersController.submit(journeyId),
@@ -48,6 +48,8 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
               journeyId
             )
           )
+        case None =>
+          throw new InternalServerException("No data stored")
       }
 
   }
@@ -55,7 +57,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).flatMap {
-        incorporatedEntityInformation =>
+        case Some(incorporatedEntityInformation) =>
           validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(
             incorporatedEntityInformation.companyNumber,
             incorporatedEntityInformation.ctutr).flatMap {
@@ -66,7 +68,8 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             case _ =>
               throw new InternalServerException("Incorporated entity details failed to match")
           }
-
+        case None =>
+          throw new InternalServerException("No data stored")
       }
   }
 
