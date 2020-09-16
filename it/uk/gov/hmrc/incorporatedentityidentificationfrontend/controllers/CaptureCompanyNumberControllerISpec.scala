@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
@@ -48,7 +47,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           "store companies house profile and redirect to the Confirm Business Name page" in {
             enable(CompaniesHouseStub)
             stubRetrieveCompanyProfileFromStub(testCompanyNumber)(status = OK, body = companyProfileJson(testCompanyNumber, testCompanyName))
-            stubStoreCompanyProfile(testJourneyId)(status = OK, Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber)))
+            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber))(status = OK)
 
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
@@ -67,7 +66,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           "store companies house profile and redirect to the Confirm Business Name page" in {
             disable(CompaniesHouseStub)
             stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(status = OK, body = companyProfileJson(testCompanyNumber, testCompanyName))
-            stubStoreCompanyProfile(testJourneyId)(status = OK, Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber)))
+            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber))(status = OK)
 
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 

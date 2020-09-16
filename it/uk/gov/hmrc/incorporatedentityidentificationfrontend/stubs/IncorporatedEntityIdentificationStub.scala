@@ -17,16 +17,22 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.{JsObject, JsValue, Json}
+import play.api.libs.json.{JsObject, JsString, Json}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethods
 
 trait IncorporatedEntityIdentificationStub extends WireMockMethods {
 
-  def stubStoreCompanyProfile(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = PUT, uri = s"/incorporated-entity-identification/journey/$journeyId/company-profile")
+  def stubStoreCompanyProfile(journeyId: String, companyProfile: CompanyProfile)(status: Int): StubMapping =
+    when(
+      method = PUT,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/company-profile",
+      body = Json.obj(
+        "companyName" -> companyProfile.companyName,
+        "companyNumber" -> companyProfile.companyNumber
+      ))
       .thenReturn(
-        status = status,
-        body = body
+        status = status
       )
 
   def stubRetrieveCompanyProfileFromBE(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
@@ -43,11 +49,10 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
         body = body
       )
 
-  def stubStoreCtutr(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
-    when(method = PUT, uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr")
+  def stubStoreCtutr(journeyId: String, ctutr: String)(status: Int): StubMapping =
+    when(method = PUT, uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr", body = JsString(ctutr))
       .thenReturn(
-        status = status,
-        body = body
+        status = status
       )
 
   def stubValidateIncorporatedEntityDetails(companyNumber: String, ctutr: String)(status: Int, body: JsObject = Json.obj()): StubMapping = {

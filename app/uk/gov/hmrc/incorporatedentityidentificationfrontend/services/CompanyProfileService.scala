@@ -18,24 +18,19 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.{CompanyProfileConnector, IncorporatedEntityIdentificationRetrievalConnector, IncorporatedEntityIdentificationStorageConnector}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CompanyProfileService @Inject()(storageConnector: IncorporatedEntityIdentificationStorageConnector,
-                                      retrievalConnector: IncorporatedEntityIdentificationRetrievalConnector,
+class CompanyProfileService @Inject()(storageConnector: IncorporatedEntityInformationConnector,
                                       companyProfileConnector: CompanyProfileConnector
                                      )(implicit ec: ExecutionContext) {
-
-  def retrieveStoredCompanyProfile(journeyId: String)(implicit hc: HeaderCarrier): Future[CompanyProfile] =
-    retrievalConnector.retrieveCompanyProfile(journeyId)
-
-  def retrieveCompanyProfile(journeyId: String, companyNumber: String)(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
+  def retrieveAndStoreCompanyProfile(journeyId: String, companyNumber: String)(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
     companyProfileConnector.getCompanyProfile(companyNumber).flatMap {
       case Some(companyProfile) =>
-        storageConnector.storeCompanyProfile(journeyId, companyProfile).map {
+        storageConnector.storeData(journeyId, "company-profile", companyProfile).map {
           _ => Some(companyProfile)
         }
       case None =>
