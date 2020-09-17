@@ -17,28 +17,37 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testCtutr
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.IncorporatedEntityIdentificationStub
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCtutr, testInternalId}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCtutrViewTests
 
-class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrViewTests with IncorporatedEntityIdentificationStub {
+class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrViewTests with IncorporatedEntityIdentificationStub with AuthStub {
 
   "GET /ct-utr" should {
-    lazy val result = get(s"/$testJourneyId/ct-utr")
-
     "return OK" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      lazy val result = get(s"/$testJourneyId/ct-utr")
       result.status mustBe OK
     }
 
     "return a view which" should {
-      testCaptureCtutrView(result)
+      lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      lazy val result = get(s"/$testJourneyId/ct-utr")
+      testCaptureCtutrView(result, authStub)
+    }
+
+    "return See Other" in {
+      stubAuthFailure()
+      lazy val result = get(s"/$testJourneyId/ct-utr")
+      result.status mustBe SEE_OTHER
     }
   }
 
   "POST /ct-utr" when {
     "a valid ctutr is submitted" should {
       "store ctutr and redirect to Check Your Answers page" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
 
         val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> testCtutr)
@@ -52,23 +61,29 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
     }
 
     "no ctutr is submitted" should {
-      lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
 
       "return a bad request" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
         result.status mustBe BAD_REQUEST
       }
 
-      testCaptureCtutrErrorMessagesNoCtutr(result)
+      lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
+      testCaptureCtutrErrorMessagesNoCtutr(result, authStub)
     }
 
     "an invalid ctutr is submitted" should {
-      lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
 
       "return a bad request" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
         result.status mustBe BAD_REQUEST
       }
 
-      testCaptureCtutrErrorMessagesInvalidCtutr(result)
+      lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
+      testCaptureCtutrErrorMessagesInvalidCtutr(result, authStub)
     }
   }
 

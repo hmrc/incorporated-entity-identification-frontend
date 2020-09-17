@@ -21,22 +21,30 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCompanyNumberTests
 
 
 class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
-  with CaptureCompanyNumberTests with CompaniesHouseApiStub with IncorporatedEntityIdentificationStub with FeatureSwitching {
+  with CaptureCompanyNumberTests with CompaniesHouseApiStub with IncorporatedEntityIdentificationStub with FeatureSwitching with AuthStub {
 
   "GET /company-number" should {
-    lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
 
     "return OK" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
       result.status mustBe OK
     }
+    "return See Other" in {
+      stubAuthFailure()
+      lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
+      result.status mustBe SEE_OTHER
+    }
     "return a view which" should {
-      testCaptureCompanyNumberView(result)
+      lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
+      testCaptureCompanyNumberView(result, authStub)
     }
   }
 
@@ -45,6 +53,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
       "retrieve companies house profile from the stub" when {
         "the company number is correct" should {
           "store companies house profile and redirect to the Confirm Business Name page" in {
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             enable(CompaniesHouseStub)
             stubRetrieveCompanyProfileFromStub(testCompanyNumber)(status = OK, body = companyProfileJson(testCompanyNumber, testCompanyName))
             stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber))(status = OK)
@@ -64,6 +73,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
       "retrieve companies house profile from coho" when {
         "the company number is correct" should {
           "store companies house profile and redirect to the Confirm Business Name page" in {
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             disable(CompaniesHouseStub)
             stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(status = OK, body = companyProfileJson(testCompanyNumber, testCompanyName))
             stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber))(status = OK)
@@ -78,15 +88,19 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
         }
 
         "the company number is missing" should {
-          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
           "return a bad request" in {
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
             result.status mustBe BAD_REQUEST
           }
-          testCaptureCompanyNumberEmpty(result)
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
+          testCaptureCompanyNumberEmpty(result, authStub)
         }
 
         "the company number is not found" should {
           "throw an internal server error" in {
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(status = NOT_FOUND)
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
@@ -96,19 +110,25 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
         }
 
         "the company number has more than 8 characters" should {
-          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
           "return a bad request" in {
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
             result.status mustBe BAD_REQUEST
           }
-          testCaptureCompanyNumberWrongLength(result)
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
+          testCaptureCompanyNumberWrongLength(result, authStub)
         }
 
         "company number is not in the correct format" should {
-          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
           "return a bad request" in {
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
             result.status mustBe BAD_REQUEST
           }
-          testCaptureCompanyNumberWrongFormat(result)
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
+          testCaptureCompanyNumberWrongFormat(result, authStub)
         }
 
       }

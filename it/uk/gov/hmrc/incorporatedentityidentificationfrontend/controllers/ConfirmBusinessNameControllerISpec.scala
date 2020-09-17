@@ -21,15 +21,16 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.IncorporatedEntityIdentificationStub
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.ConfirmBusinessNameViewTests
 
-class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with ConfirmBusinessNameViewTests with IncorporatedEntityIdentificationStub {
+class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with ConfirmBusinessNameViewTests with IncorporatedEntityIdentificationStub with AuthStub {
 
   "GET /confirm-business-name" when {
     "the company exists in Companies House" should {
       "return ok" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
 
@@ -38,19 +39,31 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
         result.status mustBe OK
       }
 
+      "return See Other" in {
+        stubAuthFailure()
+        val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
+
+        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
+
+        result.status mustBe SEE_OTHER
+      }
+
       "return a view which" should {
+        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
           status = OK,
           body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber))
         )
         lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
 
-        testConfirmBusinessNameView(result, stub, testCompanyName)
+        testConfirmBusinessNameView(result, stub, authStub, testCompanyName)
       }
     }
 
     "the company doesn't exist in the backend database" should {
       "show technical difficulties page" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
 
         lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
@@ -62,6 +75,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
 
   "POST /confirm-business-name" should {
     "redirect to Capture CTUTR Page" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"/$testJourneyId/confirm-business-name")()
 
       result must have(

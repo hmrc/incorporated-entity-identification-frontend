@@ -19,19 +19,20 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testCompanyName
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyName, testInternalId}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.IncorporatedEntityIdentificationStub
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswersViewTests
 
 
-class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests with IncorporatedEntityIdentificationStub {
+class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests with IncorporatedEntityIdentificationStub with AuthStub {
   val testCompanyNumber = "12345678"
   val testCtutr = "1234567890"
 
   "GET /check-your-answers-business" should {
     "return OK" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
         body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
       )
@@ -40,13 +41,24 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
       result.status mustBe OK
     }
 
+    "return See Other" in {
+      stubAuthFailure()
+      stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
+        body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
+      )
+      lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
+
+      result.status mustBe SEE_OTHER
+    }
+
     "return a view which" should {
+      lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val stub = stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
         body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
       )
       lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
 
-      testCheckYourAnswersView(testJourneyId)(result, stub)
+      testCheckYourAnswersView(testJourneyId)(result, stub, authStub)
     }
   }
 
@@ -55,6 +67,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
       "return a redirect to the stored continue URL from the client service" in {
         val testContinueUrl = "/testContinueUrl"
         await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
         stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
           body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
@@ -72,6 +86,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
         val testContinueUrl = "/testContinueUrl"
         await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
 
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
 
         lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
@@ -83,6 +99,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
       "throw an exception" in { //TODO - handle this in the case of entities without corporation tax
         val testContinueUrl = "/testContinueUrl"
         await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
         stubValidateIncorporatedEntityDetails(
           testCompanyNumber,

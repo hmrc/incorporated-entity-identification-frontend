@@ -33,8 +33,9 @@ import scala.collection.JavaConverters._
 trait CheckYourAnswersViewTests {
   this: AnyWordSpec with Matchers =>
 
-  def testCheckYourAnswersView(journeyId: String)(result: => WSResponse, stub: => StubMapping): Unit = {
+  def testCheckYourAnswersView(journeyId: String)(result: => WSResponse, stub: => StubMapping, authStub: => StubMapping): Unit = {
     lazy val doc: Document = {
+      authStub
       stub
       Jsoup.parse(result.body)
     }

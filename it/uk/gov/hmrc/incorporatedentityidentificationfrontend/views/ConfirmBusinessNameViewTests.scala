@@ -28,8 +28,9 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup
 trait ConfirmBusinessNameViewTests {
   this: AnyWordSpec with Matchers =>
 
-  def testConfirmBusinessNameView(result: => WSResponse, stub: => StubMapping, testCompanyName: String): Unit = {
+  def testConfirmBusinessNameView(result: => WSResponse, stub: => StubMapping, authStub: => StubMapping, testCompanyName: String): Unit = {
     lazy val doc: Document = {
+      authStub
       stub
       Jsoup.parse(result.body)
     }

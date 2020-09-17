@@ -18,6 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCtutrForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService
@@ -29,30 +30,35 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                                        view: capture_ctutr_page,
-                                       incorporatedEntityInformationService: IncorporatedEntityInformationService
+                                       incorporatedEntityInformationService: IncorporatedEntityInformationService,
+                                       val authConnector: AuthConnector
                                       )(implicit val config: AppConfig,
-                                        executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                        executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      Future.successful(
-        Ok(view(routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
-      )
+      authorised() {
+        Future.successful(
+          Ok(view(routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+        )
+      }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      CaptureCtutrForm.form.bindFromRequest().fold(
-        formWithErrors =>
-          Future.successful(
-            BadRequest(view(routes.CaptureCtutrController.submit(journeyId), formWithErrors))
-          ),
-        ctutr =>
-          incorporatedEntityInformationService.storeCtutr(journeyId, ctutr).map {
-            _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
-          }
+      authorised() {
+        CaptureCtutrForm.form.bindFromRequest().fold(
+          formWithErrors =>
+            Future.successful(
+              BadRequest(view(routes.CaptureCtutrController.submit(journeyId), formWithErrors))
+            ),
+          ctutr =>
+            incorporatedEntityInformationService.storeCtutr(journeyId, ctutr).map {
+              _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+            }
 
-      )
+        )
+      }
   }
 
 }

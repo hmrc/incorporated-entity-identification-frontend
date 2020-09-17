@@ -1,4 +1,5 @@
 import play.core.PlayVersion.current
+import sbt.Keys.libraryDependencies
 import sbt._
 
 object AppDependencies {
@@ -6,7 +7,8 @@ object AppDependencies {
   val compile = Seq(
     "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "2.23.0",
     "uk.gov.hmrc" %% "play-frontend-govuk" % "0.49.0-play-27",
-    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.30.0-play-27"
+    "uk.gov.hmrc" %% "simple-reactivemongo" % "7.30.0-play-27",
+    "uk.gov.hmrc" %% "auth-client" % "3.0.0-play-27"
   )
 
   val it = Seq(
