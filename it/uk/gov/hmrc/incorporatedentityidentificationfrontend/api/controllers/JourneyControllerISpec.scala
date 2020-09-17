@@ -32,8 +32,6 @@ import scala.concurrent.ExecutionContext.Implicits.global
 class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with IncorporatedEntityIdentificationStub {
   "POST /api/journey" should {
     "return a created journey" in {
-      implicit lazy val fakeRequest: FakeRequest[AnyContentAsEmpty.type] = FakeRequest()
-
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
       val testJourneyConfig = JourneyConfig(

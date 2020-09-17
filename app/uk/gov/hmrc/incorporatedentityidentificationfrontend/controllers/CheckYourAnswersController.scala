@@ -18,6 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.DetailsMatched
@@ -32,44 +33,48 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                                            incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
                                            validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService,
                                            mcc: MessagesControllerComponents,
-                                           view: check_your_answers_page)
+                                           view: check_your_answers_page,
+                                           val authConnector: AuthConnector)
                                           (implicit val config: AppConfig,
-                                           executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                           executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).map {
-        case Some(incorporatedEntityInformation) =>
-          Ok(
-            view(
-              routes.CheckYourAnswersController.submit(journeyId),
-              incorporatedEntityInformation.ctutr,
-              incorporatedEntityInformation.companyNumber,
-              journeyId
+      authorised() {
+        incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).map {
+          case Some(incorporatedEntityInformation) =>
+            Ok(
+              view(
+                routes.CheckYourAnswersController.submit(journeyId),
+                incorporatedEntityInformation.ctutr,
+                incorporatedEntityInformation.companyNumber,
+                journeyId
+              )
             )
-          )
-        case None =>
-          throw new InternalServerException("No data stored")
+          case None =>
+            throw new InternalServerException("No data stored")
+        }
       }
-
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).flatMap {
-        case Some(incorporatedEntityInformation) =>
-          validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(
-            incorporatedEntityInformation.companyNumber,
-            incorporatedEntityInformation.ctutr).flatMap {
-            case DetailsMatched =>
-              journeyService.getJourneyConfig(journeyId).map(
-                journeyConfig => SeeOther(journeyConfig.continueUrl)
-              )
-            case _ =>
-              throw new InternalServerException("Incorporated entity details failed to match")
-          }
-        case None =>
-          throw new InternalServerException("No data stored")
+      authorised() {
+        incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).flatMap {
+          case Some(incorporatedEntityInformation) =>
+            validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(
+              incorporatedEntityInformation.companyNumber,
+              incorporatedEntityInformation.ctutr).flatMap {
+              case DetailsMatched =>
+                journeyService.getJourneyConfig(journeyId).map(
+                  journeyConfig => SeeOther(journeyConfig.continueUrl)
+                )
+              case _ =>
+                throw new InternalServerException("Incorporated entity details failed to match")
+            }
+          case None =>
+            throw new InternalServerException("No data stored")
+        }
       }
   }
 

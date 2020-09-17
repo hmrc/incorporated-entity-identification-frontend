@@ -19,6 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.http.InternalServerException
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
@@ -29,22 +30,28 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
                                               mcc: MessagesControllerComponents,
-                                              view: confirm_business_name_page
+                                              view: confirm_business_name_page,
+                                              val authConnector: AuthConnector
                                              )(implicit val config: AppConfig,
-                                               executionContext: ExecutionContext) extends FrontendController(mcc) {
+                                               executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).map {
-        case Some(companiesHouseInformation) =>
-          Ok(view(routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))
-        case None =>
-          throw new InternalServerException("No company profile stored")
+      authorised() {
+        incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).map {
+          case Some(companiesHouseInformation) =>
+            Ok(view(routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))
+          case None =>
+            throw new InternalServerException("No company profile stored")
+        }
       }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
-    Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
+    implicit request =>
+      authorised() {
+        Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
+      }
   }
 
 }

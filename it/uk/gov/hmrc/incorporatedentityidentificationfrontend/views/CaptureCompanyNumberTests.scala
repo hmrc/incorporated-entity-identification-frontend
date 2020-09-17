@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.views
 
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.matchers.must.Matchers
@@ -27,8 +28,11 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper
 trait CaptureCompanyNumberTests {
   this: AnyWordSpec with Matchers =>
 
-  def testCaptureCompanyNumberView(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
+  def testCaptureCompanyNumberView(result: => WSResponse, authStub: => StubMapping): Unit = {
+    lazy val doc: Document = {
+      authStub
+      Jsoup.parse(result.body)
+    }
 
     "have a view with the correct title" in {
       doc.title mustBe messages.title
@@ -55,8 +59,11 @@ trait CaptureCompanyNumberTests {
     }
   }
 
-  def testCaptureCompanyNumberEmpty(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
+  def testCaptureCompanyNumberEmpty(result: => WSResponse, authStub: => StubMapping): Unit = {
+    lazy val doc: Document = {
+      authStub
+      Jsoup.parse(result.body)
+    }
 
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
@@ -67,8 +74,11 @@ trait CaptureCompanyNumberTests {
     }
   }
 
-  def testCaptureCompanyNumberWrongLength(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
+  def testCaptureCompanyNumberWrongLength(result: => WSResponse, authStub: => StubMapping): Unit = {
+    lazy val doc: Document = {
+      authStub
+      Jsoup.parse(result.body)
+    }
 
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
@@ -79,8 +89,11 @@ trait CaptureCompanyNumberTests {
     }
   }
 
-  def testCaptureCompanyNumberWrongFormat(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
+  def testCaptureCompanyNumberWrongFormat(result: => WSResponse, authStub: => StubMapping): Unit = {
+    lazy val doc: Document = {
+      authStub
+      Jsoup.parse(result.body)
+    }
 
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title

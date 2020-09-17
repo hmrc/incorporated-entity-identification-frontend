@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.views
 
+import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.scalatest.matchers.must.Matchers
@@ -28,8 +29,11 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper
 trait CaptureCtutrViewTests {
   this: AnyWordSpec with Matchers =>
 
-  def testCaptureCtutrView(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
+  def testCaptureCtutrView(result: => WSResponse, authStub: => StubMapping): Unit = {
+    lazy val doc: Document = {
+      authStub
+      Jsoup.parse(result.body)
+    }
 
     "have the correct title" in {
       doc.title mustBe messages.title
@@ -56,8 +60,11 @@ trait CaptureCtutrViewTests {
     }
   }
 
-  def testCaptureCtutrErrorMessagesNoCtutr(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
+  def testCaptureCtutrErrorMessagesNoCtutr(result: => WSResponse, authStub: => StubMapping): Unit = {
+    lazy val doc: Document = {
+      authStub
+      Jsoup.parse(result.body)
+    }
 
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
@@ -69,8 +76,11 @@ trait CaptureCtutrViewTests {
     }
   }
 
-  def testCaptureCtutrErrorMessagesInvalidCtutr(result: => WSResponse): Unit = {
-    lazy val doc: Document = Jsoup.parse(result.body)
+  def testCaptureCtutrErrorMessagesInvalidCtutr(result: => WSResponse, authStub: => StubMapping): Unit = {
+    lazy val doc: Document = {
+      authStub
+      Jsoup.parse(result.body)
+    }
 
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
