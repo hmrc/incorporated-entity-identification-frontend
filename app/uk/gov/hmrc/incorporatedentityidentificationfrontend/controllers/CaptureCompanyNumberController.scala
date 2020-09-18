@@ -17,6 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
+import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException

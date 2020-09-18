@@ -18,6 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controller
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors.TestCreateJourneyConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms.TestCreateJourneyForm.form
@@ -29,19 +30,24 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class TestCreateJourneyController @Inject()(messagesControllerComponents: MessagesControllerComponents,
                                             testCreateJourneyConnector: TestCreateJourneyConnector,
-                                            view: test_create_journey)(implicit ec: ExecutionContext) extends FrontendController(messagesControllerComponents) {
-  val show: Action[AnyContent] = Action {
+                                            view: test_create_journey,
+                                            val authConnector: AuthConnector)(implicit ec: ExecutionContext) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
+  val show: Action[AnyContent] = Action.async {
     implicit request =>
-      Ok(view(routes.TestCreateJourneyController.submit(), form))
+      authorised() {
+        Future.successful(Ok(view(routes.TestCreateJourneyController.submit(), form)))
+      }
   }
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
-      form.bindFromRequest().fold(
-        formWithErrors => Future.successful(BadRequest(view(routes.TestCreateJourneyController.submit(), formWithErrors))),
-        continueUrl =>
-          testCreateJourneyConnector.createJourney(JourneyConfig(continueUrl))
-            .map(journeyUrl => SeeOther(journeyUrl))
-      )
+      authorised() {
+        form.bindFromRequest().fold(
+          formWithErrors => Future.successful(BadRequest(view(routes.TestCreateJourneyController.submit(), formWithErrors))),
+          continueUrl =>
+            testCreateJourneyConnector.createJourney(JourneyConfig(continueUrl))
+              .map(journeyUrl => SeeOther(journeyUrl))
+        )
+      }
   }
 }

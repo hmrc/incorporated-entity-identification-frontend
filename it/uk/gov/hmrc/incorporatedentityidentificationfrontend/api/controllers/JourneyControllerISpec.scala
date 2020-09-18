@@ -22,16 +22,17 @@ import play.api.mvc.AnyContentAsEmpty
 import play.api.test.FakeRequest
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{IncorporatedEntityIdentificationStub, JourneyStub}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes.CaptureCompanyNumberController
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
-class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with IncorporatedEntityIdentificationStub {
+class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with IncorporatedEntityIdentificationStub with AuthStub {
   "POST /api/journey" should {
     "return a created journey" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
       val testJourneyConfig = JourneyConfig(
@@ -44,10 +45,23 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
       await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testJourneyConfig)
     }
+    "return See Other" in {
+      stubAuthFailure()
+      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+      val testJourneyConfig = JourneyConfig(
+        continueUrl = "/testContinueUrl"
+      )
+
+      lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))
+
+      result.status mustBe SEE_OTHER
+    }
   }
   "GET /api/journey/:journeyId" should {
     "return captured data" when {
       "the journeyId exists" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveIncorporatedEntityInformation(testJourneyId)(
           status = OK,
           body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
@@ -63,6 +77,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
     }
     "return not found" when {
       "the journey Id does not exist" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveIncorporatedEntityInformation(testJourneyId)(
           status = NOT_FOUND
         )
@@ -71,6 +86,16 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         result.status mustBe NOT_FOUND
       }
+    }
+    "return See Other" in {
+      stubAuthFailure()
+      stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+        status = NOT_FOUND
+      )
+
+      lazy val result = get(s"/api/journey/$testJourneyId")
+
+      result.status mustBe SEE_OTHER
     }
   }
 }
