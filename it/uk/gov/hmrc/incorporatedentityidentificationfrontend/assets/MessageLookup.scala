@@ -23,6 +23,7 @@ object MessageLookup {
     val change = "Change"
     val saveAndContinue = "Save and continue"
     val saveAndComeBack = "Save and come back later"
+    val tryAgain = "Try Again"
 
     object Error {
       val title = "There is a problem"
@@ -42,6 +43,7 @@ object MessageLookup {
       val lengthCompanyNumber = "Enter a Company Registration number using 8 characters or fewer"
       val formatCompanyNumber = "Enter a Company Number in the correct format"
     }
+
   }
 
   object ConfirmBusinessName {
@@ -68,6 +70,12 @@ object MessageLookup {
     val heading = "Check your answers"
     val ctutr = "Unique Taxpayers Reference number"
     val companyNumber = "Company number"
+  }
+
+  object CtutrMismatch {
+    val title: String = "We could not confirm your business"
+    val heading: String = title
+    val paragraph: String = "The information you provided does not match the details we have about your business."
   }
 
 }

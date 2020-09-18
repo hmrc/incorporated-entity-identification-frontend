@@ -13,6 +13,7 @@ base.save_and_continue                                      = Save and continue
 base.confirm_and_continue                                   = Confirm and continue
 base.save_and_come_back                                     = Save and come back later
 base.change                                                 = Change
+base.try_again                                              = Try Again
 
 ## Error
 error.summary.title                                         = There is a problem
@@ -44,3 +45,8 @@ check-your-answers.title                                    = Check your answers
 check-your-answers.heading                                  = Check your answers
 check-your-answers.company_number                           = Company number
 check-your-answers.ctutr                                    = Unique Taxpayers Reference number
+
+# CTUTR Mismatch Error Page
+ctutr-mismatch.title                                        = We could not confirm your business
+ctutr-mismatch.heading                                      = We could not confirm your business
+ctutr-mismatch.paragraph                                    = The information you provided does not match the details we have about your business.
