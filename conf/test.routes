@@ -9,3 +9,5 @@ GET        /:companyNumber/incorporated-company-profile                         
 
 GET        /create-journey                                                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestCreateJourneyController.show
 POST       /create-journey                                                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestCreateJourneyController.submit
+
+GET        /retrieve-journey/:journeyId                                                     uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveIncorporatedEntityInformation(journeyId)

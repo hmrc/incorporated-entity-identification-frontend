@@ -18,34 +18,41 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers
 
 import javax.inject.Inject
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes.CaptureCompanyNumberController
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes.CaptureCompanyNumberController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import scala.concurrent.ExecutionContext
 
-class JourneyController @Inject()(controllerComponents: MessagesControllerComponents,
+class JourneyController @Inject()(controllerComponents: ControllerComponents,
                                   journeyService: JourneyService,
-                                  incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService)(implicit ec: ExecutionContext) extends FrontendController(controllerComponents) {
+                                  incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
+                                  val authConnector: AuthConnector)(implicit ec: ExecutionContext) extends BackendController(controllerComponents) with AuthorisedFunctions {
+
   def createJourney(): Action[JourneyConfig] = Action.async(parse.json[JourneyConfig]) {
     implicit req =>
-      journeyService.createJourney(req.body).map(
-        journeyId =>
-          Created(Json.obj(
-            "journeyStartUrl" -> CaptureCompanyNumberController.show(journeyId).absoluteURL()
-          ))
-      )
+      authorised() {
+        journeyService.createJourney(req.body).map(
+          journeyId =>
+            Created(Json.obj(
+              "journeyStartUrl" -> CaptureCompanyNumberController.show(journeyId).absoluteURL()
+            ))
+        )
+      }
   }
 
   def retrieveJourneyData(journeyId: String): Action[AnyContent] = Action.async {
     implicit req =>
-      incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).map {
-        case Some(journeyData) =>
-          Ok(Json.toJson(journeyData))
-        case None =>
-          NotFound
+      authorised() {
+        incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).map {
+          case Some(journeyData) =>
+            Ok(Json.toJson(journeyData))
+          case None =>
+            NotFound
+        }
       }
   }
 }
