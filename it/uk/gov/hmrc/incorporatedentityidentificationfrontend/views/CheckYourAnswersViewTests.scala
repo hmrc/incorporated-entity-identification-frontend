@@ -76,10 +76,6 @@ trait CheckYourAnswersViewTests {
       "have a continue and confirm button" in {
         doc.getSubmitButton.first.text mustBe Base.confirmAndContinue
       }
-
-      "have a save and come back later button" in {
-        doc.getSubmitButton.get(1).text mustBe Base.saveAndComeBack
-      }
     }
 
   }

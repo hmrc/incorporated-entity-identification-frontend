@@ -53,10 +53,6 @@ trait CaptureCompanyNumberTests {
     "have a save and confirm button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
-
-    "have a save and come back later button" in {
-      doc.getSubmitButton.get(1).text mustBe Base.saveAndComeBack
-    }
   }
 
   def testCaptureCompanyNumberEmpty(result: => WSResponse, authStub: => StubMapping): Unit = {

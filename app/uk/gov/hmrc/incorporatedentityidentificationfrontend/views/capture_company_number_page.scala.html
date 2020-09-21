@@ -14,10 +14,8 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.errorSummary
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.inputText
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.{errorSummary, inputText}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
 
 
@@ -31,23 +29,23 @@
         errorSummary: errorSummary
 )
 
-@(formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages)
 
 @layout(title = title(messages("capture-company-number.title"), form)) {
     @errorSummary(form.errors)
 
-        @govukFieldset(Fieldset(
-            legend = Some(Legend(
-                content = Text(Messages("capture-company-number.title")),
-                classes = "govuk-fieldset__legend--xl",
-                isPageHeading = true
-            )),
-            html = html
-        ))
+    @govukFieldset(Fieldset(
+        legend = Some(Legend(
+            content = Text(Messages("capture-company-number.title")),
+            classes = "govuk-fieldset__legend--xl",
+            isPageHeading = true
+        )),
+        html = html
+    ))
 
-    }
+}
 
-    @html= {
+@html = {
     @formWithCSRF(action = formAction) {
 
         <p class="govuk-body">
@@ -72,11 +70,6 @@
             classes = "govuk-!-margin-right-1",
             content = Text(Messages("base.save_and_continue"))
         ))
-
-        @govukButton(Button(
-            classes = "govuk-button--secondary",
-            content = Text(Messages("base.save_and_come_back"))
-        ))
     }
-    }
+}
 

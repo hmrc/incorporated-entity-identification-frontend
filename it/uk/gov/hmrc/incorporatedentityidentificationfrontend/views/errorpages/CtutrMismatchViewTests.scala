@@ -46,7 +46,7 @@ trait CtutrMismatchViewTests {
       doc.getParagraphs.first.text mustBe messages.paragraph
     }
 
-    "have a save and confirm button" in {
+    "have a try again button" in {
       doc.getSubmitButton.first.text mustBe Base.tryAgain
     }
   }

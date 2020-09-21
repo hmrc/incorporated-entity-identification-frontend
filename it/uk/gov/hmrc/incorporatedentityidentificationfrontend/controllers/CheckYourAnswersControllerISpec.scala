@@ -19,7 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyName, testInternalId}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -27,34 +27,52 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswe
 
 
 class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests with IncorporatedEntityIdentificationStub with AuthStub {
-  val testCompanyNumber = "12345678"
-  val testCtutr = "1234567890"
 
   "GET /check-your-answers-business" should {
     "return OK" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
-        body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
+      stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+        status = OK,
+        body = Json.toJsObject(
+          IncorporatedEntityInformation(
+            companyNumber = testCompanyNumber,
+            companyName = testCompanyName,
+            ctutr = testCtutr)
+        )
       )
       lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
 
       result.status mustBe OK
     }
 
-    "return See Other" in {
-      stubAuthFailure()
-      stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
-        body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
-      )
-      lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
+    "redirect to sign in page" when {
+      "the user is UNAUTHORISED" in {
+        stubAuthFailure()
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyNumber = testCompanyNumber,
+              companyName = testCompanyName,
+              ctutr = testCtutr)
+          )
+        )
+        lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
 
-      result.status mustBe SEE_OTHER
+        result.status mustBe SEE_OTHER
+      }
     }
 
     "return a view which" should {
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val stub = stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
-        body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
+      lazy val stub = stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+        status = OK,
+        body = Json.toJsObject(
+          IncorporatedEntityInformation(
+            companyNumber = testCompanyNumber,
+            companyName = testCompanyName,
+            ctutr = testCtutr)
+        )
       )
       lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
 
@@ -70,8 +88,14 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
-        stubRetrieveIncorporatedEntityInformation(testJourneyId)(status = OK,
-          body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyNumber = testCompanyNumber,
+              companyName = testCompanyName,
+              ctutr = testCtutr)
+          )
         )
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
 
@@ -81,6 +105,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
         result.header(LOCATION) mustBe Some(testContinueUrl)
       }
     }
+
     "the company details do not match" should {
       "throw an exception" in { //TODO - update this to route to an error page in the future
         val testContinueUrl = "/testContinueUrl"
@@ -95,6 +120,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
         result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
+
     "the company details do not exist" should {
       "throw an exception" in { //TODO - handle this in the case of entities without corporation tax
         val testContinueUrl = "/testContinueUrl"
@@ -118,5 +144,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
         result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
+
   }
+
 }
