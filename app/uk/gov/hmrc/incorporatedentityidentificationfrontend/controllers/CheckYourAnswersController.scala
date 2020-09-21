@@ -21,12 +21,13 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.DetailsMatched
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
@@ -69,8 +70,10 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                 journeyService.getJourneyConfig(journeyId).map(
                   journeyConfig => SeeOther(journeyConfig.continueUrl)
                 )
+              case DetailsMismatch =>
+                Future.successful(Redirect(errorRoutes.CtutrMismatchController.show(journeyId)))
               case _ =>
-                throw new InternalServerException("Incorporated entity details failed to match")
+                throw new InternalServerException("Incorporated entity details not found")
             }
           case None =>
             throw new InternalServerException("No data stored")

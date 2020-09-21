@@ -14,4 +14,7 @@ POST       /:journeyId/confirm-business-name                           uk.gov.hm
 GET        /:journeyId/check-your-answers-business                     uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId)
 POST       /:journeyId/check-your-answers-business                     uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.submit(journeyId)
 
+GET        /:journeyId/error/could-not-confirm-business                uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.show(journeyId)
+POST       /:journeyId/error/could-not-confirm-business                uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.submit(journeyId)
+
 ->         /govuk-frontend                                             govuk.Routes
