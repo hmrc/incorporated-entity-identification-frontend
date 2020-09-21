@@ -20,11 +20,11 @@ import javax.inject.{Inject, Singleton}
 import play.api.Logger
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCompanyNumberForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_company_number_page
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -58,7 +58,7 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
               case Some(_) =>
                 Redirect(routes.ConfirmBusinessNameController.show(journeyId))
               case None =>
-                throw new InternalServerException(s"Company Profile not found for company number: $companyNumber")
+                Redirect(errorRoutes.CompanyNumberNotFoundController.show(journeyId))
             }
         )
       }

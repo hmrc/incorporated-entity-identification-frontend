@@ -40,7 +40,7 @@ capture-ctutr.lost_utr                                      = Lost the companyâ€
 capture-ctutr.error.no-entry                                = Enter your companyâ€™s Unique Taxpayer Reference
 capture-ctutr.error.incorrect-format                        = Unique Taxpayer Reference number must be 10 numbers
 
-# Check Your Answerss Page
+# Check Your Answers Page
 check-your-answers.title                                    = Check your answers
 check-your-answers.heading                                  = Check your answers
 check-your-answers.company_number                           = Company number
@@ -50,3 +50,9 @@ check-your-answers.ctutr                                    = Unique Taxpayers R
 ctutr-mismatch.title                                        = We could not confirm your business
 ctutr-mismatch.heading                                      = We could not confirm your business
 ctutr-mismatch.paragraph                                    = The information you provided does not match the details we have about your business.
+
+# Company Number Not Found Page
+company-number-not-found.title                              = We could not confirm your company
+company-number-not-found.heading                            = We could not confirm your company
+company-number-not-found.paragraph                          = The company number you entered is not on our system.
+
