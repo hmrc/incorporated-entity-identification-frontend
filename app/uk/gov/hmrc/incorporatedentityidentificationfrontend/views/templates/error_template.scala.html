@@ -15,11 +15,12 @@
  *@
 
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
 
-@this(appConfig: AppConfig, layout: govuk_template)
+@this(appConfig: AppConfig, layout: govuk_template, h1: h1)
 @(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-    @layout(pageTitle) {
-        <h1>@heading</h1>
-        <p>@message</p>
-    }
+@layout(pageTitle) {
+    @h1(messages(heading))
+    <p class="govuk-body">@message</p>
+}
