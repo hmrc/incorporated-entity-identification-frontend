@@ -31,20 +31,26 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
   with CaptureCompanyNumberTests with CompaniesHouseApiStub with IncorporatedEntityIdentificationStub with FeatureSwitching with AuthStub {
 
   "GET /company-number" should {
-
     "return OK" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
+
       result.status mustBe OK
     }
-    "return See Other" in {
-      stubAuthFailure()
-      lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
-      result.status mustBe SEE_OTHER
+
+    "redirect to sign in page" when {
+      "the user is UNAUTHORISED" in {
+        stubAuthFailure()
+        lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
+
+        result.status mustBe SEE_OTHER
+      }
     }
+
     "return a view which" should {
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
+
       testCaptureCompanyNumberView(result, authStub)
     }
   }
@@ -92,10 +98,13 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           "return a bad request" in {
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
+
             result.status mustBe BAD_REQUEST
           }
+
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
+
           testCaptureCompanyNumberEmpty(result, authStub)
         }
 
@@ -107,7 +116,6 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
             result.status mustBe SEE_OTHER
             redirectUri(errorRoutes.CompanyNumberNotFoundController.show(testJourneyId).url)
-
           }
         }
 
@@ -115,10 +123,13 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           "return a bad request" in {
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
+
             result.status mustBe BAD_REQUEST
           }
+
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
+
           testCaptureCompanyNumberWrongLength(result, authStub)
         }
 
@@ -126,10 +137,13 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           "return a bad request" in {
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
+
             result.status mustBe BAD_REQUEST
           }
+
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
+
           testCaptureCompanyNumberWrongFormat(result, authStub)
         }
 

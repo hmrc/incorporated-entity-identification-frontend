@@ -39,14 +39,16 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
         result.status mustBe OK
       }
 
-      "return See Other" in {
-        stubAuthFailure()
-        val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
+      "redirect to sign in page" when {
+        "the user is UNAUTHORISED" in {
+          stubAuthFailure()
+          val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber))
+          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
 
-        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
+          lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
 
-        result.status mustBe SEE_OTHER
+          result.status mustBe SEE_OTHER
+        }
       }
 
       "return a view which" should {

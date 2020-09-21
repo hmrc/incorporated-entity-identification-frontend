@@ -17,16 +17,16 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.config
 
 import javax.inject.{Inject, Singleton}
-import play.api.{Configuration, Environment, Logger}
 import play.api.i18n.MessagesApi
-import play.api.mvc.{Request, RequestHeader, Result}
 import play.api.mvc.Results.NotFound
+import play.api.mvc.{Request, RequestHeader, Result}
+import play.api.{Configuration, Environment, Logging}
 import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http.NotFoundException
-import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.error_template
 import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
+import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 import scala.concurrent.Future
 
@@ -35,7 +35,7 @@ class ErrorHandler @Inject()(view: error_template,
                              val messagesApi: MessagesApi,
                              val config: Configuration,
                              val env: Environment
-                            )(implicit appConfig: AppConfig) extends FrontendErrorHandler with AuthRedirects {
+                            ) extends FrontendErrorHandler with AuthRedirects with Logging {
 
   override def standardErrorTemplate(pageTitle: String,
                                      heading: String,
@@ -52,7 +52,7 @@ class ErrorHandler @Inject()(view: error_template,
   override def resolveError(rh: RequestHeader, ex: Throwable): Result = {
     ex match {
       case _: AuthorisationException =>
-        Logger.debug("[AuthenticationPredicate][async] Unauthorised request. Redirect to Sign In.")
+        logger.debug("[AuthenticationPredicate][async] Unauthorised request. Redirect to Sign In.")
         toGGLogin(rh.path)
       case _: NotFoundException =>
         NotFound(notFoundTemplate(Request(rh, "")))

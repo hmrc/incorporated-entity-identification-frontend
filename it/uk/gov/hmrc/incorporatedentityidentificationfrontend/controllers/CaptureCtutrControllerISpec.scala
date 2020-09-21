@@ -28,19 +28,24 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
     "return OK" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = get(s"/$testJourneyId/ct-utr")
+
       result.status mustBe OK
     }
 
     "return a view which" should {
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = get(s"/$testJourneyId/ct-utr")
+
       testCaptureCtutrView(result, authStub)
     }
 
-    "return See Other" in {
-      stubAuthFailure()
-      lazy val result = get(s"/$testJourneyId/ct-utr")
-      result.status mustBe SEE_OTHER
+    "redirect to sign in page" when {
+      "the user is UNAUTHORISED" in {
+        stubAuthFailure()
+        lazy val result = get(s"/$testJourneyId/ct-utr")
+
+        result.status mustBe SEE_OTHER
+      }
     }
   }
 
@@ -61,28 +66,30 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper with CaptureCtutrV
     }
 
     "no ctutr is submitted" should {
-
       "return a bad request" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
+
         result.status mustBe BAD_REQUEST
       }
 
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
+
       testCaptureCtutrErrorMessagesNoCtutr(result, authStub)
     }
 
     "an invalid ctutr is submitted" should {
-
       "return a bad request" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
+
         result.status mustBe BAD_REQUEST
       }
 
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
+
       testCaptureCtutrErrorMessagesInvalidCtutr(result, authStub)
     }
   }

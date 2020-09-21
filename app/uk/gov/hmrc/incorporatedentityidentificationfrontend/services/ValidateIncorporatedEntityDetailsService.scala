@@ -21,10 +21,9 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.ValidateIncorporatedEntityDetailsConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.IncorporatedEntityDetailsValidationResult
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.Future
 
-class ValidateIncorporatedEntityDetailsService @Inject()(validateIncorporatedEntityDetailsConnector: ValidateIncorporatedEntityDetailsConnector
-                                                        )(implicit ec: ExecutionContext) {
+class ValidateIncorporatedEntityDetailsService @Inject()(validateIncorporatedEntityDetailsConnector: ValidateIncorporatedEntityDetailsConnector) {
 
   def validateIncorporatedEntityDetails(companyNumber:
                                         String, ctutr: String

@@ -46,7 +46,7 @@ trait CompanyNumberNotFoundTests {
       doc.getParagraphs.first.text mustBe messages.line
     }
 
-    "have a save and confirm button" in {
+    "have a try again button" in {
       doc.getSubmitButton.first.text mustBe Base.tryAgain
     }
   }
