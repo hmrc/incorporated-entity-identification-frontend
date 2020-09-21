@@ -78,4 +78,10 @@ object MessageLookup {
     val paragraph: String = "The information you provided does not match the details we have about your business."
   }
 
+  object CompanyNumberNotFound {
+    val title = "We could not confirm your company"
+    val heading = "We could not confirm your company"
+    val line = "The company number you entered is not on our system."
+
+  }
 }

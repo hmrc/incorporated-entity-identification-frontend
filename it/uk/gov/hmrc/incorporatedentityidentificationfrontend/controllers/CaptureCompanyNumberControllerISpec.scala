@@ -24,6 +24,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfil
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCompanyNumberTests
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 
 
 class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
@@ -99,12 +100,13 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
         }
 
         "the company number is not found" should {
-          "throw an internal server error" in {
+          "redirect to the Company Number not found error page" in {
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(status = NOT_FOUND)
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
-            result.status mustBe INTERNAL_SERVER_ERROR
+            result.status mustBe SEE_OTHER
+            redirectUri(errorRoutes.CompanyNumberNotFoundController.show(testJourneyId).url)
 
           }
         }
