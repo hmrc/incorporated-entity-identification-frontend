@@ -29,7 +29,8 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       uri = s"/incorporated-entity-identification/journey/$journeyId/company-profile",
       body = Json.obj(
         "companyName" -> companyProfile.companyName,
-        "companyNumber" -> companyProfile.companyNumber
+        "companyNumber" -> companyProfile.companyNumber,
+        "dateOfCreation" -> companyProfile.dateOfCreation
       ))
       .thenReturn(
         status = status
