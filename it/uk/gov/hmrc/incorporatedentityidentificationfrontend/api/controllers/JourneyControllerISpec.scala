@@ -18,14 +18,12 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers
 
 import play.api.http.Status.CREATED
 import play.api.libs.json.Json
-import play.api.mvc.AnyContentAsEmpty
-import play.api.test.FakeRequest
 import play.api.test.Helpers._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes.CaptureCompanyNumberController
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -41,7 +39,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
       lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))
 
-      (result.json \ "journeyStartUrl").as[String] must include(CaptureCompanyNumberController.show(testJourneyId).url)
+      (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
 
       await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testJourneyConfig)
     }
@@ -64,7 +62,12 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveIncorporatedEntityInformation(testJourneyId)(
           status = OK,
-          body = Json.toJsObject(IncorporatedEntityInformation(companyNumber = testCompanyNumber, companyName = testCompanyName, ctutr = testCtutr))
+          body = Json.toJsObject(IncorporatedEntityInformation(
+            companyNumber = testCompanyNumber,
+            companyName = testCompanyName,
+            ctutr = testCtutr,
+            dateOfCreation = testDateOfCreation
+          ))
         )
 
         lazy val result = get(s"/api/journey/$testJourneyId")
@@ -72,7 +75,9 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         result.status mustBe OK
         result.json mustBe Json.obj("ctutr" -> testCtutr,
           "companyNumber" -> testCompanyNumber,
-          "companyName" -> testCompanyName)
+          "companyName" -> testCompanyName,
+          "dateOfCreation" -> testDateOfCreation
+        )
       }
     }
     "return not found" when {

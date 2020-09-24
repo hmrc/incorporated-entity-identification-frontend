@@ -16,19 +16,23 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
-import play.api.libs.json._
 import play.api.libs.functional.syntax._
+import play.api.libs.json._
 
 
-case class IncorporatedEntityInformation(companyNumber: String, companyName: String, ctutr: String)
+case class IncorporatedEntityInformation(companyNumber: String,
+                                         companyName: String,
+                                         ctutr: String,
+                                         dateOfCreation: String)
 
 object IncorporatedEntityInformation {
 
   val reads: Reads[IncorporatedEntityInformation] = (
     (__ \\ "companyNumber").read[String] and
       (__ \\ "companyName").read[String] and
-      (__ \\ "ctutr").read[String]
-    )(IncorporatedEntityInformation.apply _)
+      (__ \\ "ctutr").read[String] and
+      (__ \\ "dateOfCreation").read[String]
+    ) (IncorporatedEntityInformation.apply _)
 
   val writes: OWrites[IncorporatedEntityInformation] = Json.writes[IncorporatedEntityInformation]
 

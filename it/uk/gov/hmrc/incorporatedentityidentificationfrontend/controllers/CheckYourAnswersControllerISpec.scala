@@ -37,7 +37,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
           IncorporatedEntityInformation(
             companyNumber = testCompanyNumber,
             companyName = testCompanyName,
-            ctutr = testCtutr)
+            ctutr = testCtutr,
+            dateOfCreation = testDateOfCreation
+          )
         )
       )
       lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
@@ -54,7 +56,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
             IncorporatedEntityInformation(
               companyNumber = testCompanyNumber,
               companyName = testCompanyName,
-              ctutr = testCtutr)
+              ctutr = testCtutr,
+              dateOfCreation = testDateOfCreation
+            )
           )
         )
         lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
@@ -71,7 +75,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
           IncorporatedEntityInformation(
             companyNumber = testCompanyNumber,
             companyName = testCompanyName,
-            ctutr = testCtutr)
+            ctutr = testCtutr,
+            dateOfCreation = testDateOfCreation
+          )
         )
       )
       lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
@@ -94,7 +100,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
             IncorporatedEntityInformation(
               companyNumber = testCompanyNumber,
               companyName = testCompanyName,
-              ctutr = testCtutr)
+              ctutr = testCtutr,
+              dateOfCreation = testDateOfCreation
+            )
           )
         )
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
