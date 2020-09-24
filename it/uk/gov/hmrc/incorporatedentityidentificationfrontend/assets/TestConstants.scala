@@ -1,6 +1,9 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 
+import java.time.LocalDate
 import java.util.UUID
+
+
 
 object TestConstants {
 
@@ -10,6 +13,7 @@ object TestConstants {
   val testCompanyName = "Test Company Ltd"
   val testCtutr = "1234567890"
   val testJourneyId = "TestJourneyId"
+  val testDateOfCreation = LocalDate.now().toString
   val testCredentialId = UUID.randomUUID().toString
   val GGProviderId = UUID.randomUUID().toString
   val testGroupId = UUID.randomUUID().toString

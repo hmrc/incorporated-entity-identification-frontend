@@ -16,6 +16,8 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers
 
+import java.time.LocalDate
+
 import javax.inject.Singleton
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, InjectedController}
@@ -27,7 +29,9 @@ class CompaniesHouseStubController extends InjectedController {
 
   private val companyNameKey = "company_name"
   private val companyNumberKey = "company_number"
+  private val dateOfCreationKey = "date_of_creation"
   private val stubCompanyName = "Test Company Ltd"
+  private val stubDateOfCreation = "2020-01-01"
 
   def getCompanyInformation(companyNumber: String): Action[AnyContent] = Action.async {
 
@@ -35,7 +39,8 @@ class CompaniesHouseStubController extends InjectedController {
       case "00000001" => NotFound
       case _ => Ok(Json.obj(
         companyNameKey -> stubCompanyName,
-        companyNumberKey -> companyNumber
+        companyNumberKey -> companyNumber,
+        dateOfCreationKey -> stubDateOfCreation
       ))
     })
 

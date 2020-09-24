@@ -62,8 +62,11 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           "store companies house profile and redirect to the Confirm Business Name page" in {
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             enable(CompaniesHouseStub)
-            stubRetrieveCompanyProfileFromStub(testCompanyNumber)(status = OK, body = companyProfileJson(testCompanyNumber, testCompanyName))
-            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber))(status = OK)
+            stubRetrieveCompanyProfileFromStub(testCompanyNumber)(
+              status = OK,
+              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfCreation)
+            )
+            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfCreation))(status = OK)
 
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
@@ -82,8 +85,11 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           "store companies house profile and redirect to the Confirm Business Name page" in {
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             disable(CompaniesHouseStub)
-            stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(status = OK, body = companyProfileJson(testCompanyNumber, testCompanyName))
-            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber))(status = OK)
+            stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(
+              status = OK,
+              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfCreation)
+            )
+            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfCreation))(status = OK)
 
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
