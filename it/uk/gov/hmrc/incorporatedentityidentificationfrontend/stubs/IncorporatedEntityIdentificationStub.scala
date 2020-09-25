@@ -30,7 +30,7 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       body = Json.obj(
         "companyName" -> companyProfile.companyName,
         "companyNumber" -> companyProfile.companyNumber,
-        "dateOfCreation" -> companyProfile.dateOfCreation
+        "dateOfIncorporation" -> companyProfile.dateOfIncorporation
       ))
       .thenReturn(
         status = status

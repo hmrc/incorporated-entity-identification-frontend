@@ -38,7 +38,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
             companyNumber = testCompanyNumber,
             companyName = testCompanyName,
             ctutr = testCtutr,
-            dateOfCreation = testDateOfCreation
+            dateOfIncorporation = testDateOfIncorporation
           )
         )
       )
@@ -57,7 +57,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
               companyNumber = testCompanyNumber,
               companyName = testCompanyName,
               ctutr = testCtutr,
-              dateOfCreation = testDateOfCreation
+              dateOfIncorporation = testDateOfIncorporation
             )
           )
         )
@@ -76,7 +76,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
             companyNumber = testCompanyNumber,
             companyName = testCompanyName,
             ctutr = testCtutr,
-            dateOfCreation = testDateOfCreation
+            dateOfIncorporation = testDateOfIncorporation
           )
         )
       )
@@ -101,7 +101,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
               companyNumber = testCompanyNumber,
               companyName = testCompanyName,
               ctutr = testCtutr,
-              dateOfCreation = testDateOfCreation
+              dateOfIncorporation = testDateOfIncorporation
             )
           )
         )

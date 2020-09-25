@@ -66,7 +66,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
             companyNumber = testCompanyNumber,
             companyName = testCompanyName,
             ctutr = testCtutr,
-            dateOfCreation = testDateOfCreation
+            dateOfIncorporation = testDateOfIncorporation
           ))
         )
 
@@ -76,7 +76,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         result.json mustBe Json.obj("ctutr" -> testCtutr,
           "companyNumber" -> testCompanyNumber,
           "companyName" -> testCompanyName,
-          "dateOfCreation" -> testDateOfCreation
+          "dateOfIncorporation" -> testDateOfIncorporation
         )
       }
     }
