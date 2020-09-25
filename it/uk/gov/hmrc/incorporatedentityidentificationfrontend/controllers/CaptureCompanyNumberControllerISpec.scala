@@ -64,9 +64,9 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             enable(CompaniesHouseStub)
             stubRetrieveCompanyProfileFromStub(testCompanyNumber)(
               status = OK,
-              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfCreation)
+              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation)
             )
-            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfCreation))(status = OK)
+            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))(status = OK)
 
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
@@ -87,9 +87,9 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             disable(CompaniesHouseStub)
             stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(
               status = OK,
-              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfCreation)
+              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation)
             )
-            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfCreation))(status = OK)
+            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))(status = OK)
 
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 

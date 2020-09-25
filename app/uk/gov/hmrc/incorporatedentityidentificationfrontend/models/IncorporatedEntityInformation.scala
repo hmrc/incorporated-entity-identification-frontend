@@ -23,7 +23,7 @@ import play.api.libs.json._
 case class IncorporatedEntityInformation(companyNumber: String,
                                          companyName: String,
                                          ctutr: String,
-                                         dateOfCreation: String)
+                                         dateOfIncorporation: String)
 
 object IncorporatedEntityInformation {
 
@@ -31,7 +31,7 @@ object IncorporatedEntityInformation {
     (__ \\ "companyNumber").read[String] and
       (__ \\ "companyName").read[String] and
       (__ \\ "ctutr").read[String] and
-      (__ \\ "dateOfCreation").read[String]
+      (__ \\ "dateOfIncorporation").read[String]
     ) (IncorporatedEntityInformation.apply _)
 
   val writes: OWrites[IncorporatedEntityInformation] = Json.writes[IncorporatedEntityInformation]

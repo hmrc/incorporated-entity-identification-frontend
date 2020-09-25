@@ -44,12 +44,12 @@ class CompanyProfileConnector @Inject()(http: HttpClient,
 object CompanyProfileHttpParser {
   private val companyNameKey = "company_name"
   private val companyNumberKey = "company_number"
-  private val dateOfCreationKey = "date_of_creation"
+  private val dateOfIncorporationKey = "date_of_creation"
 
   val companiesHouseReads: Reads[CompanyProfile] = (
     (__ \ companyNameKey).read[String] and
       (__ \ companyNumberKey).read[String] and
-      (__ \ dateOfCreationKey).read[String]
+      (__ \ dateOfIncorporationKey).read[String]
     ) (CompanyProfile.apply _)
 
   implicit object CompanyProfileHttpReads extends HttpReads[Option[CompanyProfile]] {

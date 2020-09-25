@@ -18,7 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json._
 
-case class CompanyProfile(companyName: String, companyNumber: String, dateOfCreation: String)
+case class CompanyProfile(companyName: String, companyNumber: String, dateOfIncorporation: String)
 
 object CompanyProfile {
   implicit val format: OFormat[CompanyProfile] = Json.format[CompanyProfile]
