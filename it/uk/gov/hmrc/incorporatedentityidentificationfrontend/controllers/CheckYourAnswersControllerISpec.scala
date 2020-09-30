@@ -20,16 +20,28 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityInformation
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswersViewTests
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
+
+import scala.concurrent.ExecutionContext.Implicits.global
 
 
-class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYourAnswersViewTests with IncorporatedEntityIdentificationStub with AuthStub {
+class CheckYourAnswersControllerISpec extends ComponentSpecHelper
+  with CheckYourAnswersViewTests
+  with IncorporatedEntityIdentificationStub
+  with AuthStub {
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    journeyConfigRepository.drop
+  }
 
   "GET /check-your-answers-business" should {
     "return OK" in {
+      await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRetrieveIncorporatedEntityInformation(testJourneyId)(
         status = OK,
@@ -49,6 +61,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
 
     "redirect to sign in page" when {
       "the user is UNAUTHORISED" in {
+        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
         stubAuthFailure()
         stubRetrieveIncorporatedEntityInformation(testJourneyId)(
           status = OK,
@@ -67,33 +80,55 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
       }
     }
 
-    "return a view which" should {
-      lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val stub = stubRetrieveIncorporatedEntityInformation(testJourneyId)(
-        status = OK,
-        body = Json.toJsObject(
-          IncorporatedEntityInformation(
-            companyNumber = testCompanyNumber,
-            companyName = testCompanyName,
-            ctutr = testCtutr,
-            dateOfIncorporation = testDateOfIncorporation
+    "return a view" when {
+      "there is no serviceName passed in the journeyConfig" should {
+        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val stub = stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyNumber = testCompanyNumber,
+              companyName = testCompanyName,
+              ctutr = testCtutr,
+              dateOfIncorporation = testDateOfIncorporation
+            )
           )
         )
-      )
-      lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
+        lazy val result = get(s"/$testJourneyId/check-your-answers-business")
 
-      testCheckYourAnswersView(testJourneyId)(result, stub, authStub)
+        testCheckYourAnswersView(testJourneyId)(result, stub, authStub, insertConfig)
+        testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+      }
+
+      "there is a serviceName passed in the journeyConfig" should {
+        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
+        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val stub = stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyNumber = testCompanyNumber,
+              companyName = testCompanyName,
+              ctutr = testCtutr,
+              dateOfIncorporation = testDateOfIncorporation
+            )
+          )
+        )
+        lazy val result = get(s"/$testJourneyId/check-your-answers-business")
+
+        testCheckYourAnswersView(testJourneyId)(result, stub, authStub, insertConfig)
+        testServiceName(testCallingServiceName, result, authStub, insertConfig)
+      }
     }
   }
 
   "POST /check-your-answers-business" when {
     "the company details are successfully matched" should {
       "return a redirect to the stored continue URL from the client service" in {
-        val testContinueUrl = "/testContinueUrl"
-        await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
+        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-
         stubRetrieveIncorporatedEntityInformation(testJourneyId)(
           status = OK,
           body = Json.toJsObject(
@@ -115,27 +150,45 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper with CheckYour
     }
 
     "the company details do not match" should {
-      "throw an exception" in { //TODO - update this to route to an error page in the future
-        val testContinueUrl = "/testContinueUrl"
-        await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
-
+      "redirect to ctutr mismatch page" in {
+        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyNumber = testCompanyNumber,
+              companyName = testCompanyName,
+              ctutr = testCtutr,
+              dateOfIncorporation = testDateOfIncorporation
+            )
+          )
+        )
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
 
         lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
 
-        result.status mustBe INTERNAL_SERVER_ERROR
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
+
       }
     }
 
     "the company details do not exist" should {
       "throw an exception" in { //TODO - handle this in the case of entities without corporation tax
-        val testContinueUrl = "/testContinueUrl"
-        await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl)))
-
+        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyNumber = testCompanyNumber,
+              companyName = testCompanyName,
+              ctutr = testCtutr,
+              dateOfIncorporation = testDateOfIncorporation
+            )
+          )
+        )
         stubValidateIncorporatedEntityDetails(
           testCompanyNumber,
           testCtutr

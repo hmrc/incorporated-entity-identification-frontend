@@ -27,9 +27,9 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class TestRetrieveJourneyDataController @Inject()(messagesControllerComponents: MessagesControllerComponents,
-                                        incorporatedEntityInformationConnector: IncorporatedEntityInformationConnector,
-                                        val authConnector: AuthConnector
-                                       )(implicit ec: ExecutionContext) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
+                                                  incorporatedEntityInformationConnector: IncorporatedEntityInformationConnector,
+                                                  val authConnector: AuthConnector
+                                                 )(implicit ec: ExecutionContext) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
   def retrieveIncorporatedEntityInformation(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>

@@ -22,15 +22,23 @@ import org.jsoup.nodes.Document
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
+import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, CaptureCtutr => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
+
+import scala.concurrent.Future
 
 
 trait CaptureCtutrViewTests {
   this: AnyWordSpec with Matchers =>
 
-  def testCaptureCtutrView(result: => WSResponse, authStub: => StubMapping): Unit = {
+  def testCaptureCtutrView(result: => WSResponse,
+                           authStub: => StubMapping,
+                           insertJourneyConfig: => Future[WriteResult]): Unit = {
+
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
     }
@@ -56,8 +64,11 @@ trait CaptureCtutrViewTests {
     }
   }
 
-  def testCaptureCtutrErrorMessagesNoCtutr(result: => WSResponse, authStub: => StubMapping): Unit = {
+  def testCaptureCtutrErrorMessagesNoCtutr(result: => WSResponse,
+                                           authStub: => StubMapping,
+                                           insertJourneyConfig: => Future[WriteResult]): Unit = {
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
     }
@@ -72,8 +83,11 @@ trait CaptureCtutrViewTests {
     }
   }
 
-  def testCaptureCtutrErrorMessagesInvalidCtutr(result: => WSResponse, authStub: => StubMapping): Unit = {
+  def testCaptureCtutrErrorMessagesInvalidCtutr(result: => WSResponse,
+                                                authStub: => StubMapping,
+                                                insertJourneyConfig: => Future[WriteResult]): Unit = {
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
     }
@@ -86,6 +100,23 @@ trait CaptureCtutrViewTests {
     "correctly display the field errors" in {
       doc.getFieldErrorMessage.text mustBe Base.Error.error + messages.Error.invalidCtutrEntered
     }
+  }
+
+  def testServiceName(serviceName: String,
+                      result: => WSResponse,
+                      authStub: => StubMapping,
+                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+
+    lazy val doc: Document = {
+      await(insertJourneyConfig)
+      authStub
+      Jsoup.parse(result.body)
+    }
+
+    "correctly display the service name" in {
+      doc.getServiceName.text mustBe serviceName
+    }
+
   }
 
 }

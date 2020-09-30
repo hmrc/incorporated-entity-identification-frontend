@@ -28,9 +28,9 @@
         formWithCSRF: FormWithCSRF
 )
 
-@(featureSwitchList: Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])], formAction: Call)(implicit request: Request[_], messages: Messages)
+@(serviceName: String, featureSwitchList: Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])], formAction: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(title = "Choose which features to enable.") {
+@layout(serviceName, title = "Choose which features to enable.") {
 
     @h1("Choose which features to enable.")
 

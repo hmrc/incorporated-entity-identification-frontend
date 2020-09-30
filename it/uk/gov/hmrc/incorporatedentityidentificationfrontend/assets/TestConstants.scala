@@ -18,5 +18,8 @@ object TestConstants {
   val GGProviderId = UUID.randomUUID().toString
   val testGroupId = UUID.randomUUID().toString
   val testInternalId = UUID.randomUUID().toString
+  val testDefaultServiceName = "Entity Validation Service"
+  val testCallingServiceName = "Test Service"
+  val testContinueUrl = "/test"
 
 }

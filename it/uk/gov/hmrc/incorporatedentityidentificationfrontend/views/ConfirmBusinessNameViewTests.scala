@@ -22,14 +22,24 @@ import org.jsoup.nodes.Document
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
+import play.api.test.Helpers._
+import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, ConfirmBusinessName => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
+
+import scala.concurrent.Future
 
 trait ConfirmBusinessNameViewTests {
   this: AnyWordSpec with Matchers =>
 
-  def testConfirmBusinessNameView(result: => WSResponse, stub: => StubMapping, authStub: => StubMapping, testCompanyName: String): Unit = {
+  def testConfirmBusinessNameView(result: => WSResponse,
+                                  stub: => StubMapping,
+                                  authStub: => StubMapping,
+                                  insertJourneyConfig: => Future[WriteResult],
+                                  testCompanyName: String): Unit = {
+
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       stub
       Jsoup.parse(result.body)
@@ -54,6 +64,23 @@ trait ConfirmBusinessNameViewTests {
     "have a save and confirm button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
+  }
+
+  def testServiceName(serviceName: String,
+                      result: => WSResponse,
+                      authStub: => StubMapping,
+                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+
+    lazy val doc: Document = {
+      await(insertJourneyConfig)
+      authStub
+      Jsoup.parse(result.body)
+    }
+
+    "correctly display the service name" in {
+      doc.getServiceName.text mustBe serviceName
+    }
+
   }
 
 }

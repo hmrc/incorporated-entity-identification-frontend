@@ -20,7 +20,7 @@
 @this(appConfig: AppConfig, layout: govuk_template, h1: h1)
 @(pageTitle: String, heading: String, message: String)(implicit messages: Messages)
 
-@layout(pageTitle) {
+@layout(appConfig.defaultServiceName, pageTitle) {
     @h1(messages(heading))
     <p class="govuk-body">@message</p>
 }

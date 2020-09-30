@@ -30,6 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyProfileService,
+                                               journeyService: JourneyService,
                                                mcc: MessagesControllerComponents,
                                                view: capture_company_number_page,
                                                val authConnector: AuthConnector)
@@ -39,9 +40,14 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(
-          Ok(view(routes.CaptureCompanyNumberController.submit(journeyId), CaptureCompanyNumberForm.form))
-        )
+        val getServiceName = journeyService.getJourneyConfig(journeyId).map {
+          _.optServiceName.getOrElse(config.defaultServiceName)
+        }
+
+        getServiceName.map {
+          serviceName =>
+            Ok(view(serviceName, routes.CaptureCompanyNumberController.submit(journeyId), CaptureCompanyNumberForm.form))
+        }
       }
   }
 
@@ -49,9 +55,16 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
     implicit request =>
       authorised() {
         CaptureCompanyNumberForm.form.bindFromRequest().fold(
-          formWithErrors => Future.successful(
-            BadRequest(view(routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
-          ),
+          formWithErrors => {
+            val getServiceName = journeyService.getJourneyConfig(journeyId).map {
+              _.optServiceName.getOrElse(config.defaultServiceName)
+            }
+
+            getServiceName.map {
+              serviceName =>
+                BadRequest(view(serviceName, routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
+            }
+          },
           companyNumber =>
             companyProfileService.retrieveAndStoreCompanyProfile(journeyId, companyNumber).map {
               case Some(_) =>

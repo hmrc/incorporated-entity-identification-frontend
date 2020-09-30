@@ -21,22 +21,31 @@ import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.errorpages.company_number_not_found
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CompanyNumberNotFoundController @Inject()(mcc: MessagesControllerComponents,
-                                        view: company_number_not_found,
-                                        val authConnector: AuthConnector
-                                       )(implicit val config: AppConfig,
-                                         executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+class CompanyNumberNotFoundController @Inject()(journeyService: JourneyService,
+                                                mcc: MessagesControllerComponents,
+                                                view: company_number_not_found,
+                                                val authConnector: AuthConnector
+                                               )(implicit val config: AppConfig,
+                                                 executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(Ok(view(routes.CompanyNumberNotFoundController.submit(journeyId), journeyId)))
+        val getServiceName = journeyService.getJourneyConfig(journeyId).map {
+          _.optServiceName.getOrElse(config.defaultServiceName)
+        }
+
+        getServiceName.map {
+          serviceName =>
+            Ok(view(serviceName, routes.CompanyNumberNotFoundController.submit(journeyId), journeyId))
+        }
       }
   }
 

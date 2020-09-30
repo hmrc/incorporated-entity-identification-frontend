@@ -21,7 +21,7 @@ import play.api.mvc._
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -29,6 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
+                                             journeyService: JourneyService,
                                               mcc: MessagesControllerComponents,
                                               view: confirm_business_name_page,
                                               val authConnector: AuthConnector
@@ -38,11 +39,18 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).map {
-          case Some(companiesHouseInformation) =>
-            Ok(view(routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))
-          case None =>
-            throw new InternalServerException("No company profile stored")
+        val getServiceName = journeyService.getJourneyConfig(journeyId).map {
+          _.optServiceName.getOrElse(config.defaultServiceName)
+        }
+
+        getServiceName.flatMap {
+          serviceName =>
+            incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).map {
+              case Some(companiesHouseInformation) =>
+                Ok(view(serviceName, routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))
+              case None =>
+                throw new InternalServerException("No company profile stored")
+            }
         }
       }
   }

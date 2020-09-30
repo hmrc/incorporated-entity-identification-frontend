@@ -19,6 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.front
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.services.FeatureSwitchRetrievalService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.views.html.feature_switch
@@ -29,7 +30,8 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwitchRetrievalService,
                                                 featureSwitchView: feature_switch,
-                                                mcc: MessagesControllerComponents
+                                                mcc: MessagesControllerComponents,
+                                                config: AppConfig
                                                )(implicit ec: ExecutionContext) extends FrontendController(mcc) with FeatureSwitching with I18nSupport {
 
 
@@ -37,7 +39,7 @@ class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwi
     implicit req =>
       featureSwitchService.retrieveFeatureSwitches().map {
         featureSwitches =>
-          Ok(featureSwitchView(featureSwitches, routes.FeatureSwitchFrontendController.submit()))
+          Ok(featureSwitchView(config.defaultServiceName, featureSwitches, routes.FeatureSwitchFrontendController.submit()))
       }
   }
 
@@ -45,7 +47,7 @@ class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwi
     implicit req =>
       featureSwitchService.updateFeatureSwitches(req.body.keys).map {
         featureSwitches =>
-          Ok(featureSwitchView(featureSwitches, routes.FeatureSwitchFrontendController.submit()))
+          Ok(featureSwitchView(config.defaultServiceName, featureSwitches, routes.FeatureSwitchFrontendController.submit()))
       }
   }
 }

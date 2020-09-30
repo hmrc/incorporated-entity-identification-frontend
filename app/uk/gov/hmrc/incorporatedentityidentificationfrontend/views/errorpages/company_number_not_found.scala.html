@@ -23,9 +23,9 @@
         h1: h1,
         formWithCSRF: FormWithCSRF)
 
-@(formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages)
+@(serviceName: String, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages)
 
-@govukLayout(title = messages("company-number-not-found.title")) {
+@govukLayout(serviceName, messages("company-number-not-found.title")) {
 
     @h1(messages("company-number-not-found.heading"))
     <p class="govuk-body">@messages("company-number-not-found.paragraph")</p>

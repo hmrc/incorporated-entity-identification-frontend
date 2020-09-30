@@ -19,12 +19,15 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraint
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.MappingUtil.optText
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 
 
 object TestCreateJourneyForm {
 
   val continueUrl = "continueUrl"
+  val serviceName = "serviceName"
   val alphanumericRegex = "^[A-Z0-9]*$"
 
   def continueUrlEmpty: Constraint[String] = Constraint("continue_url.not_entered")(
@@ -34,13 +37,11 @@ object TestCreateJourneyForm {
     )
   )
 
-  val form: Form[String] = {
-    Form(
-      continueUrl -> text.verifying(
-        continueUrlEmpty
-      )
-    )
-
-
+  val form: Form[JourneyConfig] = {
+    Form(mapping(
+      continueUrl -> text.verifying(continueUrlEmpty),
+      serviceName -> optText
+    )(JourneyConfig.apply)(JourneyConfig.unapply))
   }
+
 }

@@ -42,16 +42,24 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).map {
+        incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).flatMap {
           case Some(incorporatedEntityInformation) =>
-            Ok(
-              view(
-                routes.CheckYourAnswersController.submit(journeyId),
-                incorporatedEntityInformation.ctutr,
-                incorporatedEntityInformation.companyNumber,
-                journeyId
-              )
-            )
+            val getServiceName = journeyService.getJourneyConfig(journeyId).map {
+              _.optServiceName.getOrElse(config.defaultServiceName)
+            }
+
+            getServiceName.map {
+              serviceName =>
+                Ok(
+                  view(
+                    serviceName,
+                    routes.CheckYourAnswersController.submit(journeyId),
+                    incorporatedEntityInformation.ctutr,
+                    incorporatedEntityInformation.companyNumber,
+                    journeyId
+                  )
+                )
+            }
           case None =>
             throw new InternalServerException("No data stored")
         }

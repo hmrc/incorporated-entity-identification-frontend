@@ -22,19 +22,28 @@ import org.jsoup.nodes.Document
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
+import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, CheckYourAnswers => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyNumber, testCtutr}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
 
 import scala.collection.JavaConverters._
+import scala.concurrent.Future
 
 
 trait CheckYourAnswersViewTests {
   this: AnyWordSpec with Matchers =>
 
-  def testCheckYourAnswersView(journeyId: String)(result: => WSResponse, stub: => StubMapping, authStub: => StubMapping): Unit = {
+  def testCheckYourAnswersView(journeyId: String)
+                              (result: => WSResponse,
+                               stub: => StubMapping,
+                               authStub: => StubMapping,
+                               insertJourneyConfig: => Future[WriteResult]): Unit = {
+
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       stub
       Jsoup.parse(result.body)
@@ -76,6 +85,23 @@ trait CheckYourAnswersViewTests {
       "have a continue and confirm button" in {
         doc.getSubmitButton.first.text mustBe Base.confirmAndContinue
       }
+    }
+
+  }
+
+  def testServiceName(serviceName: String,
+                      result: => WSResponse,
+                      authStub: => StubMapping,
+                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+
+    lazy val doc: Document = {
+      await(insertJourneyConfig)
+      authStub
+      Jsoup.parse(result.body)
+    }
+
+    "correctly display the service name" in {
+      doc.getServiceName.text mustBe serviceName
     }
 
   }

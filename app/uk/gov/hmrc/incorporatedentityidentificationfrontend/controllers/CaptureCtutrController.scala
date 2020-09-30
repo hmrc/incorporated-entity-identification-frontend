@@ -21,7 +21,7 @@ import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCtutrForm
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_ctutr_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -31,6 +31,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                                        view: capture_ctutr_page,
                                        incorporatedEntityInformationService: IncorporatedEntityInformationService,
+                                       journeyService: JourneyService,
                                        val authConnector: AuthConnector
                                       )(implicit val config: AppConfig,
                                         executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
@@ -38,9 +39,14 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(
-          Ok(view(routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
-        )
+        val getServiceName = journeyService.getJourneyConfig(journeyId).map {
+          _.optServiceName.getOrElse(config.defaultServiceName)
+        }
+
+        getServiceName.map {
+          serviceName =>
+            Ok(view(serviceName, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+        }
       }
   }
 
@@ -48,10 +54,16 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authorised() {
         CaptureCtutrForm.form.bindFromRequest().fold(
-          formWithErrors =>
-            Future.successful(
-              BadRequest(view(routes.CaptureCtutrController.submit(journeyId), formWithErrors))
-            ),
+          formWithErrors => {
+            val getServiceName = journeyService.getJourneyConfig(journeyId).map {
+              _.optServiceName.getOrElse(config.defaultServiceName)
+            }
+
+            getServiceName.map {
+              serviceName =>
+                BadRequest(view(serviceName, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
+            }
+          },
           ctutr =>
             incorporatedEntityInformationService.storeCtutr(journeyId, ctutr).map {
               _ => Redirect(routes.CheckYourAnswersController.show(journeyId))

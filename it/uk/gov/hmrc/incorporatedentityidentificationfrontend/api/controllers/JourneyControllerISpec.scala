@@ -34,7 +34,8 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
       val testJourneyConfig = JourneyConfig(
-        continueUrl = "/testContinueUrl"
+        continueUrl = "/testContinueUrl",
+        optServiceName = None
       )
 
       lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))
@@ -48,7 +49,8 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
       val testJourneyConfig = JourneyConfig(
-        continueUrl = "/testContinueUrl"
+        continueUrl = "/testContinueUrl",
+        optServiceName = None
       )
 
       lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))
