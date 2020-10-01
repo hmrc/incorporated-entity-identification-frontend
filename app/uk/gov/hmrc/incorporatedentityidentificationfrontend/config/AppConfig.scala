@@ -42,7 +42,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
 
   private lazy val backendUrl: String = servicesConfig.baseUrl("incorporated-entity-identification")
-  def incorporatedEntityInformationUrl(journeyId:String): String = s"$backendUrl/incorporated-entity-identification/journey/$journeyId"
+
+  def incorporatedEntityInformationUrl(journeyId: String): String = s"$backendUrl/incorporated-entity-identification/journey/$journeyId"
 
   def createJourneyUrl: String = s"$backendUrl/incorporated-entity-identification/journey"
 
@@ -59,5 +60,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val validateIncorporatedEntityDetailsUrl: String = s"$backendUrl/incorporated-entity-identification/validate-details"
 
   lazy val defaultServiceName: String = servicesConfig.getString("defaultServiceName")
+
+  lazy val timeToLiveSeconds: Long = servicesConfig.getString("mongodb.timeToLiveSeconds").toLong
 
 }
