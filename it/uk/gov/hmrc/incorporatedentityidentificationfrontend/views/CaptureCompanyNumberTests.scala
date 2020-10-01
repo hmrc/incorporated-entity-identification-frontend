@@ -22,14 +22,22 @@ import org.jsoup.nodes.Document
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
+import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, CaptureCompanyNumber => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
+
+import scala.concurrent.Future
 
 trait CaptureCompanyNumberTests {
   this: AnyWordSpec with Matchers =>
 
-  def testCaptureCompanyNumberView(result: => WSResponse, authStub: => StubMapping): Unit = {
+  def testCaptureCompanyNumberView(result: => WSResponse,
+                                   authStub: => StubMapping,
+                                   insertJourneyConfig: => Future[WriteResult]): Unit = {
+
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
     }
@@ -55,8 +63,11 @@ trait CaptureCompanyNumberTests {
     }
   }
 
-  def testCaptureCompanyNumberEmpty(result: => WSResponse, authStub: => StubMapping): Unit = {
+  def testCaptureCompanyNumberEmpty(result: => WSResponse,
+                                    authStub: => StubMapping,
+                                    insertJourneyConfig: => Future[WriteResult]): Unit = {
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
     }
@@ -70,8 +81,11 @@ trait CaptureCompanyNumberTests {
     }
   }
 
-  def testCaptureCompanyNumberWrongLength(result: => WSResponse, authStub: => StubMapping): Unit = {
+  def testCaptureCompanyNumberWrongLength(result: => WSResponse,
+                                          authStub: => StubMapping,
+                                          insertJourneyConfig: => Future[WriteResult]): Unit = {
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
     }
@@ -85,8 +99,11 @@ trait CaptureCompanyNumberTests {
     }
   }
 
-  def testCaptureCompanyNumberWrongFormat(result: => WSResponse, authStub: => StubMapping): Unit = {
+  def testCaptureCompanyNumberWrongFormat(result: => WSResponse,
+                                          authStub: => StubMapping,
+                                          insertJourneyConfig: => Future[WriteResult]): Unit = {
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
     }
@@ -100,5 +117,21 @@ trait CaptureCompanyNumberTests {
     }
   }
 
+  def testServiceName(serviceName: String,
+                      result: => WSResponse,
+                      authStub: => StubMapping,
+                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+
+    lazy val doc: Document = {
+      await(insertJourneyConfig)
+      authStub
+      Jsoup.parse(result.body)
+    }
+
+    "correctly display the service name" in {
+      doc.getServiceName.text mustBe serviceName
+    }
+
+  }
 
 }

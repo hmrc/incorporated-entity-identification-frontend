@@ -14,39 +14,37 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.errorSummary
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.inputText
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.{errorSummary, inputText}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
 
 
 @this(layout: govuk_template,
         govukFieldset: GovukFieldset,
-        govukInput: GovukInput,
-        govukDetails: GovukDetails,
         govukButton: GovukButton,
         formWithCSRF: FormWithCSRF,
         inputText: inputText,
         errorSummary: errorSummary
 )
 
-@(formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages)
+@(serviceName: String, formAction: Call, form: Form[JourneyConfig])(implicit request: Request[_], messages: Messages)
 
-@layout(title = title(messages("Enter the journey config"), form)) {
+@layout(serviceName, title(messages("Enter the journey config"), form)) {
     @errorSummary(form.errors)
 
-        @govukFieldset(Fieldset(
-            legend = Some(Legend(
-                content = Text("Enter the journey config"),
-                classes = "govuk-fieldset__legend--xl",
-                isPageHeading = true
-            )),
-            html = html
-        ))
+    @govukFieldset(Fieldset(
+        legend = Some(Legend(
+            content = Text("Enter the journey config"),
+            classes = "govuk-fieldset__legend--xl",
+            isPageHeading = true
+        )),
+        html = html
+    ))
 
-    }
+}
 
-    @html= {
+@html = {
     @formWithCSRF(action = formAction) {
 
         @inputText(
@@ -58,6 +56,15 @@
             classes = "govuk-input--width-10"
         )
 
+        @inputText(
+            form = form,
+            id = "serviceName",
+            name = "serviceName",
+            label = "Service Name",
+            isPageHeading = false,
+            classes = "govuk-input--width-20"
+        )
+
         @govukButton(Button(
             attributes = Map("id" -> "save-and-continue"),
             classes = "govuk-!-margin-right-1",
@@ -65,5 +72,4 @@
         ))
 
     }
-    }
-
+}

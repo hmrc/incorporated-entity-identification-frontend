@@ -23,9 +23,9 @@
         h1: h1,
         formWithCSRF: FormWithCSRF)
 
-@(formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages)
+@(serviceName: String, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages)
 
-@govukLayout(title = messages("ctutr-mismatch.title")) {
+@govukLayout(serviceName, messages("ctutr-mismatch.title")) {
 
     @h1(messages("ctutr-mismatch.heading"))
     <p class="govuk-body">@messages("ctutr-mismatch.paragraph")</p>

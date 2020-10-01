@@ -25,9 +25,9 @@
         govukSummaryList: GovukSummaryList,
         formWithCSRF: FormWithCSRF)
 
-@(formAction: Call, ctutr: String, companyNumber: String, journeyId: String)(implicit request: Request[_], messages: Messages)
+@(serviceName: String, formAction: Call, ctutr: String, companyNumber: String, journeyId: String)(implicit request: Request[_], messages: Messages)
 
-@layout(title = messages("check-your-answers.title")) {
+@layout(serviceName, messages("check-your-answers.title")) {
 
     @govukFieldset(Fieldset(
         legend = Some(Legend(

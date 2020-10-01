@@ -24,9 +24,9 @@
         h1: h1,
         formWithCSRF: FormWithCSRF)
 
-@(formAction: Call, companyName: String, journeyId: String)(implicit request: Request[_], messages: Messages)
+@(serviceName: String, formAction: Call, companyName: String, journeyId: String)(implicit request: Request[_], messages: Messages)
 
-@govukLayout(title = messages("confirm-business.title")) {
+@govukLayout(serviceName, messages("confirm-business.title")) {
 
     @h1(messages("confirm-business.heading"))
     <p class="govuk-body">@companyName</p>

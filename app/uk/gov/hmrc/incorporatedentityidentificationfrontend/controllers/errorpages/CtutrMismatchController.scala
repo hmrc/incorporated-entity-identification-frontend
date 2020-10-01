@@ -21,13 +21,15 @@ import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.errorpages.ctutr_mismatch_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CtutrMismatchController @Inject()(mcc: MessagesControllerComponents,
+class CtutrMismatchController @Inject()(journeyService: JourneyService,
+                                         mcc: MessagesControllerComponents,
                                         view: ctutr_mismatch_page,
                                         val authConnector: AuthConnector
                                        )(implicit val config: AppConfig,
@@ -36,7 +38,13 @@ class CtutrMismatchController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(Ok(view(routes.CtutrMismatchController.submit(journeyId), journeyId)))
+        val getServiceName = journeyService.getJourneyConfig(journeyId).map {
+          _.optServiceName.getOrElse(config.defaultServiceName)
+        }
+
+        getServiceName.map {
+          serviceName => Ok(view(serviceName, routes.CtutrMismatchController.submit(journeyId), journeyId))
+        }
       }
   }
 

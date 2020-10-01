@@ -29,9 +29,9 @@
         errorSummary: errorSummary
 )
 
-@(formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages)
+@(serviceName: String, formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages)
 
-@layout(title = title(messages("capture-ctutr.title"), form)) {
+@layout(serviceName, title(messages("capture-ctutr.title"), form)) {
 
     @errorSummary(form.errors)
 

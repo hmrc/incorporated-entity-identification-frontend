@@ -56,6 +56,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
       s"$incorporationInformationUrl/incorporation-information/$companyNumber/incorporated-company-profile"
   }
 
-
   lazy val validateIncorporatedEntityDetailsUrl: String = s"$backendUrl/incorporated-entity-identification/validate-details"
+
+  lazy val defaultServiceName: String = servicesConfig.getString("defaultServiceName")
+
 }

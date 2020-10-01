@@ -18,7 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class JourneyConfig(continueUrl: String)
+case class JourneyConfig(continueUrl: String, optServiceName: Option[String])
 
 object JourneyConfig {
   implicit val format: OFormat[JourneyConfig] = Json.format[JourneyConfig]

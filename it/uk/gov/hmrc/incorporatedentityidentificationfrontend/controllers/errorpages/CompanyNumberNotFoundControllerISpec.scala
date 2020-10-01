@@ -23,11 +23,19 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.AuthStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.errorpages.CompanyNumberNotFoundTests
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
+import scala.concurrent.ExecutionContext.Implicits.global
+
 
 class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with CompanyNumberNotFoundTests with AuthStub {
 
+  override def afterEach(): Unit = {
+    super.afterEach()
+    journeyConfigRepository.drop
+  }
+
   "GET /error/company-name-not-found" when {
     "return ok" in {
+      await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
       lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
@@ -35,11 +43,24 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
       result.status mustBe OK
     }
 
-    "return a view which" should {
-      lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
+    "return a view" when {
+      "there is no serviceName passed in the journeyConfig" should {
+        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
 
-      testCompanyNumberNotFoundView(result, authStub)
+        testCompanyNumberNotFoundView(result, authStub, insertConfig)
+        testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+      }
+
+      "there is a serviceName passed in the journeyConfig" should {
+        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
+        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
+
+        testCompanyNumberNotFoundView(result, authStub, insertConfig)
+        testServiceName(testCallingServiceName, result, authStub, insertConfig)
+      }
     }
   }
 

@@ -22,14 +22,22 @@ import org.jsoup.nodes.Document
 import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
+import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, CompanyNumberNotFound => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
+
+import scala.concurrent.Future
 
 trait CompanyNumberNotFoundTests {
   this: AnyWordSpec with Matchers =>
 
-  def testCompanyNumberNotFoundView(result: => WSResponse, authStub: => StubMapping): Unit = {
+  def testCompanyNumberNotFoundView(result: => WSResponse,
+                                    authStub: => StubMapping,
+                                    insertJourneyConfig: => Future[WriteResult]): Unit = {
+
     lazy val doc: Document = {
+      await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
     }
@@ -49,6 +57,23 @@ trait CompanyNumberNotFoundTests {
     "have a try again button" in {
       doc.getSubmitButton.first.text mustBe Base.tryAgain
     }
+  }
+
+  def testServiceName(serviceName: String,
+                      result: => WSResponse,
+                      authStub: => StubMapping,
+                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+
+    lazy val doc: Document = {
+      await(insertJourneyConfig)
+      authStub
+      Jsoup.parse(result.body)
+    }
+
+    "correctly display the service name" in {
+      doc.getServiceName.text mustBe serviceName
+    }
+
   }
 
 }

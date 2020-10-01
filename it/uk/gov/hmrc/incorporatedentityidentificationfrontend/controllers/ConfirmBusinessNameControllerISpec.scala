@@ -25,12 +25,25 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, Inc
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.ConfirmBusinessNameViewTests
 
-class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with ConfirmBusinessNameViewTests with IncorporatedEntityIdentificationStub with AuthStub {
+import scala.concurrent.ExecutionContext.Implicits.global
+
+
+class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
+  with ConfirmBusinessNameViewTests
+  with IncorporatedEntityIdentificationStub
+  with AuthStub {
+
+  override def afterEach(): Unit = {
+    super.afterEach()
+    journeyConfigRepository.drop
+  }
 
   "GET /confirm-business-name" when {
     "the company exists in Companies House" should {
       "return ok" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+
         val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
 
@@ -51,21 +64,39 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper with Confir
         }
       }
 
-      "return a view which" should {
-        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
-          status = OK,
-          body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
-        )
-        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
+      "return a view" when {
+        "there is no serviceName passed in the journeyConfig" should {
+          lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+            status = OK,
+            body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+          )
+          lazy val result = get(s"/$testJourneyId/confirm-business-name")
 
-        testConfirmBusinessNameView(result, stub, authStub, testCompanyName)
+          testConfirmBusinessNameView(result, stub, authStub, insertConfig, testCompanyName)
+          testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+        }
+
+        "there is a serviceName passed in the journeyConfig" should {
+          lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+            status = OK,
+            body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+          )
+          lazy val result = get(s"/$testJourneyId/confirm-business-name")
+
+          testConfirmBusinessNameView(result, stub, authStub, insertConfig, testCompanyName)
+          testServiceName(testCallingServiceName, result, authStub, insertConfig)
+        }
       }
     }
 
     "the company doesn't exist in the backend database" should {
       "show technical difficulties page" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
 
         lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
