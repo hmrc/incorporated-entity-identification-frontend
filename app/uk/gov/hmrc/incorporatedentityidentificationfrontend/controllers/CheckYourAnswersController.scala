@@ -68,7 +68,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
               incorporatedEntityInformation.ctutr).flatMap {
               case DetailsMatched =>
                 journeyService.getJourneyConfig(journeyId).map(
-                  journeyConfig => SeeOther(journeyConfig.continueUrl)
+                  journeyConfig => SeeOther(journeyConfig.continueUrl + s"?journeyId=$journeyId")
                 )
               case DetailsMismatch =>
                 Future.successful(Redirect(errorRoutes.CtutrMismatchController.show(journeyId)))
