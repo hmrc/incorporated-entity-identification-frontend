@@ -47,11 +47,11 @@ trait CaptureCompanyNumberTests {
     }
 
     "have the correct first line" in {
-      doc.getParagraphs.first.text mustBe messages.line_1 + " " + messages.linktext
+      doc.getParagraphs.first.text mustBe messages.line_1
     }
 
     "have the correct link" in {
-      doc.getLink("companies-house").text mustBe messages.linktext
+      doc.getLink("companiesHouse").text mustBe messages.link
     }
 
     "have a correct details hint" in {
