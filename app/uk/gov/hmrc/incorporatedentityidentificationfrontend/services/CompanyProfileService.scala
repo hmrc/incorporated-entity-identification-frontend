@@ -30,7 +30,7 @@ class CompanyProfileService @Inject()(storageConnector: IncorporatedEntityInform
   def retrieveAndStoreCompanyProfile(journeyId: String, companyNumber: String)(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
     companyProfileConnector.getCompanyProfile(companyNumber).flatMap {
       case Some(companyProfile) =>
-        storageConnector.storeData(journeyId, "company-profile", companyProfile).map {
+        storageConnector.storeData(journeyId, "companyProfile", companyProfile).map {
           _ => Some(companyProfile)
         }
       case None =>

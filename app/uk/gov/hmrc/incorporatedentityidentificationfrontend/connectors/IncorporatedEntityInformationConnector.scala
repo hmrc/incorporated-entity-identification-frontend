@@ -29,6 +29,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class IncorporatedEntityInformationConnector @Inject()(http: HttpClient,
                                                        appConfig: AppConfig
                                                       )(implicit ec: ExecutionContext) extends HttpReadsInstances {
+
   def retrieveIncorporatedEntityInformation[DataType](journeyId: String,
                                                       dataKey: String
                                                      )(implicit dataTypeReads: Reads[DataType],
@@ -36,10 +37,12 @@ class IncorporatedEntityInformationConnector @Inject()(http: HttpClient,
                                                        hc: HeaderCarrier): Future[Option[DataType]] =
     http.GET[Option[DataType]](s"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey")
 
-  def retrieveIncorporatedEntityInformation(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityInformation]] =
+  def retrieveIncorporatedEntityInformation(journeyId: String
+                                           )(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityInformation]] =
     http.GET[Option[IncorporatedEntityInformation]](appConfig.incorporatedEntityInformationUrl(journeyId))
 
-  def storeData[DataType](journeyId: String, dataKey: String, data: DataType)(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[StorageResult] = {
+  def storeData[DataType](journeyId: String, dataKey: String, data: DataType
+                         )(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[StorageResult] = {
     http.PUT[DataType, StorageResult](s"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey", data)
   }
 

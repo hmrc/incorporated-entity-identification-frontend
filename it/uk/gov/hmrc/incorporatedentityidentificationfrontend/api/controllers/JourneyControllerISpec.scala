@@ -20,7 +20,7 @@ import play.api.http.Status.CREATED
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, IncorporatedEntityInformation, JourneyConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
@@ -64,21 +64,32 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveIncorporatedEntityInformation(testJourneyId)(
           status = OK,
-          body = Json.toJsObject(IncorporatedEntityInformation(
-            companyNumber = testCompanyNumber,
-            companyName = testCompanyName,
-            ctutr = testCtutr,
-            dateOfIncorporation = testDateOfIncorporation
-          ))
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              CompanyProfile(
+                companyNumber = testCompanyNumber,
+                companyName = testCompanyName,
+                dateOfIncorporation = testDateOfIncorporation
+              ),
+              ctutr = testCtutr,
+              identifiersMatch = true
+            )
+          )
         )
 
         lazy val result = get(s"/api/journey/$testJourneyId")
 
         result.status mustBe OK
-        result.json mustBe Json.obj("ctutr" -> testCtutr,
-          "companyNumber" -> testCompanyNumber,
-          "companyName" -> testCompanyName,
-          "dateOfIncorporation" -> testDateOfIncorporation
+        result.json mustBe Json.toJsObject(
+          IncorporatedEntityInformation(
+            CompanyProfile(
+              companyNumber = testCompanyNumber,
+              companyName = testCompanyName,
+              dateOfIncorporation = testDateOfIncorporation
+            ),
+            ctutr = testCtutr,
+            identifiersMatch = true
+          )
         )
       }
     }

@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import play.api.libs.json.Json
+import play.api.libs.json.{JsString, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityInformation
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswersViewTests
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -43,17 +43,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     "return OK" in {
       await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      stubRetrieveIncorporatedEntityInformation(testJourneyId)(
-        status = OK,
-        body = Json.toJsObject(
-          IncorporatedEntityInformation(
-            companyNumber = testCompanyNumber,
-            companyName = testCompanyName,
-            ctutr = testCtutr,
-            dateOfIncorporation = testDateOfIncorporation
-          )
-        )
-      )
+      stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+      stubRetrieveCtutr(testJourneyId)(status = OK, body = JsString(testCtutr))
+
       lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
 
       result.status mustBe OK
@@ -63,17 +55,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "the user is UNAUTHORISED" in {
         await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
         stubAuthFailure()
-        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
-          status = OK,
-          body = Json.toJsObject(
-            IncorporatedEntityInformation(
-              companyNumber = testCompanyNumber,
-              companyName = testCompanyName,
-              ctutr = testCtutr,
-              dateOfIncorporation = testDateOfIncorporation
-            )
-          )
-        )
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCtutr(testJourneyId)(status = OK, body = JsString(testCtutr))
+
         lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
 
         result.status mustBe SEE_OTHER
@@ -84,40 +68,24 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "there is no serviceName passed in the journeyConfig" should {
         lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val stub = stubRetrieveIncorporatedEntityInformation(testJourneyId)(
-          status = OK,
-          body = Json.toJsObject(
-            IncorporatedEntityInformation(
-              companyNumber = testCompanyNumber,
-              companyName = testCompanyName,
-              ctutr = testCtutr,
-              dateOfIncorporation = testDateOfIncorporation
-            )
-          )
-        )
+        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = JsString(testCtutr))
+
         lazy val result = get(s"/$testJourneyId/check-your-answers-business")
 
-        testCheckYourAnswersView(testJourneyId)(result, stub, authStub, insertConfig)
+        testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig)
         testServiceName(testDefaultServiceName, result, authStub, insertConfig)
       }
 
       "there is a serviceName passed in the journeyConfig" should {
         lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val stub = stubRetrieveIncorporatedEntityInformation(testJourneyId)(
-          status = OK,
-          body = Json.toJsObject(
-            IncorporatedEntityInformation(
-              companyNumber = testCompanyNumber,
-              companyName = testCompanyName,
-              ctutr = testCtutr,
-              dateOfIncorporation = testDateOfIncorporation
-            )
-          )
-        )
+        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = JsString(testCtutr))
+
         lazy val result = get(s"/$testJourneyId/check-your-answers-business")
 
-        testCheckYourAnswersView(testJourneyId)(result, stub, authStub, insertConfig)
+        testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig)
         testServiceName(testCallingServiceName, result, authStub, insertConfig)
       }
     }
@@ -129,18 +97,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
-          status = OK,
-          body = Json.toJsObject(
-            IncorporatedEntityInformation(
-              companyNumber = testCompanyNumber,
-              companyName = testCompanyName,
-              ctutr = testCtutr,
-              dateOfIncorporation = testDateOfIncorporation
-            )
-          )
-        )
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCtutr(testJourneyId)(status = OK, body = JsString(testCtutr))
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
+        stubStoreIdentifiersMatch(testJourneyId)(status = OK)
 
         lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
 
@@ -152,19 +112,12 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     "the company details do not match" should {
       "redirect to ctutr mismatch page" in {
         await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
-          status = OK,
-          body = Json.toJsObject(
-            IncorporatedEntityInformation(
-              companyNumber = testCompanyNumber,
-              companyName = testCompanyName,
-              ctutr = testCtutr,
-              dateOfIncorporation = testDateOfIncorporation
-            )
-          )
-        )
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCtutr(testJourneyId)(status = OK, body = JsString(testCtutr))
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
+        stubStoreIdentifiersMatch(testJourneyId)(status = OK)
 
         lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
 
@@ -177,18 +130,11 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     "the company details do not exist" should {
       "throw an exception" in { //TODO - handle this in the case of entities without corporation tax
         await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
-          status = OK,
-          body = Json.toJsObject(
-            IncorporatedEntityInformation(
-              companyNumber = testCompanyNumber,
-              companyName = testCompanyName,
-              ctutr = testCtutr,
-              dateOfIncorporation = testDateOfIncorporation
-            )
-          )
-        )
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCtutr(testJourneyId)(status = OK, body = JsString(testCtutr))
+
         stubValidateIncorporatedEntityDetails(
           testCompanyNumber,
           testCtutr

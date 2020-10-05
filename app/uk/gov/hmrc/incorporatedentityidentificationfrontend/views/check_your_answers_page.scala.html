@@ -71,6 +71,7 @@
 
     @formWithCSRF(action = formAction) {
         @govukButton(Button(
+            attributes = Map("id" -> "confirm-and-continue"),
             classes = "govuk-!-margin-right-1",
             content = Text(messages("base.confirm_and_continue"))
         ))
