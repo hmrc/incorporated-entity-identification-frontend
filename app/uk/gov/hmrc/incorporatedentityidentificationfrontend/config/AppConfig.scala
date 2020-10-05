@@ -40,6 +40,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
   lazy val termsConditions: String = servicesConfig.getString("urls.footer.termsConditions")
   lazy val govukHelp: String = servicesConfig.getString("urls.footer.govukHelp")
+  lazy val companiesHouse: String = servicesConfig.getString("companies-house.url")
 
   private lazy val backendUrl: String = servicesConfig.baseUrl("incorporated-entity-identification")
 
