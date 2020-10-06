@@ -21,17 +21,17 @@ import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
-                                           incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
+                                           incorporatedEntityInformationService: IncorporatedEntityInformationService,
                                            validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService,
                                            mcc: MessagesControllerComponents,
                                            view: check_your_answers_page,
@@ -42,11 +42,16 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).flatMap {
-          case Some(incorporatedEntityInformation) =>
-            val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-              _.optServiceName.getOrElse(config.defaultServiceName)
-            }
+        val identifiers = for {
+          companyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
+          ctutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
+        } yield {
+          (companyProfile, ctutr)
+        }
+
+        identifiers.flatMap {
+          case (Some(companyProfile), Some(ctutr)) =>
+            val getServiceName = journeyService.getJourneyConfig(journeyId).map(_.optServiceName.getOrElse(config.defaultServiceName))
 
             getServiceName.map {
               serviceName =>
@@ -54,13 +59,13 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                   view(
                     serviceName,
                     routes.CheckYourAnswersController.submit(journeyId),
-                    incorporatedEntityInformation.ctutr,
-                    incorporatedEntityInformation.companyNumber,
+                    ctutr,
+                    companyProfile.companyNumber,
                     journeyId
                   )
                 )
             }
-          case None =>
+          case _ =>
             throw new InternalServerException("No data stored")
         }
       }
@@ -69,21 +74,31 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).flatMap {
-          case Some(incorporatedEntityInformation) =>
-            validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(
-              incorporatedEntityInformation.companyNumber,
-              incorporatedEntityInformation.ctutr).flatMap {
+        val identifiers = for {
+          companyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
+          ctutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
+        } yield {
+          (companyProfile, ctutr)
+        }
+
+        identifiers.flatMap {
+          case (Some(companyProfile), Some(ctutr)) =>
+            validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr).flatMap {
               case DetailsMatched =>
-                journeyService.getJourneyConfig(journeyId).map(
-                  journeyConfig => SeeOther(journeyConfig.continueUrl + s"?journeyId=$journeyId")
-                )
+                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true).flatMap {
+                  _ =>
+                    journeyService.getJourneyConfig(journeyId).map(
+                      journeyConfig => SeeOther(journeyConfig.continueUrl + s"?journeyId=$journeyId")
+                    )
+                }
               case DetailsMismatch =>
-                Future.successful(Redirect(errorRoutes.CtutrMismatchController.show(journeyId)))
+                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
+                  _ => Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
+                }
               case _ =>
                 throw new InternalServerException("Incorporated entity details not found")
             }
-          case None =>
+          case _ =>
             throw new InternalServerException("No data stored")
         }
       }

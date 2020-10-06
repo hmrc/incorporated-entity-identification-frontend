@@ -17,29 +17,42 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import javax.inject.{Inject, Singleton}
+import play.api.libs.json.{JsObject, JsString}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityInformationConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, IncorporatedEntityInformation, StorageResult}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService._
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEntityInformationConnector) {
+class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEntityInformationConnector
+                                                    )(implicit ec: ExecutionContext) {
+
+  def storeCompanyProfile(journeyId: String,
+                          companyProfile: CompanyProfile
+                         )(implicit hc: HeaderCarrier): Future[StorageResult] =
+    connector.storeData[CompanyProfile](journeyId, companyProfileKey, companyProfile)
+
+  def storeCtutr(journeyId: String,
+                 ctutr: String
+                )(implicit hc: HeaderCarrier): Future[StorageResult] =
+    connector.storeData[String](journeyId, ctutrKey, ctutr)
+
+  def storeIdentifiersMatch(journeyId: String,
+                            identifiersMatch: Boolean
+                           )(implicit hc: HeaderCarrier): Future[StorageResult] =
+    connector.storeData[Boolean](journeyId, identifiersMatchKey, identifiersMatch)
 
   def retrieveCompanyProfile(journeyId: String
                             )(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
     connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, companyProfileKey)
 
-  def storeCompanyProfile(journeyId: String,
-                          companyProfile: CompanyProfile
-                         )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData(journeyId, companyProfileKey, companyProfile)
-
-  def storeCtutr(journeyId: String,
-                 ctutr: String
-                )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData(journeyId, ctutrKey, ctutr)
+  def retrieveCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+    connector.retrieveIncorporatedEntityInformation[JsString](journeyId, ctutrKey).map {
+      case Some(jsString) => Some(jsString.value)
+      case None => None
+    }
 
   def retrieveIncorporatedEntityInformation(journeyId: String
                                            )(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityInformation]] =
@@ -47,6 +60,8 @@ class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEnti
 }
 
 object IncorporatedEntityInformationService {
-  val companyProfileKey: String = "company-profile"
+  val companyProfileKey: String = "companyProfile"
   val ctutrKey: String = "ctutr"
+  val companyNumberKey: String = "company_number"
+  val identifiersMatchKey: String = "identifiersMatch"
 }

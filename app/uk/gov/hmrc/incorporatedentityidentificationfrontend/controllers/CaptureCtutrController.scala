@@ -25,7 +25,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{Incorporat
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_ctutr_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,

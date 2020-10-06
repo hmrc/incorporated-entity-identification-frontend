@@ -26,7 +26,7 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
   def stubStoreCompanyProfile(journeyId: String, companyProfile: CompanyProfile)(status: Int): StubMapping =
     when(
       method = PUT,
-      uri = s"/incorporated-entity-identification/journey/$journeyId/company-profile",
+      uri = s"/incorporated-entity-identification/journey/$journeyId/companyProfile",
       body = Json.obj(
         "companyName" -> companyProfile.companyName,
         "companyNumber" -> companyProfile.companyNumber,
@@ -36,8 +36,29 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
         status = status
       )
 
+  def stubStoreCtutr(journeyId: String, ctutr: String)(status: Int): StubMapping =
+    when(method = PUT, uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr", body = JsString(ctutr))
+      .thenReturn(
+        status = status
+      )
+
+  def stubStoreIdentifiersMatch(journeyId: String)(status: Int): StubMapping = {
+    when(method = PUT, uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch")
+      .thenReturn(
+        status = status
+      )
+  }
+
+  def stubValidateIncorporatedEntityDetails(companyNumber: String, ctutr: String)(status: Int, body: JsObject = Json.obj()): StubMapping = {
+    when(method = POST, uri = s"/incorporated-entity-identification/validate-details", body = Json.obj("companyNumber" -> companyNumber, "ctutr" -> ctutr))
+      .thenReturn(
+        status = status,
+        body = body
+      )
+  }
+
   def stubRetrieveCompanyProfileFromBE(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = GET, uri = s"/incorporated-entity-identification/journey/$journeyId/company-profile")
+    when(method = GET, uri = s"/incorporated-entity-identification/journey/$journeyId/companyProfile")
       .thenReturn(
         status = status,
         body = body
@@ -50,18 +71,11 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
         body = body
       )
 
-  def stubStoreCtutr(journeyId: String, ctutr: String)(status: Int): StubMapping =
-    when(method = PUT, uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr", body = JsString(ctutr))
-      .thenReturn(
-        status = status
-      )
-
-  def stubValidateIncorporatedEntityDetails(companyNumber: String, ctutr: String)(status: Int, body: JsObject = Json.obj()): StubMapping = {
-    when(method = POST, uri = s"/incorporated-entity-identification/validate-details", body = Json.obj("companyNumber" -> companyNumber, "ctutr" -> ctutr))
+  def stubRetrieveCtutr(journeyId: String)(status: Int, body: JsString = JsString("")): StubMapping =
+    when(method = GET, uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr")
       .thenReturn(
         status = status,
         body = body
       )
-  }
 
 }

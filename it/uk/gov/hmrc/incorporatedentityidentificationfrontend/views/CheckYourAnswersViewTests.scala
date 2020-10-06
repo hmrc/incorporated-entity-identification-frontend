@@ -38,14 +38,16 @@ trait CheckYourAnswersViewTests {
 
   def testCheckYourAnswersView(journeyId: String)
                               (result: => WSResponse,
-                               stub: => StubMapping,
+                               companyNumberStub: => StubMapping,
+                               ctutrStub: => StubMapping,
                                authStub: => StubMapping,
                                insertJourneyConfig: => Future[WriteResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
-      stub
+      companyNumberStub
+      ctutrStub
       Jsoup.parse(result.body)
     }
 
