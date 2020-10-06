@@ -20,7 +20,7 @@ import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes.CaptureCompanyNumberController
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => controllerRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -38,7 +38,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         journeyService.createJourney(req.body).map(
           journeyId =>
             Created(Json.obj(
-              "journeyStartUrl" -> CaptureCompanyNumberController.show(journeyId).absoluteURL()
+              "journeyStartUrl" -> controllerRoutes.CaptureCompanyNumberController.show(journeyId).url
             ))
         )
       }
