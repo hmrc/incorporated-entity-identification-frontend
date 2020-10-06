@@ -23,6 +23,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
 
+  lazy val selfBaseUrl: String = servicesConfig.baseUrl("self")
 
   private lazy val contactBaseUrl: String = servicesConfig.baseUrl("contact-frontend")
 
