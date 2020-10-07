@@ -20,4 +20,6 @@ POST       /:journeyId/error/could-not-confirm-business                uk.gov.hm
 GET        /:journeyId/error/company-name-not-found                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.show(journeyId)
 POST       /:journeyId/error/company-name-not-found                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.submit(journeyId)
 
+GET        /:journeyId/business-verification-result                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureBusinessVerificationResultController.show(journeyId)
+
 ->         /govuk-frontend                                             govuk.Routes
