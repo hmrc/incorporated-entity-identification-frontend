@@ -22,13 +22,16 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.rout
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import play.api.http.Status._
 import play.api.mvc.{AnyContent, Request}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestCreateJourneyConnector @Inject()(httpClient: HttpClient)(implicit ec: ExecutionContext) {
+class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
+                                          appConfig: AppConfig
+                                          )(implicit ec: ExecutionContext) {
   def createJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[String] = {
-    val url = routes.JourneyController.createJourney().absoluteURL()
+    val url = appConfig.selfBaseUrl + routes.JourneyController.createJourney().url
 
     httpClient.POST(url, journeyConfig).map{
       case response @ HttpResponse(CREATED, _, _) =>
