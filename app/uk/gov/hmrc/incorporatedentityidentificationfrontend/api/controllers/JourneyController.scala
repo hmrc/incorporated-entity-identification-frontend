@@ -20,7 +20,6 @@ import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => controllerRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
@@ -31,8 +30,7 @@ import scala.concurrent.ExecutionContext
 class JourneyController @Inject()(controllerComponents: ControllerComponents,
                                   journeyService: JourneyService,
                                   incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
-                                  val authConnector: AuthConnector,
-                                  appConfig: AppConfig
+                                  val authConnector: AuthConnector
                                  )(implicit ec: ExecutionContext) extends BackendController(controllerComponents) with AuthorisedFunctions {
 
   def createJourney(): Action[JourneyConfig] = Action.async(parse.json[JourneyConfig]) {
@@ -41,7 +39,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         journeyService.createJourney(req.body).map(
           journeyId =>
             Created(Json.obj(
-              "journeyStartUrl" -> s"${appConfig.selfBaseUrl}${controllerRoutes.CaptureCompanyNumberController.show(journeyId).url}"
+              "journeyStartUrl" -> controllerRoutes.CaptureCompanyNumberController.show(journeyId).absoluteURL()
             ))
         )
       }
