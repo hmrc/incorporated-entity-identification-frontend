@@ -45,16 +45,15 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   private lazy val backendUrl: String = servicesConfig.baseUrl("incorporated-entity-identification")
 
+  private lazy val incorporationInformationUrl = servicesConfig.baseUrl("incorporation-information")
+
   def incorporatedEntityInformationUrl(journeyId: String): String = s"$backendUrl/incorporated-entity-identification/journey/$journeyId"
 
   def createJourneyUrl: String = s"$backendUrl/incorporated-entity-identification/journey"
 
   def getCompanyProfileUrl(companyNumber: String): String = {
-    val stubUrl = servicesConfig.getString("microservice.services.incorporation-information.stub-url")
-    val incorporationInformationUrl = servicesConfig.getString("microservice.services.incorporation-information.url")
-
     if (isEnabled(CompaniesHouseStub))
-      s"$stubUrl/$companyNumber/incorporated-company-profile"
+      s"$selfBaseUrl/incorporated-entity-identification/test-only/$companyNumber/incorporated-company-profile"
     else
       s"$incorporationInformationUrl/incorporation-information/$companyNumber/incorporated-company-profile"
   }

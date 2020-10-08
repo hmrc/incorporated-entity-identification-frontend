@@ -86,8 +86,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
       "retrieve companies house profile from the stub" when {
         "the company number is correct" should {
           "store companies house profile and redirect to the Confirm Business Name page" in {
-            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             enable(CompaniesHouseStub)
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             stubRetrieveCompanyProfileFromStub(testCompanyNumber)(
               status = OK,
               body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation)
