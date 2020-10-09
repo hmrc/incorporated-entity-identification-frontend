@@ -24,6 +24,7 @@ import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
 
   lazy val selfBaseUrl: String = servicesConfig.baseUrl("self")
+  lazy val selfUrl: String = servicesConfig.getString("microservice.services.self.url")
 
   private lazy val contactBaseUrl: String = servicesConfig.baseUrl("contact-frontend")
 
