@@ -24,7 +24,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.m
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq(CompaniesHouseStub)
+  val switches = Seq(CompaniesHouseStub, BusinessVerificationStub)
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
@@ -36,4 +36,9 @@ class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 case object CompaniesHouseStub extends FeatureSwitch {
   override val configName: String = "feature-switch.companies-house-stub"
   override val displayName: String = "Use stub for Companies House API"
+}
+
+case object BusinessVerificationStub extends FeatureSwitch {
+  override val configName: String = "feature-switch.business-verification-stub"
+  override val displayName: String = "Use stub for Business Verification flow"
 }

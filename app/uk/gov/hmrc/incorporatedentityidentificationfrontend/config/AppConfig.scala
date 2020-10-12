@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.config
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, CompaniesHouseStub, FeatureSwitching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
@@ -48,6 +48,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   private lazy val incorporationInformationUrl = servicesConfig.baseUrl("incorporation-information")
 
+  private lazy val businessVerificationUrl = servicesConfig.baseUrl("business-verification")
+
   def incorporatedEntityInformationUrl(journeyId: String): String = s"$backendUrl/incorporated-entity-identification/journey/$journeyId"
 
   def createJourneyUrl: String = s"$backendUrl/incorporated-entity-identification/journey"
@@ -57,6 +59,13 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
       s"$selfBaseUrl/incorporated-entity-identification/test-only/$companyNumber/incorporated-company-profile"
     else
       s"$incorporationInformationUrl/incorporation-information/$companyNumber/incorporated-company-profile"
+  }
+
+  lazy val getBusinessVerificationUrl: String = {
+    if (isEnabled(BusinessVerificationStub))
+      s"$selfBaseUrl/incorporated-entity-identification/test-only/verification-question/journey"
+    else
+      s"$businessVerificationUrl/verification-question/journey"
   }
 
   lazy val validateIncorporatedEntityDetailsUrl: String = s"$backendUrl/incorporated-entity-identification/validate-details"
