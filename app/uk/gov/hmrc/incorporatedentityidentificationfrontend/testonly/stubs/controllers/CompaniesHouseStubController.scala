@@ -16,8 +16,6 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers
 
-import java.time.LocalDate
-
 import javax.inject.Singleton
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, InjectedController}

@@ -58,4 +58,5 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         }
       }
   }
+
 }

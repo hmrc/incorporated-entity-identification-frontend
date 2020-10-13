@@ -26,7 +26,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.services._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_company_number_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.{ExecutionContext, Future}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyProfileService,

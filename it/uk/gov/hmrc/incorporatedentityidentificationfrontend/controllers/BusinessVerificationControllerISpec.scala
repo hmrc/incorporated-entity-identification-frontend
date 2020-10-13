@@ -18,39 +18,52 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testContinueUrl, testCtutr, testInternalId, testJourneyId}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
-class CaptureBusinessVerificationResultControllerISpec extends ComponentSpecHelper with AuthStub
+class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthStub
   with BusinessVerificationStub with IncorporatedEntityIdentificationStub {
 
   "GET /business-verification-result" should {
-    "return Ok" in {
+    "redirect to /journey/redirect/:journeyId" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
 
-      lazy val result = get("/business-verification-result")
+      lazy val result = get(s"/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 
-      result.status mustBe OK
+      result.status mustBe SEE_OTHER
+      result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+    }
+
+    "throw an exception when the query string is missing" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
+
+      lazy val result = get(s"/$testJourneyId/business-verification-result")
+
+      result.status mustBe INTERNAL_SERVER_ERROR
     }
   }
 
-  "POST /:journeyId/business-verification-result" should {
-    "redirect to returned redirectUri" in {
+  "GET /:journeyId/start-business-verification" should {
+    "redirect to business verification redirectUri" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
       stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
 
-      lazy val result = post(s"/$testJourneyId/business-verification-result")()
+      lazy val result = get(s"/$testJourneyId/start-business-verification")
 
       result.status mustBe SEE_OTHER
       result.header(LOCATION) mustBe Some(testContinueUrl)
     }
 
     "return Not Implemented" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
       stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(NOT_FOUND)
 
-      lazy val result = post(s"/$testJourneyId/business-verification-result")()
+      lazy val result = get(s"/$testJourneyId/start-business-verification")
 
       result.status mustBe NOT_IMPLEMENTED
     }

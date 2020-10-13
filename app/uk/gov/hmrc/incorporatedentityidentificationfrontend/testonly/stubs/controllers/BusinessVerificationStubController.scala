@@ -18,38 +18,36 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.cont
 
 import java.util.UUID
 
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
+import javax.inject.Singleton
+import play.api.libs.json.{JsValue, Json}
 import play.api.mvc.{Action, AnyContent, InjectedController}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
 
 import scala.concurrent.Future
 
 @Singleton
-class BusinessVerificationStubController @Inject()(appConfig: AppConfig) extends InjectedController {
+class BusinessVerificationStubController extends InjectedController {
 
   private val origin = "vat"
   private val businessVerificationJourneyId = UUID.randomUUID.toString
 
-  def createJourney(): Action[AnyContent] = Action.async {
-
-    val continueUrl: String = appConfig.selfUrl + appRoutes.CaptureBusinessVerificationResultController.show().url
+  def createBusinessVerificationJourney: Action[JsValue] = Action.async(parse.json) {
+    implicit request =>
+      val continueUrl: String = (request.body \ "continueUrl").as[String]
 
     Future.successful {
-      Ok(Json.obj(
-        "redirectUri" -> s"/verification-questions-frontend/journey/$businessVerificationJourneyId?continueUrl=$continueUrl&origin=$origin"
+      Created(Json.obj(
+        "redirectUri" -> (continueUrl + s"?journeyId=$businessVerificationJourneyId")
       ))
     }
   }
 
-  def retrieveVerificationResult(journeyId: String): Action[AnyContent] = Action.async {
+  def retrieveVerificationResult(businessVerificationJourneyId: String): Action[AnyContent] = Action.async {
     Future.successful {
       Ok(Json.obj(
           "journeyType" -> "BUSINESS_VERIFICATION",
           "origin" -> origin,
           "identifier" -> {
-            "ctUtr" -> "0123456789"
+            "ctUtr" -> "1234567890"
           },
           "verificationStatus" -> "PASS"
       ))
