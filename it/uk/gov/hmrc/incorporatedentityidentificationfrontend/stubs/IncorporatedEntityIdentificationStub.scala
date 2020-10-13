@@ -71,11 +71,11 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
         body = body
       )
 
-  def stubRetrieveCtutr(journeyId: String)(status: Int, body: JsString = JsString("")): StubMapping =
+  def stubRetrieveCtutr(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = GET, uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr")
       .thenReturn(
         status = status,
-        body = body
+        body = JsString(body)
       )
 
 }

@@ -32,9 +32,9 @@ class BusinessVerificationStubController @Inject()(appConfig: AppConfig) extends
   private val origin = "vat"
   private val businessVerificationJourneyId = UUID.randomUUID.toString
 
-  def createJourney(journeyId: String): Action[AnyContent] = Action.async {
+  def createJourney(): Action[AnyContent] = Action.async {
 
-    val continueUrl: String = appConfig.selfUrl + appRoutes.CaptureBusinessVerificationResultController.show(journeyId).url
+    val continueUrl: String = appConfig.selfUrl + appRoutes.CaptureBusinessVerificationResultController.show().url
 
     Future.successful {
       Ok(Json.obj(

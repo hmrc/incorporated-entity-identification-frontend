@@ -12,4 +12,4 @@ POST       /create-journey                                                      
 
 GET        /retrieve-journey/:journeyId                                                     uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveIncorporatedEntityInformation(journeyId)
 
-POST       /:journeyId/verification-question                                                uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers.BusinessVerificationStubController.createJourney(journeyId)
+POST       /verification-question/journey                                                uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers.BusinessVerificationStubController.createJourney()

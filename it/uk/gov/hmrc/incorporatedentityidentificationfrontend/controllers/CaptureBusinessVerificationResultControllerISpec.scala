@@ -16,20 +16,43 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import play.api.test.Helpers.OK
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{companyNumberKey, testInternalId, testJourneyId}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.AuthStub
+import play.api.libs.json.Json
+import play.api.test.Helpers._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCtutr, testInternalId, testJourneyId}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
-class CaptureBusinessVerificationResultControllerISpec extends ComponentSpecHelper with AuthStub {
+class CaptureBusinessVerificationResultControllerISpec extends ComponentSpecHelper with AuthStub
+  with BusinessVerificationStub with IncorporatedEntityIdentificationStub {
 
-  "GET /:journeyId/business-verification-result" should {
+  "GET /business-verification-result" should {
     "return Ok" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
-      lazy val result = get(s"/$testJourneyId/business-verification-result")
+      lazy val result = get(s"/business-verification-result")
 
-      result.status mustBe 200
+      result.status mustBe OK
     }
+  }
+
+  "POST /:journeyId/business-verification-result" should {
+    "redirect to returned redirectUri" in {
+      stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
+      stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(CREATED, Json.obj("redirectUri" -> "/test"))
+
+      lazy val result = post(s"/$testJourneyId/business-verification-result")()
+
+      result.status mustBe SEE_OTHER
+    }
+    "return Not Implemented" in {
+      stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
+      stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(NOT_FOUND)
+
+      lazy val result = post(s"/$testJourneyId/business-verification-result")()
+
+      result.status mustBe NOT_IMPLEMENTED
+    }
+
+
   }
 }
