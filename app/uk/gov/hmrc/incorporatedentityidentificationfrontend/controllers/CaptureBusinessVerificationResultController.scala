@@ -19,6 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{BusinessVerificationService, IncorporatedEntityInformationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -42,11 +43,13 @@ class CaptureBusinessVerificationResultController @Inject()(mcc: MessagesControl
     implicit req =>
       val ctutr = incorporatedEntityInformationService.retrieveCtutr(journeyId)
       ctutr.flatMap {
-        case (Some(ctutr)) =>
+        case Some(ctutr) =>
           businessVerificationService.createBusinessVerificationJourney(ctutr).map {
             case Some(redirectUri) => Redirect(redirectUri)
             case None => NotImplemented
           }
+        case None =>
+          throw new InternalServerException(s"There is no CTUTR for $journeyId")
       }
   }
 }

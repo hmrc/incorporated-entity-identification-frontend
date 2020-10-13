@@ -18,7 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.libs.json.Json
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCtutr, testInternalId, testJourneyId}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testContinueUrl, testCtutr, testInternalId, testJourneyId}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -29,7 +29,7 @@ class CaptureBusinessVerificationResultControllerISpec extends ComponentSpecHelp
     "return Ok" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
-      lazy val result = get(s"/business-verification-result")
+      lazy val result = get("/business-verification-result")
 
       result.status mustBe OK
     }
@@ -38,12 +38,14 @@ class CaptureBusinessVerificationResultControllerISpec extends ComponentSpecHelp
   "POST /:journeyId/business-verification-result" should {
     "redirect to returned redirectUri" in {
       stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-      stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(CREATED, Json.obj("redirectUri" -> "/test"))
+      stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
 
       lazy val result = post(s"/$testJourneyId/business-verification-result")()
 
       result.status mustBe SEE_OTHER
+      result.header(LOCATION) mustBe Some(testContinueUrl)
     }
+
     "return Not Implemented" in {
       stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
       stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(NOT_FOUND)
@@ -52,7 +54,5 @@ class CaptureBusinessVerificationResultControllerISpec extends ComponentSpecHelp
 
       result.status mustBe NOT_IMPLEMENTED
     }
-
-
   }
 }
