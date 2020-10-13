@@ -19,20 +19,34 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{BusinessVerificationService, IncorporatedEntityInformationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureBusinessVerificationResultController @Inject()(mcc: MessagesControllerComponents,
-                                                            val authConnector: AuthConnector
+                                                            val authConnector: AuthConnector,
+                                                            businessVerificationService: BusinessVerificationService,
+                                                            incorporatedEntityInformationService: IncorporatedEntityInformationService
                                                            )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
-  def show(journeyId: String): Action[AnyContent] = Action.async {
+  def show(): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
         Future.successful(Ok)
       }
   }
 
+  def startBusinessVerificationJourney(journeyId: String): Action[AnyContent] = Action.async {
+    implicit req =>
+      val ctutr = incorporatedEntityInformationService.retrieveCtutr(journeyId)
+      ctutr.flatMap {
+        case (Some(ctutr)) =>
+          businessVerificationService.createBusinessVerificationJourney(ctutr).map {
+            case Some(redirectUri) => Redirect(redirectUri)
+            case None => NotImplemented
+          }
+      }
+  }
 }

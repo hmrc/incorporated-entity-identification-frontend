@@ -1,25 +1,26 @@
 # microservice specific routes
 
-GET        /assets/*file                                               controllers.Assets.versioned(path="/public", file: Asset)
+GET         /assets/*file                                       controllers.Assets.versioned(path="/public", file: Asset)
 
-GET        /:journeyId/company-number                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCompanyNumberController.show(journeyId)
-POST       /:journeyId/company-number                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCompanyNumberController.submit(journeyId)
+GET         /:journeyId/company-number                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCompanyNumberController.show(journeyId)
+POST        /:journeyId/company-number                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCompanyNumberController.submit(journeyId)
 
-GET        /:journeyId/ct-utr                                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.show(journeyId)
-POST       /:journeyId/ct-utr                                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.submit(journeyId)
+GET         /:journeyId/ct-utr                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.show(journeyId)
+POST        /:journeyId/ct-utr                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.submit(journeyId)
 
-GET        /:journeyId/confirm-business-name                           uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.show(journeyId)
-POST       /:journeyId/confirm-business-name                           uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.submit(journeyId)
+GET         /:journeyId/confirm-business-name                   uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.show(journeyId)
+POST        /:journeyId/confirm-business-name                   uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.submit(journeyId)
 
-GET        /:journeyId/check-your-answers-business                     uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId)
-POST       /:journeyId/check-your-answers-business                     uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.submit(journeyId)
+GET         /:journeyId/check-your-answers-business             uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId)
+POST        /:journeyId/check-your-answers-business             uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.submit(journeyId)
 
-GET        /:journeyId/error/could-not-confirm-business                uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.show(journeyId)
-POST       /:journeyId/error/could-not-confirm-business                uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.submit(journeyId)
+GET         /:journeyId/error/could-not-confirm-business        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.show(journeyId)
+POST        /:journeyId/error/could-not-confirm-business        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.submit(journeyId)
 
-GET        /:journeyId/error/company-name-not-found                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.show(journeyId)
-POST       /:journeyId/error/company-name-not-found                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.submit(journeyId)
+GET         /:journeyId/error/company-name-not-found            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.show(journeyId)
+POST        /:journeyId/error/company-name-not-found            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.submit(journeyId)
 
-GET        /:journeyId/business-verification-result                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureBusinessVerificationResultController.show(journeyId)
+GET         /business-verification-result                       uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureBusinessVerificationResultController.show()
+POST        /:journeyId/business-verification-result            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureBusinessVerificationResultController.startBusinessVerificationJourney(journeyId)
 
-->         /govuk-frontend                                             govuk.Routes
+->          /govuk-frontend                                     govuk.Routes
