@@ -43,5 +43,18 @@ class BusinessVerificationStubController @Inject()(appConfig: AppConfig) extends
     }
   }
 
+  def retrieveVerificationResult(journeyId: String): Action[AnyContent] = Action.async {
+    Future.successful {
+      Ok(Json.obj(
+          "journeyType" -> "BUSINESS_VERIFICATION",
+          "origin" -> origin,
+          "identifier" -> {
+            "ctUtr" -> "0123456789"
+          },
+          "verificationStatus" -> "PASS"
+      ))
+    }
+  }
+
 }
 
