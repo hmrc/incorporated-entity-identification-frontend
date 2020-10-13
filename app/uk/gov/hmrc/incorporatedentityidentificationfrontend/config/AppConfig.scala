@@ -68,6 +68,13 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
       s"$businessVerificationUrl/verification-question/journey"
   }
 
+  def getBusinessVerificationResultUrl(journeyId: String): String = {
+    if (isEnabled(BusinessVerificationStub))
+      s"$selfBaseUrl/incorporated-entity-identification/test-only/verification-question/journey/$journeyId/status"
+    else
+      s"$businessVerificationUrl/verification-question/journey/$journeyId/status"
+  }
+
   lazy val validateIncorporatedEntityDetailsUrl: String = s"$backendUrl/incorporated-entity-identification/validate-details"
 
   lazy val defaultServiceName: String = servicesConfig.getString("defaultServiceName")
