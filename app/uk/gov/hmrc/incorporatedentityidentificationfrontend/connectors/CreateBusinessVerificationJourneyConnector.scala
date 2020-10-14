@@ -21,34 +21,41 @@ import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json, Writes}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.BusinessVerificationConnector.BusinessVerificationHttpReads
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CreateBusinessVerificationJourneyConnector.BusinessVerificationHttpReads
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class BusinessVerificationConnector @Inject()(http: HttpClient, appConfig: AppConfig)
-                                             (implicit ec: ExecutionContext) {
+class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
+                                                           appConfig: AppConfig)
+                                                          (implicit ec: ExecutionContext) {
 
-  def createBusinessVerificationJourney(ctutr: String)(implicit hc: HeaderCarrier): Future[Option[String]] = {
+  def createBusinessVerificationJourney(journeyId: String,
+                                        ctutr: String
+                                       )(implicit hc: HeaderCarrier): Future[Option[String]] = {
+
     val jsonBody: JsObject =
       Json.obj(
         "journeyType" -> "BUSINESS_VERIFICATION",
         "origin" -> "vat",
-        "identifiers" -> Json.obj("ctUtr" -> ctutr),
-        "continueUrl" -> routes.CaptureBusinessVerificationResultController.show().url
+        "identifiers" -> Json.obj(
+          "ctUtr" -> ctutr
+        ),
+        "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url
       )
-    http.POST[JsObject, Option[String]](appConfig.getBusinessVerificationUrl, jsonBody)(
+
+    http.POST[JsObject, Option[String]](appConfig.createBusinessVerificationJourneyUrl, jsonBody)(
       implicitly[Writes[JsObject]],
       BusinessVerificationHttpReads,
       hc,
       ec
     )
   }
+
 }
 
-object BusinessVerificationConnector {
-
+object CreateBusinessVerificationJourneyConnector {
   implicit object BusinessVerificationHttpReads extends HttpReads[Option[String]] {
     override def read(method: String, url: String, response: HttpResponse): Option[String] = {
       response.status match {

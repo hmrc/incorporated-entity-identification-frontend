@@ -86,7 +86,8 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr).flatMap {
               case DetailsMatched =>
                 incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true).map {
-                  _ => Redirect(routes.CaptureBusinessVerificationResultController.startBusinessVerificationJourney(journeyId))
+                  result =>
+                    Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
                 }
               case DetailsMismatch =>
                 incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {

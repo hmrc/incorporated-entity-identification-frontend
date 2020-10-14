@@ -30,7 +30,7 @@ import scala.concurrent.{ExecutionContext, Future}
 class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
                                           appConfig: AppConfig
                                           )(implicit ec: ExecutionContext) {
-  def createJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier, request: Request[AnyContent]): Future[String] = {
+  def createJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
     val url = appConfig.selfBaseUrl + routes.JourneyController.createJourney().url
 
     httpClient.POST(url, journeyConfig).map{

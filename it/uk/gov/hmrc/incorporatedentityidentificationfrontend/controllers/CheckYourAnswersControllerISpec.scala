@@ -107,7 +107,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe SEE_OTHER
-        result.header(LOCATION) mustBe Some(s"/incorporated-entity-identification/TestJourneyId/business-verification-result")
+        result.header(LOCATION) mustBe Some(routes.BusinessVerificationController.startBusinessVerificationJourney(testJourneyId).url)
       }
     }
 

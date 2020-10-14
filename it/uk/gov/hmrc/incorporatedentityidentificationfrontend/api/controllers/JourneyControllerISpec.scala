@@ -44,6 +44,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
       await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testJourneyConfig)
     }
+
     "return See Other" in {
       stubAuthFailure()
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
@@ -58,6 +59,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
       result.status mustBe SEE_OTHER
     }
   }
+
   "GET /api/journey/:journeyId" should {
     "return captured data" when {
       "the journeyId exists" in {
@@ -93,6 +95,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         )
       }
     }
+
     "return not found" when {
       "the journey Id does not exist" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -105,6 +108,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         result.status mustBe NOT_FOUND
       }
     }
+
     "return See Other" in {
       stubAuthFailure()
       stubRetrieveIncorporatedEntityInformation(testJourneyId)(
