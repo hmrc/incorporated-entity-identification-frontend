@@ -3,6 +3,8 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 import java.time.LocalDate
 import java.util.UUID
 
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BvPass
+
 
 
 object TestConstants {
@@ -22,5 +24,5 @@ object TestConstants {
   val testDefaultServiceName = "Entity Validation Service"
   val testCallingServiceName = "Test Service"
   val testContinueUrl = "/test"
-
+  val testPassStatus = BvPass
 }

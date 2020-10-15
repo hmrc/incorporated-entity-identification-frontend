@@ -20,10 +20,10 @@ import play.api.http.Status.CREATED
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, IncorporatedEntityInformation, JourneyConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerification, CompanyProfile, IncorporatedEntityInformation, JourneyConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -74,10 +74,14 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
                 dateOfIncorporation = testDateOfIncorporation
               ),
               ctutr = testCtutr,
-              identifiersMatch = true
+              identifiersMatch = true,
+              BusinessVerification(
+                verificationStatus = testPassStatus
+              )
             )
           )
         )
+
 
         lazy val result = get(s"/api/journey/$testJourneyId")
 
@@ -90,7 +94,10 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
               dateOfIncorporation = testDateOfIncorporation
             ),
             ctutr = testCtutr,
-            identifiersMatch = true
+            identifiersMatch = true,
+            BusinessVerification(
+              verificationStatus = testPassStatus
+            )
           )
         )
       }
