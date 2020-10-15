@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerification, CompanyProfile, IncorporatedEntityInformation, JourneyConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, IncorporatedEntityInformation, JourneyConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -75,9 +75,8 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
               ),
               ctutr = testCtutr,
               identifiersMatch = true,
-              BusinessVerification(
-                verificationStatus = testPassStatus
-              )
+              businessVerification = testPassStatus,
+              registration = testSuccessfulRegistration
             )
           )
         )
@@ -95,9 +94,8 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
             ),
             ctutr = testCtutr,
             identifiersMatch = true,
-            BusinessVerification(
-              verificationStatus = testPassStatus
-            )
+            businessVerification = testPassStatus,
+            registration = testSuccessfulRegistration
           )
         )
       }

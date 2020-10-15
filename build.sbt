@@ -11,7 +11,7 @@ lazy val microservice = Project(appName, file("."))
   .settings(
     majorVersion := 0,
     scalaVersion := "2.12.11",
-    libraryDependencies ++= AppDependencies.compile ++ AppDependencies.it,
+    libraryDependencies ++= AppDependencies.apply(),
     // ***************
     // Use the silencer plugin to suppress warnings
     // You may turn it on for `views` too to suppress warnings from unused imports in compiled twirl templates, but this will hide other warnings.

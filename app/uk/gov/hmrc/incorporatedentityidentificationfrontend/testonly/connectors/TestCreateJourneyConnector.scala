@@ -21,7 +21,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import play.api.http.Status._
-import play.api.mvc.{AnyContent, Request}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 
 import scala.concurrent.{ExecutionContext, Future}

@@ -20,37 +20,35 @@ import javax.inject.Inject
 import play.api.http.Status.OK
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RetrieveBusinessVerificationResultParser._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationState
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RetrieveBusinessVerificationStatusParser.RetrieveBusinessVerificationStatusHttpReads
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus
 
 import scala.concurrent.{ExecutionContext, Future}
 
-class RetrieveBusinessVerificationResultConnector @Inject()(http: HttpClient,
+class RetrieveBusinessVerificationStatusConnector @Inject()(http: HttpClient,
                                                             appConfig: AppConfig
                                                            )(implicit ec: ExecutionContext) {
 
-  def getBusinessVerificationResult(journeyId: String)(implicit hc: HeaderCarrier): Future[BusinessVerificationState] =
-    http.GET[BusinessVerificationState](appConfig.getBusinessVerificationResultUrl(journeyId))(
-      RetrieveBusinessVerificationResultHttpReads,
+  def retrieveBusinessVerificationStatus(journeyId: String)(implicit hc: HeaderCarrier): Future[BusinessVerificationStatus] =
+    http.GET[BusinessVerificationStatus](appConfig.getBusinessVerificationResultUrl(journeyId))(
+      RetrieveBusinessVerificationStatusHttpReads,
       hc,
       ec
     )
 
 }
 
-object RetrieveBusinessVerificationResultParser {
+object RetrieveBusinessVerificationStatusParser {
 
-  implicit object RetrieveBusinessVerificationResultHttpReads extends HttpReads[BusinessVerificationState] {
-
-    override def read(method: String, url: String, response: HttpResponse): BusinessVerificationState = {
+  implicit object RetrieveBusinessVerificationStatusHttpReads extends HttpReads[BusinessVerificationStatus] {
+    override def read(method: String, url: String, response: HttpResponse): BusinessVerificationStatus = {
       response.status match {
         case OK =>
-          (response.json \ "verificationStatus").as[BusinessVerificationState]
+          (response.json \ "verificationStatus").as[BusinessVerificationStatus]
         case _ =>
           throw new InternalServerException("Invalid response returned from retrieve Business Verification result")
       }
     }
-
   }
 
 }
