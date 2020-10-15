@@ -18,7 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsObject, JsString, Json}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerification, CompanyProfile}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethods
 
 trait IncorporatedEntityIdentificationStub extends WireMockMethods {
@@ -31,6 +31,17 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
         "companyName" -> companyProfile.companyName,
         "companyNumber" -> companyProfile.companyNumber,
         "dateOfIncorporation" -> companyProfile.dateOfIncorporation
+      ))
+      .thenReturn(
+        status = status
+      )
+
+  def stubstoreBusinessVerificationStatus(journeyId: String, businessVerification: BusinessVerification)(status: Int): StubMapping =
+    when(
+      method = PUT,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/businessVerification",
+      body = Json.obj(
+        "verificationStatus" -> businessVerification.verificationStatus
       ))
       .thenReturn(
         status = status

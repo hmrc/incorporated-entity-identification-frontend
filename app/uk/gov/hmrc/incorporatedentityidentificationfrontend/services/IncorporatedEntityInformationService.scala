@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.JsString
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityInformationConnector
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, IncorporatedEntityInformation, StorageResult}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerification, CompanyProfile, IncorporatedEntityInformation, StorageResult}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -38,6 +38,12 @@ class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEnti
                  ctutr: String
                 )(implicit hc: HeaderCarrier): Future[StorageResult] =
     connector.storeData[String](journeyId, ctutrKey, ctutr)
+
+  def storeBusinessVerificationStatus(journeyId: String,
+                                      businessVerification: BusinessVerification
+                                     )(implicit hc: HeaderCarrier): Future[StorageResult] =
+    connector.storeData[BusinessVerification](journeyId, businessVerificationKey, businessVerification)
+
 
   def storeIdentifiersMatch(journeyId: String,
                             identifiersMatch: Boolean
@@ -64,4 +70,5 @@ object IncorporatedEntityInformationService {
   val ctutrKey: String = "ctutr"
   val companyNumberKey: String = "company_number"
   val identifiersMatchKey: String = "identifiersMatch"
+  val businessVerificationKey: String = "businessVerification"
 }
