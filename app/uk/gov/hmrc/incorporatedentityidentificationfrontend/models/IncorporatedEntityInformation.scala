@@ -21,7 +21,8 @@ import play.api.libs.json._
 
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
                                          ctutr: String,
-                                         identifiersMatch: Boolean)
+                                         identifiersMatch: Boolean,
+                                         businessVerification: BusinessVerification)
 
 object IncorporatedEntityInformation {
 

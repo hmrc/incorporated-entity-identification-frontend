@@ -48,13 +48,10 @@ case object BusinessVerificationState {
 
 }
 
-
 case class BusinessVerification(verificationStatus: BusinessVerificationState)
 
 object BusinessVerification {
   implicit val format: OFormat[BusinessVerification] = Json.format[BusinessVerification]
 }
-
-
 
 
