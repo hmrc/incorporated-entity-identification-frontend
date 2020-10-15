@@ -19,6 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerification, BvPass}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -26,9 +27,10 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
   with BusinessVerificationStub with IncorporatedEntityIdentificationStub {
 
   "GET /business-verification-result" should {
-    "redirect to /journey/redirect/:journeyId" in {
+    "redirect to /journey/redirect/:journeyId if BV status is stored successfully" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
+      stubstoreBusinessVerificationStatus(journeyId = testJourneyId,businessVerification = BusinessVerification(BvPass) )(status=OK)
 
       lazy val result = get(s"/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 
