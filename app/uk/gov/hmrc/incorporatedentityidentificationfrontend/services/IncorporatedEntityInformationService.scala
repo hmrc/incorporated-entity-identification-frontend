@@ -68,7 +68,6 @@ class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEnti
 object IncorporatedEntityInformationService {
   val companyProfileKey: String = "companyProfile"
   val ctutrKey: String = "ctutr"
-  val companyNumberKey: String = "company_number"
   val identifiersMatchKey: String = "identifiersMatch"
   val businessVerificationKey: String = "businessVerification"
 }

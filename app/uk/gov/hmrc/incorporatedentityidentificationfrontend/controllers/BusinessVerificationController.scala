@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerification
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerification, BusinessVerificationState}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{BusinessVerificationService, IncorporatedEntityInformationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -58,10 +58,11 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
         optBusinessVerificationJourneyId match {
           case Some(businessVerificationJourneyId) =>
             businessVerificationService.retrieveBusinessVerificationResult(businessVerificationJourneyId).flatMap {
-              verificationStatus: String => {
-                incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId,BusinessVerification(verificationStatus)).map {
-                  _ => Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-            }}}
+              verificationStatus  =>
+                  incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId,BusinessVerification(verificationStatus)).map {
+                                  _ => Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))}
+
+            }
           case None =>
             throw new InternalServerException("Missing JourneyID from Business Verification callback")
         }

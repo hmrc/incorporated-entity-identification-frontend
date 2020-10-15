@@ -16,9 +16,40 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
-import play.api.libs.json.{Json, OFormat}
+import play.api.libs.json.{Format, JsResult, JsString, JsValue, Json, OFormat}
 
-case class BusinessVerification(verificationStatus: String)
+sealed trait BusinessVerificationState
+
+case object BvPass extends BusinessVerificationState
+case object BvFail extends BusinessVerificationState
+case object BvUnchallenged extends BusinessVerificationState
+
+case object BusinessVerificationState {
+  val BvPassKey = "PASS"
+  val BvFailKey = "FAIL"
+  val BvUnchallengedKey = "UNCHALLENGED"
+
+
+  implicit val businessVerificationStateFormat: Format[BusinessVerificationState] = new Format[BusinessVerificationState] {
+    override def writes(bvState: BusinessVerificationState): JsValue = bvState match {
+      case BvPass => JsString(BvPassKey)
+      case BvFail => JsString(BvFailKey)
+      case BvUnchallenged => JsString(BvUnchallengedKey)
+    }
+
+    override def reads(json: JsValue): JsResult[BusinessVerificationState] =
+      json.validate[String] map {
+        case BvPassKey => BvPass
+        case BvFailKey => BvFail
+        case BvUnchallengedKey => BvUnchallenged
+      }
+  }
+
+
+}
+
+
+case class BusinessVerification(verificationStatus: BusinessVerificationState)
 
 object BusinessVerification {
   implicit val format: OFormat[BusinessVerification] = Json.format[BusinessVerification]
