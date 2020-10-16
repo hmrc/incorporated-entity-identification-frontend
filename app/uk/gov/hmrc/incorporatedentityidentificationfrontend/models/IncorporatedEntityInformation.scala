@@ -22,10 +22,41 @@ import play.api.libs.json._
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
                                          ctutr: String,
                                          identifiersMatch: Boolean,
-                                         businessVerification: BusinessVerification)
+                                         businessVerification: BusinessVerificationStatus,
+                                         registration: RegistrationStatus
+                                        )
 
 object IncorporatedEntityInformation {
 
-  implicit val format: OFormat[IncorporatedEntityInformation] = Json.format[IncorporatedEntityInformation]
+  val companyProfileKey = "companyProfile"
+  val ctutrKey = "ctutr"
+  val identifiersMatchKey = "identifiersMatch"
+  val businessVerificationKey = "businessVerification"
+  val verificationStatusKey = "verificationStatus"
+  val registrationKey = "registration"
+
+  implicit val format: OFormat[IncorporatedEntityInformation] = new OFormat[IncorporatedEntityInformation] {
+    override def reads(json: JsValue): JsResult[IncorporatedEntityInformation] =
+      for {
+        companyProfile <- (json \ companyProfileKey).validate[CompanyProfile]
+        ctutr <- (json \ ctutrKey).validate[String]
+        identifiersMatch <- (json \ identifiersMatchKey).validate[Boolean]
+        businessVerification <- (json \ businessVerificationKey \ verificationStatusKey).validate[BusinessVerificationStatus]
+        registrationStatus <- (json \ registrationKey).validate[RegistrationStatus]
+      } yield {
+        IncorporatedEntityInformation(companyProfile, ctutr, identifiersMatch, businessVerification, registrationStatus)
+      }
+
+    override def writes(incorporatedEntityInformation: IncorporatedEntityInformation): JsObject =
+      Json.obj(
+        companyProfileKey -> incorporatedEntityInformation.companyProfile,
+        ctutrKey -> incorporatedEntityInformation.ctutr,
+        identifiersMatchKey -> incorporatedEntityInformation.identifiersMatch,
+        businessVerificationKey -> Json.obj(
+          verificationStatusKey -> incorporatedEntityInformation.businessVerification
+        ),
+        registrationKey -> incorporatedEntityInformation.registration
+      )
+  }
 
 }

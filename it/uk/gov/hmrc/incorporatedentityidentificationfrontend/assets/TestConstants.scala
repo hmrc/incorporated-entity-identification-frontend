@@ -3,7 +3,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 import java.time.LocalDate
 import java.util.UUID
 
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BvPass
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BvPass, Registered}
 
 
 
@@ -25,4 +25,6 @@ object TestConstants {
   val testCallingServiceName = "Test Service"
   val testContinueUrl = "/test"
   val testPassStatus = BvPass
+  val testSafeId = UUID.randomUUID().toString
+  val testSuccessfulRegistration = Registered(testSafeId)
 }

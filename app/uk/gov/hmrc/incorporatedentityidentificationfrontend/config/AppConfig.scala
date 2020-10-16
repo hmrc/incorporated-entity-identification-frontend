@@ -54,6 +54,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   def createJourneyUrl: String = s"$backendUrl/incorporated-entity-identification/journey"
 
+  def registerUrl: String = s"$backendUrl/incorporated-entity-identification/register"
+
   def getCompanyProfileUrl(companyNumber: String): String = {
     if (isEnabled(CompaniesHouseStub))
       s"$selfBaseUrl/incorporated-entity-identification/test-only/$companyNumber/incorporated-company-profile"
