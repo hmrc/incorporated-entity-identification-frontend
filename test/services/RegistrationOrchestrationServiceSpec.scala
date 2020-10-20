@@ -21,7 +21,7 @@ import helpers.TestConstants._
 import play.api.test.Helpers._
 import services.mocks.MockIncorporationEntityInformationService
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.SuccessfullyStored
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed, RegistrationNotCalled, SuccessfullyStored}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.RegistrationOrchestrationService
 import utils.UnitSpec
 
@@ -43,52 +43,58 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockIncorporati
         mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
         mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
-        mockRegister(testCompanyNumber, testCtutr)(Future.successful(testSuccessfulRegistrationStatus))
-        mockStoreRegistrationResponse(testJourneyId, testSuccessfulRegistrationStatus)(Future.successful(SuccessfullyStored))
+        mockRegister(testCompanyNumber, testCtutr)(Future.successful(Registered(testSafeId)))
+        mockStoreRegistrationResponse(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
         await(TestService.register(testJourneyId)) mustBe {
-          ()
+          Registered(testSafeId)
         }
         verifyRegistration(testCompanyNumber, testCtutr)
-        verifyStoreRegistrationResponse(testJourneyId, testSuccessfulRegistrationStatus)
+        verifyStoreRegistrationResponse(testJourneyId, Registered(testSafeId))
       }
 
       "when the business entity is verified but fails to register" in {
         mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
         mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
-        mockRegister(testCompanyNumber, testCtutr)(Future.successful(testFailedRegistrationStatus))
-        mockStoreRegistrationResponse(testJourneyId, testFailedRegistrationStatus)(Future.successful(SuccessfullyStored))
+        mockRegister(testCompanyNumber, testCtutr)(Future.successful(RegistrationFailed))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationFailed)(Future.successful(SuccessfullyStored))
 
         await(TestService.register(testJourneyId)) mustBe {
-          ()
+          RegistrationFailed
         }
         verifyRegistration(testCompanyNumber, testCtutr)
-        verifyStoreRegistrationResponse(testJourneyId, testFailedRegistrationStatus)
+        verifyStoreRegistrationResponse(testJourneyId, RegistrationFailed)
       }
     }
 
-    "throw an Internal Server Exception" when {
+    "store a registration state of registration not called" when {
       "the business entity did not pass verification" in {
         mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
         mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testFailedBusinessVerificationStatus)))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
-        intercept[InternalServerException](
-          await(TestService.register(testJourneyId))
-        )
+        await(TestService.register(testJourneyId)) mustBe {
+          RegistrationNotCalled
+        }
+        verifyStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)
       }
 
       "the business entity was not challenged to verify" in {
         mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
         mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testUnchallengedBusinessVerificationStatus)))
+        mockStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
-        intercept[InternalServerException](
-          await(TestService.register(testJourneyId))
-        )
+        await(TestService.register(testJourneyId)) mustBe {
+          RegistrationNotCalled
+        }
+        verifyStoreRegistrationResponse(testJourneyId, RegistrationNotCalled)
       }
+    }
 
+    "throw an Internal Server Exception" when {
       "there is no ctutr in the database" in {
         mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
         mockRetrieveCtutr(testJourneyId)(Future.successful(None))

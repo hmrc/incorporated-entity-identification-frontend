@@ -19,7 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BvPass
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationPass
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -27,15 +27,15 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
   with BusinessVerificationStub with IncorporatedEntityIdentificationStub {
 
   "GET /business-verification-result" should {
-    "redirect to /journey/redirect/:journeyId if BV status is stored successfully" in {
+    "redirect to /:journeyId/register if BV status is stored successfully" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
-      stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BvPass)(status = OK)
+      stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
 
       lazy val result = get(s"/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 
       result.status mustBe SEE_OTHER
-      result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+      result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
     }
 
     "throw an exception when the query string is missing" in {

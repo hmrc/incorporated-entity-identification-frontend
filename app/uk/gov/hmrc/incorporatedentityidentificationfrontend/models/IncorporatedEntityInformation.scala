@@ -41,7 +41,7 @@ object IncorporatedEntityInformation {
         companyProfile <- (json \ companyProfileKey).validate[CompanyProfile]
         ctutr <- (json \ ctutrKey).validate[String]
         identifiersMatch <- (json \ identifiersMatchKey).validate[Boolean]
-        businessVerification <- (json \ businessVerificationKey \ verificationStatusKey).validate[BusinessVerificationStatus]
+        businessVerification <- (json \ businessVerificationKey).validate[BusinessVerificationStatus]
         registrationStatus <- (json \ registrationKey).validate[RegistrationStatus]
       } yield {
         IncorporatedEntityInformation(companyProfile, ctutr, identifiersMatch, businessVerification, registrationStatus)
@@ -52,9 +52,7 @@ object IncorporatedEntityInformation {
         companyProfileKey -> incorporatedEntityInformation.companyProfile,
         ctutrKey -> incorporatedEntityInformation.ctutr,
         identifiersMatchKey -> incorporatedEntityInformation.identifiersMatch,
-        businessVerificationKey -> Json.obj(
-          verificationStatusKey -> incorporatedEntityInformation.businessVerification
-        ),
+        businessVerificationKey -> incorporatedEntityInformation.businessVerification,
         registrationKey -> incorporatedEntityInformation.registration
       )
   }

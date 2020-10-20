@@ -59,7 +59,7 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
             businessVerificationService.retrieveBusinessVerificationStatus(businessVerificationJourneyId).flatMap {
               verificationStatus =>
                 incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, verificationStatus).map {
-                  _ => Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
+                  _ => Redirect(routes.RegistrationController.register(journeyId))
                 }
             }
           case None =>

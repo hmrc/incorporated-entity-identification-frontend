@@ -19,7 +19,7 @@ package helpers
 import java.time.LocalDate
 import java.util.UUID
 
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BvPass, _}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, _}
 
 
 object TestConstants {
@@ -32,17 +32,15 @@ object TestConstants {
   val testIdentifiersMatch: Boolean = true
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)
   val testSafeId: String = UUID.randomUUID().toString
-  val testSuccessfulRegistrationStatus: RegistrationStatus = Registered(testSafeId)
-  val testFailedRegistrationStatus: RegistrationStatus = RegistrationFailed
-  val testPassedBusinessVerificationStatus: BusinessVerificationStatus = BvPass
-  val testFailedBusinessVerificationStatus: BusinessVerificationStatus = BvFail
-  val testUnchallengedBusinessVerificationStatus: BusinessVerificationStatus = BvUnchallenged
+  val testPassedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationPass
+  val testFailedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationFail
+  val testUnchallengedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationUnchallenged
   val testIncorporatedEntityInformation: IncorporatedEntityInformation =
     IncorporatedEntityInformation(
       testCompanyProfile,
       testCtutr,
       testIdentifiersMatch,
       testPassedBusinessVerificationStatus,
-      testSuccessfulRegistrationStatus
+      Registered(testSafeId)
     )
 }

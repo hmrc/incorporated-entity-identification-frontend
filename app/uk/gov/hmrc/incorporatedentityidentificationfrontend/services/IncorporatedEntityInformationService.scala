@@ -78,6 +78,6 @@ object IncorporatedEntityInformationService {
   val companyProfileKey: String = "companyProfile"
   val ctutrKey: String = "ctutr"
   val identifiersMatchKey: String = "identifiersMatch"
-  val verificationStatusKey: String = "verificationStatus"
+  val verificationStatusKey: String = "businessVerification"
   val registrationKey: String = "registration"
 }

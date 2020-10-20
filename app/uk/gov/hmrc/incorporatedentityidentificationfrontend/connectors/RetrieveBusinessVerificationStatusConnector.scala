@@ -18,10 +18,11 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import javax.inject.Inject
 import play.api.http.Status.OK
+import play.api.libs.json.JsonValidationError
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RetrieveBusinessVerificationStatusParser.RetrieveBusinessVerificationStatusHttpReads
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, BusinessVerificationFail, BusinessVerificationPass}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -39,12 +40,19 @@ class RetrieveBusinessVerificationStatusConnector @Inject()(http: HttpClient,
 }
 
 object RetrieveBusinessVerificationStatusParser {
+  val BusinessVerificationPassKey = "PASS"
+  val BusinessVerificationFailKey = "FAIL"
 
   implicit object RetrieveBusinessVerificationStatusHttpReads extends HttpReads[BusinessVerificationStatus] {
     override def read(method: String, url: String, response: HttpResponse): BusinessVerificationStatus = {
       response.status match {
         case OK =>
-          (response.json \ "verificationStatus").as[BusinessVerificationStatus]
+          (response.json \ "verificationStatus")
+            .validate[String]
+            .collect(JsonValidationError("Invalid verification status returned from business verification")){
+            case BusinessVerificationPassKey => BusinessVerificationPass
+            case BusinessVerificationFailKey => BusinessVerificationFail
+          }.getOrElse(throw new InternalServerException("Invalid response returned from retrieve Business Verification result"))
         case _ =>
           throw new InternalServerException("Invalid response returned from retrieve Business Verification result")
       }

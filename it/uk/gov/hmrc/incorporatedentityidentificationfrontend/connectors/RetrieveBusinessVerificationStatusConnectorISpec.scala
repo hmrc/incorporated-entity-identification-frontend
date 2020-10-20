@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.{OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testBusinessVerificationJourneyId
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BvFail, BvPass, BvUnchallenged}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass, BusinessVerificationUnchallenged}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.BusinessVerificationStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -36,21 +36,14 @@ class RetrieveBusinessVerificationStatusConnectorISpec extends ComponentSpecHelp
 
       val result = await(retrieveBusinessVerificationStatusConnector.retrieveBusinessVerificationStatus(testBusinessVerificationJourneyId))
 
-      result mustBe BvPass
+      result mustBe BusinessVerificationPass
     }
     "return BvFail" in {
       stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "FAIL"))
 
       val result = await(retrieveBusinessVerificationStatusConnector.retrieveBusinessVerificationStatus(testBusinessVerificationJourneyId))
 
-      result mustBe BvFail
-    }
-    "return BvUnchallenged" in {
-      stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "UNCHALLENGED"))
-
-      val result = await(retrieveBusinessVerificationStatusConnector.retrieveBusinessVerificationStatus(testBusinessVerificationJourneyId))
-
-      result mustBe BvUnchallenged
+      result mustBe BusinessVerificationFail
     }
   }
 

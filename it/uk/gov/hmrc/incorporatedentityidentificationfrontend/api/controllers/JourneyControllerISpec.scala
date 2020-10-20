@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, IncorporatedEntityInformation, JourneyConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, CompanyProfile, IncorporatedEntityInformation, JourneyConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -75,7 +75,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
               ),
               ctutr = testCtutr,
               identifiersMatch = true,
-              businessVerification = testPassStatus,
+              businessVerification = BusinessVerificationPass,
               registration = testSuccessfulRegistration
             )
           )
@@ -85,17 +85,20 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         lazy val result = get(s"/api/journey/$testJourneyId")
 
         result.status mustBe OK
-        result.json mustBe Json.toJsObject(
-          IncorporatedEntityInformation(
-            CompanyProfile(
-              companyNumber = testCompanyNumber,
-              companyName = testCompanyName,
-              dateOfIncorporation = testDateOfIncorporation
-            ),
-            ctutr = testCtutr,
-            identifiersMatch = true,
-            businessVerification = testPassStatus,
-            registration = testSuccessfulRegistration
+        result.json mustBe Json.obj(
+          "ctutr" -> testCtutr,
+          "companyProfile" -> Json.obj(
+            "companyName" -> testCompanyName,
+            "companyNumber" -> testCompanyNumber,
+            "dateOfIncorporation" -> testDateOfIncorporation
+          ),
+          "identifiersMatch" -> true,
+          "businessVerification" -> Json.obj(
+            "verificationStatus" -> "PASS"
+          ),
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTERED",
+            "registeredBusinessPartnerId" -> testSafeId
           )
         )
       }
