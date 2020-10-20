@@ -3,8 +3,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 import java.time.LocalDate
 import java.util.UUID
 
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BvPass, Registered}
-
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, BusinessVerificationFail, BusinessVerificationPass, Registered, RegistrationFailed, RegistrationStatus}
 
 
 object TestConstants {
@@ -16,15 +15,15 @@ object TestConstants {
   val testCtutr = "1234567890"
   val testJourneyId = "TestJourneyId"
   val testBusinessVerificationJourneyId = "TestBusinessVerificationJourneyId"
-  val testDateOfIncorporation = LocalDate.now().toString
-  val testCredentialId = UUID.randomUUID().toString
-  val GGProviderId = UUID.randomUUID().toString
-  val testGroupId = UUID.randomUUID().toString
-  val testInternalId = UUID.randomUUID().toString
+  val testDateOfIncorporation: String = LocalDate.now().toString
+  val testCredentialId: String = UUID.randomUUID().toString
+  val GGProviderId: String = UUID.randomUUID().toString
+  val testGroupId: String = UUID.randomUUID().toString
+  val testInternalId: String = UUID.randomUUID().toString
   val testDefaultServiceName = "Entity Validation Service"
   val testCallingServiceName = "Test Service"
   val testContinueUrl = "/test"
-  val testPassStatus = BvPass
-  val testSafeId = UUID.randomUUID().toString
-  val testSuccessfulRegistration = Registered(testSafeId)
+  val testSafeId: String = UUID.randomUUID().toString
+  val testSuccessfulRegistration: Registered = Registered(testSafeId)
+  val testFailedRegistration: RegistrationStatus = RegistrationFailed
 }

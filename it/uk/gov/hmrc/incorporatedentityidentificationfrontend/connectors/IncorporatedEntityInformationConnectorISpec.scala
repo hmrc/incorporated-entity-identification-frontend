@@ -32,7 +32,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
 
   val ctutrKey: String = "ctutr"
   val companyProfileKey: String = "companyProfile"
-  val verificationStatusKey: String = "verificationStatus"
+  val verificationStatusKey: String = "businessVerification"
   val identifiersMatchKey: String = "identifiersMatch"
 
   s"retrieveIncorporatedEntityInformation($testJourneyId)" should {
@@ -49,7 +49,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
               ),
               ctutr = testCtutr,
               identifiersMatch = true,
-              businessVerification = testPassStatus,
+              businessVerification = BusinessVerificationPass,
               registration = testSuccessfulRegistration
             )
           )
@@ -62,7 +62,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
             CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation),
             testCtutr,
             true,
-            testPassStatus,
+            BusinessVerificationPass,
             testSuccessfulRegistration))
       }
     }
@@ -129,9 +129,9 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
   }
   s"storeData($testJourneyId, $verificationStatusKey, BusinessVerificationStatus)" should {
     "return SuccessfullyStored" in {
-      stubStoreBusinessVerificationStatus(testJourneyId, businessVerificationStatus = BvPass)(status = OK)
+      stubStoreBusinessVerificationStatus(testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
 
-      val result = await(incorporatedEntityInformationConnector.storeData[BusinessVerificationStatus](testJourneyId, verificationStatusKey, testPassStatus))
+      val result = await(incorporatedEntityInformationConnector.storeData[BusinessVerificationStatus](testJourneyId, verificationStatusKey, BusinessVerificationPass))
 
       result mustBe SuccessfullyStored
     }

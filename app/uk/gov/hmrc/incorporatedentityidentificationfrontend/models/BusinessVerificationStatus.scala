@@ -16,35 +16,39 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
-import play.api.libs.json.{Format, JsResult, JsString, JsValue}
+import play.api.libs.json._
 
 
 sealed trait BusinessVerificationStatus
 
-case object BvPass extends BusinessVerificationStatus
+case object BusinessVerificationPass extends BusinessVerificationStatus
 
-case object BvFail extends BusinessVerificationStatus
+case object BusinessVerificationFail extends BusinessVerificationStatus
 
-case object BvUnchallenged extends BusinessVerificationStatus
+case object BusinessVerificationUnchallenged extends BusinessVerificationStatus
 
 object BusinessVerificationStatus {
-  val BvPassKey = "PASS"
-  val BvFailKey = "FAIL"
-  val BvUnchallengedKey = "UNCHALLENGED"
+  val BusinessVerificationPassKey = "PASS"
+  val BusinessVerificationFailKey = "FAIL"
+  val BusinessVerificationUnchallengedKey = "UNCHALLENGED"
+  val BusinessVerificationStatusKey = "verificationStatus"
 
   implicit val format: Format[BusinessVerificationStatus] = new Format[BusinessVerificationStatus] {
-    override def writes(bvState: BusinessVerificationStatus): JsValue =
-      bvState match {
-        case BvPass => JsString(BvPassKey)
-        case BvFail => JsString(BvFailKey)
-        case BvUnchallenged => JsString(BvUnchallengedKey)
+    override def writes(businessVerificationStatus: BusinessVerificationStatus): JsObject = {
+      val businessVerificationStatusString = businessVerificationStatus match {
+        case BusinessVerificationPass => BusinessVerificationPassKey
+        case BusinessVerificationFail => BusinessVerificationFailKey
+        case BusinessVerificationUnchallenged => BusinessVerificationUnchallengedKey
       }
 
+      Json.obj(BusinessVerificationStatusKey -> businessVerificationStatusString)
+    }
+
     override def reads(json: JsValue): JsResult[BusinessVerificationStatus] =
-      json.validate[String].map {
-        case BvPassKey => BvPass
-        case BvFailKey => BvFail
-        case BvUnchallengedKey => BvUnchallenged
+      (json \ BusinessVerificationStatusKey).validate[String].collect(JsonValidationError("Invalid business validation state")) {
+        case BusinessVerificationPassKey => BusinessVerificationPass
+        case BusinessVerificationFailKey => BusinessVerificationFail
+        case BusinessVerificationUnchallengedKey => BusinessVerificationUnchallenged
       }
   }
 

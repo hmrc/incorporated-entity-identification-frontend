@@ -35,8 +35,8 @@ object RegistrationStatus {
   val RegistrationFailedKey = "REGISTRATION_FAILED"
   val RegistrationNotCalledKey = "REGISTRATION_NOT_CALLED"
 
-  implicit val format: Format[RegistrationStatus] = new Format[RegistrationStatus] {
-    override def writes(registrationStatus: RegistrationStatus): JsValue =
+  implicit val format: OFormat[RegistrationStatus] = new OFormat[RegistrationStatus] {
+    override def writes(registrationStatus: RegistrationStatus): JsObject =
       registrationStatus match {
         case Registered(businessPartnerId) => Json.obj(
           registrationStatusKey -> RegisteredKey,
