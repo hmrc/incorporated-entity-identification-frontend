@@ -20,12 +20,13 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethods
 
-trait JourneyStub extends WireMockMethods {
+trait RegistrationStub extends WireMockMethods {
 
-  def stubCreateJourney(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = POST, uri = "/incorporated-entity-identification/journey")
+  def stubRegister(status: Int, body: JsObject = Json.obj()): StubMapping =
+    when(method = POST, uri = "/incorporated-entity-identification/register")
       .thenReturn(
         status = status,
         body = body
       )
+
 }
