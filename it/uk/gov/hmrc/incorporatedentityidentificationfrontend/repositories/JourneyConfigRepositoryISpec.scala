@@ -18,9 +18,9 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories
 
 import org.scalatest.concurrent.{AbstractPatienceConfiguration, Eventually}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.test.Helpers.{await, _}
+import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testJourneyConfig, testJourneyId}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testContinueUrl, testJourneyId}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -44,24 +44,24 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
 
   "documents" should {
     "successfully insert a new document" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testJourneyConfig, None)))
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, None)))
       await(repo.count) mustBe 1
     }
 
     "successfully insert journeyConfig" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testJourneyConfig, None)))
-      await(repo.findById(testJourneyId)) must contain(JourneyConfig(testJourneyConfig, None))
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, None)))
+      await(repo.findById(testJourneyId)) must contain(JourneyConfig(testContinueUrl, None))
     }
 
     "successfully delete all documents" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testJourneyConfig, None)))
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, None)))
       await(repo.drop)
       await(repo.count) mustBe 0
     }
 
     "successfully delete one document" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testJourneyConfig, None)))
-      await(repo.insertJourneyConfig(testJourneyId + 1, JourneyConfig(testJourneyConfig, None)))
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, None)))
+      await(repo.insertJourneyConfig(testJourneyId + 1, JourneyConfig(testContinueUrl, None)))
       await(repo.removeById(testJourneyId + 1))
       await(repo.count) mustBe 1
     }
