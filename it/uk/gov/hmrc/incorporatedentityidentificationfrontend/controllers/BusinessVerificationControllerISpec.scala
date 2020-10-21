@@ -19,7 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationPass
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, BusinessVerificationUnchallenged}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -49,25 +49,31 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
   }
 
   "GET /:journeyId/start-business-verification" should {
-    "redirect to business verification redirectUri" in {
-      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-      stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
+    "redirect to business verification redirectUri" when {
+      "business verification returns a journey to redirect to" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
+        stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
 
-      lazy val result = get(s"/$testJourneyId/start-business-verification")
+        lazy val result = get(s"/$testJourneyId/start-business-verification")
 
-      result.status mustBe SEE_OTHER
-      result.header(LOCATION) mustBe Some(testContinueUrl)
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(testContinueUrl)
+      }
     }
 
-    "return Not Implemented" in {
-      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-      stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(NOT_FOUND)
+    "store a verification state of UNCHALLENGED and redirect to the registration controller" when {
+      "business verification does not have enough information to create a verification journey" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
+        stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(NOT_FOUND)
+        stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
 
-      lazy val result = get(s"/$testJourneyId/start-business-verification")
+        lazy val result = get(s"/$testJourneyId/start-business-verification")
 
-      result.status mustBe NOT_IMPLEMENTED
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
+      }
     }
   }
 }
