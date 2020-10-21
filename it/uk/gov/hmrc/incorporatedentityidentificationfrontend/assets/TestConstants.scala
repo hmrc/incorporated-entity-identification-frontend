@@ -15,6 +15,7 @@ object TestConstants {
   val testCompanyName = "Test Company Ltd"
   val testCtutr = "1234567890"
   val testJourneyId = "TestJourneyId"
+  val testJourneyConfig = "continueURL"
   val testBusinessVerificationJourneyId = "TestBusinessVerificationJourneyId"
   val testDateOfIncorporation = LocalDate.now().toString
   val testCredentialId = UUID.randomUUID().toString
