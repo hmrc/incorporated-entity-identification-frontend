@@ -43,4 +43,5 @@ object TestConstants {
       testPassedBusinessVerificationStatus,
       Registered(testSafeId)
     )
+  val testContinueUrl = "/test"
 }

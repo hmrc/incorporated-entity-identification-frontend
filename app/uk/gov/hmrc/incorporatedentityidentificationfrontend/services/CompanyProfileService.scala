@@ -27,7 +27,10 @@ import scala.concurrent.{ExecutionContext, Future}
 class CompanyProfileService @Inject()(storageConnector: IncorporatedEntityInformationConnector,
                                       companyProfileConnector: CompanyProfileConnector
                                      )(implicit ec: ExecutionContext) {
-  def retrieveAndStoreCompanyProfile(journeyId: String, companyNumber: String)(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
+
+  def retrieveAndStoreCompanyProfile(journeyId: String,
+                                     companyNumber: String
+                                    )(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
     companyProfileConnector.getCompanyProfile(companyNumber).flatMap {
       case Some(companyProfile) =>
         storageConnector.storeData(journeyId, "companyProfile", companyProfile).map {
