@@ -39,7 +39,7 @@ class CtutrMismatchController @Inject()(journeyService: JourneyService,
     implicit request =>
       authorised() {
         val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-          _.optServiceName.getOrElse(config.defaultServiceName)
+          _.pageConfig.optServiceName.getOrElse(config.defaultServiceName)
         }
 
         getServiceName.map {

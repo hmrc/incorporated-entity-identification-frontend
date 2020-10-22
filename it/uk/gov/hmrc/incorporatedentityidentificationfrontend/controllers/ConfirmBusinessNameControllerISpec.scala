@@ -42,7 +42,12 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
     "the company exists in Companies House" should {
       "return ok" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
 
         val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
@@ -66,7 +71,12 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
       "return a view" when {
         "there is no serviceName passed in the journeyConfig" should {
-          lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+          lazy val insertConfig = insertJourneyConfig(
+            journeyId = testJourneyId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId
+          )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
             status = OK,
@@ -79,7 +89,12 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         }
 
         "there is a serviceName passed in the journeyConfig" should {
-          lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
+          lazy val insertConfig = insertJourneyConfig(
+            journeyId = testJourneyId,
+            continueUrl = testContinueUrl,
+            optServiceName = Some(testCallingServiceName),
+            deskProServiceId = testDeskProServiceId
+          )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
             status = OK,
@@ -96,7 +111,12 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
     "the company doesn't exist in the backend database" should {
       "show technical difficulties page" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
 
         lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")

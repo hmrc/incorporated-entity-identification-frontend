@@ -35,7 +35,12 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
 
   "GET /error/could-not-confirm-business" when {
     "return ok" in {
-      await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId
+      ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
       lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
@@ -44,7 +49,12 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
     }
 
     "return a view which" should {
-      lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+      lazy val insertConfig = insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId
+      )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
 
@@ -52,7 +62,12 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
     }
     "return a view" when {
       "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
 
@@ -61,7 +76,12 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
       }
 
       "there is a serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = Some(testCallingServiceName),
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
 
