@@ -30,10 +30,11 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.{errorSummary, inputText}
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
 
 @this(layout: govuk_template,
         govukFieldset: GovukFieldset,
@@ -45,9 +46,9 @@
         errorSummary: errorSummary
 )
 
-@(serviceName: String, formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(pageConfig: PageConfig, formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(serviceName, title(messages("capture-company-number.title"), form)) {
+@layout(pageConfig, title(messages("capture-company-number.title"), form)) {
     @errorSummary(form.errors)
 
     @govukFieldset(Fieldset(
@@ -62,28 +63,26 @@
 }
 
 @html = {
-@formWithCSRF(action = formAction) {
+    @formWithCSRF(action = formAction) {
 
-    <p class="govuk-body">
-        @Html(messages("capture-company-number.line_1", appConfig.companiesHouse))
-    </p>
+        <p class="govuk-body">
+            @Html(messages("capture-company-number.line_1", appConfig.companiesHouse))
+        </p>
 
-    @inputText(
-        form = form,
-        id = "companyNumber",
-        name = "companyNumber",
-        isPageHeading = false,
-        label = "",
-        hint = Some(Html(s"""<p style="color:#626a6e" class="govuk-body">${messages("capture-company-number.hint")}</p>""")),
-        classes = "govuk-input--width-10"
-    )
+        @inputText(
+            form = form,
+            id = "companyNumber",
+            name = "companyNumber",
+            isPageHeading = false,
+            label = "",
+            hint = Some(Html(s"""<p style="color:#626a6e" class="govuk-body">${messages("capture-company-number.hint")}</p>""")),
+            classes = "govuk-input--width-10"
+        )
 
-    @govukButton(Button(
-        attributes = Map("id" -> "save-and-continue"),
-        classes = "govuk-!-margin-right-1",
-        content = Text(Messages("base.save_and_continue"))
-    ))
+        @govukButton(Button(
+            attributes = Map("id" -> "save-and-continue"),
+            classes = "govuk-!-margin-right-1",
+            content = Text(Messages("base.save_and_continue"))
+        ))
+    }
 }
-}
-
-

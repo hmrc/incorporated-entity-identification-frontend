@@ -39,13 +39,9 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-          _.pageConfig.optServiceName.getOrElse(config.defaultServiceName)
-        }
-
-        getServiceName.map {
-          serviceName =>
-            Ok(view(serviceName, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+        journeyService.getJourneyConfig(journeyId).map {
+          journeyConfig =>
+            Ok(view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
         }
       }
   }
@@ -55,20 +51,15 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
       authorised() {
         CaptureCtutrForm.form.bindFromRequest().fold(
           formWithErrors => {
-            val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-              _.pageConfig.optServiceName.getOrElse(config.defaultServiceName)
-            }
-
-            getServiceName.map {
-              serviceName =>
-                BadRequest(view(serviceName, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
+                BadRequest(view(journeyConfig.pageConfig,routes.CaptureCtutrController.submit(journeyId), formWithErrors))
             }
           },
           ctutr =>
             incorporatedEntityInformationService.storeCtutr(journeyId, ctutr).map {
               _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
             }
-
         )
       }
   }

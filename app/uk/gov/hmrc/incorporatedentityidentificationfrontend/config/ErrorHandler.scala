@@ -40,8 +40,9 @@ class ErrorHandler @Inject()(view: error_template,
   override def standardErrorTemplate(pageTitle: String,
                                      heading: String,
                                      message: String
-                                    )(implicit request: Request[_]): Html =
+                                    )(implicit request: Request[_]): Html = {
     view(pageTitle, heading, message)
+  }
 
   override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] = {
     exception match {

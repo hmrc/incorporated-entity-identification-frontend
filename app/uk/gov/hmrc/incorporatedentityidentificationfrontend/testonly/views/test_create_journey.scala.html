@@ -14,7 +14,7 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.{errorSummary, inputText}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
@@ -28,9 +28,9 @@
         errorSummary: errorSummary
 )
 
-@(serviceName: String, formAction: Call, form: Form[JourneyConfig])(implicit request: Request[_], messages: Messages)
+@(pageConfig: PageConfig, formAction: Call, form: Form[JourneyConfig])(implicit request: Request[_], messages: Messages)
 
-@layout(serviceName, title(messages("Enter the journey config"), form)) {
+@layout(pageConfig, title(messages("Enter the journey config"), form)) {
     @errorSummary(form.errors)
 
     @govukFieldset(Fieldset(

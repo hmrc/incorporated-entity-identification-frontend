@@ -16,6 +16,7 @@
 
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => Routes}
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
 
 @this(layout: govuk_template,
@@ -25,9 +26,9 @@
         govukSummaryList: GovukSummaryList,
         formWithCSRF: FormWithCSRF)
 
-@(serviceName: String, formAction: Call, ctutr: String, companyNumber: String, journeyId: String)(implicit request: Request[_], messages: Messages)
+@(pageConfig: PageConfig, formAction: Call, ctutr: String, companyNumber: String, journeyId: String)(implicit request: Request[_], messages: Messages)
 
-@layout(serviceName, messages("check-your-answers.title")) {
+@layout(pageConfig, messages("check-your-answers.title")) {
 
     @govukFieldset(Fieldset(
         legend = Some(Legend(
