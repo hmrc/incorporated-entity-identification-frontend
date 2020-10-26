@@ -49,7 +49,7 @@ object TestCreateJourneyForm {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),
       serviceName -> optText,
-      deskProServiceId -> text.verifying(deskProServiceIdEmpty),
+      deskProServiceId -> text.verifying(deskProServiceIdEmpty)
     )((continueUrl, serviceName, deskProServiceId) =>
       JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId))
     )(journeyConfig =>
