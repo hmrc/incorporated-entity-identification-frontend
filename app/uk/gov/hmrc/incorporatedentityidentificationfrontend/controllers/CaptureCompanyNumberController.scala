@@ -41,7 +41,7 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
     implicit request =>
       authorised() {
         val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-          _.optServiceName.getOrElse(config.defaultServiceName)
+          _.pageConfig.optServiceName.getOrElse(config.defaultServiceName)
         }
 
         getServiceName.map {
@@ -57,7 +57,7 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
         CaptureCompanyNumberForm.form.bindFromRequest().fold(
           formWithErrors => {
             val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-              _.optServiceName.getOrElse(config.defaultServiceName)
+              _.pageConfig.optServiceName.getOrElse(config.defaultServiceName)
             }
 
             getServiceName.map {

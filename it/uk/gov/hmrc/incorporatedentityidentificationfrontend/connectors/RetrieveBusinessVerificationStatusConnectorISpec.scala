@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.{OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testBusinessVerificationJourneyId
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass, BusinessVerificationUnchallenged}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.BusinessVerificationStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 

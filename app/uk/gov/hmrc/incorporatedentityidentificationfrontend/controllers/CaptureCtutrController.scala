@@ -40,7 +40,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authorised() {
         val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-          _.optServiceName.getOrElse(config.defaultServiceName)
+          _.pageConfig.optServiceName.getOrElse(config.defaultServiceName)
         }
 
         getServiceName.map {
@@ -56,7 +56,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
         CaptureCtutrForm.form.bindFromRequest().fold(
           formWithErrors => {
             val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-              _.optServiceName.getOrElse(config.defaultServiceName)
+              _.pageConfig.optServiceName.getOrElse(config.defaultServiceName)
             }
 
             getServiceName.map {

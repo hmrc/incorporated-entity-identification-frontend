@@ -42,7 +42,12 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
   "GET /check-your-answers-business" should {
     "return OK" in {
-      await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId
+      ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
       stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
@@ -54,7 +59,12 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "redirect to sign in page" when {
       "the user is UNAUTHORISED" in {
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
         stubAuthFailure()
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
@@ -67,9 +77,17 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "return a view" when {
       "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+        )
         lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
         lazy val result = get(s"/$testJourneyId/check-your-answers-business")
@@ -79,9 +97,17 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
 
       "there is a serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = Some(testCallingServiceName),
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+        )
         lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
         lazy val result = get(s"/$testJourneyId/check-your-answers-business")
@@ -95,7 +121,12 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   "POST /check-your-answers-business" when {
     "the company details are successfully matched" should {
       "return a redirect to the Business Verification Result page" in {
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
@@ -113,7 +144,12 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "the company details do not match" should {
       "redirect to ctutr mismatch page" in {
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
@@ -131,7 +167,12 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "the company details do not exist" should {
       "throw an exception" in { //TODO - handle this in the case of entities without corporation tax
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))

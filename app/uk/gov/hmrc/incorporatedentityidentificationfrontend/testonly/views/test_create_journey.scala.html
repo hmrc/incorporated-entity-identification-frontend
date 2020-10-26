@@ -65,6 +65,15 @@
             classes = "govuk-input--width-20"
         )
 
+        @inputText(
+            form = form,
+            id = "deskProServiceId",
+            name = "deskProServiceId",
+            label = "DeskPro Service Identifier",
+            isPageHeading = false,
+            classes = "govuk-input--width-20"
+        )
+
         @govukButton(Button(
             attributes = Map("id" -> "save-and-continue"),
             classes = "govuk-!-margin-right-1",

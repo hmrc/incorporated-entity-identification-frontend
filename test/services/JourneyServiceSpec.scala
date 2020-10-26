@@ -21,7 +21,7 @@ import helpers.TestConstants._
 import reactivemongo.api.commands.WriteResult
 import repositories.mocks.MockJourneyConfigRepository
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import utils.UnitSpec
 import play.api.test.Helpers._
@@ -38,7 +38,10 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
 
   val testJourneyConfig: JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
-    optServiceName = None
+    pageConfig = PageConfig(
+      optServiceName = None,
+      deskProServiceId = "vrs"
+    )
   )
 
   "createJourney" should {

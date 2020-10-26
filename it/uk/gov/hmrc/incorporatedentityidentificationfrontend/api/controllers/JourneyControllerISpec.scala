@@ -21,7 +21,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, CompanyProfile, IncorporatedEntityInformation, JourneyConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, CompanyProfile, IncorporatedEntityInformation, JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -35,7 +35,10 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
       val testJourneyConfig = JourneyConfig(
         continueUrl = "/testContinueUrl",
-        optServiceName = None
+        pageConfig = PageConfig(
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        )
       )
 
       lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))
@@ -51,7 +54,10 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
       val testJourneyConfig = JourneyConfig(
         continueUrl = "/testContinueUrl",
-        optServiceName = None
+        pageConfig = PageConfig(
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        )
       )
 
       lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))

@@ -43,7 +43,12 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
   "GET /company-number" should {
     "return OK" in {
-      await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId
+      ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
 
@@ -52,7 +57,12 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
     "redirect to sign in page" when {
       "the user is UNAUTHORISED" in {
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
         stubAuthFailure()
         lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
 
@@ -62,7 +72,12 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
     "return a view" when {
       "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
 
@@ -71,7 +86,12 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
       }
 
       "there is a serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = Some(testCallingServiceName),
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
 
@@ -128,14 +148,24 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
         "the company number is missing" should {
           "return a bad request" in {
-            await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+            await(insertJourneyConfig(
+              journeyId = testJourneyId,
+              continueUrl = testContinueUrl,
+              optServiceName = None,
+              deskProServiceId = testDeskProServiceId
+            ))
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
 
             result.status mustBe BAD_REQUEST
           }
 
-          lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+          lazy val insertConfig = insertJourneyConfig(
+            journeyId = testJourneyId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId
+          )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
 
@@ -155,13 +185,23 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
         "the company number has more than 8 characters" should {
           "return a bad request" in {
-            await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+            await(insertJourneyConfig(
+              journeyId = testJourneyId,
+              continueUrl = testContinueUrl,
+              optServiceName = None,
+              deskProServiceId = testDeskProServiceId
+            ))
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
 
             result.status mustBe BAD_REQUEST
           }
-          lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+          lazy val insertConfig = insertJourneyConfig(
+            journeyId = testJourneyId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId
+          )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
 
@@ -170,14 +210,24 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
         "company number is not in the correct format" should {
           "return a bad request" in {
-            await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+            await(insertJourneyConfig(
+              journeyId = testJourneyId,
+              continueUrl = testContinueUrl,
+              optServiceName = None,
+              deskProServiceId = testDeskProServiceId
+            ))
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
 
             result.status mustBe BAD_REQUEST
           }
 
-          lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+          lazy val insertConfig = insertJourneyConfig(
+            journeyId = testJourneyId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId
+          )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
 

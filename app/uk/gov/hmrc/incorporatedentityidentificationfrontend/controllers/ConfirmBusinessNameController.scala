@@ -40,7 +40,7 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
     implicit request =>
       authorised() {
         val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-          _.optServiceName.getOrElse(config.defaultServiceName)
+          _.pageConfig.optServiceName.getOrElse(config.defaultServiceName)
         }
 
         getServiceName.flatMap {

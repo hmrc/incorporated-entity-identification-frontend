@@ -12,15 +12,23 @@ This is a Scala/Play frontend to allow Limited Companies to provide their inform
 3. Run the frontend locally using
 `sbt 'run 9718 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
 
-### End-Points
-#### POST /journey
+## End-Points
+### POST /journey
 
 ---
 Creates a new journey, storing the journeyConfig against the journeyId.
-##### Request:
-No body is required for this request
+#### Request:
+Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service name, ```Entity Validation Service``` will be used.
 
-##### Response:
+```
+{
+"continueUrl" : "/testUrl",
+"optServiceName" : "Service Name",
+"deskProServiceId" : "DeskProServiceId",
+}
+```
+
+#### Response:
 Status: **Created(201)**
 
 Example Response body: 
@@ -29,14 +37,14 @@ Example Response body:
 {“journeyStartUrl” : "/testUrl"}
 ```
 
-#### GET /journey/:journeyId
+### GET /journey/:journeyId
 
 ---
 Retrieves all the journey data that is stored against a specific journeyID.
-##### Request:
+#### Request:
 A valid journeyId must be sent in the URI
 
-##### Response:
+#### Response:
 Status:
 
 | Expected Response                       | Reason  

@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors.TestCreateJourneyConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms.TestCreateJourneyForm.form
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.views.html.test_create_journey
@@ -32,12 +33,21 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
                                             testCreateJourneyConnector: TestCreateJourneyConnector,
                                             view: test_create_journey,
                                             val authConnector: AuthConnector,
-                                           config: AppConfig
+                                            config: AppConfig
                                            )(implicit ec: ExecutionContext) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
+
   val show: Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        Future.successful(Ok(view(config.defaultServiceName, routes.TestCreateJourneyController.submit(), form)))
+        val defaultJourneyConfig = JourneyConfig(
+          continueUrl = s"${config.selfBaseUrl}/incorporated-entity-identification/test-only/retrieve-journey",
+          pageConfig = PageConfig(
+            optServiceName = None,
+            deskProServiceId = "vrs"
+          )
+        )
+
+        Future.successful(Ok(view(config.defaultServiceName, routes.TestCreateJourneyController.submit(), form.fill(defaultJourneyConfig))))
       }
   }
 

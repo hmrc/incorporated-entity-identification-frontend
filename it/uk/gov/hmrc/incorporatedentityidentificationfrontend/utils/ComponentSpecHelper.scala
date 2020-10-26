@@ -26,7 +26,7 @@ import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
 import reactivemongo.api.commands.WriteResult
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
@@ -121,7 +121,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   private def buildClient(path: String): WSRequest =
     ws.url(s"http://localhost:$port$baseUrl$path").withFollowRedirects(false)
 
-  def insertJourneyConfig(journeyId: String, continueUrl: String, optServiceName: Option[String]): Future[WriteResult] =
-    journeyConfigRepository.insertJourneyConfig(journeyId, JourneyConfig(continueUrl, optServiceName))
+  def insertJourneyConfig(journeyId: String, continueUrl: String, optServiceName: Option[String], deskProServiceId: String): Future[WriteResult] =
+    journeyConfigRepository.insertJourneyConfig(journeyId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId)))
 
 }
