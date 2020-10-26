@@ -35,7 +35,7 @@ object JourneyConfig {
     override def writes(journeyConfig: JourneyConfig): JsObject = Json.obj(
       continueUrlKey -> journeyConfig.continueUrl,
       optServiceNameKey -> journeyConfig.pageConfig.optServiceName,
-      deskProServiceIdKey -> journeyConfig.pageConfig.deskProServiceId,
+      deskProServiceIdKey -> journeyConfig.pageConfig.deskProServiceId
     )
   }
 }
