@@ -51,13 +51,9 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
 
         identifiers.flatMap {
           case (Some(companyProfile), Some(ctutr)) =>
-            val getServiceName = journeyService.getJourneyConfig(journeyId).map(_.pageConfig.optServiceName.getOrElse(config.defaultServiceName))
-
-            getServiceName.map {
-              serviceName =>
-                Ok(
-                  view(
-                    serviceName,
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
+                Ok(view(journeyConfig.pageConfig,
                     routes.CheckYourAnswersController.submit(journeyId),
                     ctutr,
                     companyProfile.companyNumber,

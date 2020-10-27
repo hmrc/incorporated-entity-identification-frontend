@@ -23,6 +23,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.services.FeatureSwitchRetrievalService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.views.html.feature_switch
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import scala.concurrent.ExecutionContext
@@ -30,16 +31,17 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwitchRetrievalService,
                                                 featureSwitchView: feature_switch,
-                                                mcc: MessagesControllerComponents,
-                                                config: AppConfig
-                                               )(implicit ec: ExecutionContext) extends FrontendController(mcc) with FeatureSwitching with I18nSupport {
+                                                mcc: MessagesControllerComponents
+                                               )(implicit ec: ExecutionContext,
+                                                 appConfig: AppConfig) extends FrontendController(mcc) with FeatureSwitching with I18nSupport {
 
+  private val defaultPageConfig = PageConfig(None, "vrs")
 
   def show: Action[AnyContent] = Action.async {
     implicit req =>
       featureSwitchService.retrieveFeatureSwitches().map {
         featureSwitches =>
-          Ok(featureSwitchView(config.defaultServiceName, featureSwitches, routes.FeatureSwitchFrontendController.submit()))
+          Ok(featureSwitchView(defaultPageConfig, featureSwitches, routes.FeatureSwitchFrontendController.submit()))
       }
   }
 
@@ -47,7 +49,7 @@ class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwi
     implicit req =>
       featureSwitchService.updateFeatureSwitches(req.body.keys).map {
         featureSwitches =>
-          Ok(featureSwitchView(config.defaultServiceName, featureSwitches, routes.FeatureSwitchFrontendController.submit()))
+          Ok(featureSwitchView(defaultPageConfig, featureSwitches, routes.FeatureSwitchFrontendController.submit()))
       }
   }
 }

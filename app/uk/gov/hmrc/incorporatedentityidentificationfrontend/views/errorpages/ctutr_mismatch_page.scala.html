@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
 
@@ -23,9 +24,9 @@
         h1: h1,
         formWithCSRF: FormWithCSRF)
 
-@(serviceName: String, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages)
+@(pageConfig: PageConfig, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages)
 
-@govukLayout(serviceName, messages("ctutr-mismatch.title")) {
+@govukLayout(pageConfig, messages("ctutr-mismatch.title")) {
 
     @h1(messages("ctutr-mismatch.heading"))
     <p class="govuk-body">@messages("ctutr-mismatch.paragraph")</p>

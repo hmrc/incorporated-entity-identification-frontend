@@ -29,14 +29,16 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   private lazy val contactBaseUrl: String = servicesConfig.baseUrl("contact-frontend")
 
   private lazy val assetsUrl: String = servicesConfig.getString("assets.url")
-  private lazy val serviceIdentifier: String = "MyService"
 
   lazy val assetsPrefix: String = assetsUrl + servicesConfig.getString("assets.version")
   lazy val analyticsToken: String = servicesConfig.getString(s"google-analytics.token")
   lazy val analyticsHost: String = servicesConfig.getString(s"google-analytics.host")
 
-  lazy val reportAProblemPartialUrl: String = s"$contactBaseUrl/contact/problem_reports_ajax?service=$serviceIdentifier"
-  lazy val reportAProblemNonJSUrl: String = s"$contactBaseUrl/contact/problem_reports_nonjs?service=$serviceIdentifier"
+  def reportAProblemPartialUrl(serviceIdentifier: String): String =
+    s"$contactBaseUrl/contact/problem_reports_ajax?service=$serviceIdentifier"
+
+  def reportAProblemNonJSUrl(serviceIdentifier: String): String =
+    s"$contactBaseUrl/contact/problem_reports_nonjs?service=$serviceIdentifier"
 
   lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")

@@ -15,8 +15,9 @@
  *@
 
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
 
 @this(govukLayout: govuk_template,
         govUkHeader: GovukHeader,
@@ -24,9 +25,9 @@
         h1: h1,
         formWithCSRF: FormWithCSRF)
 
-@(serviceName: String, formAction: Call, companyName: String, journeyId: String)(implicit request: Request[_], messages: Messages)
+@(pageConfig: PageConfig, formAction: Call, companyName: String, journeyId: String)(implicit request: Request[_], messages: Messages)
 
-@govukLayout(serviceName, messages("confirm-business.title")) {
+@govukLayout(pageConfig, messages("confirm-business.title")) {
 
     @h1(messages("confirm-business.heading"))
     <p class="govuk-body">@companyName</p>
