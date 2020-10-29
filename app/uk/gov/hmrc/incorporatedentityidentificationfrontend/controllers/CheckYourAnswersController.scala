@@ -51,13 +51,9 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
 
         identifiers.flatMap {
           case (Some(companyProfile), Some(ctutr)) =>
-            val getServiceName = journeyService.getJourneyConfig(journeyId).map(_.optServiceName.getOrElse(config.defaultServiceName))
-
-            getServiceName.map {
-              serviceName =>
-                Ok(
-                  view(
-                    serviceName,
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
+                Ok(view(journeyConfig.pageConfig,
                     routes.CheckYourAnswersController.submit(journeyId),
                     ctutr,
                     companyProfile.companyNumber,
@@ -86,7 +82,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr).flatMap {
               case DetailsMatched =>
                 incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true).map {
-                  result =>
+                  _ =>
                     Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
                 }
               case DetailsMismatch =>

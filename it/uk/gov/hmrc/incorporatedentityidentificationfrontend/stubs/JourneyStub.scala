@@ -23,7 +23,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethod
 trait JourneyStub extends WireMockMethods {
 
   def stubCreateJourney(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = POST, uri = s"/incorporated-entity-identification/journey")
+    when(method = POST, uri = "/incorporated-entity-identification/journey")
       .thenReturn(
         status = status,
         body = body

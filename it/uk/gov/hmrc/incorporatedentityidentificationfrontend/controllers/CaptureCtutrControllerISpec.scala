@@ -37,7 +37,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
   "GET /ct-utr" should {
     "return OK" in {
-      await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId
+      ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = get(s"/$testJourneyId/ct-utr")
 
@@ -46,7 +51,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
     "return a view" when {
       "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = get(s"/$testJourneyId/ct-utr")
 
@@ -55,7 +65,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
       }
 
       "there is a serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = Some(testCallingServiceName),
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = get(s"/$testJourneyId/ct-utr")
 
@@ -66,7 +81,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
     "redirect to sign in page" when {
       "the user is UNAUTHORISED" in {
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
         stubAuthFailure()
         lazy val result = get(s"/$testJourneyId/ct-utr")
 
@@ -93,14 +113,24 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
     "no ctutr is submitted" should {
       "return a bad request" in {
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
 
         result.status mustBe BAD_REQUEST
       }
 
-      lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+      lazy val insertConfig = insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId
+      )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
 
@@ -109,14 +139,24 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
     "an invalid ctutr is submitted" should {
       "return a bad request" in {
-        await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
 
         result.status mustBe BAD_REQUEST
       }
 
-      lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+      lazy val insertConfig = insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId
+      )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
 

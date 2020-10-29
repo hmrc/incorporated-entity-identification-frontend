@@ -14,8 +14,10 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.models.FeatureSwitchProvider
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.models.FeatureSwitchSetting
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.models.FeatureSwitchProvider
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
 
@@ -28,9 +30,9 @@
         formWithCSRF: FormWithCSRF
 )
 
-@(serviceName: String, featureSwitchList: Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])], formAction: Call)(implicit request: Request[_], messages: Messages)
+@(pageConfig: PageConfig, featureSwitchList: Seq[(FeatureSwitchProvider, Seq[FeatureSwitchSetting])], formAction: Call)(implicit request: Request[_], messages: Messages)
 
-@layout(serviceName, title = "Choose which features to enable.") {
+@layout(pageConfig, title = "Choose which features to enable.") {
 
     @h1("Choose which features to enable.")
 

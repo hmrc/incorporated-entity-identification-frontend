@@ -15,15 +15,17 @@
  *@
 
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.FooterLinks
 
 @this(govukLayout: GovukLayout,
         govUkHeader: GovukHeader,
         appConfig: AppConfig,
         footerLinks: FooterLinks,
-        footer: govukFooter)
+        footer: govukFooter
+)
 
-@(serviceName: String, title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit messages: Messages)
+@(pageConfig: PageConfig, title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit messages: Messages)
 
 @head = {
     <script src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
@@ -35,7 +37,7 @@
 @headerBlock = {
     @govUkHeader(Header(
         serviceUrl = startUrl,
-        serviceName = Some(serviceName)
+        serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName))
     ))
 }
 
@@ -45,7 +47,7 @@
     </div>
 
     <div class="govuk-body">
-        <a lang="en" hreflang="en" class="govuk-link " target="_blank" href="@{appConfig.reportAProblemNonJSUrl}">
+        <a lang="en" hreflang="en" class="govuk-link " target="_blank" href="@{appConfig.reportAProblemNonJSUrl(pageConfig.deskProServiceId)}">
             @messages("getpagehelp.linkText")
         </a>
     </div>

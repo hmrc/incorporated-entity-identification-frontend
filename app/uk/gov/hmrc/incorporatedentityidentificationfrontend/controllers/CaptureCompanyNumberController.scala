@@ -40,13 +40,9 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-          _.optServiceName.getOrElse(config.defaultServiceName)
-        }
-
-        getServiceName.map {
-          serviceName =>
-            Ok(view(serviceName, routes.CaptureCompanyNumberController.submit(journeyId), CaptureCompanyNumberForm.form))
+        journeyService.getJourneyConfig(journeyId).map {
+          journeyConfig =>
+            Ok(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), CaptureCompanyNumberForm.form))
         }
       }
   }
@@ -56,13 +52,9 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
       authorised() {
         CaptureCompanyNumberForm.form.bindFromRequest().fold(
           formWithErrors => {
-            val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-              _.optServiceName.getOrElse(config.defaultServiceName)
-            }
-
-            getServiceName.map {
-              serviceName =>
-                BadRequest(view(serviceName, routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
+            journeyService.getJourneyConfig(journeyId).map {
+              journeyConfig =>
+                BadRequest(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
             }
           },
           companyNumber =>

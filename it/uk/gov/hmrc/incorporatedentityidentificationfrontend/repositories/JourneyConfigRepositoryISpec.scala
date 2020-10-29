@@ -17,13 +17,12 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories
 
 import org.scalatest.concurrent.{AbstractPatienceConfiguration, Eventually}
-import org.scalatest.time.{Seconds, Span}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testJourneyId
 
 import scala.concurrent.ExecutionContext.Implicits.global
 
@@ -36,19 +35,36 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
     .configure("mongodb.timeToLiveSeconds" -> "10")
     .build
 
+  override def beforeEach(): Unit = {
+    super.beforeEach()
+    await(repo.drop)
+  }
+
   val repo: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
 
   "documents" should {
-    "expire" in {
-      val journeyId = testJourneyId
-      val journeyConfig = "continueURL"
-      await(repo.insertJourneyConfig(journeyId, JourneyConfig(journeyConfig, None)))
-      implicit val patienceConfig: PatienceConfig =
-        PatienceConfig(timeout = scaled(Span(90, Seconds)), interval = scaled(Span(10, Seconds)))
-      eventually {
-        await(repo.findById(journeyId)) mustBe None
-      }
+    "successfully insert a new document" in {
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
+      await(repo.count) mustBe 1
     }
-  }
 
+    "successfully insert journeyConfig" in {
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
+      await(repo.findById(testJourneyId)) must contain(JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId)))
+    }
+
+    "successfully delete all documents" in {
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
+      await(repo.drop)
+      await(repo.count) mustBe 0
+    }
+
+    "successfully delete one document" in {
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
+      await(repo.insertJourneyConfig(testJourneyId + 1, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
+      await(repo.removeById(testJourneyId + 1))
+      await(repo.count) mustBe 1
+    }
+
+  }
 }

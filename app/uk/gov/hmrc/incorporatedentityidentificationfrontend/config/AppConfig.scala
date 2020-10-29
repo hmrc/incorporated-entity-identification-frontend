@@ -26,17 +26,19 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val selfBaseUrl: String = servicesConfig.baseUrl("self")
   lazy val selfUrl: String = servicesConfig.getString("microservice.services.self.url")
 
-  private lazy val contactBaseUrl: String = servicesConfig.baseUrl("contact-frontend")
+  private lazy val contactHost: String = servicesConfig.getString("contact-frontend.host")
 
   private lazy val assetsUrl: String = servicesConfig.getString("assets.url")
-  private lazy val serviceIdentifier: String = "MyService"
 
   lazy val assetsPrefix: String = assetsUrl + servicesConfig.getString("assets.version")
   lazy val analyticsToken: String = servicesConfig.getString(s"google-analytics.token")
   lazy val analyticsHost: String = servicesConfig.getString(s"google-analytics.host")
 
-  lazy val reportAProblemPartialUrl: String = s"$contactBaseUrl/contact/problem_reports_ajax?service=$serviceIdentifier"
-  lazy val reportAProblemNonJSUrl: String = s"$contactBaseUrl/contact/problem_reports_nonjs?service=$serviceIdentifier"
+  def reportAProblemPartialUrl(serviceIdentifier: String): String =
+    s"$contactHost/contact/problem_reports_ajax?service=$serviceIdentifier"
+
+  def reportAProblemNonJSUrl(serviceIdentifier: String): String =
+    s"$contactHost/contact/problem_reports_nonjs?service=$serviceIdentifier"
 
   lazy val cookies: String = servicesConfig.getString("urls.footer.cookies")
   lazy val privacy: String = servicesConfig.getString("urls.footer.privacy")
@@ -53,6 +55,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   def incorporatedEntityInformationUrl(journeyId: String): String = s"$backendUrl/incorporated-entity-identification/journey/$journeyId"
 
   def createJourneyUrl: String = s"$backendUrl/incorporated-entity-identification/journey"
+
+  def registerUrl: String = s"$backendUrl/incorporated-entity-identification/register"
 
   def getCompanyProfileUrl(companyNumber: String): String = {
     if (isEnabled(CompaniesHouseStub))

@@ -18,18 +18,19 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.{CreateBusinessVerificationJourneyConnector, RetrieveBusinessVerificationResultConnector}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.{CreateBusinessVerificationJourneyConnector, RetrieveBusinessVerificationStatusConnector}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus
 
 import scala.concurrent.Future
 
 @Singleton
 class BusinessVerificationService @Inject()(createBusinessVerificationJourneyConnector: CreateBusinessVerificationJourneyConnector,
-                                           retrieveBusinessVerificationResultConnector: RetrieveBusinessVerificationResultConnector) {
+                                            retrieveBusinessVerificationResultConnector: RetrieveBusinessVerificationStatusConnector) {
 
   def createBusinessVerificationJourney(journeyId: String, ctutr: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     createBusinessVerificationJourneyConnector.createBusinessVerificationJourney(journeyId, ctutr)
 
-  def retrieveBusinessVerificationResult(businessVerificationJourneyId: String)(implicit hc: HeaderCarrier): Future[String] =
-    retrieveBusinessVerificationResultConnector.getBusinessVerificationResult(businessVerificationJourneyId)
+  def retrieveBusinessVerificationStatus(businessVerificationJourneyId: String)(implicit hc: HeaderCarrier): Future[BusinessVerificationStatus] =
+    retrieveBusinessVerificationResultConnector.retrieveBusinessVerificationStatus(businessVerificationJourneyId)
 
 }

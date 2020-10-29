@@ -23,6 +23,8 @@ POST        /:journeyId/error/company-name-not-found            uk.gov.hmrc.inco
 GET         /:journeyId/start-business-verification             uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.BusinessVerificationController.startBusinessVerificationJourney(journeyId)
 GET         /:journeyId/business-verification-result            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId)
 
-GET         /journey/redirect/:journeyId                        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.JourneyRedirectController.redirectToContinueUrl(journeyId: String)
+GET         /journey/redirect/:journeyId                        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.JourneyRedirectController.redirectToContinueUrl(journeyId)
+
+GET         /:journeyId/register                                uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.RegistrationController.register(journeyId)
 
 ->          /govuk-frontend                                     govuk.Routes

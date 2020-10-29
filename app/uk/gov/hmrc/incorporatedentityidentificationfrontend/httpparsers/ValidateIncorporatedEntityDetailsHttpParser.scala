@@ -16,9 +16,9 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers
 
+import play.api.http.Status._
 import play.api.libs.json.JsSuccess
 import uk.gov.hmrc.http.{HttpReads, HttpResponse, InternalServerException}
-import play.api.http.Status._
 
 
 object ValidateIncorporatedEntityDetailsHttpParser {

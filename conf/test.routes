@@ -11,6 +11,7 @@ GET        /create-journey                                                      
 POST       /create-journey                                                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestCreateJourneyController.submit
 
 GET        /retrieve-journey/:journeyId                                                     uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveIncorporatedEntityInformation(journeyId)
+GET        /retrieve-journey                                                                uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveIncorporatedEntityInformation(journeyId)
 
 GET        /verification-question/journey/:journeyId/status                                 uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers.BusinessVerificationStubController.retrieveVerificationResult(journeyId)
 + nocsrf

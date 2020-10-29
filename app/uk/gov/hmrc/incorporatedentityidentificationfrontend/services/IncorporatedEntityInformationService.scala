@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.libs.json.JsString
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityInformationConnector
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, IncorporatedEntityInformation, StorageResult}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService._
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -39,14 +39,29 @@ class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEnti
                 )(implicit hc: HeaderCarrier): Future[StorageResult] =
     connector.storeData[String](journeyId, ctutrKey, ctutr)
 
+  def storeBusinessVerificationStatus(journeyId: String,
+                                      businessVerification: BusinessVerificationStatus
+                                     )(implicit hc: HeaderCarrier): Future[StorageResult] =
+    connector.storeData[BusinessVerificationStatus](journeyId, verificationStatusKey, businessVerification)
+
+
   def storeIdentifiersMatch(journeyId: String,
                             identifiersMatch: Boolean
                            )(implicit hc: HeaderCarrier): Future[StorageResult] =
     connector.storeData[Boolean](journeyId, identifiersMatchKey, identifiersMatch)
 
+  def storeRegistrationStatus(journeyId: String,
+                              registrationStatus: RegistrationStatus
+                             )(implicit hc: HeaderCarrier): Future[StorageResult] =
+    connector.storeData[RegistrationStatus](journeyId, registrationKey, registrationStatus)
+
   def retrieveCompanyProfile(journeyId: String
                             )(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
     connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, companyProfileKey)
+
+  def retrieveBusinessVerificationStatus(journeyId: String
+                                        )(implicit hc: HeaderCarrier): Future[Option[BusinessVerificationStatus]] =
+    connector.retrieveIncorporatedEntityInformation[BusinessVerificationStatus](journeyId, verificationStatusKey)
 
   def retrieveCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveIncorporatedEntityInformation[JsString](journeyId, ctutrKey).map {
@@ -62,6 +77,7 @@ class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEnti
 object IncorporatedEntityInformationService {
   val companyProfileKey: String = "companyProfile"
   val ctutrKey: String = "ctutr"
-  val companyNumberKey: String = "company_number"
   val identifiersMatchKey: String = "identifiersMatch"
+  val verificationStatusKey: String = "businessVerification"
+  val registrationKey: String = "registration"
 }

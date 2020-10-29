@@ -38,13 +38,9 @@ class CompanyNumberNotFoundController @Inject()(journeyService: JourneyService,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-          _.optServiceName.getOrElse(config.defaultServiceName)
-        }
-
-        getServiceName.map {
-          serviceName =>
-            Ok(view(serviceName, routes.CompanyNumberNotFoundController.submit(journeyId), journeyId))
+        journeyService.getJourneyConfig(journeyId).map {
+          journeyConfig =>
+            Ok(view(journeyConfig.pageConfig,  routes.CompanyNumberNotFoundController.submit(journeyId), journeyId))
         }
       }
   }

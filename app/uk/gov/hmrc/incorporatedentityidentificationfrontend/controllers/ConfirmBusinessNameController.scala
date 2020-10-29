@@ -39,15 +39,11 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        val getServiceName = journeyService.getJourneyConfig(journeyId).map {
-          _.optServiceName.getOrElse(config.defaultServiceName)
-        }
-
-        getServiceName.flatMap {
-          serviceName =>
+        journeyService.getJourneyConfig(journeyId).flatMap {
+          journeyConfig =>
             incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).map {
               case Some(companiesHouseInformation) =>
-                Ok(view(serviceName, routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))
+                Ok(view(journeyConfig.pageConfig, routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))
               case None =>
                 throw new InternalServerException("No company profile stored")
             }

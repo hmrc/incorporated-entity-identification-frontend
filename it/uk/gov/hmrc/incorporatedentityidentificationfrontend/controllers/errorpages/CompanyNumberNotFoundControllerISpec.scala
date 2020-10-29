@@ -35,7 +35,12 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
 
   "GET /error/company-name-not-found" when {
     "return ok" in {
-      await(insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None))
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        continueUrl = testContinueUrl,
+        optServiceName = None,
+        deskProServiceId = testDeskProServiceId
+      ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
       lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
@@ -45,7 +50,12 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
 
     "return a view" when {
       "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = None)
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
 
@@ -54,7 +64,12 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
       }
 
       "there is a serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(journeyId = testJourneyId, continueUrl = testContinueUrl, optServiceName = Some(testCallingServiceName))
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = Some(testCallingServiceName),
+          deskProServiceId = testDeskProServiceId
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
 

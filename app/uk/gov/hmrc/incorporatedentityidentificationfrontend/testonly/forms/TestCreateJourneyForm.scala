@@ -21,13 +21,14 @@ import play.api.data.Forms._
 import play.api.data.validation.Constraint
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.MappingUtil.optText
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 
 
 object TestCreateJourneyForm {
 
   val continueUrl = "continueUrl"
   val serviceName = "serviceName"
+  val deskProServiceId = "deskProServiceId"
   val alphanumericRegex = "^[A-Z0-9]*$"
 
   def continueUrlEmpty: Constraint[String] = Constraint("continue_url.not_entered")(
@@ -37,11 +38,23 @@ object TestCreateJourneyForm {
     )
   )
 
+  def deskProServiceIdEmpty: Constraint[String] = Constraint("desk_pro_service_id.not_entered")(
+    serviceId => validate(
+      constraint = serviceId.isEmpty,
+      errMsg = "DeskPro Service Identifier is not entered"
+    )
+  )
+
   val form: Form[JourneyConfig] = {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),
-      serviceName -> optText
-    )(JourneyConfig.apply)(JourneyConfig.unapply))
+      serviceName -> optText,
+      deskProServiceId -> text.verifying(deskProServiceIdEmpty)
+    )((continueUrl, serviceName, deskProServiceId) =>
+      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId))
+    )(journeyConfig =>
+      Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName, journeyConfig.pageConfig.deskProServiceId)
+    ))
   }
 
 }
