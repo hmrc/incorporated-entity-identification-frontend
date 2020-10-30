@@ -41,7 +41,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         journeyId = testJourneyId,
         continueUrl = testContinueUrl,
         optServiceName = None,
-        deskProServiceId = testDeskProServiceId
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = get(s"/$testJourneyId/ct-utr")
@@ -55,7 +56,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = get(s"/$testJourneyId/ct-utr")
@@ -69,7 +71,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = Some(testCallingServiceName),
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = get(s"/$testJourneyId/ct-utr")
@@ -85,7 +88,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
         stubAuthFailure()
         lazy val result = get(s"/$testJourneyId/ct-utr")
@@ -117,7 +121,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
@@ -129,7 +134,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         journeyId = testJourneyId,
         continueUrl = testContinueUrl,
         optServiceName = None,
-        deskProServiceId = testDeskProServiceId
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
@@ -143,7 +149,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
@@ -155,7 +162,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         journeyId = testJourneyId,
         continueUrl = testContinueUrl,
         optServiceName = None,
-        deskProServiceId = testDeskProServiceId
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")

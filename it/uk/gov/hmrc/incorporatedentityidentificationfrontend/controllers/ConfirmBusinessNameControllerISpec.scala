@@ -46,7 +46,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
 
         val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
@@ -75,7 +76,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             journeyId = testJourneyId,
             continueUrl = testContinueUrl,
             optServiceName = None,
-            deskProServiceId = testDeskProServiceId
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -93,7 +95,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             journeyId = testJourneyId,
             continueUrl = testContinueUrl,
             optServiceName = Some(testCallingServiceName),
-            deskProServiceId = testDeskProServiceId
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -115,7 +118,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
 

@@ -35,7 +35,7 @@ class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwi
                                                )(implicit ec: ExecutionContext,
                                                  appConfig: AppConfig) extends FrontendController(mcc) with FeatureSwitching with I18nSupport {
 
-  private val defaultPageConfig = PageConfig(None, "vrs")
+  private val defaultPageConfig = PageConfig(None, "vrs", appConfig.defaultFeedbackUrl)
 
   def show: Action[AnyContent] = Action.async {
     implicit req =>

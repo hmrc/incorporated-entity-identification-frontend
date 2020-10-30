@@ -46,7 +46,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         journeyId = testJourneyId,
         continueUrl = testContinueUrl,
         optServiceName = None,
-        deskProServiceId = testDeskProServiceId
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
@@ -63,7 +64,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
         stubAuthFailure()
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
@@ -81,7 +83,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -101,7 +104,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = Some(testCallingServiceName),
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -125,7 +129,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -148,7 +153,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -171,7 +177,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))

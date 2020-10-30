@@ -40,7 +40,8 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
     continueUrl = testContinueUrl,
     pageConfig = PageConfig(
       optServiceName = None,
-      deskProServiceId = "vrs"
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl
     )
   )
 

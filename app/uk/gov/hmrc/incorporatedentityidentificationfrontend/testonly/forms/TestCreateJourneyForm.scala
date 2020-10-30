@@ -30,6 +30,7 @@ object TestCreateJourneyForm {
   val serviceName = "serviceName"
   val deskProServiceId = "deskProServiceId"
   val alphanumericRegex = "^[A-Z0-9]*$"
+  val signOutUrl = "signOutUrl"
 
   def continueUrlEmpty: Constraint[String] = Constraint("continue_url.not_entered")(
     companyNumber => validate(
@@ -51,7 +52,7 @@ object TestCreateJourneyForm {
       serviceName -> optText,
       deskProServiceId -> text.verifying(deskProServiceIdEmpty)
     )((continueUrl, serviceName, deskProServiceId) =>
-      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId))
+      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl))
     )(journeyConfig =>
       Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName, journeyConfig.pageConfig.deskProServiceId)
     ))

@@ -22,7 +22,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors.TestCreateJourneyConnector
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms.TestCreateJourneyForm.form
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms.TestCreateJourneyForm.{form, signOutUrl}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.views.html.test_create_journey
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -38,7 +38,8 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
 
   private val defaultPageConfig = PageConfig(
     optServiceName = None,
-    deskProServiceId = "vrs"
+    deskProServiceId = "vrs",
+    signOutUrl = appConfig.defaultFeedbackUrl
   )
 
   private val defaultJourneyConfig = JourneyConfig(

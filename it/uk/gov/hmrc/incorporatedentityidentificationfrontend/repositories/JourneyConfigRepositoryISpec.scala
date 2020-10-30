@@ -44,24 +44,24 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
 
   "documents" should {
     "successfully insert a new document" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
       await(repo.count) mustBe 1
     }
 
     "successfully insert journeyConfig" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
-      await(repo.findById(testJourneyId)) must contain(JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId)))
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
+      await(repo.findById(testJourneyId)) must contain(JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl)))
     }
 
     "successfully delete all documents" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
       await(repo.drop)
       await(repo.count) mustBe 0
     }
 
     "successfully delete one document" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
-      await(repo.insertJourneyConfig(testJourneyId + 1, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId))))
+      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
+      await(repo.insertJourneyConfig(testJourneyId + 1, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
       await(repo.removeById(testJourneyId + 1))
       await(repo.count) mustBe 1
     }

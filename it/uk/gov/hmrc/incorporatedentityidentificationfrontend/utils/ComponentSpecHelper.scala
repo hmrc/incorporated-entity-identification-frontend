@@ -121,7 +121,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   private def buildClient(path: String): WSRequest =
     ws.url(s"http://localhost:$port$baseUrl$path").withFollowRedirects(false)
 
-  def insertJourneyConfig(journeyId: String, continueUrl: String, optServiceName: Option[String], deskProServiceId: String): Future[WriteResult] =
-    journeyConfigRepository.insertJourneyConfig(journeyId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId)))
+  def insertJourneyConfig(journeyId: String, continueUrl: String, optServiceName: Option[String], deskProServiceId: String, signOutUrl: String): Future[WriteResult] =
+    journeyConfigRepository.insertJourneyConfig(journeyId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl)))
 
 }
