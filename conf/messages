@@ -6,7 +6,7 @@ footer.links.terms_and_conditions.text                      = Terms and conditio
 
 service.name                                                = Register for VAT
 
-getpagehelp.linkText                                        = Get help with this page
+getpagehelp.linkText                                        = Get help with this page (opens in new tab)
 
 ## Base
 base.save_and_continue                                      = Save and continue
