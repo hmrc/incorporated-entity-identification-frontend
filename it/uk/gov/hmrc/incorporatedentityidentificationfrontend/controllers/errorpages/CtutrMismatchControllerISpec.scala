@@ -39,7 +39,8 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
         journeyId = testJourneyId,
         continueUrl = testContinueUrl,
         optServiceName = None,
-        deskProServiceId = testDeskProServiceId
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -53,7 +54,8 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
         journeyId = testJourneyId,
         continueUrl = testContinueUrl,
         optServiceName = None,
-        deskProServiceId = testDeskProServiceId
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
@@ -66,7 +68,8 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
@@ -80,7 +83,8 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = Some(testCallingServiceName),
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")

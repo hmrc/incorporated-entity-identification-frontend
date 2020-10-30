@@ -25,14 +25,14 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import scala.concurrent.ExecutionContext
 
 class JourneyRedirectController @Inject()(controllerComponents: MessagesControllerComponents,
-                                         journeyService: JourneyService,
-                                         val authConnector: AuthConnector
-                                         )(implicit ec: ExecutionContext) extends FrontendController(controllerComponents) with AuthorisedFunctions{
+                                          journeyService: JourneyService,
+                                          val authConnector: AuthConnector
+                                         )(implicit ec: ExecutionContext) extends FrontendController(controllerComponents) with AuthorisedFunctions {
 
   def redirectToContinueUrl(journeyId: String): Action[AnyContent] = Action.async {
     implicit req =>
       authorised() {
-        journeyService.getJourneyConfig(journeyId).map{
+        journeyService.getJourneyConfig(journeyId).map {
           journeyConfig => SeeOther(journeyConfig.continueUrl + s"?journeyId=$journeyId")
         }
       }

@@ -18,7 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json.{Json, OFormat}
 
-case class PageConfig(optServiceName: Option[String], deskProServiceId: String)
+case class PageConfig(optServiceName: Option[String], deskProServiceId: String, signOutUrl: String)
 
 object PageConfig {
   implicit val format: OFormat[PageConfig] = Json.format[PageConfig]

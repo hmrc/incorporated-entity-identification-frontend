@@ -47,7 +47,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
         journeyId = testJourneyId,
         continueUrl = testContinueUrl,
         optServiceName = None,
-        deskProServiceId = testDeskProServiceId
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
@@ -61,7 +62,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         ))
         stubAuthFailure()
         lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
@@ -76,7 +78,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
@@ -90,7 +93,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = Some(testCallingServiceName),
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
@@ -152,7 +156,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
               journeyId = testJourneyId,
               continueUrl = testContinueUrl,
               optServiceName = None,
-              deskProServiceId = testDeskProServiceId
+              deskProServiceId = testDeskProServiceId,
+              signOutUrl = testSignOutUrl
             ))
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
@@ -164,7 +169,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             journeyId = testJourneyId,
             continueUrl = testContinueUrl,
             optServiceName = None,
-            deskProServiceId = testDeskProServiceId
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
@@ -189,7 +195,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
               journeyId = testJourneyId,
               continueUrl = testContinueUrl,
               optServiceName = None,
-              deskProServiceId = testDeskProServiceId
+              deskProServiceId = testDeskProServiceId,
+              signOutUrl = testSignOutUrl
             ))
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
@@ -200,7 +207,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             journeyId = testJourneyId,
             continueUrl = testContinueUrl,
             optServiceName = None,
-            deskProServiceId = testDeskProServiceId
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
@@ -214,7 +222,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
               journeyId = testJourneyId,
               continueUrl = testContinueUrl,
               optServiceName = None,
-              deskProServiceId = testDeskProServiceId
+              deskProServiceId = testDeskProServiceId,
+              signOutUrl = testSignOutUrl
             ))
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
@@ -226,7 +235,8 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             journeyId = testJourneyId,
             continueUrl = testContinueUrl,
             optServiceName = None,
-            deskProServiceId = testDeskProServiceId
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")

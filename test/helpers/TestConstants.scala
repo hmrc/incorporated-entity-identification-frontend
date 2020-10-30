@@ -44,4 +44,5 @@ object TestConstants {
       Registered(testSafeId)
     )
   val testContinueUrl = "/test"
+  val testSignOutUrl = "/signOutUrl"
 }

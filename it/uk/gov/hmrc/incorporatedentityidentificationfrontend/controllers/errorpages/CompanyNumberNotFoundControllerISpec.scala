@@ -39,7 +39,8 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
         journeyId = testJourneyId,
         continueUrl = testContinueUrl,
         optServiceName = None,
-        deskProServiceId = testDeskProServiceId
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -54,7 +55,8 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = None,
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
@@ -68,7 +70,8 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
           optServiceName = Some(testCallingServiceName),
-          deskProServiceId = testDeskProServiceId
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")

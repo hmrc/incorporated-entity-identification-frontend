@@ -17,12 +17,14 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
 
 @this(appConfig: AppConfig, layout: govuk_template, h1: h1)
 
+
 @(pageTitle: String, heading: String, message: String)(implicit messages: Messages)
 
-@layout(PageConfig(Some(appConfig.defaultServiceName), "vrs"), pageTitle) {
+@layout(PageConfig(Some(appConfig.defaultServiceName), "vrs", appConfig.defaultFeedbackUrl), pageTitle) {
     @h1(messages(heading))
     <p class="govuk-body">@message</p>
 }
