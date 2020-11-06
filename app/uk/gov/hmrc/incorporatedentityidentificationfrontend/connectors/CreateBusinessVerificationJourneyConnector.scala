@@ -39,9 +39,10 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
       Json.obj(
         "journeyType" -> "BUSINESS_VERIFICATION",
         "origin" -> "vat",
-        "identifiers" -> Json.obj(
+        "identifiers" -> Json.arr(
+          Json.obj(
           "ctUtr" -> ctutr
-        ),
+        )),
         "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url
       )
 
