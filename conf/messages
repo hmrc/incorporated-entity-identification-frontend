@@ -4,6 +4,9 @@ footer.links.cookies.text                                   = Cookies
 footer.links.privacy_policy.text                            = Privacy policy
 footer.links.terms_and_conditions.text                      = Terms and conditions
 
+## Header Links
+header.links.sign_out                                       = Sign Out
+
 service.name                                                = Register for VAT
 
 getpagehelp.linkText                                        = Get help with this page

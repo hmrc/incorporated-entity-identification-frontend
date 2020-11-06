@@ -39,7 +39,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
   private val defaultPageConfig = PageConfig(
     optServiceName = None,
     deskProServiceId = "vrs",
-    signOutUrl = appConfig.defaultFeedbackUrl
+    signOutUrl = appConfig.vatRegFeedbackUrl
   )
 
   private val defaultJourneyConfig = JourneyConfig(

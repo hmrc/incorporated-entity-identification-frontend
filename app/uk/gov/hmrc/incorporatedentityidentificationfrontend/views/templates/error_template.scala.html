@@ -24,7 +24,7 @@
 
 @(pageTitle: String, heading: String, message: String)(implicit messages: Messages)
 
-@layout(PageConfig(Some(appConfig.defaultServiceName), "vrs", appConfig.defaultFeedbackUrl), pageTitle) {
+@layout(PageConfig(Some(appConfig.defaultServiceName), "vrs", appConfig.vatRegFeedbackUrl), pageTitle) {
     @h1(messages(heading))
     <p class="govuk-body">@message</p>
 }

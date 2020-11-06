@@ -73,6 +73,11 @@ object ViewSpecHelper {
     def getSummaryListChangeLink: String = element.select("dd.govuk-summary-list__actions > a").attr("href")
 
     def getSummaryListChangeText: String = element.select("dd.govuk-summary-list__actions > a").text
+
+    lazy val getNavigationItemsList: List[Element] = element.select(".govuk-header__navigation-item").iterator().asScala.toList
+
+    lazy val getNavigationLink: Elements = element.select("ul.govuk-header__navigation li:nth-of-type(1) a")
+
   }
 
   def text(text: String): HavePropertyMatcher[Elements, String] =
