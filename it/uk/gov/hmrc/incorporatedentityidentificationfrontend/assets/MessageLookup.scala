@@ -29,7 +29,10 @@ object MessageLookup {
       val title = "There is a problem"
       val error = "Error: "
     }
+  }
 
+  object Header {
+    val signOut = "Sign Out"
   }
 
   object CaptureCompanyNumber {
@@ -37,6 +40,7 @@ object MessageLookup {
     val link = "search Companies House for the company registration number (opens in a new tab)"
     val line_1 = s"You can $link."
     val hint = "For example, 01234567"
+
 
     object Error {
       val emptyCompanyNumber = "Enter a Company Registration number"

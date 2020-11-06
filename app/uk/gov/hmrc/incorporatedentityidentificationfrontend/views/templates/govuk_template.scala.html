@@ -19,13 +19,13 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.FooterLinks
 
 @this(govukLayout: GovukLayout,
-        govUkHeader: GovukHeader,
+        govukHeader: GovukHeader,
         appConfig: AppConfig,
         footerLinks: FooterLinks,
         footer: govukFooter
 )
 
-@(pageConfig: PageConfig, title: String, startUrl: Option[String] = None)(contentBlock: Html)(implicit messages: Messages)
+@(pageConfig: PageConfig, title: String)(contentBlock: Html)(implicit messages: Messages)
 
 @head = {
     <script src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
@@ -35,9 +35,13 @@
 }
 
 @headerBlock = {
-    @govUkHeader(Header(
-        serviceUrl = startUrl,
-        serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName))
+    @govukHeader(Header(
+        serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
+        navigation =
+            Some(Seq(HeaderNavigation(
+                    href = Some(appConfig.vatRegFeedbackUrl),
+                    text = Some(messages("header.links.sign_out"))
+                )))
     ))
 }
 

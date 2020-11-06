@@ -87,8 +87,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   private lazy val feedbackUrl: String = servicesConfig.getString("feedback.url")
 
-  lazy val exitSurveyOrigin = "vat-registration"
+  lazy val vatRegExitSurveyOrigin = "vat-registration"
 
-  lazy val defaultFeedbackUrl = s"$feedbackUrl/feedback/$exitSurveyOrigin"
+  lazy val vatRegFeedbackUrl = s"$feedbackUrl/feedback/$vatRegExitSurveyOrigin"
 
 }

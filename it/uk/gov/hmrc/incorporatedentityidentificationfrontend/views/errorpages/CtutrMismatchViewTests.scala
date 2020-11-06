@@ -24,13 +24,15 @@ import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, CtutrMismatch => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, Header, CtutrMismatch => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
 
 import scala.concurrent.Future
 
 trait CtutrMismatchViewTests {
-  this: AnyWordSpec with Matchers =>
+  this: ComponentSpecHelper =>
 
   def testCtutrMismatchView(result: => WSResponse,
                             authStub: => StubMapping,
@@ -40,6 +42,16 @@ trait CtutrMismatchViewTests {
       await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
+    }
+
+    lazy val config = app.injector.instanceOf[AppConfig]
+
+    "have a sign out link in the header" in {
+      doc.getNavigationItemsList.head.text mustBe Header.signOut
+    }
+
+    "sign out link redirects to feedback page" in {
+      doc.getNavigationLink.attr("href") mustBe config.vatRegFeedbackUrl
     }
 
     "have the correct title" in {
