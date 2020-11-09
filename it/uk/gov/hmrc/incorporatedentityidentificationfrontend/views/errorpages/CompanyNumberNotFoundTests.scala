@@ -19,12 +19,10 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.views.errorpages
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, Header, CompanyNumberNotFound => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CompanyNumberNotFound => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
@@ -50,8 +48,16 @@ trait CompanyNumberNotFoundTests {
       doc.getNavigationItemsList.head.text mustBe Header.signOut
     }
 
-    "sign out link redirects to feedback page" in {
+    "have a sign out link that redirects to feedback page" in {
       doc.getNavigationLink.attr("href") mustBe config.vatRegFeedbackUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.vatRegBetaFeedbackUrl
     }
 
     "have the correct title" in {
@@ -63,7 +69,7 @@ trait CompanyNumberNotFoundTests {
     }
 
     "have the correct paragraph" in {
-      doc.getParagraphs.first.text mustBe messages.line
+      doc.getParagraphs.eq(1).text mustBe messages.line
     }
 
     "have a try again button" in {

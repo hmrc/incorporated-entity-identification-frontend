@@ -20,12 +20,10 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.views
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, Header, CheckYourAnswers => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CheckYourAnswers => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyNumber, testCtutr}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
@@ -60,8 +58,16 @@ trait CheckYourAnswersViewTests {
       doc.getNavigationItemsList.head.text mustBe Header.signOut
     }
 
-    "sign out link redirects to feedback page" in {
+    "have a sign out link that redirects to feedback page" in {
       doc.getNavigationLink.attr("href") mustBe config.vatRegFeedbackUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.vatRegBetaFeedbackUrl
     }
 
     "have the correct title" in {

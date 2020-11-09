@@ -17,7 +17,9 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.config
 
 import javax.inject.{Inject, Singleton}
+import play.api.mvc.RequestHeader
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, CompaniesHouseStub, FeatureSwitching}
+import uk.gov.hmrc.play.bootstrap.binders.SafeRedirectUrl
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 @Singleton
@@ -90,5 +92,12 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val vatRegExitSurveyOrigin = "vat-registration"
 
   lazy val vatRegFeedbackUrl = s"$feedbackUrl/feedback/$vatRegExitSurveyOrigin"
+
+  private def requestUri(implicit request: RequestHeader): String = SafeRedirectUrl(selfUrl + request.uri).encodedUrl
+
+  def betaFeedbackUrl(serviceIdentifier: String): String =
+    s"$contactHost/contact/beta-feedback?service=$serviceIdentifier"
+
+  def vatRegBetaFeedbackUrl: String = betaFeedbackUrl("vrs")
 
 }
