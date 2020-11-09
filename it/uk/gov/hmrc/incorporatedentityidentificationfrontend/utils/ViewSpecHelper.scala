@@ -74,9 +74,13 @@ object ViewSpecHelper {
 
     def getSummaryListChangeText: String = element.select("dd.govuk-summary-list__actions > a").text
 
+    def getBanner: Elements = element.getElementsByClass("govuk-phase-banner__text")
+
     lazy val getNavigationItemsList: List[Element] = element.select(".govuk-header__navigation-item").iterator().asScala.toList
 
     lazy val getNavigationLink: Elements = element.select("ul.govuk-header__navigation li:nth-of-type(1) a")
+
+    lazy val getBannerLink: String = element.getElementsByClass("govuk-link").attr("href")
 
   }
 

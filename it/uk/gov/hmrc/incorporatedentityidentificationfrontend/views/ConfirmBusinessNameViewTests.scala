@@ -19,12 +19,10 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.views
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
-import org.scalatest.matchers.must.Matchers
-import org.scalatest.wordspec.AnyWordSpec
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, Header, ConfirmBusinessName => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, ConfirmBusinessName => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
@@ -61,12 +59,20 @@ trait ConfirmBusinessNameViewTests {
       doc.getNavigationLink.attr("href") mustBe config.vatRegFeedbackUrl
     }
 
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.vatRegBetaFeedbackUrl
+    }
+
     "have the correct heading" in {
       doc.getH1Elements.first.text mustBe messages.heading
     }
 
     "display the company name" in {
-      doc.getParagraphs.first.text mustBe testCompanyName
+      doc.getParagraphs.eq(1).text mustBe testCompanyName
     }
 
     "Have the correct link" in {

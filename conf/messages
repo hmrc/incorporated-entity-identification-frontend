@@ -11,6 +11,10 @@ service.name                                                = Register for VAT
 
 getpagehelp.linkText                                        = Get help with this page (opens in new tab)
 
+feedback.before                                             = This is a new service - your
+feedback.link                                               = feedback
+feedback.after                                              = (opens in new tab) will help us to improve it.
+
 ## Base
 base.save_and_continue                                      = Save and continue
 base.confirm_and_continue                                   = Confirm and continue

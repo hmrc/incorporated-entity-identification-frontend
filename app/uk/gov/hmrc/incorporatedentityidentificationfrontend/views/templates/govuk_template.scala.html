@@ -17,15 +17,17 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.FooterLinks
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.phaseBanner
 
 @this(govukLayout: GovukLayout,
         govukHeader: GovukHeader,
+        phaseBanner: phaseBanner,
         appConfig: AppConfig,
         footerLinks: FooterLinks,
         footer: govukFooter
 )
 
-@(pageConfig: PageConfig, title: String)(contentBlock: Html)(implicit messages: Messages)
+@(pageConfig: PageConfig, title: String)(contentBlock: Html)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
 
 @head = {
     <script src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
@@ -43,6 +45,10 @@
                     text = Some(messages("header.links.sign_out"))
                 )))
     ))
+}
+
+@beforeContentBlock = {
+    @phaseBanner("beta")
 }
 
 @content = {
@@ -64,6 +70,7 @@
 @govukLayout(
     pageTitle = Some(title),
     headBlock = Some(head),
+    beforeContentBlock = Some(beforeContentBlock),
     headerBlock = Some(headerBlock),
     footerItems = Seq.empty,
     footerBlock = Some(footerBlock)

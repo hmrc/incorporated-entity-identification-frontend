@@ -35,6 +35,10 @@ object MessageLookup {
     val signOut = "Sign Out"
   }
 
+  object BetaBanner {
+    val title = "This is a new service - your feedback (opens in new tab) will help us to improve it."
+  }
+
   object CaptureCompanyNumber {
     val title = "What is the company registration number?"
     val link = "search Companies House for the company registration number (opens in a new tab)"

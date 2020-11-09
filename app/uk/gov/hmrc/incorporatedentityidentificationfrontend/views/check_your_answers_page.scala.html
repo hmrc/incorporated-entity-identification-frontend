@@ -14,6 +14,7 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => Routes}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
@@ -26,7 +27,7 @@
         govukSummaryList: GovukSummaryList,
         formWithCSRF: FormWithCSRF)
 
-@(pageConfig: PageConfig, formAction: Call, ctutr: String, companyNumber: String, journeyId: String)(implicit request: Request[_], messages: Messages)
+@(pageConfig: PageConfig, formAction: Call, ctutr: String, companyNumber: String, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageConfig, messages("check-your-answers.title")) {
 

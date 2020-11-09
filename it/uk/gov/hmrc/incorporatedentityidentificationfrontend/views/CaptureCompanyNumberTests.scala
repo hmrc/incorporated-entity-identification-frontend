@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, Header, CaptureCompanyNumber => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CaptureCompanyNumber => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
@@ -52,12 +52,20 @@ trait CaptureCompanyNumberTests {
       doc.getNavigationLink.attr("href") mustBe config.vatRegFeedbackUrl
     }
 
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.vatRegBetaFeedbackUrl
+    }
+
     "have a view with the correct title" in {
       doc.title mustBe messages.title
     }
 
     "have the correct first line" in {
-      doc.getParagraphs.first.text mustBe messages.line_1
+      doc.getParagraphs.eq(1).text mustBe messages.line_1
     }
 
     "have the correct link" in {
