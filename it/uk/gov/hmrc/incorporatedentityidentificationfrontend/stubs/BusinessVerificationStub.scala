@@ -11,9 +11,10 @@ trait BusinessVerificationStub extends WireMockMethods {
   def stubCreateBusinessVerificationJourney(ctutr: String, journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping = {
     val postBody = Json.obj("journeyType" -> "BUSINESS_VERIFICATION",
       "origin" -> "vat",
-      "identifiers" -> Json.obj(
+      "identifiers" -> Json.arr(
+        Json.obj(
         "ctUtr" -> ctutr
-      ),
+      )),
       "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url
     )
     when(method = POST, uri = "/verification-question/journey", postBody)
