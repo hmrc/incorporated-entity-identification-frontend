@@ -57,7 +57,7 @@ trait CaptureCompanyNumberTests {
     }
 
     "have a banner link that redirects to beta feedback" in {
-      doc.getBannerLink mustBe config.vatRegBetaFeedbackUrl
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
     }
 
     "have a view with the correct title" in {
