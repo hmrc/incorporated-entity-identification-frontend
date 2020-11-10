@@ -85,7 +85,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   lazy val timeToLiveSeconds: Long = servicesConfig.getString("mongodb.timeToLiveSeconds").toLong
 
-  private lazy val feedbackUrl: String = servicesConfig.getString("feedback.url")
+  private lazy val feedbackUrl: String = servicesConfig.getString("feedback.host")
 
   lazy val vatRegExitSurveyOrigin = "vat-registration"
 
