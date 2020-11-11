@@ -43,7 +43,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
   )
 
   private val defaultJourneyConfig = JourneyConfig(
-    continueUrl = s"${appConfig.selfUrl}/incorporated-entity-identification/test-only/retrieve-journey",
+    continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig
   )
 
