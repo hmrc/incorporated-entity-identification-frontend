@@ -53,7 +53,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
       stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
-      lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
+      lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
       result.status mustBe OK
     }
@@ -71,7 +71,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
-        lazy val result: WSResponse = get(s"/$testJourneyId/check-your-answers-business")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
         result.status mustBe SEE_OTHER
       }
@@ -93,7 +93,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         )
         lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
-        lazy val result = get(s"/$testJourneyId/check-your-answers-business")
+        lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
         testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig)
         testServiceName(testDefaultServiceName, result, authStub, insertConfig)
@@ -114,7 +114,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         )
         lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
-        lazy val result = get(s"/$testJourneyId/check-your-answers-business")
+        lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
         testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig)
         testServiceName(testCallingServiceName, result, authStub, insertConfig)
@@ -140,7 +140,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubStoreIdentifiersMatch(testJourneyId)(status = OK)
         stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(status = CREATED)
 
-        lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
+        lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.BusinessVerificationController.startBusinessVerificationJourney(testJourneyId).url)
@@ -163,7 +163,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
         stubStoreIdentifiersMatch(testJourneyId)(status = OK)
 
-        lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
+        lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
@@ -196,7 +196,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           )
         )
 
-        lazy val result = post(s"/$testJourneyId/check-your-answers-business")()
+        lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe INTERNAL_SERVER_ERROR
       }

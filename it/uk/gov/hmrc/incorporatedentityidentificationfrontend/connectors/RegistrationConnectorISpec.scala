@@ -16,15 +16,14 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import play.api.libs.json.Json
 import play.api.test.Helpers.{INTERNAL_SERVER_ERROR, OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.RegistrationStub
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.RegisterStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
-class RegistrationConnectorISpec extends ComponentSpecHelper with RegistrationStub {
+class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
 
   private val registrationConnector = app.injector.instanceOf[RegistrationConnector]
 
@@ -33,12 +32,7 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegistrationSt
   "register" should {
     "return Registered" when {
       "the registration has been successful" in {
-        stubRegister(OK, Json.obj(
-          "registration" -> Json.obj(
-            "registrationStatus" -> "REGISTERED",
-            "registeredBusinessPartnerId" -> testSafeId
-          )
-        ))
+        stubRegister(testCompanyNumber, testCtutr)(OK, Registered(testSafeId))
 
         val result = await(registrationConnector.register(testCompanyNumber, testCtutr))
 
@@ -47,7 +41,7 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegistrationSt
     }
     "return RegistrationFailed" when {
       "the registration has not been successful" in {
-        stubRegister(INTERNAL_SERVER_ERROR)
+        stubRegister(testCompanyNumber, testCtutr)(INTERNAL_SERVER_ERROR, RegistrationFailed)
 
         val result = await(registrationConnector.register(testCompanyNumber, testCtutr))
 

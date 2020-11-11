@@ -45,7 +45,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         signOutUrl = testSignOutUrl
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result = get(s"/$testJourneyId/ct-utr")
+      lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
       result.status mustBe OK
     }
@@ -60,7 +60,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result = get(s"/$testJourneyId/ct-utr")
+        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
         testCaptureCtutrView(result, authStub, insertConfig)
         testServiceName(testDefaultServiceName, result, authStub, insertConfig)
@@ -75,7 +75,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result = get(s"/$testJourneyId/ct-utr")
+        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
         testCaptureCtutrView(result, authStub, insertConfig)
         testServiceName(testCallingServiceName, result, authStub, insertConfig)
@@ -92,7 +92,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         ))
         stubAuthFailure()
-        lazy val result = get(s"/$testJourneyId/ct-utr")
+        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
         result.status mustBe SEE_OTHER
       }
@@ -105,7 +105,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
 
-        val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> testCtutr)
+        val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> testCtutr)
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -125,7 +125,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
+        lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "")
 
         result.status mustBe BAD_REQUEST
       }
@@ -138,7 +138,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         signOutUrl = testSignOutUrl
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "")
+      lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "")
 
       testCaptureCtutrErrorMessagesNoCtutr(result, authStub, insertConfig)
     }
@@ -153,7 +153,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
+        lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "123456789")
 
         result.status mustBe BAD_REQUEST
       }
@@ -166,7 +166,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         signOutUrl = testSignOutUrl
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result = post(s"/$testJourneyId/ct-utr")("ctutr" -> "123456789")
+      lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "123456789")
 
       testCaptureCtutrErrorMessagesInvalidCtutr(result, authStub, insertConfig)
     }

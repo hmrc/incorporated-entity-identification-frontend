@@ -51,7 +51,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
         signOutUrl = testSignOutUrl
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
+      lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/company-number")
 
       result.status mustBe OK
     }
@@ -66,7 +66,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         ))
         stubAuthFailure()
-        lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/company-number")
 
         result.status mustBe SEE_OTHER
       }
@@ -82,7 +82,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/company-number")
 
         testCaptureCompanyNumberView(result, authStub, insertConfig)
         testServiceName(testDefaultServiceName, result, authStub, insertConfig)
@@ -97,7 +97,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result: WSResponse = get(s"/$testJourneyId/company-number")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/company-number")
 
         testCaptureCompanyNumberView(result, authStub, insertConfig)
         testServiceName(testCallingServiceName, result, authStub, insertConfig)
@@ -118,7 +118,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             )
             stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))(status = OK)
 
-            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
+            lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
             result must have(
               httpStatus(SEE_OTHER),
@@ -141,7 +141,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             )
             stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))(status = OK)
 
-            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
+            lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
             result must have(
               httpStatus(SEE_OTHER),
@@ -160,7 +160,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
               signOutUrl = testSignOutUrl
             ))
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
+            lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "")
 
             result.status mustBe BAD_REQUEST
           }
@@ -173,7 +173,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             signOutUrl = testSignOutUrl
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "")
+          lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "")
 
           testCaptureCompanyNumberEmpty(result, authStub, insertConfig)
         }
@@ -182,7 +182,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           "redirect to the Company Number not found error page" in {
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(status = NOT_FOUND)
-            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
+            lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
             result.status mustBe SEE_OTHER
             redirectUri(errorRoutes.CompanyNumberNotFoundController.show(testJourneyId).url)
@@ -199,7 +199,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
               signOutUrl = testSignOutUrl
             ))
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
+            lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
 
             result.status mustBe BAD_REQUEST
           }
@@ -211,7 +211,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             signOutUrl = testSignOutUrl
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
+          lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
 
           testCaptureCompanyNumberWrongLength(result, authStub, insertConfig)
         }
@@ -226,7 +226,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
               signOutUrl = testSignOutUrl
             ))
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-            lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
+            lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
 
             result.status mustBe BAD_REQUEST
           }
@@ -239,7 +239,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             signOutUrl = testSignOutUrl
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          lazy val result = post(s"/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
+          lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
 
           testCaptureCompanyNumberWrongFormat(result, authStub, insertConfig)
         }

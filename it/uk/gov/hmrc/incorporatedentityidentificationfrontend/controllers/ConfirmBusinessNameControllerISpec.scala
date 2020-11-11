@@ -53,7 +53,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
 
-        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
         result.status mustBe OK
       }
@@ -64,7 +64,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
 
-          lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
+          lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
           result.status mustBe SEE_OTHER
         }
@@ -84,7 +84,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             status = OK,
             body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
           )
-          lazy val result = get(s"/$testJourneyId/confirm-business-name")
+          lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
           testConfirmBusinessNameView(result, stub, authStub, insertConfig, testCompanyName)
           testServiceName(testDefaultServiceName, result, authStub, insertConfig)
@@ -103,7 +103,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             status = OK,
             body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
           )
-          lazy val result = get(s"/$testJourneyId/confirm-business-name")
+          lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
           testConfirmBusinessNameView(result, stub, authStub, insertConfig, testCompanyName)
           testServiceName(testCallingServiceName, result, authStub, insertConfig)
@@ -123,7 +123,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         ))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
 
-        lazy val result: WSResponse = get(s"/$testJourneyId/confirm-business-name")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
         result.status mustBe INTERNAL_SERVER_ERROR
       }
@@ -133,7 +133,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
   "POST /confirm-business-name" should {
     "redirect to Capture CTUTR Page" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result = post(s"/$testJourneyId/confirm-business-name")()
+      lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 
       result must have(
         httpStatus(SEE_OTHER),

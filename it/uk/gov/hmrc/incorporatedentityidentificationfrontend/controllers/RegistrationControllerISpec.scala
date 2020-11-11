@@ -20,7 +20,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRegister(testCompanyNumber, testCtutr)(status = OK, body = testSuccessfulRegistration)
         stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
 
-        val result = get(s"/$testJourneyId/register")
+        val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
         verifyRegister(testCompanyNumber, testCtutr)
@@ -35,7 +35,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRegister(testCompanyNumber, testCtutr)(status = OK, body = testFailedRegistration)
         stubStoreRegistrationStatus(testJourneyId, testFailedRegistration)(status = OK)
 
-        val result = get(s"/$testJourneyId/register")
+        val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
         verifyRegister(testCompanyNumber, testCtutr)
@@ -47,9 +47,9 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
       "the user is unauthorised" in {
         stubAuthFailure()
 
-        val result = get(s"/$testJourneyId/register")
+        val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe SEE_OTHER
-        result.header(LOCATION) mustBe Some("http://localhost:9025/gg/sign-in?continue=%2Fincorporated-entity-identification%2FTestJourneyId%2Fregister&origin=incorporated-entity-identification-frontend")
+        result.header(LOCATION) mustBe Some("http://localhost:9025/gg/sign-in?continue=%2Fidentify-your-incorporated-business%2FTestJourneyId%2Fregister&origin=incorporated-entity-identification-frontend")
 
       }
     }
@@ -61,7 +61,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
 
-        val result = get(s"/$testJourneyId/register")
+        val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
       }
 
@@ -71,7 +71,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
 
-        val result = get(s"/$testJourneyId/register")
+        val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
       }
 
@@ -81,7 +81,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
 
-        val result = get(s"/$testJourneyId/register")
+        val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
       }
 
@@ -91,7 +91,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = NOT_FOUND)
 
-        val result = get(s"/$testJourneyId/register")
+        val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe INTERNAL_SERVER_ERROR
       }
     }

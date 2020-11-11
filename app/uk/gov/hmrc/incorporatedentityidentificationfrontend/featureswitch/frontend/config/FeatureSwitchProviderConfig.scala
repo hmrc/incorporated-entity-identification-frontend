@@ -28,7 +28,7 @@ class FeatureSwitchProviderConfig @Inject()(configuration: Configuration) {
 
   lazy val selfBaseUrl: String = servicesConfig.baseUrl("self")
 
-  lazy val selfFeatureSwitchUrl = s"$selfBaseUrl/incorporated-entity-identification/test-only/api/feature-switches"
+  lazy val selfFeatureSwitchUrl = s"$selfBaseUrl/identify-your-incorporated-business/test-only/api/feature-switches"
 
   lazy val incorporatedEntityIdentificationFeatureSwitchUrl =
     s"${servicesConfig.baseUrl("incorporated-entity-identification")}/incorporated-entity-identification/test-only/api/feature-switches"

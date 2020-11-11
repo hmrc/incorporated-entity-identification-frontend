@@ -32,7 +32,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
       stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
       stubStoreBusinessVerificationStatus(journeyId = testJourneyId, businessVerificationStatus = BusinessVerificationPass)(status = OK)
 
-      lazy val result = get(s"/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
+      lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result" + s"?journeyId=$testBusinessVerificationJourneyId")
 
       result.status mustBe SEE_OTHER
       result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
@@ -42,7 +42,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
 
-      lazy val result = get(s"/$testJourneyId/business-verification-result")
+      lazy val result = get(s"$baseUrl/$testJourneyId/business-verification-result")
 
       result.status mustBe INTERNAL_SERVER_ERROR
     }
@@ -55,7 +55,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
         stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
         stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
 
-        lazy val result = get(s"/$testJourneyId/start-business-verification")
+        lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(testContinueUrl)
@@ -69,7 +69,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
         stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(NOT_FOUND)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
 
-        lazy val result = get(s"/$testJourneyId/start-business-verification")
+        lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
