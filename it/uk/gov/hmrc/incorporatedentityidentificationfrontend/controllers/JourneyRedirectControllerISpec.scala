@@ -13,7 +13,7 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       await(journeyConfigRepository.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
 
-      lazy val result = get(s"/journey/redirect/$testJourneyId")
+      lazy val result = get(s"$baseUrl/journey/redirect/$testJourneyId")
 
       result.status mustBe SEE_OTHER
       result.header(LOCATION) mustBe Some(testContinueUrl + s"?journeyId=$testJourneyId")

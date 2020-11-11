@@ -28,6 +28,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecH
 import scala.concurrent.ExecutionContext.Implicits.global
 
 class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with IncorporatedEntityIdentificationStub with AuthStub {
+
   "POST /api/journey" should {
     "return a created journey" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -43,7 +44,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
       )
 
-      lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))
+      lazy val result = post("/incorporated-entity-identification/api/journey", Json.toJson(testJourneyConfig))
 
       (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
 
@@ -63,7 +64,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         )
       )
 
-      lazy val result = post("/api/journey", Json.toJson(testJourneyConfig))
+      lazy val result = post("/incorporated-entity-identification/api/journey", Json.toJson(testJourneyConfig))
 
       result.status mustBe SEE_OTHER
     }
@@ -91,7 +92,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         )
 
 
-        lazy val result = get(s"/api/journey/$testJourneyId")
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
 
         result.status mustBe OK
         result.json mustBe Json.obj(
@@ -120,7 +121,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
           status = NOT_FOUND
         )
 
-        lazy val result = get(s"/api/journey/$testJourneyId")
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
 
         result.status mustBe NOT_FOUND
       }
@@ -132,7 +133,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         status = NOT_FOUND
       )
 
-      lazy val result = get(s"/api/journey/$testJourneyId")
+      lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
 
       result.status mustBe SEE_OTHER
     }

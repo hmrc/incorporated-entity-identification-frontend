@@ -116,12 +116,17 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     )
   }
 
-  val baseUrl: String = "/incorporated-entity-identification"
+  val baseUrl: String = "/identify-your-incorporated-business"
 
-  private def buildClient(path: String): WSRequest =
-    ws.url(s"http://localhost:$port$baseUrl$path").withFollowRedirects(false)
+  private def buildClient(path: String): WSRequest = ws.url(s"http://localhost:$port$path").withFollowRedirects(false)
 
-  def insertJourneyConfig(journeyId: String, continueUrl: String, optServiceName: Option[String], deskProServiceId: String, signOutUrl: String): Future[WriteResult] =
-    journeyConfigRepository.insertJourneyConfig(journeyId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl)))
+  def insertJourneyConfig(journeyId: String,
+                          continueUrl: String,
+                          optServiceName: Option[String],
+                          deskProServiceId: String,
+                          signOutUrl: String): Future[WriteResult] =
+    journeyConfigRepository.insertJourneyConfig(
+      journeyId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl))
+    )
 
 }

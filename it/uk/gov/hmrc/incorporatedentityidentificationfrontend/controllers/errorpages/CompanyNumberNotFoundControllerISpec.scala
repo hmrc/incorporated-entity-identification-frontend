@@ -44,7 +44,7 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
-      lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
+      lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/company-name-not-found")
 
       result.status mustBe OK
     }
@@ -59,7 +59,7 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
           signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/company-name-not-found")
 
         testCompanyNumberNotFoundView(result, authStub, insertConfig)
         testServiceName(testDefaultServiceName, result, authStub, insertConfig)
@@ -74,7 +74,7 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
           signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result: WSResponse = get(s"/$testJourneyId/error/company-name-not-found")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/company-name-not-found")
 
         testCompanyNumberNotFoundView(result, authStub, insertConfig)
         testServiceName(testCallingServiceName, result, authStub, insertConfig)
@@ -85,7 +85,7 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
   "POST /error/company-name-not-found" should {
     "redirect to Capture Company Number Page" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result = post(s"/$testJourneyId/error/company-name-not-found")()
+      lazy val result = post(s"$baseUrl/$testJourneyId/error/company-name-not-found")()
 
       result must have(
         httpStatus(SEE_OTHER),

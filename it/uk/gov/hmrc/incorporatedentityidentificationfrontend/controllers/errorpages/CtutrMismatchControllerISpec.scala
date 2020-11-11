@@ -44,7 +44,7 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
-      lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
+      lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
 
       result.status mustBe OK
     }
@@ -58,7 +58,7 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
         signOutUrl = testSignOutUrl
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
+      lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
 
       testCtutrMismatchView(result, authStub, insertConfig)
     }
@@ -72,7 +72,7 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
           signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
 
         testCtutrMismatchView(result, authStub, insertConfig)
         testServiceName(testDefaultServiceName, result, authStub, insertConfig)
@@ -87,7 +87,7 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
           signOutUrl = testSignOutUrl
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result: WSResponse = get(s"/$testJourneyId/error/could-not-confirm-business")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
 
         testCtutrMismatchView(result, authStub, insertConfig)
         testServiceName(testCallingServiceName, result, authStub, insertConfig)
@@ -98,7 +98,7 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
   "POST /error/could-not-confirm-business" should {
     "redirect to Capture Company Number Page" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result = post(s"/$testJourneyId/error/could-not-confirm-business")()
+      lazy val result = post(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")()
 
       result must have(
         httpStatus(SEE_OTHER),
