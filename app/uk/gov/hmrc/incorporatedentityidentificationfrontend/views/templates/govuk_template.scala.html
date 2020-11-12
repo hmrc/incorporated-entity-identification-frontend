@@ -18,9 +18,11 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.FooterLinks
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.phaseBanner
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
 
 @this(govukLayout: GovukLayout,
-        govukHeader: GovukHeader,
+        hmrcHeader: HmrcHeader,
         phaseBanner: phaseBanner,
         appConfig: AppConfig,
         footerLinks: FooterLinks,
@@ -37,14 +39,11 @@
 }
 
 @headerBlock = {
-    @govukHeader(Header(
+    @hmrcHeader(Header(
         serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
-        navigation =
-            Some(Seq(HeaderNavigation(
-                    href = Some(appConfig.vatRegFeedbackUrl),
-                    text = Some(messages("header.links.sign_out"))
-                )))
+        signOutHref = Some(appConfig.vatRegFeedbackUrl)
     ))
+
 }
 
 @beforeContentBlock = {
