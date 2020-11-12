@@ -76,11 +76,11 @@ object ViewSpecHelper {
 
     def getBanner: Elements = element.getElementsByClass("govuk-phase-banner__text")
 
-    lazy val getNavigationItemsList: List[Element] = element.select(".govuk-header__navigation-item").iterator().asScala.toList
+    lazy val getSignOutLink: String = element.select(".hmrc-sign-out-nav__link").attr("href")
 
-    lazy val getNavigationLink: Elements = element.select("ul.govuk-header__navigation li:nth-of-type(1) a")
+    lazy val getSignOutText: String = element.select(".hmrc-sign-out-nav__link").text
 
-    lazy val getBannerLink: String = element.getElementsByClass("govuk-link").attr("href")
+    lazy val getBannerLink: String = element.getElementsByClass("govuk-link-beta").attr("href")
 
   }
 

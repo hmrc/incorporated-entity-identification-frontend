@@ -55,11 +55,11 @@ trait CheckYourAnswersViewTests {
     lazy val config = app.injector.instanceOf[AppConfig]
 
     "have a sign out link in the header" in {
-      doc.getNavigationItemsList.head.text mustBe Header.signOut
+      doc.getSignOutText mustBe Header.signOut
     }
 
     "have a sign out link that redirects to feedback page" in {
-      doc.getNavigationLink.attr("href") mustBe config.vatRegFeedbackUrl
+      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
     }
 
     "have the correct beta banner" in {

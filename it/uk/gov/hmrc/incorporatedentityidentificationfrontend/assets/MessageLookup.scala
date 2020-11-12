@@ -32,7 +32,7 @@ object MessageLookup {
   }
 
   object Header {
-    val signOut = "Sign Out"
+    val signOut = "Sign out"
   }
 
   object BetaBanner {
