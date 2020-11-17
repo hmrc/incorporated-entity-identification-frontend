@@ -22,6 +22,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 
 import scala.concurrent.{ExecutionContext, Future}
+import scala.util.matching.Regex
 
 @Singleton
 class CompanyProfileService @Inject()(storageConnector: IncorporatedEntityInformationConnector,
@@ -31,7 +32,7 @@ class CompanyProfileService @Inject()(storageConnector: IncorporatedEntityInform
   def retrieveAndStoreCompanyProfile(journeyId: String,
                                      companyNumber: String
                                     )(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
-    companyProfileConnector.getCompanyProfile(companyNumber).flatMap {
+    companyProfileConnector.getCompanyProfile(padCrn(companyNumber)).flatMap {
       case Some(companyProfile) =>
         storageConnector.storeData(journeyId, "companyProfile", companyProfile).map {
           _ => Some(companyProfile)
@@ -39,5 +40,18 @@ class CompanyProfileService @Inject()(storageConnector: IncorporatedEntityInform
       case None =>
         Future.successful(None)
     }
+
+
+  private def padCrn(companyNumber: String): String = {
+    val crnMaxLength: Int = 8
+    val CrnRegex: Regex = "([a-zA-Z]*)([0-9a-zA-Z]*)".r
+    val padding: String = Seq.fill(crnMaxLength - companyNumber.length)('0').mkString
+
+    companyNumber match {
+      case CrnRegex(prefix, remainder) =>
+        prefix + padding + remainder
+      case _ =>
+        throw new IllegalArgumentException(s"[CompanyProfileService] Company number: '$companyNumber' is invalid") }
+  }
 
 }
