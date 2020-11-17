@@ -34,6 +34,14 @@ class CompanyProfileServiceSpec extends UnitSpec
   object TestService extends CompanyProfileService(mockIncorporatedEntityInformationConnector, mockCompanyProfileConnector)
 
   val dataKey = "companyProfile"
+  val testShortCompanyNumber = "1234567"
+  val testPaddedCompanyNumber = "01234567"
+  val testPrefixedCompanyNumber = "SC12"
+  val testPrefixedPaddedCompanyNumber = "SC000012"
+  val testSuffixedCompanyNumber = "1234567R"
+  val testPrefixSuffixCompanyNumber = "IP1234RS"
+  val testInvalidCompanyNumber = "123456 7"
+
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -48,6 +56,84 @@ class CompanyProfileServiceSpec extends UnitSpec
         result mustBe Some(testCompanyProfile)
         verifyGetCompanyProfile(testCompanyNumber)
         verifyStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)
+      }
+
+      "the company number is 8 characters long" should {
+        "return the result of the connector" in {
+          mockGetCompanyProfile(testCompanyNumber)(Future.successful(Some(testCompanyProfile)))
+          mockStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)(Future.successful(SuccessfullyStored))
+
+          val result = await(TestService.retrieveAndStoreCompanyProfile(testJourneyId, testCompanyNumber))
+
+          result mustBe Some(testCompanyProfile)
+          verifyGetCompanyProfile(testCompanyNumber)
+          verifyStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)
+        }
+      }
+
+      "the company number is shorter than 8 characters" when {
+        "there CRN has no prefix" should {
+          "return the result of the connector" in {
+            mockGetCompanyProfile(testPaddedCompanyNumber)(Future.successful(Some(testCompanyProfile)))
+            mockStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)(Future.successful(SuccessfullyStored))
+
+            val result = await(TestService.retrieveAndStoreCompanyProfile(testJourneyId, testShortCompanyNumber))
+
+            result mustBe Some(testCompanyProfile)
+            verifyGetCompanyProfile(testPaddedCompanyNumber)
+            verifyStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)
+          }
+        }
+
+        "the CRN has a prefix" should {
+          "return the result of the connector" in {
+            mockGetCompanyProfile(testPrefixedPaddedCompanyNumber)(Future.successful(Some(testCompanyProfile)))
+            mockStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)(Future.successful(SuccessfullyStored))
+
+            val result = await(TestService.retrieveAndStoreCompanyProfile(testJourneyId, testPrefixedCompanyNumber))
+
+            result mustBe Some(testCompanyProfile)
+            verifyGetCompanyProfile(testPrefixedPaddedCompanyNumber)
+            verifyStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)
+          }
+        }
+      }
+
+      "the company number has a suffix" should {
+        "return the result of the connector" in {
+          mockGetCompanyProfile(testSuffixedCompanyNumber)(Future.successful(Some(testCompanyProfile)))
+          mockStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)(Future.successful(SuccessfullyStored))
+
+          val result = await(TestService.retrieveAndStoreCompanyProfile(testJourneyId, testSuffixedCompanyNumber))
+
+          result mustBe Some(testCompanyProfile)
+          verifyGetCompanyProfile(testSuffixedCompanyNumber)
+          verifyStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)
+        }
+      }
+
+      "the company number has a prefix and a suffix" should {
+        "return the result of the connector" in {
+          mockGetCompanyProfile(testPrefixSuffixCompanyNumber)(Future.successful(Some(testCompanyProfile)))
+          mockStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)(Future.successful(SuccessfullyStored))
+
+          val result = await(TestService.retrieveAndStoreCompanyProfile(testJourneyId, testPrefixSuffixCompanyNumber))
+
+          result mustBe Some(testCompanyProfile)
+          verifyGetCompanyProfile(testPrefixSuffixCompanyNumber)
+          verifyStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)
+        }
+      }
+    }
+
+    "return None" when {
+      "there is no company profile for the given company number" in {
+        mockGetCompanyProfile(testCompanyNumber)(Future.successful(None))
+
+        val result = await(TestService.retrieveAndStoreCompanyProfile(testJourneyId, testCompanyNumber))
+
+        result mustBe None
+        verifyGetCompanyProfile(testCompanyNumber)
       }
     }
 
@@ -66,18 +152,13 @@ class CompanyProfileServiceSpec extends UnitSpec
         verifyGetCompanyProfile(testCompanyNumber)
         verifyStoreData[CompanyProfile](testJourneyId, dataKey, testCompanyProfile)
       }
-    }
 
-    "return None" when {
-      "there is no company profile for the given company number" in {
-        mockGetCompanyProfile(testCompanyNumber)(Future.successful(None))
-
-        val result = await(TestService.retrieveAndStoreCompanyProfile(testJourneyId, testCompanyNumber))
-
-        result mustBe None
-        verifyGetCompanyProfile(testCompanyNumber)
+      "the company number is invalid" in {
+        intercept[IllegalArgumentException](
+          await(TestService.retrieveAndStoreCompanyProfile(testJourneyId, testInvalidCompanyNumber))
+        )
       }
     }
-  }
 
+  }
 }
