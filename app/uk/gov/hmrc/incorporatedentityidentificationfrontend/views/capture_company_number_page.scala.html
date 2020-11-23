@@ -14,30 +14,15 @@
  * limitations under the License.
  *@
 
-@*
- * Copyright 2020 HM Revenue & Customs
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- *@
-
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.{errorSummary, inputText}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
 
 @this(layout: govuk_template,
-        govukFieldset: GovukFieldset,
+        h1: h1,
         govukInput: GovukInput,
         govukDetails: GovukDetails,
         govukButton: GovukButton,
@@ -49,20 +34,11 @@
 @(pageConfig: PageConfig, formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageConfig, title(messages("capture-company-number.title"), form)) {
+
     @errorSummary(form.errors)
 
-    @govukFieldset(Fieldset(
-        legend = Some(Legend(
-            content = Text(Messages("capture-company-number.title")),
-            classes = "govuk-fieldset__legend--xl",
-            isPageHeading = true
-        )),
-        html = html
-    ))
+    @h1(messages("capture-company-number.heading"))
 
-}
-
-@html = {
     @formWithCSRF(action = formAction) {
 
         <p class="govuk-body">
@@ -74,7 +50,7 @@
             id = "companyNumber",
             name = "companyNumber",
             isPageHeading = false,
-            label = "",
+            label = messages("capture-company-number.title"),
             hint = Some(Html(s"""<p style="color:#626a6e" class="govuk-body">${messages("capture-company-number.hint")}</p>""")),
             classes = "govuk-input--width-10"
         )

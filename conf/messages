@@ -28,8 +28,10 @@ error.title-prefix                                          = 'Error: '
 
 ## Company Number
 capture-company-number.title                                = What is the company registration number?
+capture-company-number.heading                              = What is the company registration number?
 capture-company-number.line_1                               = You can <a id="companiesHouse" href="{0}" target="_blank"> search Companies House for the company registration number (opens in new tab)</a>.
 capture-company-number.hint                                 = For example, 01234567
+capture-company-number.label                                = Your company registration number
 capture-company-number-empty.error                          = Enter a Company Registration number
 capture-company-number-length.error                         = Enter a Company Registration number using 8 characters or fewer
 capture-company-number-format.error                         = Enter a Company Number in the correct format 
