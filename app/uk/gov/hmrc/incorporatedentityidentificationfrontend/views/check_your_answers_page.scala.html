@@ -18,11 +18,12 @@
 @import uk.gov.hmrc.govukfrontend.views.html.components._
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => Routes}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
 
 @this(layout: govuk_template,
+        h1: h1,
         govUkHeader: GovukHeader,
-        govukFieldset: GovukFieldset,
         govukButton: GovukButton,
         govukSummaryList: GovukSummaryList,
         formWithCSRF: FormWithCSRF)
@@ -31,18 +32,8 @@
 
 @layout(pageConfig, messages("check-your-answers.title")) {
 
-    @govukFieldset(Fieldset(
-        legend = Some(Legend(
-            content = Text(messages("check-your-answers.heading")),
-            classes = "govuk-fieldset__legend--xl",
-            isPageHeading = true
-        )),
-        html = html
-    ))
+    @h1(messages("check-your-answers.heading"))
 
-}
-
-@html = {
     @govukSummaryList(SummaryList(
         classes = "govuk-!-margin-bottom-9",
         rows = Seq(
