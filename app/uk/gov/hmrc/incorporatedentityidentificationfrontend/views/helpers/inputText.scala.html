@@ -36,7 +36,7 @@
         label = Label(
             content = Text(label),
             isPageHeading = isPageHeading,
-            classes = if(isPageHeading) "govuk-label--xl" else "govuk-label govuk-visually-hidden"
+            classes = if(isPageHeading) "govuk-label--xl" else "govuk-label govuk-!-font-weight-bold"
         ),
         hint = hint.map(hintHtml => Hint(
             content = HtmlContent(hintHtml)

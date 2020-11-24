@@ -34,9 +34,14 @@
 @(pageConfig: PageConfig, formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageConfig, title(messages("capture-company-number.title"), form)) {
+
     @errorSummary(form.errors)
 
-    @h1(messages("capture-company-number.heading"))
+    <h1 class="govuk-label-wrapper">
+        <label class="govuk-label govuk-label--xl" for="companyNumber">
+            @messages("capture-company-number.title")
+        </label>
+    </h1>
 
     @formWithCSRF(action = formAction) {
 
@@ -49,7 +54,7 @@
             id = "companyNumber",
             name = "companyNumber",
             isPageHeading = false,
-            label = messages("capture-company-number.heading"),
+            label = "",
             hint = Some(Html(s"""<p style="color:#626a6e" class="govuk-body">${messages("capture-company-number.hint")}</p>""")),
             classes = "govuk-input--width-10"
         )
