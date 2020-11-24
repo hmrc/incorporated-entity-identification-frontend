@@ -94,4 +94,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   def betaFeedbackUrl(serviceIdentifier: String): String =
     s"$contactHost/contact/beta-feedback?service=$serviceIdentifier"
 
+  lazy val timeout: Int = servicesConfig.getInt("timeout.timeout")
+  lazy val countdown: Int = servicesConfig.getInt("timeout.countdown")
 }
