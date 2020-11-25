@@ -20,22 +20,39 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.phaseBanner
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcTimeoutDialog
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.TimeoutDialog
 
 @this(govukLayout: GovukLayout,
         hmrcHeader: HmrcHeader,
         phaseBanner: phaseBanner,
         appConfig: AppConfig,
         footerLinks: FooterLinks,
-        footer: govukFooter
+        footer: govukFooter,
+        timeoutDialog: HmrcTimeoutDialog
 )
 
-@(pageConfig: PageConfig, title: String)(contentBlock: Html)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
+@(pageConfig: PageConfig, title: String, timeout: Boolean = true)(contentBlock: Html)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
 
 @head = {
     <script src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
         <!--[if lte IE 8]><link href=' @controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
         <!--[if gt IE 8]><!--> <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" />
         <!--<![endif]-->
+    @if(timeout) {
+        @timeoutDialog(
+            TimeoutDialog(
+                timeout = Some(appConfig.timeout),
+                countdown = Some(appConfig.countdown),
+                keepAliveUrl = Some("#"),
+                keepAliveButtonText = Some(messages("timeout.keepAlive")),
+                signOutUrl = Some(pageConfig.signOutUrl),
+                signOutButtonText = Some(messages("timeout.signOut")),
+                title = None,
+                message = Some(messages("timeout.message"))
+                )
+        )
+    }
 }
 
 @headerBlock = {
@@ -43,7 +60,6 @@
         serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
         signOutHref = Some(appConfig.vatRegFeedbackUrl)
     ))
-
 }
 
 @beforeContentBlock = {
@@ -66,11 +82,20 @@
     @footer(Footer(meta = Some(Meta(items = Some(footerLinks.items)))))
 }
 
+@scripts = {
+    <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("javascripts/jquery.min.js")'></script>
+    <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
+    <script>window.GOVUKFrontend.initAll();</script>
+    <script>window.HMRCFrontend.initAll();</script>
+}
+
 @govukLayout(
     pageTitle = Some(title),
     headBlock = Some(head),
     beforeContentBlock = Some(beforeContentBlock),
     headerBlock = Some(headerBlock),
+    scriptsBlock = Some(scripts),
     footerItems = Seq.empty,
     footerBlock = Some(footerBlock)
 )(content)

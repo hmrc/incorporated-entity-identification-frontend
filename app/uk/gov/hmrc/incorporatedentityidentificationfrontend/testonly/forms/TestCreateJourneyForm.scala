@@ -46,15 +46,23 @@ object TestCreateJourneyForm {
     )
   )
 
+  def signOutUrlEmpty: Constraint[String] = Constraint("sign_out_url.not_entered")(
+    signOutUrl => validate(
+      constraint = signOutUrl.isEmpty,
+      errMsg = "Sign Out Url is not entered"
+    )
+  )
+
   val form: Form[JourneyConfig] = {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),
       serviceName -> optText,
-      deskProServiceId -> text.verifying(deskProServiceIdEmpty)
-    )((continueUrl, serviceName, deskProServiceId) =>
+      deskProServiceId -> text.verifying(deskProServiceIdEmpty),
+      signOutUrl -> text.verifying(signOutUrlEmpty)
+    )((continueUrl, serviceName, deskProServiceId, signOutUrl) =>
       JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl))
     )(journeyConfig =>
-      Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName, journeyConfig.pageConfig.deskProServiceId)
+      Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName, journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl)
     ))
   }
 
