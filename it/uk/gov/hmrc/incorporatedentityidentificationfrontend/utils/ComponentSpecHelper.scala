@@ -20,11 +20,11 @@ import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatest.{BeforeAndAfterAll, BeforeAndAfterEach}
 import org.scalatestplus.play.guice.GuiceOneServerPerSuite
+import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
-import play.api.{Application, Environment, Mode}
 import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
@@ -39,18 +39,13 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with BeforeAndAfterEach
   with GuiceOneServerPerSuite {
 
-  override lazy val app: Application = new GuiceApplicationBuilder()
-    .in(Environment.simple(mode = Mode.Dev))
-    .configure(config)
-    .configure("application.router" -> "testOnlyDoNotUseInAppConf.Routes")
-    .build
-
   val mockHost: String = WiremockHelper.wiremockHost
   val mockPort: String = WiremockHelper.wiremockPort.toString
   val mockUrl: String = s"http://$mockHost:$mockPort"
 
-  def config: Map[String, String] = Map(
+  val config: Map[String, String] = Map(
     "auditing.enabled" -> "false",
+    "play.http.router" -> "testOnlyDoNotUseInAppConf.Routes",
     "play.filters.csrf.header.bypassHeaders.Csrf-Token" -> "nocheck",
     "microservice.services.auth.host" -> mockHost,
     "microservice.services.auth.port" -> mockPort,
@@ -65,6 +60,10 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.business-verification.host" -> mockHost,
     "microservice.services.business-verification.port" -> mockPort
   )
+
+  override lazy val app: Application = new GuiceApplicationBuilder()
+    .configure(config)
+    .build
 
   lazy val journeyConfigRepository: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
 

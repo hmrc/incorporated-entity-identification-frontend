@@ -20,31 +20,54 @@ import play.api.libs.json.Json
 import play.api.test.Helpers.{OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testBusinessVerificationJourneyId
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, FeatureSwitching}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.BusinessVerificationStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
-class RetrieveBusinessVerificationStatusConnectorISpec extends ComponentSpecHelper with BusinessVerificationStub {
+class RetrieveBusinessVerificationStatusConnectorISpec extends ComponentSpecHelper with BusinessVerificationStub with FeatureSwitching {
 
   private val retrieveBusinessVerificationStatusConnector = app.injector.instanceOf[RetrieveBusinessVerificationStatusConnector]
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  "retrieveBusinessVerificationStatus" should {
-    "return BvPass" in {
-      stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
+  "retrieveBusinessVerificationStatus" when {
+    s"the $BusinessVerificationStub feature switch is enabled" should {
+      "return BvPass" in {
+        enable(BusinessVerificationStub)
+        stubRetrieveBusinessVerificationResultFromStub(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
 
-      val result = await(retrieveBusinessVerificationStatusConnector.retrieveBusinessVerificationStatus(testBusinessVerificationJourneyId))
+        val result = await(retrieveBusinessVerificationStatusConnector.retrieveBusinessVerificationStatus(testBusinessVerificationJourneyId))
 
-      result mustBe BusinessVerificationPass
+        result mustBe BusinessVerificationPass
+      }
+      "return BvFail" in {
+        enable(BusinessVerificationStub)
+        stubRetrieveBusinessVerificationResultFromStub(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "FAIL"))
+
+        val result = await(retrieveBusinessVerificationStatusConnector.retrieveBusinessVerificationStatus(testBusinessVerificationJourneyId))
+
+        result mustBe BusinessVerificationFail
+      }
     }
-    "return BvFail" in {
-      stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "FAIL"))
 
-      val result = await(retrieveBusinessVerificationStatusConnector.retrieveBusinessVerificationStatus(testBusinessVerificationJourneyId))
+    s"the $BusinessVerificationStub feature switch is disabled" should {
+      "return BvPass" in {
+        disable(BusinessVerificationStub)
+        stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "PASS"))
 
-      result mustBe BusinessVerificationFail
+        val result = await(retrieveBusinessVerificationStatusConnector.retrieveBusinessVerificationStatus(testBusinessVerificationJourneyId))
+
+        result mustBe BusinessVerificationPass
+      }
+      "return BvFail" in {
+        disable(BusinessVerificationStub)
+        stubRetrieveBusinessVerificationResult(testBusinessVerificationJourneyId)(OK, Json.obj("verificationStatus" -> "FAIL"))
+
+        val result = await(retrieveBusinessVerificationStatusConnector.retrieveBusinessVerificationStatus(testBusinessVerificationJourneyId))
+
+        result mustBe BusinessVerificationFail
+      }
     }
   }
-
 }
