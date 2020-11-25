@@ -65,7 +65,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
       s"$incorporationInformationUrl/incorporation-information/$companyNumber/incorporated-company-profile"
   }
 
-  lazy val createBusinessVerificationJourneyUrl: String = {
+  def createBusinessVerificationJourneyUrl: String = {
     if (isEnabled(BusinessVerificationStub))
       s"$selfBaseUrl/identify-your-incorporated-business/test-only/verification-question/journey"
     else
