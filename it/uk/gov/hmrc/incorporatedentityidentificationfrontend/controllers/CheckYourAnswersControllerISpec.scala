@@ -21,7 +21,8 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, CompanyProfile, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswersViewTests
@@ -33,7 +34,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
   with CheckYourAnswersViewTests
   with IncorporatedEntityIdentificationStub
   with BusinessVerificationStub
-  with AuthStub {
+  with AuthStub
+  with FeatureSwitching {
 
   override def afterEach(): Unit = {
     super.afterEach()
@@ -124,7 +126,30 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
   "POST /check-your-answers-business" when {
     "the company details are successfully matched" should {
-      "return a redirect to the Business Verification Result page" in {
+      "return a redirect to the Business Verification Result page when the feature switch is enabled" in {
+        enable(EnableUnmatchedCtutrJourney)
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+        stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
+        stubStoreIdentifiersMatch(testJourneyId)(status = OK)
+        stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(status = CREATED)
+
+        lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(routes.BusinessVerificationController.startBusinessVerificationJourney(testJourneyId).url)
+      }
+      "return a redirect to the Business Verification Result page when the feature switch is disabled" in {
+        disable(EnableUnmatchedCtutrJourney)
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
@@ -148,7 +173,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     }
 
     "the company details do not match" should {
-      "redirect to ctutr mismatch page" in {
+      "redirect to ctutr mismatch page when the feature switch is enabled" in {
+        enable(EnableUnmatchedCtutrJourney)
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
@@ -169,10 +195,32 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
 
       }
+      "redirect to ctutr mismatch page when the feature switch is disabled" in {
+        disable(EnableUnmatchedCtutrJourney)
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+        stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
+        stubStoreIdentifiersMatch(testJourneyId)(status = OK)
+
+        lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
+      }
     }
 
     "the company details do not exist" should {
-      "throw an exception" in { //TODO - handle this in the case of entities without corporation tax
+      "throw an exception when the feature switch is disabled" in { //TODO - handle this in the case of entities without corporation tax
+        disable(EnableUnmatchedCtutrJourney)
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           continueUrl = testContinueUrl,
@@ -189,7 +237,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           testCompanyNumber,
           testCtutr
         )(
-          status = NOT_FOUND,
+          status = BAD_REQUEST,
           body = Json.obj(
             "code" -> "NOT_FOUND",
             "reason" -> "The back end has indicated that CT UTR cannot be returned"
@@ -200,8 +248,40 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
         result.status mustBe INTERNAL_SERVER_ERROR
       }
-    }
+      "redirect to continueUrl if feature switch is enabled" in {
+        enable(EnableUnmatchedCtutrJourney)
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
 
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+        stubStoreIdentifiersMatch(testJourneyId)(status = OK)
+        stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)
+        stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
+
+        stubValidateIncorporatedEntityDetails(
+          testCompanyNumber,
+          testCtutr
+        )(
+          status = BAD_REQUEST,
+          body = Json.obj(
+            "code" -> "NOT_FOUND",
+            "reason" -> "The back end has indicated that CT UTR cannot be returned"
+          )
+        )
+
+        lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+      }
+    }
   }
 
 }

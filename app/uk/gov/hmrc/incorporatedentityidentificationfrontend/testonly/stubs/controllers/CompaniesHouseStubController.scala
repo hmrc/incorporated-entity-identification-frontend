@@ -37,7 +37,8 @@ class CompaniesHouseStubController extends InjectedController {
       case "00000001" => NotFound
       case _ => Ok(Json.obj(
         companyNameKey -> stubCompanyName,
-        companyNumberKey -> companyNumber,  dateOfIncorporationKey -> stubDateOfIncorporation
+        companyNumberKey -> companyNumber,
+        dateOfIncorporationKey -> stubDateOfIncorporation
       ))
     })
 

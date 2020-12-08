@@ -25,8 +25,8 @@ import scala.concurrent.Future
 
 class ValidateIncorporatedEntityDetailsService @Inject()(validateIncorporatedEntityDetailsConnector: ValidateIncorporatedEntityDetailsConnector) {
 
-  def validateIncorporatedEntityDetails(companyNumber:
-                                        String, ctutr: String
+  def validateIncorporatedEntityDetails(companyNumber: String,
+                                        ctutr: String
                                        )(implicit hc: HeaderCarrier): Future[IncorporatedEntityDetailsValidationResult] =
     validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(companyNumber, ctutr)
 
