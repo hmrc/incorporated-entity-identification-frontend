@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import play.api.libs.json.Json
-import play.api.test.Helpers.{NOT_FOUND, OK, await, defaultAwaitTimeout}
+import play.api.test.Helpers.{BAD_REQUEST, OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyNumber, testCtutr}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch, DetailsNotFound}
@@ -39,7 +39,7 @@ class ValidateIncorporatedEntityDetailsConnectorISpec extends ComponentSpecHelpe
       result mustBe DetailsMatched
     }
     "return DetailsNotFound" in {
-      stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(NOT_FOUND, body = Json.obj(
+      stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(BAD_REQUEST, body = Json.obj(
         "code" -> "NOT_FOUND",
         "reason" -> "The back end has indicated that CT UTR cannot be returned"
       ))

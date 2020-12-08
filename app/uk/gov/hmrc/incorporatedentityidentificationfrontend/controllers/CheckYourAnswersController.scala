@@ -22,7 +22,9 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch, DetailsNotFound}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -37,7 +39,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                                            view: check_your_answers_page,
                                            val authConnector: AuthConnector)
                                           (implicit val config: AppConfig,
-                                           executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+                                           executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -54,11 +56,11 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             journeyService.getJourneyConfig(journeyId).map {
               journeyConfig =>
                 Ok(view(journeyConfig.pageConfig,
-                    routes.CheckYourAnswersController.submit(journeyId),
-                    ctutr,
-                    companyProfile.companyNumber,
-                    journeyId
-                  )
+                  routes.CheckYourAnswersController.submit(journeyId),
+                  ctutr,
+                  companyProfile.companyNumber,
+                  journeyId
+                )
                 )
             }
           case _ =>
@@ -89,8 +91,16 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                 incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
                   _ => Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
                 }
-              case _ =>
-                throw new InternalServerException("Incorporated entity details not found")
+              case DetailsNotFound =>
+                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
+                  _ =>
+                    if (isEnabled(EnableUnmatchedCtutrJourney)) {
+                      incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                      incorporatedEntityInformationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                      Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
+                    }
+                    else Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
+                }
             }
           case _ =>
             throw new InternalServerException("No data stored")

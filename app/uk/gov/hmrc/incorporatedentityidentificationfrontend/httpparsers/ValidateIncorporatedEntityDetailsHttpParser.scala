@@ -43,7 +43,7 @@ object ValidateIncorporatedEntityDetailsHttpParser {
             case JsSuccess(_, _) => DetailsMismatch
             case _ => throw invalidResponseException
           }
-        case NOT_FOUND =>
+        case BAD_REQUEST =>
           (response.json \ "code").validate[String] match {
             case JsSuccess("NOT_FOUND", _) => DetailsNotFound
             case _ => throw invalidResponseException
