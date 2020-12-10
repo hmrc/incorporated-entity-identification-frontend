@@ -44,6 +44,6 @@ case object BusinessVerificationStub extends FeatureSwitch {
 }
 
 case object EnableUnmatchedCtutrJourney extends FeatureSwitch {
-  override val configName: String = "feature-switch.cotax-not-found-stub"
+  override val configName: String = "feature-switch.enable-unmatched-ctutr-journey"
   override val displayName: String = "Enable unmatched CTUTR journey"
 }
