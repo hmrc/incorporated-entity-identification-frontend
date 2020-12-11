@@ -19,7 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RegistrationConnector
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, RegistrationNotCalled, RegistrationStatus}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, CtEnrolled, RegistrationNotCalled, RegistrationStatus}
 
 import scala.concurrent.{ExecutionContext, Future}
 
@@ -30,7 +30,7 @@ class RegistrationOrchestrationService @Inject()(incorporatedEntityInformationSe
 
   def register(journeyId: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
     registrationStatus <- incorporatedEntityInformationService.retrieveBusinessVerificationStatus(journeyId).flatMap {
-      case Some(BusinessVerificationPass) => for {
+      case Some(BusinessVerificationPass) | Some(CtEnrolled) => for {
         optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
         optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
         registrationStatus <-

@@ -29,4 +29,6 @@ object TestConstants {
   val testSuccessfulRegistration: Registered = Registered(testSafeId)
   val testFailedRegistration: RegistrationStatus = RegistrationFailed
   val testDeskProServiceId: String = "vrs"
+  val IRCTEnrolmentKey = "IR-CT"
+  val IRCTReferenceKey = "UTR"
 }

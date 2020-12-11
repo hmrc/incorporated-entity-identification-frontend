@@ -20,8 +20,8 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.http.HeaderNames
 import play.api.libs.json.{JsObject, Json, Writes}
 import play.api.test.Helpers.UNAUTHORIZED
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethods
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethods
 
 trait AuthStub extends WireMockMethods {
 
@@ -37,12 +37,23 @@ trait AuthStub extends WireMockMethods {
       .thenReturn(status = UNAUTHORIZED, headers = Map(HeaderNames.WWW_AUTHENTICATE -> s"""MDTP detail="MissingBearerToken""""))
   }
 
-  def successfulAuthResponse(internalId: Option[String]): JsObject = Json.obj(
+  def successfulAuthResponse(internalId: Option[String], enrolments: JsObject*): JsObject = Json.obj(
     "optionalCredentials" -> Json.obj(
       "providerId" -> testCredentialId,
       "providerType" -> GGProviderId
     ),
     "groupIdentifier" -> testGroupId,
-    "internalId" -> internalId
+    "internalId" -> internalId,
+    "allEnrolments" -> enrolments
+  )
+
+  val irctEnrolment: JsObject = Json.obj(
+    "key" -> IRCTEnrolmentKey,
+    "identifiers" -> Json.arr(
+      Json.obj(
+        "key" -> IRCTReferenceKey,
+        "value" -> testCtutr
+      )
+    )
   )
 }
