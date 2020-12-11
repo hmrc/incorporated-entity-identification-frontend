@@ -18,10 +18,15 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import javax.inject.{Inject, Singleton}
 import play.api.mvc._
-import uk.gov.hmrc.http.InternalServerException
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.allEnrolments
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableIRCTEnrolmentJourney, FeatureSwitching}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CtEnrolled
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.EnrolmentUtils.getEnrolmentCtutr
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -29,12 +34,13 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
-                                             journeyService: JourneyService,
+                                              journeyService: JourneyService,
+                                              validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService,
                                               mcc: MessagesControllerComponents,
                                               view: confirm_business_name_page,
                                               val authConnector: AuthConnector
                                              )(implicit val config: AppConfig,
-                                               executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+                                               executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
@@ -53,8 +59,29 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised() {
-        Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
+      authorised().retrieve(allEnrolments) { enrolments =>
+        if (isEnabled(EnableIRCTEnrolmentJourney)) {
+          val enrolmentCtutr = getEnrolmentCtutr(enrolments)
+          enrolmentCtutr match {
+            case Some(ctutr) =>
+              incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).flatMap {
+                case Some(companyProfile) =>
+                  validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr).flatMap {
+                    case DetailsMatched =>
+                      for {
+                        _ <- incorporatedEntityInformationRetrievalService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
+                        _ <- incorporatedEntityInformationRetrievalService.storeCtutr(journeyId, ctutr)
+                        _ <- incorporatedEntityInformationRetrievalService.storeBusinessVerificationStatus(journeyId, CtEnrolled)
+                      } yield Redirect(routes.RegistrationController.register(journeyId))
+                    case _ => Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
+                  }
+                case _ =>
+                  throw new InternalServerException("No data stored")
+              }
+            case None => Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
+          }
+        }
+        else Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
       }
   }
 

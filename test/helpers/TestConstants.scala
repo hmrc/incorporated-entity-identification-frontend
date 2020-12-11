@@ -35,6 +35,7 @@ object TestConstants {
   val testPassedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationPass
   val testFailedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationFail
   val testUnchallengedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationUnchallenged
+  val testCtEnrolledStatus: BusinessVerificationStatus = CtEnrolled
   val testIncorporatedEntityInformation: IncorporatedEntityInformation =
     IncorporatedEntityInformation(
       testCompanyProfile,
