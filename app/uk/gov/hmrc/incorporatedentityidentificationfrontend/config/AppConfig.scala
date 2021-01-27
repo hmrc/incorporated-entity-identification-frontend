@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2021 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -50,7 +50,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   private lazy val incorporationInformationUrl = servicesConfig.baseUrl("incorporation-information")
 
-  private lazy val businessVerificationUrl = servicesConfig.baseUrl("business-verification")
+  private lazy val businessVerificationUrl = servicesConfig.getString("microservice.services.business-verification.url")
 
   def incorporatedEntityInformationUrl(journeyId: String): String = s"$backendUrl/incorporated-entity-identification/journey/$journeyId"
 
@@ -67,16 +67,16 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   def createBusinessVerificationJourneyUrl: String = {
     if (isEnabled(BusinessVerificationStub))
-      s"$selfBaseUrl/identify-your-incorporated-business/test-only/verification-question/journey"
+      s"$selfBaseUrl/identify-your-incorporated-business/test-only/business-verification/journey"
     else
-      s"$businessVerificationUrl/verification-question/journey"
+      s"$businessVerificationUrl/journey"
   }
 
   def getBusinessVerificationResultUrl(journeyId: String): String = {
     if (isEnabled(BusinessVerificationStub))
-      s"$selfBaseUrl/identify-your-incorporated-business/test-only/verification-question/journey/$journeyId/status"
+      s"$selfBaseUrl/identify-your-incorporated-business/test-only/business-verification/journey/$journeyId/status"
     else
-      s"$businessVerificationUrl/verification-question/journey/$journeyId/status"
+      s"$businessVerificationUrl/journey/$journeyId/status"
   }
 
   lazy val validateIncorporatedEntityDetailsUrl: String = s"$backendUrl/incorporated-entity-identification/validate-details"

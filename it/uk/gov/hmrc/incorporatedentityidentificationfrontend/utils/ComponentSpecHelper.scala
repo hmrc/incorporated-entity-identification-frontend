@@ -57,8 +57,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
     "microservice.services.incorporated-entity-identification.port" -> mockPort,
     "microservice.services.incorporation-information.host" -> mockHost,
     "microservice.services.incorporation-information.port" -> mockPort,
-    "microservice.services.business-verification.host" -> mockHost,
-    "microservice.services.business-verification.port" -> mockPort
+    "microservice.services.business-verification.url" -> s"$mockUrl/business-verification",
   )
 
   override lazy val app: Application = new GuiceApplicationBuilder()
