@@ -17,13 +17,15 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import org.scalatest.BeforeAndAfterEach
+import play.api.http.Status.FORBIDDEN
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, BusinessVerificationUnchallenged}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass, BusinessVerificationUnchallenged}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
+
 
 class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthStub
   with BusinessVerificationStub with IncorporatedEntityIdentificationStub with FeatureSwitching with BeforeAndAfterEach {
@@ -45,6 +47,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
+        verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationPass)
       }
 
       "throw an exception when the query string is missing" in {
@@ -68,6 +71,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
+        verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationPass)
       }
 
       "throw an exception when the query string is missing" in {
@@ -109,6 +113,22 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
+          verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationUnchallenged)
+        }
+      }
+      "store a verification state of FAIL and redirect to the registration controller" when {
+        "business verification reports the user is locked out" in {
+          enable(BusinessVerificationStub)
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
+          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId)(FORBIDDEN)
+          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)(OK)
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
+
+          result.status mustBe SEE_OTHER
+          result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
+          verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationFail)
         }
       }
     }
@@ -138,6 +158,21 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
+          verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationUnchallenged)
+        }
+      }
+      "store a verification state of FAIL and redirect to the registration controller" when {
+        "business verification reports the user is locked out" in {
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
+          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(FORBIDDEN)
+          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)(OK)
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
+
+          result.status mustBe SEE_OTHER
+          result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
+          verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationFail)
         }
       }
     }

@@ -17,18 +17,31 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.{CreateBusinessVerificationJourneyConnector, RetrieveBusinessVerificationStatusConnector}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationStatus, BusinessVerificationUnchallenged, JourneyCreated, NotEnoughEvidence, UserLockedOut}
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class BusinessVerificationService @Inject()(createBusinessVerificationJourneyConnector: CreateBusinessVerificationJourneyConnector,
-                                            retrieveBusinessVerificationResultConnector: RetrieveBusinessVerificationStatusConnector) {
+                                            retrieveBusinessVerificationResultConnector: RetrieveBusinessVerificationStatusConnector,
+                                            incorporatedEntityInformationService: IncorporatedEntityInformationService)(implicit val executionContext: ExecutionContext) {
 
   def createBusinessVerificationJourney(journeyId: String, ctutr: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    createBusinessVerificationJourneyConnector.createBusinessVerificationJourney(journeyId, ctutr)
+    createBusinessVerificationJourneyConnector.createBusinessVerificationJourney(journeyId, ctutr).flatMap {
+      case Right(JourneyCreated(redirectUrl)) => Future.successful(Option(redirectUrl))
+      case Left(failureReason) => {
+        val bvStatus = failureReason match {
+          case NotEnoughEvidence => BusinessVerificationUnchallenged
+          case UserLockedOut => BusinessVerificationFail
+          case _ => throw new InternalServerException(s"createBusinessVerificationJourney service failed with invalid BV status")
+        }
+        incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, bvStatus).map {
+          _ => None
+        }
+      }
+    }
 
   def retrieveBusinessVerificationStatus(businessVerificationJourneyId: String)(implicit hc: HeaderCarrier): Future[BusinessVerificationStatus] =
     retrieveBusinessVerificationResultConnector.retrieveBusinessVerificationStatus(businessVerificationJourneyId)

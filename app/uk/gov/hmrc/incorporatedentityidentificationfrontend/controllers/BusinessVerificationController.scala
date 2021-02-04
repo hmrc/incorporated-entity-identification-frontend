@@ -20,7 +20,6 @@ import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationUnchallenged
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{BusinessVerificationService, IncorporatedEntityInformationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -43,9 +42,7 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
               case Some(redirectUri) =>
                 Future.successful(Redirect(redirectUri))
               case None =>
-                incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged).map {
-                  _ => Redirect(routes.RegistrationController.register(journeyId))
-                }
+                Future.successful(Redirect(routes.RegistrationController.register(journeyId)))
             }
           case None =>
             throw new InternalServerException(s"There is no CTUTR for $journeyId")
