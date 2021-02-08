@@ -20,6 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json, Writes}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyCreated, JourneyCreationFailure, NotEnoughEvidence, UserLockedOut}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CreateBusinessVerificationJourneyConnector.BusinessVerificationHttpReads
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
@@ -33,7 +34,7 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
 
   def createBusinessVerificationJourney(journeyId: String,
                                         ctutr: String
-                                       )(implicit hc: HeaderCarrier): Future[Option[String]] = {
+                                       )(implicit hc: HeaderCarrier): Future[Either[JourneyCreationFailure, JourneyCreated]] = {
 
     val jsonBody: JsObject =
       Json.obj(
@@ -46,7 +47,7 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
         "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url
       )
 
-    http.POST[JsObject, Option[String]](appConfig.createBusinessVerificationJourneyUrl, jsonBody)(
+    http.POST[JsObject, Either[JourneyCreationFailure, JourneyCreated]](appConfig.createBusinessVerificationJourneyUrl, jsonBody)(
       implicitly[Writes[JsObject]],
       BusinessVerificationHttpReads,
       hc,
@@ -57,18 +58,20 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
 }
 
 object CreateBusinessVerificationJourneyConnector {
-  implicit object BusinessVerificationHttpReads extends HttpReads[Option[String]] {
-    override def read(method: String, url: String, response: HttpResponse): Option[String] = {
+  implicit object BusinessVerificationHttpReads extends HttpReads[Either[JourneyCreationFailure, JourneyCreated]] {
+    override def read(method: String, url: String, response: HttpResponse): Either[JourneyCreationFailure, JourneyCreated] = {
       response.status match {
         case CREATED =>
           (response.json \ "redirectUri").asOpt[String] match {
             case Some(redirectUri) =>
-              Some(redirectUri)
+              Right(JourneyCreated(redirectUri))
             case _ =>
               throw new InternalServerException(s"Business Verification API returned malformed JSON")
           }
         case NOT_FOUND =>
-          None
+          Left(NotEnoughEvidence)
+        case FORBIDDEN =>
+          Left(UserLockedOut)
         case status =>
           throw new InternalServerException(s"Business Verification API failed with status: $status")
       }

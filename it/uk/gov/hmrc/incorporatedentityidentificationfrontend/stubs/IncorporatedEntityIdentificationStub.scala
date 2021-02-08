@@ -40,10 +40,15 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
                                          )(status: Int): StubMapping =
     when(method = PUT,
       uri = s"/incorporated-entity-identification/journey/$journeyId/businessVerification",
-      body = businessVerificationStatus
+      body = Json.toJson(businessVerificationStatus)
     ).thenReturn(
       status = status
     )
+
+  def verifyStoreBusinessVerificationStatus(journeyId: String, businessVerificationStatus: BusinessVerificationStatus): Unit = {
+    val jsonBody = Json.toJson(businessVerificationStatus)
+    WiremockHelper.verifyPut(uri = s"/incorporated-entity-identification/journey/$journeyId/businessVerification", optBody = Some(jsonBody.toString()))
+  }
 
   def stubStoreCtutr(journeyId: String, ctutr: String)(status: Int): StubMapping =
     when(method = PUT,
