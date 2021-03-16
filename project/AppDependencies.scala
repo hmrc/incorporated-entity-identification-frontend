@@ -1,5 +1,4 @@
 import play.core.PlayVersion.current
-import sbt.Keys.libraryDependencies
 import sbt._
 
 object AppDependencies {

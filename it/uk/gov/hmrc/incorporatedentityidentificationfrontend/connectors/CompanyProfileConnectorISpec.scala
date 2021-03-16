@@ -18,9 +18,8 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import play.api.test.Helpers.{NOT_FOUND, OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyName, testCompanyNumber, testDateOfIncorporation, testJourneyId}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -36,13 +35,13 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
         enable(CompaniesHouseStub)
         stubRetrieveCompanyProfileFromStub(testCompanyNumber)(
           status = OK,
-          body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation)
+          body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation, testAddress)
         )
-        stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))(status = OK)
+        stubStoreCompanyProfile(testJourneyId, testCompanyProfile)(status = OK)
 
         val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
 
-        result mustBe Some(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+        result mustBe Some(testCompanyProfile)
       }
     }
     "return None" when {
@@ -60,13 +59,13 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
         disable(CompaniesHouseStub)
         stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(
           status = OK,
-          body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation)
+          body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation, testAddress)
         )
-        stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))(status = OK)
+        stubStoreCompanyProfile(testJourneyId, testCompanyProfile)(status = OK)
 
         val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
 
-        result mustBe Some(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+        result mustBe Some(testCompanyProfile)
       }
     }
     "return None" when {

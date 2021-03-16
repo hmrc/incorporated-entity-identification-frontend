@@ -36,16 +36,18 @@ trait CompaniesHouseApiStub extends WireMockMethods {
         body = body
       )
 
-  def companyProfileJson(companyNumber: String, companyName: String, dateOfIncorporation: String): JsObject = {
+  def companyProfileJson(companyNumber: String, companyName: String, dateOfIncorporation: String, address: JsObject): JsObject = {
 
     val companyNameKey = "company_name"
     val companyNumberKey = "company_number"
     val dateOfIncorporationKey = "date_of_creation"
+    val registeredOfficeAddressKey = "registered_office_address"
 
     Json.obj(
       companyNameKey -> companyName,
       companyNumberKey -> companyNumber,
-      dateOfIncorporationKey -> dateOfIncorporation
+      dateOfIncorporationKey -> dateOfIncorporation,
+      registeredOfficeAddressKey -> address
     )
 
   }

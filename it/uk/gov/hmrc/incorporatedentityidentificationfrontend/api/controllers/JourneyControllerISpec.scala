@@ -78,11 +78,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
           status = OK,
           body = Json.toJsObject(
             IncorporatedEntityInformation(
-              CompanyProfile(
-                companyNumber = testCompanyNumber,
-                companyName = testCompanyName,
-                dateOfIncorporation = testDateOfIncorporation
-              ),
+              companyProfile = testCompanyProfile,
               ctutr = testCtutr,
               identifiersMatch = true,
               businessVerification = BusinessVerificationPass,
@@ -100,7 +96,18 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
           "companyProfile" -> Json.obj(
             "companyName" -> testCompanyName,
             "companyNumber" -> testCompanyNumber,
-            "dateOfIncorporation" -> testDateOfIncorporation
+            "dateOfIncorporation" -> testDateOfIncorporation,
+            "unsanitisedCHROAddress" -> Json.obj(
+              "address_line_1" -> "testLine1",
+              "address_line_2" -> "test town",
+              "care_of" -> "test name",
+              "country" -> "United Kingdom",
+              "locality" -> "test city",
+              "po_box" -> "123",
+              "postal_code" -> "AA11AA",
+              "premises" -> "1",
+              "region" -> "test region"
+            )
           ),
           "identifiersMatch" -> true,
           "businessVerification" -> Json.obj(

@@ -16,10 +16,11 @@
 
 package helpers
 
+import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, _}
+
 import java.time.LocalDate
 import java.util.UUID
-
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, _}
 
 
 object TestConstants {
@@ -30,7 +31,18 @@ object TestConstants {
   val testDateOfIncorporation: String = LocalDate.now().toString
   val testCompanyName: String = "ABC Limited"
   val testIdentifiersMatch: Boolean = true
-  val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)
+  val testAddress: JsObject = Json.obj(
+    "address_line_1" -> "testLine1",
+    "address_line_2" -> "test town",
+    "care_of" -> "test name",
+    "country" -> "United Kingdom",
+    "locality" -> "test city",
+    "po_box" -> "123",
+    "postal_code" -> "AA11AA",
+    "premises" -> "1",
+    "region" -> "test region"
+  )
+  val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testSafeId: String = UUID.randomUUID().toString
   val testPassedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationPass
   val testFailedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationFail

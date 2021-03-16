@@ -1,10 +1,11 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 
+import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
+
 import java.time.LocalDate
 import java.util.UUID
-
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed, RegistrationStatus}
 
 
 object TestConstants {
@@ -31,4 +32,16 @@ object TestConstants {
   val testDeskProServiceId: String = "vrs"
   val IRCTEnrolmentKey = "IR-CT"
   val IRCTReferenceKey = "UTR"
+  val testAddress: JsObject = Json.obj(
+    "address_line_1" -> "testLine1",
+    "address_line_2" -> "test town",
+    "care_of" -> "test name",
+    "country" -> "United Kingdom",
+    "locality" -> "test city",
+    "po_box" -> "123",
+    "postal_code" -> "AA11AA",
+    "premises" -> "1",
+    "region" -> "test region"
+  )
+  val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
 }
