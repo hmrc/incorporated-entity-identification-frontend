@@ -42,11 +42,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
           status = OK,
           body = Json.toJsObject(
             IncorporatedEntityInformation(
-              CompanyProfile(
-                companyNumber = testCompanyNumber,
-                companyName = testCompanyName,
-                dateOfIncorporation = testDateOfIncorporation
-              ),
+              companyProfile = testCompanyProfile,
               ctutr = testCtutr,
               identifiersMatch = true,
               businessVerification = BusinessVerificationPass,
@@ -59,7 +55,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
 
         result mustBe Some(
           IncorporatedEntityInformation(
-            CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation),
+            testCompanyProfile,
             testCtutr,
             true,
             BusinessVerificationPass,
@@ -80,11 +76,11 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
   s"retrieveIncorporatedEntityInformation($testJourneyId, $companyProfileKey)" should {
     "return CompanyProfile" when {
       "the companyProfile key is given there is a Company Profile stored against the journeyId" in {
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(OK, Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(OK, Json.toJsObject(testCompanyProfile))
 
         val result = await(incorporatedEntityInformationConnector.retrieveIncorporatedEntityInformation[CompanyProfile](testJourneyId, companyProfileKey))
 
-        result mustBe Some(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+        result mustBe Some(testCompanyProfile)
       }
     }
     "return None" when {
@@ -119,10 +115,10 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
   }
   s"storeData($testJourneyId, $companyProfileKey, CompanyProfile)" should {
     "return SuccessfullyStored" in {
-      stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))(status = OK)
+      stubStoreCompanyProfile(testJourneyId, testCompanyProfile)(status = OK)
 
       val result = await(incorporatedEntityInformationConnector.storeData[CompanyProfile](
-        testJourneyId, companyProfileKey, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        testJourneyId, companyProfileKey, testCompanyProfile))
 
       result mustBe SuccessfullyStored
     }

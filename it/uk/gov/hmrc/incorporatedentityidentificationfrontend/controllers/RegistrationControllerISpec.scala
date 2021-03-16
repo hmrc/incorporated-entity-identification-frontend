@@ -4,7 +4,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass, CompanyProfile}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, RegisterStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -14,7 +14,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
     "redirect to continueUrl" when {
       "registration is successful and registration status is successfully stored" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
         stubRegister(testCompanyNumber, testCtutr)(status = OK, body = testSuccessfulRegistration)
@@ -29,7 +29,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
       "registration failed and registration status is successfully stored" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
         stubRegister(testCompanyNumber, testCtutr)(status = OK, body = testFailedRegistration)
@@ -57,7 +57,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
     "throw an exception" when {
       "business verification is in an invalid state" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
 
@@ -77,7 +77,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
       "ctutr is missing" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
 
@@ -87,7 +87,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
       "business verification status is missing" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = NOT_FOUND)
 

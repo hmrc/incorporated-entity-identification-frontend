@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import javax.inject.{Inject, Singleton}
 import play.api.http.Status.{NOT_FOUND, OK}
 import play.api.libs.functional.syntax._
-import play.api.libs.json.{JsError, JsSuccess, Reads, __}
+import play.api.libs.json._
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CompanyProfileHttpParser._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -45,11 +45,13 @@ object CompanyProfileHttpParser {
   private val companyNameKey = "company_name"
   private val companyNumberKey = "company_number"
   private val dateOfIncorporationKey = "date_of_creation"
+  private val registeredOfficeAddressKey = "registered_office_address"
 
   val companiesHouseReads: Reads[CompanyProfile] = (
     (__ \ companyNameKey).read[String] and
       (__ \ companyNumberKey).read[String] and
-      (__ \ dateOfIncorporationKey).read[String]
+      (__ \ dateOfIncorporationKey).read[String] and
+      (__ \ registeredOfficeAddressKey).read[JsObject]
     ) (CompanyProfile.apply _)
 
   implicit object CompanyProfileHttpReads extends HttpReads[Option[CompanyProfile]] {

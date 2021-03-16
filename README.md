@@ -4,7 +4,7 @@ This is a Scala/Play frontend to allow Limited Companies to provide their inform
 
 ### How to run the service
 1. Make sure any dependent services are running using the following service-manager command
-`sm --start INCORPORATED_ENTITY_IDENTIFICATION_ALL`
+`sm --start INCORPORATED_ENTITY_IDENTIFICATION_ALL -r` 
 
 2. Stop the frontend in service manager using
  `sm --stop INCORPORATED_ENTITY_IDENTIFICATION_FRONTEND`
@@ -57,7 +57,19 @@ Example response body:
 {"companyProfile":
     {"companyName":"TestCompanyLtd”,
     “companyNumber":"01234567",
-    "dateOfIncorporation":"2020-01-01"},
+    "dateOfIncorporation":"2020-01-01",
+    "unsanitisedCHROAddress":
+      {"address_line_1":"testLine1",
+       "address_line_2":"test town",
+       "care_of":"test name",
+       "country":"United Kingdom",
+       "locality":"test city",
+       "po_box":"123",
+       "postal_code":"AA11AA",
+       "premises":"1",
+       "region":"test region"
+       }
+    },
 "ctutr":"1234567890",
 "identifiersMatch":true,
 "businessVerification":
@@ -116,7 +128,19 @@ Example response body:
 {"companyProfile":
     {"companyName":"TestCompanyLtd”,
     “companyNumber":"01234567",
-    "dateOfIncorporation":"2020-01-01"}
+    "dateOfIncorporation":"2020-01-01",
+    "unsanitisedCHROAddress":
+      {"address_line_1":"testLine1",
+       "address_line_2":"test town",
+       "care_of":"test name",
+       "country":"United Kingdom",
+       "locality":"test city",
+       "po_box":"123",
+       "postal_code":"AA11AA",
+       "premises":"1",
+       "region":"test region"
+       }
+    }
 ```
 
 #### GET test-only/retrieve-journey/:journeyId
@@ -140,7 +164,19 @@ Example response body:
 {"companyProfile":
     {"companyName":"TestCompanyLtd”,
     “companyNumber":"01234567",
-    "dateOfIncorporation":"2020-01-01"},
+    "dateOfIncorporation":"2020-01-01",
+    "unsanitisedCHROAddress":
+      {"address_line_1":"testLine1",
+       "address_line_2":"test town",
+       "care_of":"test name",
+       "country":"United Kingdom",
+       "locality":"test city",
+       "po_box":"123",
+       "postal_code":"AA11AA",
+       "premises":"1",
+       "region":"test region"
+       }
+    },
 "ctutr":"1234567890",
 "identifiersMatch":true,
 "businessVerification":

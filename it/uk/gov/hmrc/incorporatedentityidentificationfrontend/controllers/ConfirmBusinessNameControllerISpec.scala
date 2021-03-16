@@ -52,7 +52,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         ))
 
-        val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+        val jsonBody = Json.toJsObject(testCompanyProfile)
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
 
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
@@ -63,7 +63,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
       "redirect to sign in page" when {
         "the user is UNAUTHORISED" in {
           stubAuthFailure()
-          val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+          val jsonBody = Json.toJsObject(testCompanyProfile)
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
 
           lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
@@ -84,7 +84,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
             status = OK,
-            body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+            body = Json.toJsObject(testCompanyProfile)
           )
           lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
@@ -103,7 +103,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
             status = OK,
-            body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+            body = Json.toJsObject(testCompanyProfile)
           )
           lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
@@ -168,7 +168,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           ))
 
           val testMismatchCompanyNumber = "11111111"
-          val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testMismatchCompanyNumber, testDateOfIncorporation))
+          val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testMismatchCompanyNumber, testDateOfIncorporation, testAddress))
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
           stubValidateIncorporatedEntityDetails(testMismatchCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
 
@@ -195,7 +195,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         ))
 
-        val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+        val jsonBody = Json.toJsObject(testCompanyProfile)
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
         stubStoreIdentifiersMatch(testJourneyId)(status = OK)

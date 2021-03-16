@@ -22,7 +22,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, CompanyProfile, RegistrationNotCalled}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswersViewTests
@@ -52,7 +52,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         signOutUrl = testSignOutUrl
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+      stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
       stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
       lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
@@ -70,7 +70,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           signOutUrl = testSignOutUrl
         ))
         stubAuthFailure()
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
@@ -91,7 +91,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
           status = OK,
-          body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+          body = Json.toJsObject(testCompanyProfile)
         )
         lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
@@ -112,7 +112,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
           status = OK,
-          body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))
+          body = Json.toJsObject(testCompanyProfile)
         )
         lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
@@ -137,7 +137,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
         stubStoreIdentifiersMatch(testJourneyId)(status = OK)
@@ -159,7 +159,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
         stubStoreIdentifiersMatch(testJourneyId)(status = OK)
@@ -184,7 +184,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
         stubStoreIdentifiersMatch(testJourneyId)(status = OK)
@@ -206,7 +206,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
         stubStoreIdentifiersMatch(testJourneyId)(status = OK)
@@ -230,7 +230,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
         stubValidateIncorporatedEntityDetails(
@@ -259,7 +259,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         ))
 
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation)))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubStoreIdentifiersMatch(testJourneyId)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)

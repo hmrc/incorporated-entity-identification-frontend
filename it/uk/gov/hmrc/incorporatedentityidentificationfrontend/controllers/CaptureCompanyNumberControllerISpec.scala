@@ -21,7 +21,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCompanyNumberTests
@@ -114,9 +113,11 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             stubRetrieveCompanyProfileFromStub(testCompanyNumber)(
               status = OK,
-              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation)
+              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation, testAddress)
             )
-            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))(status = OK)
+            stubStoreCompanyProfile(testJourneyId, testCompanyProfile)(status = OK)
+
+            print(companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation, testAddress))
 
             lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
@@ -137,9 +138,9 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             disable(CompaniesHouseStub)
             stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(
               status = OK,
-              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation)
+              body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation, testAddress)
             )
-            stubStoreCompanyProfile(testJourneyId, CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation))(status = OK)
+            stubStoreCompanyProfile(testJourneyId, testCompanyProfile)(status = OK)
 
             lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
