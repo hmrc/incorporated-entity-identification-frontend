@@ -29,7 +29,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{Incorporat
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
@@ -44,66 +44,58 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        val identifiers = for {
-          companyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
-          ctutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
-        } yield {
-          (companyProfile, ctutr)
-        }
-
-        identifiers.flatMap {
-          case (Some(companyProfile), Some(ctutr)) =>
-            journeyService.getJourneyConfig(journeyId).map {
-              journeyConfig =>
-                Ok(view(journeyConfig.pageConfig,
-                  routes.CheckYourAnswersController.submit(journeyId),
-                  ctutr,
-                  companyProfile.companyNumber,
-                  journeyId
-                )
-                )
-            }
-          case _ =>
-            throw new InternalServerException("No data stored")
-        }
+        for {
+          optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
+          optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
+          result <- (optCompanyProfile, optCtutr) match {
+            case (Some(companyProfile), Some(ctutr)) =>
+              journeyService.getJourneyConfig(journeyId).map {
+                journeyConfig =>
+                  Ok(view(journeyConfig.pageConfig,
+                    routes.CheckYourAnswersController.submit(journeyId),
+                    ctutr,
+                    companyProfile.companyNumber,
+                    journeyId
+                  ))
+              }
+            case _ =>
+              throw new InternalServerException("No data stored")
+          }
+        } yield result
       }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        val identifiers = for {
-          companyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
-          ctutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
-        } yield {
-          (companyProfile, ctutr)
-        }
-
-        identifiers.flatMap {
-          case (Some(companyProfile), Some(ctutr)) =>
-            validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr).flatMap {
-              case DetailsMatched =>
-                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true).map {
-                  _ =>
-                    Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
-                }
-              case DetailsMismatch =>
-                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
-                  _ => Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
-                }
-              case DetailsNotFound =>
-                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
-                  _ =>
-                    if (isEnabled(EnableUnmatchedCtutrJourney)) {
-                      incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-                      incorporatedEntityInformationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-                      Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-                    }
-                    else Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
-                }
-            }
+        for {
+          optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
+          optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
+          details <- (optCompanyProfile, optCtutr) match {
+            case (Some(companyProfile), Some(ctutr)) =>
+              validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr)
+            case _ =>
+              throw new InternalServerException("No data stored")
+          }
+          _ <- details match {
+            case DetailsMatched =>
+              incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
+            case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) =>
+              for {
+                _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                _ <- incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                _ <- incorporatedEntityInformationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+              } yield ()
+            case _ =>
+              incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+          }
+        } yield details match {
+          case DetailsMatched =>
+            Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
+          case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) =>
+            Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
           case _ =>
-            throw new InternalServerException("No data stored")
+            Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
         }
       }
   }
