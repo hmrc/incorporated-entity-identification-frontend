@@ -22,6 +22,7 @@
         name: String,
         label: String,
         isPageHeading: Boolean,
+        hasFieldTitle: Boolean = false,
         hint: Option[Html] = None,
         classes: String = "",
         stripWhitespace: Boolean = false,
@@ -36,7 +37,9 @@
         label = Label(
             content = Text(label),
             isPageHeading = isPageHeading,
-            classes = if(isPageHeading) "govuk-label--xl" else "govuk-label govuk-visually-hidden"
+            classes = if (isPageHeading) "govuk-label--xl"
+                    else if (hasFieldTitle) "govuk-label govuk-!-font-weight-bold"
+                    else "govuk-label govuk-visually-hidden"
         ),
         hint = hint.map(hintHtml => Hint(
             content = HtmlContent(hintHtml)
