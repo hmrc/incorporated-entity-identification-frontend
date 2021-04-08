@@ -106,6 +106,10 @@ trait CheckYourAnswersViewTests {
       "have a continue and confirm button" in {
         doc.getSubmitButton.first.text mustBe Base.confirmAndContinue
       }
+
+      "have a back link" in {
+        doc.getElementById("back-link").text mustBe Base.back
+      }
     }
 
   }

@@ -24,6 +24,8 @@ object MessageLookup {
     val saveAndContinue = "Save and continue"
     val saveAndComeBack = "Save and come back later"
     val tryAgain = "Try Again"
+    val back = "Back"
+
 
     object Error {
       val title = "There is a problem"

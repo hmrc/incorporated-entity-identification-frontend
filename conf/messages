@@ -15,6 +15,8 @@ feedback.before                                             = This is a new serv
 feedback.link                                               = feedback
 feedback.after                                              = (opens in new tab) will help us to improve it.
 
+app.common.back                                             = Back
+
 ## Base
 base.save_and_continue                                      = Save and continue
 base.confirm_and_continue                                   = Confirm and continue
