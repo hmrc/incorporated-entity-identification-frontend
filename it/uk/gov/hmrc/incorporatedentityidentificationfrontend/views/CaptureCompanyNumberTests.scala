@@ -79,6 +79,12 @@ trait CaptureCompanyNumberTests {
     "have a save and confirm button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
+
+    "have a back link" in {
+      doc.getElementById("back-link").text mustBe Base.back
+    }
+
+
   }
 
   def testCaptureCompanyNumberEmpty(result: => WSResponse,

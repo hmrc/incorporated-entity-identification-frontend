@@ -29,10 +29,11 @@
         appConfig: AppConfig,
         footerLinks: FooterLinks,
         footer: govukFooter,
-        timeoutDialog: HmrcTimeoutDialog
+        timeoutDialog: HmrcTimeoutDialog,
+        govukBackLink: GovukBackLink
 )
 
-@(pageConfig: PageConfig, title: String, timeout: Boolean = true)(contentBlock: Html)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
+@(pageConfig: PageConfig, title: String, timeout: Boolean = true, showBackLink: Boolean = true)(contentBlock: Html)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
 
 @head = {
     <script src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
@@ -64,6 +65,9 @@
 
 @beforeContentBlock = {
     @phaseBanner("beta", pageConfig)
+    @if(showBackLink) {
+        @govukBackLink(BackLink(href = "#", content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
+    }
 }
 
 @content = {
@@ -88,6 +92,8 @@
     <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
     <script>window.GOVUKFrontend.initAll();</script>
     <script>window.HMRCFrontend.initAll();</script>
+    <script src='@controllers.routes.Assets.versioned("javascripts/backLink.js")'></script>
+
 }
 
 @govukLayout(
