@@ -22,9 +22,9 @@ Request body must contain the continueUrl and deskProServiceId fields. If nothin
 
 ```
 {
-"continueUrl" : "/testUrl",
-"optServiceName" : "Service Name",
-"deskProServiceId" : "DeskProServiceId",
+  "continueUrl" : "/testUrl",
+  "optServiceName" : "Service Name",
+  "deskProServiceId" : "DeskProServiceId",
 }
 ```
 
@@ -54,29 +54,32 @@ Status:
 
 Example response body:
 ```
-{"companyProfile":
-    {"companyName":"TestCompanyLtd”,
+{
+  "companyProfile": {
+    "companyName":"TestCompanyLtd”,
     “companyNumber":"01234567",
     "dateOfIncorporation":"2020-01-01",
-    "unsanitisedCHROAddress":
-      {"address_line_1":"testLine1",
-       "address_line_2":"test town",
-       "care_of":"test name",
-       "country":"United Kingdom",
-       "locality":"test city",
-       "po_box":"123",
-       "postal_code":"AA11AA",
-       "premises":"1",
-       "region":"test region"
-       }
-    },
-"ctutr":"1234567890",
-"identifiersMatch":true,
-"businessVerification":
-    {"verificationStatus":"PASS"},
-"registration":
-    {"registrationStatus":"REGISTERED",
-    "registeredBusinessPartnerId":"X00000123456789"}
+    "unsanitisedCHROAddress": {
+      "address_line_1":"testLine1",
+      "address_line_2":"test town",
+      "care_of":"test name",
+      "country":"United Kingdom",
+      "locality":"test city",
+      "po_box":"123",
+      "postal_code":"AA11AA",
+      "premises":"1",
+      "region":"test region"
+    }
+  },
+  "ctutr":"1234567890",
+  "identifiersMatch":true,
+  "businessVerification": {
+    "verificationStatus":"PASS"
+  },
+  "registration": {
+     "registrationStatus":"REGISTERED",
+     "registeredBusinessPartnerId":"X00000123456789"
+  }
 }
 ```
 ### Test End-Points
@@ -125,22 +128,24 @@ Status:
 
 Example response body:
 ```
-{"companyProfile":
-    {"companyName":"TestCompanyLtd”,
+{
+  "companyProfile": {
+    "companyName":"TestCompanyLtd”,
     “companyNumber":"01234567",
     "dateOfIncorporation":"2020-01-01",
-    "unsanitisedCHROAddress":
-      {"address_line_1":"testLine1",
-       "address_line_2":"test town",
-       "care_of":"test name",
-       "country":"United Kingdom",
-       "locality":"test city",
-       "po_box":"123",
-       "postal_code":"AA11AA",
-       "premises":"1",
-       "region":"test region"
-       }
+    "unsanitisedCHROAddress": {
+      "address_line_1":"testLine1",
+      "address_line_2":"test town",
+      "care_of":"test name",
+      "country":"United Kingdom",
+      "locality":"test city",
+      "po_box":"123",
+      "postal_code":"AA11AA",
+      "premises":"1",
+      "region":"test region"
     }
+  }
+}
 ```
 
 #### GET test-only/retrieve-journey/:journeyId
@@ -161,29 +166,32 @@ Status:
 
 Example response body:
 ```
-{"companyProfile":
-    {"companyName":"TestCompanyLtd”,
+{
+  "companyProfile": {
+    "companyName":"TestCompanyLtd”,
     “companyNumber":"01234567",
     "dateOfIncorporation":"2020-01-01",
-    "unsanitisedCHROAddress":
-      {"address_line_1":"testLine1",
-       "address_line_2":"test town",
-       "care_of":"test name",
-       "country":"United Kingdom",
-       "locality":"test city",
-       "po_box":"123",
-       "postal_code":"AA11AA",
-       "premises":"1",
-       "region":"test region"
-       }
-    },
-"ctutr":"1234567890",
-"identifiersMatch":true,
-"businessVerification":
-    {"verificationStatus":"PASS"},
-"registration":
-    {"registrationStatus":"REGISTERED",
-    "registeredBusinessPartnerId":"X00000123456789"}
+    "unsanitisedCHROAddress": {
+      "address_line_1":"testLine1",
+      "address_line_2":"test town",
+      "care_of":"test name",
+      "country":"United Kingdom",
+      "locality":"test city",
+      "po_box":"123",
+      "postal_code":"AA11AA",
+      "premises":"1",
+      "region":"test region"
+    }
+  },
+  "ctutr":"1234567890",
+  "identifiersMatch":true,
+  "businessVerification": {
+    "verificationStatus":"PASS"
+  },
+  "registration": {
+    "registrationStatus":"REGISTERED",
+    "registeredBusinessPartnerId":"X00000123456789"
+  }
 }
 ```
 
@@ -217,12 +225,14 @@ Status: **OK(200)**
 
 Example Response body: 
 ```
-{"journeyType": "BUSINESS_VERIFICATION",
- "origin": vat,
- "identifier": {
+{
+  "journeyType": "BUSINESS_VERIFICATION",
+  "origin": vat,
+  "identifier": {
     "ctUtr" -> "1234567890"
-     },
- "verificationStatus" -> "PASS"
+  },
+  "verificationStatus" -> "PASS"
+}
 ```
  
 ### License
