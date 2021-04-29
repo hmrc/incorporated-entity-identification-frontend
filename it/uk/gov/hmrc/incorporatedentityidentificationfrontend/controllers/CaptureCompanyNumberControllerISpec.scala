@@ -117,8 +117,6 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             )
             stubStoreCompanyProfile(testJourneyId, testCompanyProfile)(status = OK)
 
-            print(companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation, testAddress))
-
             lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
             result must have(
