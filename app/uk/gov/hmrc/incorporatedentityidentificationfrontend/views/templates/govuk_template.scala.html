@@ -14,14 +14,13 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.{Header, HmrcHeader, HmrcTimeoutDialog, TimeoutDialog}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcTrackingConsentSnippet
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.FooterLinks
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.phaseBanner
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.Header
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcTimeoutDialog
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.TimeoutDialog
+
 
 @this(govukLayout: GovukLayout,
         hmrcHeader: HmrcHeader,
@@ -30,10 +29,13 @@
         footerLinks: FooterLinks,
         footer: govukFooter,
         timeoutDialog: HmrcTimeoutDialog,
-        govukBackLink: GovukBackLink
+        govukBackLink: GovukBackLink,
+        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
 
 @(pageConfig: PageConfig, title: String, timeout: Boolean = true, showBackLink: Boolean = true)(contentBlock: Html)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
+
+@hmrcTrackingConsentSnippet()
 
 @head = {
     <script src='@controllers.routes.Assets.versioned("javascripts/gtm.js")'></script>
