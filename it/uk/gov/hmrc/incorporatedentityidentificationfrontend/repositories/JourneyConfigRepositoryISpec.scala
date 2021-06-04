@@ -35,34 +35,34 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
     .configure("mongodb.timeToLiveSeconds" -> "10")
     .build
 
+  val repo: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
+
   override def beforeEach(): Unit = {
     super.beforeEach()
     await(repo.drop)
   }
 
-  val repo: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
-
   "documents" should {
     "successfully insert a new document" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
+      await(repo.insertJourneyConfig(testJourneyId, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
       await(repo.count) mustBe 1
     }
 
     "successfully insert journeyConfig" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
-      await(repo.findById(testJourneyId)) must contain(JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl)))
+      await(repo.insertJourneyConfig(testJourneyId, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
+      await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl)))
     }
 
     "successfully delete all documents" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
+      await(repo.insertJourneyConfig(testJourneyId, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
       await(repo.drop)
       await(repo.count) mustBe 0
     }
 
     "successfully delete one document" in {
-      await(repo.insertJourneyConfig(testJourneyId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
-      await(repo.insertJourneyConfig(testJourneyId + 1, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
-      await(repo.removeById(testJourneyId + 1))
+      await(repo.insertJourneyConfig(testJourneyId, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
+      await(repo.insertJourneyConfig(testJourneyId + 1, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
+      await(repo.remove("_Id" -> (testJourneyId + 1), "authInternalId" -> testInternalId))
       await(repo.count) mustBe 1
     }
 

@@ -22,23 +22,17 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, Inc
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCtutrViewTests
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 
 class CaptureCtutrControllerISpec extends ComponentSpecHelper
   with CaptureCtutrViewTests
   with IncorporatedEntityIdentificationStub
   with AuthStub {
 
-  override def afterEach(): Unit = {
-    super.afterEach()
-    journeyConfigRepository.drop
-  }
-
   "GET /ct-utr" should {
     "return OK" in {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        authInternalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -54,6 +48,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
       "there is no serviceName passed in the journeyConfig" should {
         lazy val insertConfig = insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -69,6 +64,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
       "there is a serviceName passed in the journeyConfig" should {
         lazy val insertConfig = insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = Some(testCallingServiceName),
           deskProServiceId = testDeskProServiceId,
@@ -83,9 +79,10 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
     }
 
     "redirect to sign in page" when {
-      "the user is UNAUTHORISED" in {
+      "the user is not logged in" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -95,6 +92,67 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
         result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fct-utr&origin=incorporated-entity-identification-frontend")
+      }
+    }
+
+    "return NOT_FOUND" when {
+      "the journeyId does not match what is stored in the journey config database" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId + "1",
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+        result.status mustBe NOT_FOUND
+      }
+
+      "the auth internal ID does not match what is stored in the journey config database" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId + "1",
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+        result.status mustBe NOT_FOUND
+      }
+
+      "neither the journey ID or auth internal ID are found in the journey config database" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId + "1",
+          authInternalId = testInternalId + "1",
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+        result.status mustBe NOT_FOUND
+      }
+    }
+
+    "throw an Internal Server Exception" when {
+      "the user does not have an internal ID" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+        result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
   }
@@ -119,6 +177,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
       "return a bad request" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -132,6 +191,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
       lazy val insertConfig = insertJourneyConfig(
         journeyId = testJourneyId,
+        authInternalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -147,6 +207,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
       "return a bad request" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -160,6 +221,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
       lazy val insertConfig = insertJourneyConfig(
         journeyId = testJourneyId,
+        authInternalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,

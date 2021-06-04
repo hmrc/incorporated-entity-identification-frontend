@@ -20,7 +20,7 @@ import connectors.mocks.MockJourneyConnector
 import helpers.TestConstants._
 import reactivemongo.api.commands.WriteResult
 import repositories.mocks.MockJourneyConfigRepository
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import utils.UnitSpec
@@ -48,59 +48,60 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
   "createJourney" should {
     "return a journeyID and store the provided journey config" in {
       mockCreateJourney(response = Future.successful(testJourneyId))
-      mockInsertJourneyConfig(testJourneyId, testJourneyConfig)(response = Future.successful(mock[WriteResult]))
+      mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)(response = Future.successful(mock[WriteResult]))
 
-      val result = await(TestService.createJourney(testJourneyConfig))
+      val result = await(TestService.createJourney(testAuthInternalId, testJourneyConfig))
 
       result mustBe testJourneyId
       verifyCreateJourney()
-      verifyInsertJourneyConfig(testJourneyId, testJourneyConfig)
+      verifyInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)
     }
 
     "throw an exception" when {
       "create journey API returns an invalid response" in {
         mockCreateJourney(response = Future.failed(new InternalServerException("Invalid response returned from create journey API")))
-        mockInsertJourneyConfig(testJourneyId, testJourneyConfig)(response = Future.successful(mock[WriteResult]))
+        mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)(response = Future.successful(mock[WriteResult]))
 
         intercept[InternalServerException](
-          await(TestService.createJourney(testJourneyConfig))
+          await(TestService.createJourney(testAuthInternalId, testJourneyConfig))
         )
         verifyCreateJourney()
       }
 
       "the journey config is not stored" in {
         mockCreateJourney(response = Future.successful(testJourneyId))
-        mockInsertJourneyConfig(testJourneyId, testJourneyConfig)(response = Future.failed(GenericDriverException("failed to insert")))
+        mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)(response = Future.failed(GenericDriverException("failed to insert")))
 
         intercept[GenericDriverException](
-          await(TestService.createJourney(testJourneyConfig))
+          await(TestService.createJourney(testAuthInternalId, testJourneyConfig))
         )
         verifyCreateJourney()
-        verifyInsertJourneyConfig(testJourneyId, testJourneyConfig)
+        verifyInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)
       }
     }
   }
 
   "getJourneyConfig" should {
-    "return the journey config for a specific journey id" when {
-      "the journey id exists in the database" in {
-        mockFindById(testJourneyId)(Future.successful(Some(testJourneyConfig)))
+    "return the journey config for a specific journey id and auth internal ID" when {
+      "the journey id and auth internal id exists in the database" in {
+        mockFindJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(Some(testJourneyConfig)))
 
-        val result = await(TestService.getJourneyConfig(testJourneyId))
+        val result = await(TestService.getJourneyConfig(testJourneyId, testAuthInternalId))
 
         result mustBe testJourneyConfig
-        verifyFindById(testJourneyId)
+        verifyFindJourneyConfig(testJourneyId, testAuthInternalId)
       }
     }
 
-    "throw an Internal Server Exception" when {
+    "throw a Not Found Exception" when {
       "the journey config does not exist in the database" in {
-        mockFindById(testJourneyId)(Future.successful(None))
+        mockFindJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(None))
 
-        intercept[InternalServerException](
-          await(TestService.getJourneyConfig(testJourneyId))
+        intercept[NotFoundException](
+          await(TestService.getJourneyConfig(testJourneyId, testAuthInternalId))
         )
-        verifyFindById(testJourneyId)
+
+        verifyFindJourneyConfig(testJourneyId, testAuthInternalId)
       }
     }
   }

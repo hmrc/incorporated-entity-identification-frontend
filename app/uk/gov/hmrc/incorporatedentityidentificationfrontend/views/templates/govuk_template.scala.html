@@ -33,7 +33,7 @@
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
 
-@(pageConfig: PageConfig, title: String, timeout: Boolean = true, showBackLink: Boolean = true)(contentBlock: Html)(implicit messages: Messages, request: Request[_], appConfig: AppConfig)
+@(pageConfig: PageConfig, title: String, timeout: Boolean = true, showBackLink: Boolean = true)(contentBlock: Html)(implicit messages: Messages, appConfig: AppConfig)
 
 @hmrcTrackingConsentSnippet()
 

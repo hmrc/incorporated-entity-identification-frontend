@@ -49,8 +49,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
         val result = get(s"$baseUrl/$testJourneyId/register")
         result.status mustBe SEE_OTHER
-        result.header(LOCATION) mustBe Some("/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2FTestJourneyId%2Fregister&origin=incorporated-entity-identification-frontend")
-
+        result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fregister&origin=incorporated-entity-identification-frontend")
       }
     }
 

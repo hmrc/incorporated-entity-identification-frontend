@@ -16,20 +16,21 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch, DetailsNotFound}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsNotFound}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.ExecutionContext
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
@@ -39,29 +40,29 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                                            view: check_your_answers_page,
                                            val authConnector: AuthConnector)
                                           (implicit val config: AppConfig,
-                                           executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
+                                           ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised() {
-        for {
-          optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
-          optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
-          result <- (optCompanyProfile, optCtutr) match {
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          for {
+            journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
+            optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
+            optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
+          } yield (optCompanyProfile, optCtutr) match {
             case (Some(companyProfile), Some(ctutr)) =>
-              journeyService.getJourneyConfig(journeyId).map {
-                journeyConfig =>
-                  Ok(view(journeyConfig.pageConfig,
-                    routes.CheckYourAnswersController.submit(journeyId),
-                    ctutr,
-                    companyProfile.companyNumber,
-                    journeyId
-                  ))
-              }
+              Ok(view(journeyConfig.pageConfig,
+                routes.CheckYourAnswersController.submit(journeyId),
+                ctutr,
+                companyProfile.companyNumber,
+                journeyId
+              ))
             case _ =>
-              throw new InternalServerException("No data stored")
+              throw new InternalServerException("Data could not be retrieved from database or does not exist in database")
           }
-        } yield result
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
