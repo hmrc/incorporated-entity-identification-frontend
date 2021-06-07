@@ -23,20 +23,15 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.AuthStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.errorpages.CompanyNumberNotFoundTests
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
-import scala.concurrent.ExecutionContext.Implicits.global
 
 
 class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with CompanyNumberNotFoundTests with AuthStub {
-
-  override def afterEach(): Unit = {
-    super.afterEach()
-    journeyConfigRepository.drop
-  }
 
   "GET /error/company-name-not-found" when {
     "return ok" in {
       await(insertJourneyConfig(
         journeyId = testJourneyId,
+        authInternalId = testInternalId,
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
@@ -53,6 +48,7 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
       "there is no serviceName passed in the journeyConfig" should {
         lazy val insertConfig = insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -68,6 +64,7 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
       "there is a serviceName passed in the journeyConfig" should {
         lazy val insertConfig = insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = Some(testCallingServiceName),
           deskProServiceId = testDeskProServiceId,
@@ -78,6 +75,16 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
 
         testCompanyNumberNotFoundView(result, authStub, insertConfig)
         testServiceName(testCallingServiceName, result, authStub, insertConfig)
+      }
+    }
+
+    "throw an Internal Server Exception" when {
+      "the user does not have an internal ID" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/error/company-name-not-found")
+
+        result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
   }

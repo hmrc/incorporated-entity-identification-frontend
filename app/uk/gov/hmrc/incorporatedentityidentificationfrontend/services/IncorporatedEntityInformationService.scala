@@ -16,68 +16,64 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.JsString
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityInformationConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService._
 
-import scala.concurrent.{ExecutionContext, Future}
+import javax.inject.{Inject, Singleton}
+import scala.concurrent.Future
 
 @Singleton
-class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEntityInformationConnector
-                                                    )(implicit ec: ExecutionContext) {
+class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEntityInformationConnector) {
 
   def storeCompanyProfile(journeyId: String,
                           companyProfile: CompanyProfile
                          )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[CompanyProfile](journeyId, companyProfileKey, companyProfile)
+    connector.storeData[CompanyProfile](journeyId, CompanyProfileKey, companyProfile)
 
   def storeCtutr(journeyId: String,
                  ctutr: String
                 )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[String](journeyId, ctutrKey, ctutr)
+    connector.storeData[String](journeyId, CtutrKey, ctutr)
 
   def storeBusinessVerificationStatus(journeyId: String,
                                       businessVerification: BusinessVerificationStatus
                                      )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[BusinessVerificationStatus](journeyId, verificationStatusKey, businessVerification)
+    connector.storeData[BusinessVerificationStatus](journeyId, VerificationStatusKey, businessVerification)
 
 
   def storeIdentifiersMatch(journeyId: String,
                             identifiersMatch: Boolean
                            )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[Boolean](journeyId, identifiersMatchKey, identifiersMatch)
+    connector.storeData[Boolean](journeyId, IdentifiersMatchKey, identifiersMatch)
 
   def storeRegistrationStatus(journeyId: String,
                               registrationStatus: RegistrationStatus
                              )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[RegistrationStatus](journeyId, registrationKey, registrationStatus)
+    connector.storeData[RegistrationStatus](journeyId, RegistrationKey, registrationStatus)
 
   def retrieveCompanyProfile(journeyId: String
                             )(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
-    connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, companyProfileKey)
+    connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, CompanyProfileKey)
 
   def retrieveBusinessVerificationStatus(journeyId: String
                                         )(implicit hc: HeaderCarrier): Future[Option[BusinessVerificationStatus]] =
-    connector.retrieveIncorporatedEntityInformation[BusinessVerificationStatus](journeyId, verificationStatusKey)
+    connector.retrieveIncorporatedEntityInformation[BusinessVerificationStatus](journeyId, VerificationStatusKey)
 
   def retrieveCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    connector.retrieveIncorporatedEntityInformation[JsString](journeyId, ctutrKey).map {
-      case Some(jsString) => Some(jsString.value)
-      case None => None
-    }
+    connector.retrieveIncorporatedEntityInformation[String](journeyId, CtutrKey)
 
   def retrieveIncorporatedEntityInformation(journeyId: String
                                            )(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityInformation]] =
     connector.retrieveIncorporatedEntityInformation(journeyId)
+
 }
 
 object IncorporatedEntityInformationService {
-  val companyProfileKey: String = "companyProfile"
-  val ctutrKey: String = "ctutr"
-  val identifiersMatchKey: String = "identifiersMatch"
-  val verificationStatusKey: String = "businessVerification"
-  val registrationKey: String = "registration"
+  val CompanyProfileKey: String = "companyProfile"
+  val CtutrKey: String = "ctutr"
+  val IdentifiersMatchKey: String = "identifiersMatch"
+  val VerificationStatusKey: String = "businessVerification"
+  val RegistrationKey: String = "registration"
 }

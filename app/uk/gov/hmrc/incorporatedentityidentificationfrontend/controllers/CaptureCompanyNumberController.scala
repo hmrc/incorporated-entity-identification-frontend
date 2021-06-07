@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCompanyNumberForm
@@ -26,6 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.services._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_company_number_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -39,32 +41,38 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised() {
-        journeyService.getJourneyConfig(journeyId).map {
-          journeyConfig =>
-            Ok(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), CaptureCompanyNumberForm.form))
-        }
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          journeyService.getJourneyConfig(journeyId, authInternalId).map {
+            journeyConfig =>
+              Ok(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), CaptureCompanyNumberForm.form))
+          }
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised() {
-        CaptureCompanyNumberForm.form.bindFromRequest().fold(
-          formWithErrors => {
-            journeyService.getJourneyConfig(journeyId).map {
-              journeyConfig =>
-                BadRequest(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
-            }
-          },
-          companyNumber =>
-            companyProfileService.retrieveAndStoreCompanyProfile(journeyId, companyNumber).map {
-              case Some(_) =>
-                Redirect(routes.ConfirmBusinessNameController.show(journeyId))
-              case None =>
-                Redirect(errorRoutes.CompanyNumberNotFoundController.show(journeyId))
-            }
-        )
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          CaptureCompanyNumberForm.form.bindFromRequest().fold(
+            formWithErrors => {
+              journeyService.getJourneyConfig(journeyId, authInternalId).map {
+                journeyConfig =>
+                  BadRequest(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
+              }
+            },
+            companyNumber =>
+              companyProfileService.retrieveAndStoreCompanyProfile(journeyId, companyNumber).map {
+                case Some(_) =>
+                  Redirect(routes.ConfirmBusinessNameController.show(journeyId))
+                case None =>
+                  Redirect(errorRoutes.CompanyNumberNotFoundController.show(journeyId))
+              }
+          )
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 

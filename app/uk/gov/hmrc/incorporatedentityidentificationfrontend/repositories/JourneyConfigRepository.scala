@@ -17,7 +17,6 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories
 
 import java.time.Instant
-
 import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{Format, Json}
 import play.modules.reactivemongo.ReactiveMongoComponent
@@ -27,6 +26,7 @@ import reactivemongo.bson.BSONDocument
 import reactivemongo.play.json._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository._
 import uk.gov.hmrc.mongo.ReactiveRepository
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -41,14 +41,27 @@ class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoCom
   idFormat = implicitly[Format[String]]
 ) {
 
-  def insertJourneyConfig(journeyId: String, journeyConfig: JourneyConfig): Future[WriteResult] = {
+  def insertJourneyConfig(journeyId: String, authInternalId: String, journeyConfig: JourneyConfig): Future[WriteResult] = {
     val document = Json.obj(
-      "_id" -> journeyId,
-      "creationTimestamp" -> Json.obj("$date" -> Instant.now.toEpochMilli)
+      JourneyIdKey -> journeyId,
+      AuthInternalIdKey -> authInternalId,
+      CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
     ) ++ Json.toJsObject(journeyConfig)
 
     collection.insert(true).one(document)
   }
+
+  def findJourneyConfig(journeyId: String, authInternalId: String): Future[Option[JourneyConfig]] =
+    collection.find(
+      Json.obj(
+        JourneyIdKey -> journeyId,
+        AuthInternalIdKey -> authInternalId
+      ),
+      Some(Json.obj(
+        JourneyIdKey -> 0,
+        AuthInternalIdKey -> 0
+      ))
+    ).one[JourneyConfig]
 
   private lazy val ttlIndex = Index(
     Seq(("creationTimestamp", IndexType.Ascending)),
@@ -70,4 +83,9 @@ class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoCom
       r
     }
 
+}
+object JourneyConfigRepository {
+  val JourneyIdKey = "_Id"
+  val AuthInternalIdKey = "authInternalId"
+  val CreationTimestampKey = "creationTimestamp"
 }

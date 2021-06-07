@@ -16,20 +16,22 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.errorpages.ctutr_mismatch_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CtutrMismatchController @Inject()(journeyService: JourneyService,
-                                         mcc: MessagesControllerComponents,
+                                        mcc: MessagesControllerComponents,
                                         view: ctutr_mismatch_page,
                                         val authConnector: AuthConnector
                                        )(implicit val config: AppConfig,
@@ -37,11 +39,14 @@ class CtutrMismatchController @Inject()(journeyService: JourneyService,
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised() {
-        journeyService.getJourneyConfig(journeyId).map {
-          journeyConfig =>
-            Ok(view(journeyConfig.pageConfig,  routes.CtutrMismatchController.submit(journeyId), journeyId))
-        }
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          journeyService.getJourneyConfig(journeyId, authInternalId).map {
+            journeyConfig =>
+              Ok(view(journeyConfig.pageConfig, routes.CtutrMismatchController.submit(journeyId), journeyId))
+          }
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 

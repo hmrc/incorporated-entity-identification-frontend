@@ -80,7 +80,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
   override def beforeEach(): Unit = {
     resetWiremock()
-    journeyConfigRepository.drop
+    await(journeyConfigRepository.drop)
     super.beforeEach()
   }
 
@@ -119,12 +119,13 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   private def buildClient(path: String): WSRequest = ws.url(s"http://localhost:$port$path").withFollowRedirects(false)
 
   def insertJourneyConfig(journeyId: String,
+                          authInternalId: String,
                           continueUrl: String,
                           optServiceName: Option[String],
                           deskProServiceId: String,
                           signOutUrl: String): Future[WriteResult] =
     journeyConfigRepository.insertJourneyConfig(
-      journeyId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl))
+      journeyId, authInternalId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl))
     )
 
 }

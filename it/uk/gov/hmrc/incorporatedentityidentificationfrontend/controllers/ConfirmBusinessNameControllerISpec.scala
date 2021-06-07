@@ -26,8 +26,6 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, Inc
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.ConfirmBusinessNameViewTests
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 
 class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
   with ConfirmBusinessNameViewTests
@@ -35,17 +33,13 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
   with AuthStub
   with FeatureSwitching {
 
-  override def afterEach(): Unit = {
-    super.afterEach()
-    journeyConfigRepository.drop
-  }
-
   "GET /confirm-business-name" when {
     "the company exists in Companies House" should {
-      "return ok" in {
+      "return OK" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -60,22 +54,11 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         result.status mustBe OK
       }
 
-      "redirect to sign in page" when {
-        "the user is UNAUTHORISED" in {
-          stubAuthFailure()
-          val jsonBody = Json.toJsObject(testCompanyProfile)
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
-
-          lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
-
-          result.status mustBe SEE_OTHER
-        }
-      }
-
       "return a view" when {
         "there is no serviceName passed in the journeyConfig" should {
           lazy val insertConfig = insertJourneyConfig(
             journeyId = testJourneyId,
+            authInternalId = testInternalId,
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
@@ -95,6 +78,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         "there is a serviceName passed in the journeyConfig" should {
           lazy val insertConfig = insertJourneyConfig(
             journeyId = testJourneyId,
+            authInternalId = testInternalId,
             continueUrl = testContinueUrl,
             optServiceName = Some(testCallingServiceName),
             deskProServiceId = testDeskProServiceId,
@@ -114,10 +98,11 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
     }
 
     "the company doesn't exist in the backend database" should {
-      "show technical difficulties page" in {
+      "throw an Internal Server Exception" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
@@ -130,6 +115,80 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         result.status mustBe INTERNAL_SERVER_ERROR
       }
     }
+
+    "redirect to sign in page" when {
+      "the user is not logged in" in {
+        stubAuthFailure()
+        val jsonBody = Json.toJsObject(testCompanyProfile)
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
+
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fconfirm-business-name&origin=incorporated-entity-identification-frontend")
+      }
+    }
+
+    "return NOT_FOUND" when {
+      "the journeyId does not match what is stored in the journey config database" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId + "1",
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
+
+        result.status mustBe NOT_FOUND
+      }
+
+      "the auth internal ID does not match what is stored in the journey config database" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId + "1",
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
+
+        result.status mustBe NOT_FOUND
+      }
+
+      "neither the journey ID or auth internal ID are found in the journey config database" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId + "1",
+          authInternalId = testInternalId + "1",
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
+
+        result.status mustBe NOT_FOUND
+      }
+    }
+
+    "throw an Internal Server Exception" when {
+      "the user does not have an internal ID" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
   }
 
   "POST /confirm-business-name" should {
@@ -161,6 +220,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
           await(insertJourneyConfig(
             journeyId = testJourneyId,
+            authInternalId = testInternalId,
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
@@ -189,6 +249,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
         await(insertJourneyConfig(
           journeyId = testJourneyId,
+          authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,

@@ -16,15 +16,17 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCtutrForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_ctutr_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -34,33 +36,39 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                                        journeyService: JourneyService,
                                        val authConnector: AuthConnector
                                       )(implicit val config: AppConfig,
-                                        executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
+                                        ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised() {
-        journeyService.getJourneyConfig(journeyId).map {
-          journeyConfig =>
-            Ok(view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
-        }
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          journeyService.getJourneyConfig(journeyId, authInternalId).map {
+            journeyConfig =>
+              Ok(view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+          }
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised() {
-        CaptureCtutrForm.form.bindFromRequest().fold(
-          formWithErrors => {
-            journeyService.getJourneyConfig(journeyId).map {
-              journeyConfig =>
-                BadRequest(view(journeyConfig.pageConfig,routes.CaptureCtutrController.submit(journeyId), formWithErrors))
-            }
-          },
-          ctutr =>
-            incorporatedEntityInformationService.storeCtutr(journeyId, ctutr).map {
-              _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
-            }
-        )
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          CaptureCtutrForm.form.bindFromRequest().fold(
+            formWithErrors => {
+              journeyService.getJourneyConfig(journeyId, authInternalId).map {
+                journeyConfig =>
+                  BadRequest(view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
+              }
+            },
+            ctutr =>
+              incorporatedEntityInformationService.storeCtutr(journeyId, ctutr).map {
+                _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+              }
+          )
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 

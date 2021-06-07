@@ -26,6 +26,7 @@ import java.util.UUID
 object TestConstants {
 
   val testJourneyId: String = UUID.randomUUID().toString
+  val testAuthInternalId: String = UUID.randomUUID().toString
   val testCompanyNumber: String = "12345678"
   val testCtutr: String = "1234567890"
   val testDateOfIncorporation: String = LocalDate.now().toString

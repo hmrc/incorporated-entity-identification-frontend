@@ -16,12 +16,14 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class JourneyRedirectController @Inject()(controllerComponents: MessagesControllerComponents,
@@ -31,10 +33,13 @@ class JourneyRedirectController @Inject()(controllerComponents: MessagesControll
 
   def redirectToContinueUrl(journeyId: String): Action[AnyContent] = Action.async {
     implicit req =>
-      authorised() {
-        journeyService.getJourneyConfig(journeyId).map {
-          journeyConfig => SeeOther(journeyConfig.continueUrl + s"?journeyId=$journeyId")
-        }
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          journeyService.getJourneyConfig(journeyId, authInternalId).map {
+            journeyConfig => SeeOther(journeyConfig.continueUrl + s"?journeyId=$journeyId")
+          }
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 

@@ -25,12 +25,11 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
-import scala.concurrent.ExecutionContext.Implicits.global
 
 class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with IncorporatedEntityIdentificationStub with AuthStub {
 
   "POST /api/journey" should {
-    "return a created journey" in {
+    "return CREATED and supply a journey start url" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
@@ -41,32 +40,54 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl
         )
-
       )
 
       lazy val result = post("/incorporated-entity-identification/api/journey", Json.toJson(testJourneyConfig))
 
       (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
 
-      await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(testJourneyConfig)
+      await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testJourneyConfig)
     }
 
-    "return See Other" in {
-      stubAuthFailure()
-      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+    "redirect to sign in page" when {
+      "the user is not logged in" in {
+        stubAuthFailure()
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-      val testJourneyConfig = JourneyConfig(
-        continueUrl = "/testContinueUrl",
-        pageConfig = PageConfig(
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+        val testJourneyConfig = JourneyConfig(
+          continueUrl = "/testContinueUrl",
+          pageConfig = PageConfig(
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl
+          )
         )
-      )
 
-      lazy val result = post("/incorporated-entity-identification/api/journey", Json.toJson(testJourneyConfig))
+        lazy val result = post("/incorporated-entity-identification/api/journey", Json.toJson(testJourneyConfig))
 
-      result.status mustBe SEE_OTHER
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fincorporated-entity-identification%2Fapi%2Fjourney&origin=incorporated-entity-identification-frontend")
+      }
+    }
+
+    "throw an Internal Server Exception" when {
+      "the user does not have an internal ID" in {
+        stubAuth(OK, successfulAuthResponse(None))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        val testJourneyConfig = JourneyConfig(
+          continueUrl = "/testContinueUrl",
+          pageConfig = PageConfig(
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl
+          )
+        )
+
+        lazy val result = post("/incorporated-entity-identification/api/journey", Json.toJson(testJourneyConfig))
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
     }
   }
 

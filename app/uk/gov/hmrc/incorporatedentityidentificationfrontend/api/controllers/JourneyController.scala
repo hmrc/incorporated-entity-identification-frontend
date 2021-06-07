@@ -16,16 +16,18 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers
 
-import javax.inject.Inject
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, ControllerComponents}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
+import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => controllerRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class JourneyController @Inject()(controllerComponents: ControllerComponents,
@@ -37,13 +39,16 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
 
   def createJourney(): Action[JourneyConfig] = Action.async(parse.json[JourneyConfig]) {
     implicit req =>
-      authorised() {
-        journeyService.createJourney(req.body).map(
-          journeyId =>
-            Created(Json.obj(
-              "journeyStartUrl" -> s"${appConfig.selfUrl}${controllerRoutes.CaptureCompanyNumberController.show(journeyId).url}"
-            ))
-        )
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          journeyService.createJourney(authInternalId, req.body).map(
+            journeyId =>
+              Created(Json.obj(
+                "journeyStartUrl" -> s"${appConfig.selfUrl}${controllerRoutes.CaptureCompanyNumberController.show(journeyId).url}"
+              ))
+          )
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 

@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{BusinessVerificationService, IncorporatedEntityInformationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -35,8 +35,7 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
   def startBusinessVerificationJourney(journeyId: String): Action[AnyContent] = Action.async {
     implicit req =>
       authorised() {
-        val optCtutr = incorporatedEntityInformationService.retrieveCtutr(journeyId)
-        optCtutr.flatMap {
+        incorporatedEntityInformationService.retrieveCtutr(journeyId).flatMap {
           case Some(ctutr) =>
             businessVerificationService.createBusinessVerificationJourney(journeyId, ctutr).flatMap {
               case Some(redirectUri) =>
@@ -45,7 +44,7 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
                 Future.successful(Redirect(routes.RegistrationController.register(journeyId)))
             }
           case None =>
-            throw new InternalServerException(s"There is no CTUTR for $journeyId")
+            throw new InternalServerException(s"No CTUTR found in the database for $journeyId")
         }
       }
   }
@@ -53,9 +52,7 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
   def retrieveBusinessVerificationResult(journeyId: String): Action[AnyContent] = Action.async {
     implicit req =>
       authorised() {
-        val optBusinessVerificationJourneyId = req.getQueryString("journeyId")
-
-        optBusinessVerificationJourneyId match {
+        req.getQueryString("journeyId") match {
           case Some(businessVerificationJourneyId) =>
             businessVerificationService.retrieveBusinessVerificationStatus(businessVerificationJourneyId).flatMap {
               verificationStatus =>
@@ -64,7 +61,7 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
                 }
             }
           case None =>
-            throw new InternalServerException("Missing JourneyID from Business Verification callback")
+            throw new InternalServerException("JourneyID is missing from Business Verification callback")
         }
       }
   }
