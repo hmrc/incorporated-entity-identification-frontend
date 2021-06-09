@@ -62,7 +62,7 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
     "successfully delete one document" in {
       await(repo.insertJourneyConfig(testJourneyId, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
       await(repo.insertJourneyConfig(testJourneyId + 1, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
-      await(repo.remove("_Id" -> (testJourneyId + 1), "authInternalId" -> testInternalId))
+      await(repo.remove("_id" -> (testJourneyId + 1), "authInternalId" -> testInternalId))
       await(repo.count) mustBe 1
     }
 
