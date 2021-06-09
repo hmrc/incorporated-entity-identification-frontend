@@ -84,8 +84,9 @@ class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoCom
     }
 
 }
+
 object JourneyConfigRepository {
-  val JourneyIdKey = "_Id"
+  val JourneyIdKey = "_id"
   val AuthInternalIdKey = "authInternalId"
   val CreationTimestampKey = "creationTimestamp"
 }
