@@ -30,12 +30,29 @@ class CompaniesHouseStubController extends InjectedController {
   private val dateOfIncorporationKey = "date_of_creation"
   private val stubCompanyName = "Test Company Ltd"
   private val stubDateOfIncorporation = "2020-01-01"
+  private val stubOldDateOfIncorporation = "2017-01-01"
   private val registeredOfficeAddressKey = "registered_office_address"
 
   def getCompanyInformation(companyNumber: String): Action[AnyContent] = Action.async {
 
     Future.successful(companyNumber match {
       case "00000001" => NotFound
+      case "00000002" => Ok(Json.obj(
+        companyNameKey -> stubCompanyName,
+        companyNumberKey -> companyNumber,
+        dateOfIncorporationKey -> stubOldDateOfIncorporation,
+        registeredOfficeAddressKey -> Json.obj(
+          "address_line_1" -> "testLine1",
+          "address_line_2" -> "test town",
+          "care_of" -> "test name",
+          "country" -> "United Kingdom",
+          "locality" -> "test city",
+          "po_box" -> "123",
+          "postal_code" -> "AA11AA",
+          "premises" -> "1",
+          "region" -> "test region"
+        )
+      ))
       case _ => Ok(Json.obj(
         companyNameKey -> stubCompanyName,
         companyNumberKey -> companyNumber,
