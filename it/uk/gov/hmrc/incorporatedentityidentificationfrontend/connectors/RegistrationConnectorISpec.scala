@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import play.api.test.Helpers.{INTERNAL_SERVER_ERROR, OK, await, defaultAwaitTimeout}
+import play.api.test.Helpers.{OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed}
@@ -41,7 +41,7 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
     }
     "return RegistrationFailed" when {
       "the registration has not been successful" in {
-        stubRegister(testCompanyNumber, testCtutr)(INTERNAL_SERVER_ERROR, RegistrationFailed)
+        stubRegister(testCompanyNumber, testCtutr)(OK, RegistrationFailed)
 
         val result = await(registrationConnector.register(testCompanyNumber, testCtutr))
 

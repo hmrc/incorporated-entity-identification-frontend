@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import javax.inject.Inject
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json, Writes}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RegistrationHttpParser.RegistrationHttpReads
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{RegistrationFailed, RegistrationStatus}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class RegistrationConnector @Inject()(httpClient: HttpClient,
@@ -57,8 +57,6 @@ object RegistrationHttpParser {
       response.status match {
         case OK =>
           (response.json \ registrationKey).as[RegistrationStatus]
-        case INTERNAL_SERVER_ERROR =>
-          RegistrationFailed
         case _ =>
           throw new InternalServerException(s"Unexpected response from Register API - status = ${response.status}, body = ${response.body}")
       }
