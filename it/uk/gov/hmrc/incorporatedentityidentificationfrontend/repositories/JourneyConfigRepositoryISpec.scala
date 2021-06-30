@@ -18,8 +18,10 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories
 
 import org.scalatest.concurrent.{AbstractPatienceConfiguration, Eventually}
 import play.api.inject.guice.GuiceApplicationBuilder
+import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
+import reactivemongo.play.json.collection.Helpers.idWrites
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -64,6 +66,31 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
       await(repo.insertJourneyConfig(testJourneyId + 1, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
       await(repo.remove("_id" -> (testJourneyId + 1), "authInternalId" -> testInternalId))
       await(repo.count) mustBe 1
+    }
+
+    "successfully update with a business entity" in {
+      await(repo.insertJourneyConfig(testJourneyId, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))))
+      await(repo.upsertBusinessEntity(testJourneyId, testInternalId, businessEntity = "ordinaryPartnership"))
+
+      val expectedJson =
+        Json.toJsObject(
+          JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl))
+        ) ++ Json.obj("businessEntity" -> "ordinaryPartnership")
+
+      val result = await(repo.collection.find[JsObject, JsObject](
+        Json.obj(
+          "_id" -> testJourneyId,
+          "authInternalId" -> testInternalId
+        ),
+        Some(Json.obj(
+          "_id" -> 0,
+          "authInternalId" -> 0,
+          "creationTimestamp"-> 0
+        ))
+      ).one[JsObject])
+
+      result must contain(expectedJson)
+
     }
 
   }

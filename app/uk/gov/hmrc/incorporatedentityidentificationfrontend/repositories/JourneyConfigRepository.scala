@@ -51,6 +51,19 @@ class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoCom
     collection.insert(true).one(document)
   }
 
+  def upsertBusinessEntity(journeyId: String, authInternalId: String, businessEntity: String): Future[Unit] =
+    collection.update(ordered = true).one(
+      Json.obj(
+        JourneyIdKey -> journeyId,
+        AuthInternalIdKey -> authInternalId
+      ),
+      Json.obj("$set" -> Json.obj(
+        BusinessEntityKey -> businessEntity
+      ))
+    ).filter(_.n == 1).map {
+      _ => Unit
+    }
+
   def findJourneyConfig(journeyId: String, authInternalId: String): Future[Option[JourneyConfig]] =
     collection.find(
       Json.obj(
@@ -89,4 +102,5 @@ object JourneyConfigRepository {
   val JourneyIdKey = "_id"
   val AuthInternalIdKey = "authInternalId"
   val CreationTimestampKey = "creationTimestamp"
+  val BusinessEntityKey = "businessEntity"
 }
