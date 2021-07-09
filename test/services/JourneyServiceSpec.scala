@@ -18,17 +18,18 @@ package services
 
 import connectors.mocks.MockJourneyConnector
 import helpers.TestConstants._
+import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
+import reactivemongo.core.errors.GenericDriverException
 import repositories.mocks.MockJourneyConfigRepository
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import utils.UnitSpec
-import play.api.test.Helpers._
-import reactivemongo.core.errors.GenericDriverException
 
-import scala.concurrent.Future
 import scala.concurrent.ExecutionContext.Implicits.global
+import scala.concurrent.Future
 
 class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJourneyConfigRepository {
 
@@ -42,7 +43,8 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
       optServiceName = None,
       deskProServiceId = "vrs",
       signOutUrl = testSignOutUrl
-    )
+    ),
+    LimitedCompany
   )
 
   "createJourney" should {

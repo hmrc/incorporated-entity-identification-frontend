@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers
 
 import play.api.http.Status.CREATED
-import play.api.libs.json.Json
+import play.api.libs.json.{JsObject, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
@@ -28,21 +28,18 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecH
 
 class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with IncorporatedEntityIdentificationStub with AuthStub {
 
+  val testJourneyConfigJson: JsObject = Json.obj(
+    "continueUrl" -> testJourneyConfig.continueUrl,
+    "deskProServiceId" -> testJourneyConfig.pageConfig.deskProServiceId,
+    "signOutUrl" -> testJourneyConfig.pageConfig.signOutUrl
+  )
+
   "POST /api/journey" should {
     "return CREATED and supply a journey start url" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-      val testJourneyConfig = JourneyConfig(
-        continueUrl = "/testContinueUrl",
-        pageConfig = PageConfig(
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
-        )
-      )
-
-      lazy val result = post("/incorporated-entity-identification/api/journey", Json.toJson(testJourneyConfig))
+      lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
 
       (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
 
@@ -54,16 +51,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuthFailure()
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        val testJourneyConfig = JourneyConfig(
-          continueUrl = "/testContinueUrl",
-          pageConfig = PageConfig(
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl
-          )
-        )
-
-        lazy val result = post("/incorporated-entity-identification/api/journey", Json.toJson(testJourneyConfig))
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fincorporated-entity-identification%2Fapi%2Fjourney&origin=incorporated-entity-identification-frontend")
@@ -75,16 +63,43 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuth(OK, successfulAuthResponse(None))
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        val testJourneyConfig = JourneyConfig(
-          continueUrl = "/testContinueUrl",
-          pageConfig = PageConfig(
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl
-          )
-        )
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
 
-        lazy val result = post("/incorporated-entity-identification/api/journey", Json.toJson(testJourneyConfig))
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+  }
+
+  "POST /api/limited-company-journey" should {
+    "return CREATED and supply a journey start url" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+      lazy val result = post("/incorporated-entity-identification/api/limited-company-journey", testJourneyConfigJson)
+
+      (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+
+      await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testJourneyConfig)
+    }
+
+    "redirect to sign in page" when {
+      "the user is not logged in" in {
+        stubAuthFailure()
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/limited-company-journey", testJourneyConfigJson)
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fincorporated-entity-identification%2Fapi%2Flimited-company-journey&origin=incorporated-entity-identification-frontend")
+      }
+    }
+
+    "throw an Internal Server Exception" when {
+      "the user does not have an internal ID" in {
+        stubAuth(OK, successfulAuthResponse(None))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/limited-company-journey", testJourneyConfigJson)
 
         result.status mustBe INTERNAL_SERVER_ERROR
       }

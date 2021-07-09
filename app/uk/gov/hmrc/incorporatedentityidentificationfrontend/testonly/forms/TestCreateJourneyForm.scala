@@ -16,11 +16,13 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms
 
-import play.api.data.Form
 import play.api.data.Forms._
+import play.api.data.format.Formatter
 import play.api.data.validation.Constraint
+import play.api.data.{Form, FormError}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.MappingUtil.optText
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 
 
@@ -31,6 +33,7 @@ object TestCreateJourneyForm {
   val deskProServiceId = "deskProServiceId"
   val alphanumericRegex = "^[A-Z0-9]*$"
   val signOutUrl = "signOutUrl"
+  val entityType = "entityType"
 
   def continueUrlEmpty: Constraint[String] = Constraint("continue_url.not_entered")(
     companyNumber => validate(
@@ -53,6 +56,20 @@ object TestCreateJourneyForm {
     )
   )
 
+  val LtdCompanyKey = "ltdCompany"
+
+  def entityTypeFormatter: Formatter[BusinessEntity] = new Formatter[BusinessEntity] {
+    override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BusinessEntity] =
+      data.get(key) match {
+        case Some(LtdCompanyKey) => Right(LimitedCompany)
+        case _ => Left(Seq(FormError(key, "Invalid entity type")))
+      }
+
+    override def unbind(key: String, value: BusinessEntity): Map[String, String] = value match {
+      case LimitedCompany => Map(key -> LtdCompanyKey)
+    }
+  }
+
   val form: Form[JourneyConfig] = {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),
@@ -60,10 +77,11 @@ object TestCreateJourneyForm {
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
       signOutUrl -> text.verifying(signOutUrlEmpty)
     )((continueUrl, serviceName, deskProServiceId, signOutUrl) =>
-      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl))
+      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl), LimitedCompany)
     )(journeyConfig =>
-      Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName, journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl)
-    ))
+      Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName,
+        journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl
+      )))
   }
 
 }

@@ -26,6 +26,7 @@ import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
 
@@ -125,7 +126,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
                           deskProServiceId: String,
                           signOutUrl: String): Future[WriteResult] =
     journeyConfigRepository.insertJourneyConfig(
-      journeyId, authInternalId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl))
+      journeyId, authInternalId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl), LimitedCompany)
     )
 
 }

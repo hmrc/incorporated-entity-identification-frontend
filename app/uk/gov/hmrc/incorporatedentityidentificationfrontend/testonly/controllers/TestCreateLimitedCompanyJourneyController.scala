@@ -29,12 +29,12 @@ import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TestCreateJourneyController @Inject()(messagesControllerComponents: MessagesControllerComponents,
-                                            testCreateJourneyConnector: TestCreateJourneyConnector,
-                                            view: test_create_journey,
-                                            val authConnector: AuthConnector
-                                           )(implicit ec: ExecutionContext,
-                                             appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
+class TestCreateLimitedCompanyJourneyController @Inject()(messagesControllerComponents: MessagesControllerComponents,
+                                                          testCreateJourneyConnector: TestCreateJourneyConnector,
+                                                          view: test_create_journey,
+                                                          val authConnector: AuthConnector
+                                                         )(implicit ec: ExecutionContext,
+                                                           appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
   private val defaultPageConfig = PageConfig(
     optServiceName = None,

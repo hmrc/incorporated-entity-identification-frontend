@@ -21,9 +21,11 @@ import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => controllerRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -37,20 +39,31 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
                                   appConfig: AppConfig
                                  )(implicit ec: ExecutionContext) extends BackendController(controllerComponents) with AuthorisedFunctions {
 
-  def createJourney(): Action[JourneyConfig] = Action.async(parse.json[JourneyConfig]) {
-    implicit req =>
-      authorised().retrieve(internalId) {
-        case Some(authInternalId) =>
-          journeyService.createJourney(authInternalId, req.body).map(
-            journeyId =>
-              Created(Json.obj(
-                "journeyStartUrl" -> s"${appConfig.selfUrl}${controllerRoutes.CaptureCompanyNumberController.show(journeyId).url}"
-              ))
-          )
-        case None =>
-          throw new InternalServerException("Internal ID could not be retrieved from Auth")
-      }
-  }
+
+  def createLtdCompanyJourney: Action[JourneyConfig] = createJourney(LimitedCompany)
+
+  private def createJourney(businessEntity: BusinessEntity): Action[JourneyConfig] =
+    Action.async(parse.json[JourneyConfig] { json =>
+      for {
+        continueUrl <- (json \ continueUrlKey).validate[String]
+        optServiceName <- (json \ optServiceNameKey).validateOpt[String]
+        deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
+        signOutUrl <- (json \ signOutUrlKey).validate[String]
+      } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl), businessEntity)
+    }) {
+      implicit req =>
+        authorised().retrieve(internalId) {
+          case Some(authInternalId) =>
+            journeyService.createJourney(authInternalId, req.body).map {
+              journeyId =>
+                Created(Json.obj(
+                  "journeyStartUrl" -> s"${appConfig.selfUrl}${controllerRoutes.CaptureCompanyNumberController.show(journeyId).url}"
+                ))
+            }
+          case _ =>
+            throw new InternalServerException("Internal ID could not be retrieved from Auth")
+        }
+    }
 
   def retrieveJourneyData(journeyId: String): Action[AnyContent] = Action.async {
     implicit req =>
@@ -65,3 +78,11 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
   }
 
 }
+
+object JourneyController {
+  val continueUrlKey = "continueUrl"
+  val optServiceNameKey = "optServiceName"
+  val deskProServiceIdKey = "deskProServiceId"
+  val signOutUrlKey = "signOutUrl"
+}
+

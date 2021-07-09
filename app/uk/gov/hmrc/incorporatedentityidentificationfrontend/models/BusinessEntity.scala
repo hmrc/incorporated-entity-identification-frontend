@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.BusinessEntity
+object BusinessEntity {
+  sealed trait BusinessEntity
 
-case class JourneyConfig(continueUrl: String, pageConfig: PageConfig, businessEntity: BusinessEntity)
+  case object LimitedCompany extends BusinessEntity
 
+}

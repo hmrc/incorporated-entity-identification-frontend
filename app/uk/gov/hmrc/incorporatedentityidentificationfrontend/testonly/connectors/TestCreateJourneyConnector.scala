@@ -17,26 +17,38 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors
 
 import javax.inject.{Inject, Singleton}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.routes
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import play.api.http.Status._
+import play.api.libs.json.{Json, Writes}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors.TestCreateJourneyConnector.journeyConfigWriter
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
-                                          appConfig: AppConfig
+                                           appConfig: AppConfig
                                           )(implicit ec: ExecutionContext) {
-  def createJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
-    val url = appConfig.selfBaseUrl + routes.JourneyController.createJourney().url
 
-    httpClient.POST(url, journeyConfig).map{
-      case response @ HttpResponse(CREATED, _, _) =>
+  def createJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
+    val url = appConfig.selfBaseUrl + routes.JourneyController.createLtdCompanyJourney().url
+
+    httpClient.POST(url, journeyConfig).map {
+      case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
     }
   }
-
-
 }
+
+object TestCreateJourneyConnector {
+  implicit val journeyConfigWriter: Writes[JourneyConfig] = (journeyConfig: JourneyConfig) => Json.obj(
+    continueUrlKey -> journeyConfig.continueUrl,
+    optServiceNameKey -> journeyConfig.pageConfig.optServiceName,
+    deskProServiceIdKey -> journeyConfig.pageConfig.deskProServiceId,
+    signOutUrlKey -> journeyConfig.pageConfig.signOutUrl
+  )
+}
+

@@ -12,8 +12,9 @@ This is a Scala/Play frontend to allow Limited Companies to provide their inform
 3. Run the frontend locally using
 `sbt 'run 9718 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
 
-## End-Points
-### POST /journey
+# End-Points
+## POST /journey
+### Deprecated - use POST /ltd-company/journey instead
 
 ---
 Creates a new journey, storing the journeyConfig against the journeyId.
@@ -36,8 +37,31 @@ Example Response body:
 ```
 {“journeyStartUrl” : "/testUrl"}
 ```
+## POST /ltd-company/journey
 
-### GET /journey/:journeyId
+---
+Creates a new journey for Ltd Company, storing the journeyConfig against the journeyId.
+#### Request:
+Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service name, ```Entity Validation Service``` will be used.
+
+```
+{
+  "continueUrl" : "/testUrl",
+  "optServiceName" : "Service Name",
+  "deskProServiceId" : "DeskProServiceId",
+}
+```
+
+#### Response:
+Status: **Created(201)**
+
+Example Response body: 
+
+```
+{“journeyStartUrl” : "/testUrl"}
+```
+
+## GET /journey/:journeyId
 
 ---
 Retrieves all the journey data that is stored against a specific journeyID.
@@ -82,8 +106,8 @@ Example response body:
   }
 }
 ```
-### Test End-Points
-#### GET test-only/feature-switches
+## Test End-Points
+### GET test-only/feature-switches
 
 ---
 Shows all feature switches:
@@ -96,7 +120,7 @@ Shows all feature switches:
     - Get CT reference stub
     - DES stub
     
-#### GET/POST test-only/create-journey
+### GET/POST test-only/create-journey
 
 ---
 This is a test entry point which simulates a service making the initial call to setup a journey.
@@ -110,7 +134,7 @@ This is a test entry point which simulates a service making the initial call to 
     - Service Name to use throughout the service
     - If nothing is entered, ```Entity Validation Service``` will be used
     
-#### GET test-only/:companyNumber/incorporated-company-profile
+### GET test-only/:companyNumber/incorporated-company-profile
 
 ---
 Stubs retrieving the Company Profile from Companies House. The Companies House API stub feature switch will need to be enabled.
@@ -148,7 +172,7 @@ Example response body:
 }
 ```
 
-#### GET test-only/retrieve-journey/:journeyId
+### GET test-only/retrieve-journey/:journeyId
 
 ---
 Retrieves all the journey data that is stored against a specific journeyID.
@@ -195,7 +219,7 @@ Example response body:
 }
 ```
 
-#### POST test-only/verification-question/journey
+### POST test-only/verification-question/journey
 
 ---
 Stubs creating a Business Verification journey. The Business Verification Stub Feature Switch will need to be enabled. 
@@ -212,7 +236,7 @@ Example Response body:
 {“redirectUri” : "/testUrl?journeyId=<businessVerificationJourneyId>"}
 ```
 
-#### GET  test-only/verification-question/journey/:journeyId/status
+### GET  test-only/verification-question/journey/:journeyId/status
 
 ---
 Stubs retrieving the result from the Business Verification Service. The Business Verification Stub feature switch will need to be enabled.

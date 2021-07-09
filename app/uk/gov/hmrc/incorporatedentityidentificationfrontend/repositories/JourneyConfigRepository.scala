@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories
 
-import java.time.Instant
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.{Format, Json}
+import play.api.libs.json._
 import play.modules.reactivemongo.ReactiveMongoComponent
 import reactivemongo.api.commands.WriteResult
 import reactivemongo.api.indexes.{Index, IndexType}
 import reactivemongo.bson.BSONDocument
 import reactivemongo.play.json._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository._
 import uk.gov.hmrc.mongo.ReactiveRepository
 
+import java.time.Instant
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -37,7 +38,7 @@ class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoCom
                                        (implicit ec: ExecutionContext) extends ReactiveRepository[JourneyConfig, String](
   collectionName = "incorporated-entity-identification-frontend",
   mongo = reactiveMongoComponent.mongoConnector.db,
-  domainFormat = JourneyConfig.format,
+  domainFormat = journeyConfigMongoFormat,
   idFormat = implicitly[Format[String]]
 ) {
 
@@ -50,19 +51,6 @@ class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoCom
 
     collection.insert(true).one(document)
   }
-
-  def upsertBusinessEntity(journeyId: String, authInternalId: String, businessEntity: String): Future[Unit] =
-    collection.update(ordered = true).one(
-      Json.obj(
-        JourneyIdKey -> journeyId,
-        AuthInternalIdKey -> authInternalId
-      ),
-      Json.obj("$set" -> Json.obj(
-        BusinessEntityKey -> businessEntity
-      ))
-    ).filter(_.n == 1).map {
-      _ => Unit
-    }
 
   def findJourneyConfig(journeyId: String, authInternalId: String): Future[Option[JourneyConfig]] =
     collection.find(
@@ -103,4 +91,17 @@ object JourneyConfigRepository {
   val AuthInternalIdKey = "authInternalId"
   val CreationTimestampKey = "creationTimestamp"
   val BusinessEntityKey = "businessEntity"
+  val LtdCompanyKey = "LtdCompany"
+
+  implicit val partnershipTypeMongoFormat: Format[BusinessEntity] = new Format[BusinessEntity] {
+    override def reads(json: JsValue): JsResult[BusinessEntity] = json.validate[String].collect(JsonValidationError("Invalid entity type")) {
+      case LtdCompanyKey => LimitedCompany
+    }
+
+    override def writes(partnershipType: BusinessEntity): JsValue = partnershipType match {
+      case LimitedCompany => JsString(LtdCompanyKey)
+    }
+  }
+  implicit val journeyConfigMongoFormat: OFormat[JourneyConfig] = Json.format[JourneyConfig]
+
 }

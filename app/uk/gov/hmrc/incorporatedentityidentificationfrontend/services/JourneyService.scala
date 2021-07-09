@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
+import javax.inject.Inject
 import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.JourneyConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyService @Inject()(journeyConnector: JourneyConnector,
@@ -41,8 +41,4 @@ class JourneyService @Inject()(journeyConnector: JourneyConnector,
       case _ =>
         throw new NotFoundException(s"Journey config was not found for journey ID $journeyId")
     }
-
-  def storeBusinessEntity(journeyId: String, authInternalId: String, businessEntity: String): Future[Unit] =
-    journeyConfigRepository.upsertBusinessEntity(journeyId, authInternalId, businessEntity)
-
 }
