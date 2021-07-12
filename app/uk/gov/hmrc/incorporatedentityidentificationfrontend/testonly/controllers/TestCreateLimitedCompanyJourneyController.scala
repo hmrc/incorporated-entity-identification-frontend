@@ -52,7 +52,7 @@ class TestCreateLimitedCompanyJourneyController @Inject()(messagesControllerComp
     implicit request =>
       authorised() {
         Future.successful(
-          Ok(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit(), form.fill(defaultJourneyConfig)))
+          Ok(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit(), form(LimitedCompany).fill(defaultJourneyConfig)))
         )
       }
   }
@@ -60,13 +60,13 @@ class TestCreateLimitedCompanyJourneyController @Inject()(messagesControllerComp
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        form.bindFromRequest().fold(
+        form(LimitedCompany).bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
               BadRequest(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit(), formWithErrors))
             ),
           journeyConfig =>
-            testCreateJourneyConnector.createJourney(journeyConfig).map {
+            testCreateJourneyConnector.createLtdCompanyJourney(journeyConfig).map {
               journeyUrl => SeeOther(journeyUrl)
             }
         )

@@ -16,25 +16,25 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers
 
+import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.RegisteredSociety
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors.TestCreateJourneyConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms.TestCreateJourneyForm.form
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.views.html.test_create_journey
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
-import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class TestCreateJourneyController @Inject()(messagesControllerComponents: MessagesControllerComponents,
-                                            testCreateJourneyConnector: TestCreateJourneyConnector,
-                                            view: test_create_journey,
-                                            val authConnector: AuthConnector
-                                           )(implicit ec: ExecutionContext,
-                                             appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
+class TestCreateRegisteredSocietyJourneyController @Inject()(messagesControllerComponents: MessagesControllerComponents,
+                                                             testCreateJourneyConnector: TestCreateJourneyConnector,
+                                                             view: test_create_journey,
+                                                             val authConnector: AuthConnector
+                                                         )(implicit ec: ExecutionContext,
+                                                           appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
   private val defaultPageConfig = PageConfig(
     optServiceName = None,
@@ -45,14 +45,14 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
   private val defaultJourneyConfig = JourneyConfig(
     continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig,
-    LimitedCompany
+    RegisteredSociety
   )
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
         Future.successful(
-          Ok(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit(), form(LimitedCompany).fill(defaultJourneyConfig)))
+          Ok(view(defaultPageConfig, routes.TestCreateRegisteredSocietyJourneyController.submit(), form(RegisteredSociety).fill(defaultJourneyConfig)))
         )
       }
   }
@@ -60,13 +60,13 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        form(LimitedCompany).bindFromRequest().fold(
+        form(RegisteredSociety).bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit(), formWithErrors))
+              BadRequest(view(defaultPageConfig, routes.TestCreateRegisteredSocietyJourneyController.submit(), formWithErrors))
             ),
           journeyConfig =>
-            testCreateJourneyConnector.createLtdCompanyJourney(journeyConfig).map {
+            testCreateJourneyConnector.createRegisteredSocietyJourney(journeyConfig).map {
               journeyUrl => SeeOther(journeyUrl)
             }
         )

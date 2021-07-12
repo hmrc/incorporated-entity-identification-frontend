@@ -37,10 +37,34 @@ Example Response body:
 ```
 {“journeyStartUrl” : "/testUrl"}
 ```
-## POST /ltd-company/journey
+## POST /limited-company-journey
 
 ---
 Creates a new journey for Ltd Company, storing the journeyConfig against the journeyId.
+#### Request:
+Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service name, ```Entity Validation Service``` will be used.
+
+```
+{
+  "continueUrl" : "/testUrl",
+  "optServiceName" : "Service Name",
+  "deskProServiceId" : "DeskProServiceId",
+}
+```
+
+#### Response:
+Status: **Created(201)**
+
+Example Response body: 
+
+```
+{“journeyStartUrl” : "/testUrl"}
+```
+
+## POST /registered-society-journey
+
+---
+Creates a new journey for Registered Society, storing the journeyConfig against the journeyId.
 #### Request:
 Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service name, ```Entity Validation Service``` will be used.
 

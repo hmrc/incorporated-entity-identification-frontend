@@ -57,11 +57,13 @@ object TestCreateJourneyForm {
   )
 
   val LtdCompanyKey = "ltdCompany"
+  val RegisteredSocietyKey = "registeredSociety"
 
   def entityTypeFormatter: Formatter[BusinessEntity] = new Formatter[BusinessEntity] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BusinessEntity] =
       data.get(key) match {
         case Some(LtdCompanyKey) => Right(LimitedCompany)
+        case Some(RegisteredSocietyKey) => Right(LimitedCompany)
         case _ => Left(Seq(FormError(key, "Invalid entity type")))
       }
 
@@ -70,14 +72,14 @@ object TestCreateJourneyForm {
     }
   }
 
-  val form: Form[JourneyConfig] = {
+  def form(businessEntity: BusinessEntity): Form[JourneyConfig] = {
     Form(mapping(
       continueUrl -> text.verifying(continueUrlEmpty),
       serviceName -> optText,
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
       signOutUrl -> text.verifying(signOutUrlEmpty)
     )((continueUrl, serviceName, deskProServiceId, signOutUrl) =>
-      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl), LimitedCompany)
+      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl), businessEntity)
     )(journeyConfig =>
       Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName,
         journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl
