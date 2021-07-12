@@ -13,6 +13,9 @@ POST        /create-journey                                         uk.gov.hmrc.
 GET         /create-limited-company-journey                         uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestCreateLimitedCompanyJourneyController.show
 POST        /create-limited-company-journey                         uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestCreateLimitedCompanyJourneyController.submit
 
+GET         /create-registered-society-journey                      uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestCreateRegisteredSocietyJourneyController.show
+POST        /create-registered-society-journey                      uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestCreateRegisteredSocietyJourneyController.submit
+
 GET         /retrieve-journey/:journeyId                            uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveIncorporatedEntityInformation(journeyId)
 GET         /retrieve-journey                                       uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers.TestRetrieveJourneyDataController.retrieveIncorporatedEntityInformation(journeyId)
 

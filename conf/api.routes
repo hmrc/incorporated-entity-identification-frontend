@@ -5,4 +5,7 @@ POST        /journey                         uk.gov.hmrc.incorporatedentityident
 + nocsrf
 POST        /limited-company-journey         uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createLtdCompanyJourney()
 
++ nocsrf
+POST        /registered-society-journey      uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createRegisteredSocietyJourney()
+
 GET         /journey/:journeyId              uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.retrieveJourneyData(journeyId: String)
