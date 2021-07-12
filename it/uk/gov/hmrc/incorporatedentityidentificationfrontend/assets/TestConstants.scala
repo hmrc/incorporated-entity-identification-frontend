@@ -2,6 +2,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 
 import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
 import java.time.LocalDate
@@ -44,4 +45,15 @@ object TestConstants {
     "region" -> "test region"
   )
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
+  val testJourneyConfig: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), LimitedCompany)
+
+  val testIncorporatedEntityFullJourneyDataJson: JsObject = {
+    Json.obj(
+      "companyProfile" -> testCompanyProfile,
+      "ctutr" -> testCtutr,
+      "identifiersMatch" -> true,
+      "businessVerification" -> BusinessVerificationPass,
+      "registration" -> testSuccessfulRegistration)
+  }
+
 }
