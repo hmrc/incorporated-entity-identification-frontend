@@ -23,6 +23,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.AuthStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.errorpages.CompanyNumberNotFoundTests
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 
 
 class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with CompanyNumberNotFoundTests with AuthStub {
@@ -35,7 +36,8 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        businessEntity = LimitedCompany
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -52,7 +54,8 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/company-name-not-found")
@@ -68,7 +71,8 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
           continueUrl = testContinueUrl,
           optServiceName = Some(testCallingServiceName),
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/company-name-not-found")

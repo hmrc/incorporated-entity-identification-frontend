@@ -17,9 +17,10 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import play.api.libs.json.{JsString, Json}
-import play.api.test.Helpers.{NOT_FOUND, OK, await, defaultAwaitTimeout}
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.test.Helpers.{INTERNAL_SERVER_ERROR, NOT_FOUND, NO_CONTENT, OK, await, defaultAwaitTimeout}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.RemoveIncorporatedEntityDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.IncorporatedEntityIdentificationStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -149,6 +150,25 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
 
       result mustBe SuccessfullyStored
     }
+  }
+  s"removeIncorporatedEntityDetailsField($testJourneyId, $ctutrKey)" should {
+    "return SuccessfullyRemoved" when {
+      "the ctutr was successfully removed from the database" in {
+        stubRemoveCtutr(testJourneyId)(NO_CONTENT)
+        val result = await(incorporatedEntityInformationConnector.removeIncorporatedEntityDetailsField(testJourneyId, ctutrKey))
 
+        result mustBe SuccessfullyRemoved
+      }
+    }
+
+    "throw an exception" when {
+      "the sautr could not be deleted" in {
+        stubRemoveCtutr(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
+
+        intercept[InternalServerException] {
+          await(incorporatedEntityInformationConnector.removeIncorporatedEntityDetailsField(testJourneyId, ctutrKey))
+        }
+      }
+    }
   }
 }

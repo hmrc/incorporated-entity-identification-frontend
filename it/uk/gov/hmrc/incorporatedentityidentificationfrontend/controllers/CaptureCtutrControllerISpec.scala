@@ -18,6 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCtutrViewTests
@@ -28,131 +29,275 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
   with IncorporatedEntityIdentificationStub
   with AuthStub {
 
-  "GET /ct-utr" should {
-    "return OK" in {
-      await(insertJourneyConfig(
-        journeyId = testJourneyId,
-        authInternalId = testInternalId,
-        continueUrl = testContinueUrl,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
-      ))
-      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
-
-      result.status mustBe OK
-    }
-
-    "return a view" when {
-      "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
-        )
-        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
-
-        testCaptureCtutrView(result, authStub, insertConfig)
-        testServiceName(testDefaultServiceName, result, authStub, insertConfig)
-      }
-
-      "there is a serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = Some(testCallingServiceName),
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
-        )
-        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
-
-        testCaptureCtutrView(result, authStub, insertConfig)
-        testServiceName(testCallingServiceName, result, authStub, insertConfig)
-      }
-    }
-
-    "redirect to sign in page" when {
-      "the user is not logged in" in {
+  "GET /ct-utr" when {
+    "the Business Entity is LimitedCompany" should {
+      "return OK" in {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
-        ))
-        stubAuthFailure()
-        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
-
-        result.status mustBe SEE_OTHER
-        result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fct-utr&origin=incorporated-entity-identification-frontend")
-      }
-    }
-
-    "return NOT_FOUND" when {
-      "the journeyId does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId + "1",
-          authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-
         lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-        result.status mustBe NOT_FOUND
+        result.status mustBe OK
       }
 
-      "the auth internal ID does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId + "1",
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
-        ))
-        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      "return a view" when {
+        "there is no serviceName passed in the journeyConfig" should {
+          lazy val insertConfig = insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany
+          )
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+          testCaptureCtutrView(result, authStub, insertConfig)
+          testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+        }
 
-        result.status mustBe NOT_FOUND
+        "there is a serviceName passed in the journeyConfig" should {
+          lazy val insertConfig = insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = Some(testCallingServiceName),
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany
+          )
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          testCaptureCtutrView(result, authStub, insertConfig)
+          testServiceName(testCallingServiceName, result, authStub, insertConfig)
+        }
       }
 
-      "neither the journey ID or auth internal ID are found in the journey config database" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId + "1",
-          authInternalId = testInternalId + "1",
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
-        ))
-        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      "redirect to sign in page" when {
+        "the user is not logged in" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany
+          ))
+          stubAuthFailure()
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-        lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+          result.status mustBe SEE_OTHER
+          result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fct-utr&origin=incorporated-entity-identification-frontend")
+        }
+      }
 
-        result.status mustBe NOT_FOUND
+      "return NOT_FOUND" when {
+        "the journeyId does not match what is stored in the journey config database" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId + "1",
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          result.status mustBe NOT_FOUND
+        }
+
+        "the auth internal ID does not match what is stored in the journey config database" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId + "1",
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          result.status mustBe NOT_FOUND
+        }
+
+        "neither the journey ID or auth internal ID are found in the journey config database" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId + "1",
+            authInternalId = testInternalId + "1",
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          result.status mustBe NOT_FOUND
+        }
+      }
+
+      "throw an Internal Server Exception" when {
+        "the user does not have an internal ID" in {
+          stubAuth(OK, successfulAuthResponse(None))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          result.status mustBe INTERNAL_SERVER_ERROR
+        }
       }
     }
-
-    "throw an Internal Server Exception" when {
-      "the user does not have an internal ID" in {
-        stubAuth(OK, successfulAuthResponse(None))
-
+    "the Business Entity is RegisteredSociety" should {
+      "return OK" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = RegisteredSociety
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-        result.status mustBe INTERNAL_SERVER_ERROR
+        result.status mustBe OK
+      }
+
+      "return a view" when {
+        "there is no serviceName passed in the journeyConfig" should {
+          lazy val insertConfig = insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = RegisteredSociety
+          )
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          testCaptureOptionalCtutrView(result, authStub, insertConfig)
+          testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+        }
+
+        "there is a serviceName passed in the journeyConfig" should {
+          lazy val insertConfig = insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = Some(testCallingServiceName),
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = RegisteredSociety
+          )
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          testCaptureOptionalCtutrView(result, authStub, insertConfig)
+          testServiceName(testCallingServiceName, result, authStub, insertConfig)
+        }
+      }
+
+      "redirect to sign in page" when {
+        "the user is not logged in" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = RegisteredSociety
+          ))
+          stubAuthFailure()
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          result.status mustBe SEE_OTHER
+          result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fct-utr&origin=incorporated-entity-identification-frontend")
+        }
+      }
+
+      "return NOT_FOUND" when {
+        "the journeyId does not match what is stored in the journey config database" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId + "1",
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = RegisteredSociety
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          result.status mustBe NOT_FOUND
+        }
+
+        "the auth internal ID does not match what is stored in the journey config database" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId + "1",
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = RegisteredSociety
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          result.status mustBe NOT_FOUND
+        }
+
+        "neither the journey ID or auth internal ID are found in the journey config database" in {
+          await(insertJourneyConfig(
+            journeyId = testJourneyId + "1",
+            authInternalId = testInternalId + "1",
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = RegisteredSociety
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          result.status mustBe NOT_FOUND
+        }
+      }
+
+      "throw an Internal Server Exception" when {
+        "the user does not have an internal ID" in {
+          stubAuth(OK, successfulAuthResponse(None))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          result.status mustBe INTERNAL_SERVER_ERROR
+        }
       }
     }
   }
@@ -181,7 +326,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "")
@@ -195,7 +341,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        businessEntity = LimitedCompany
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "")
@@ -211,7 +358,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "123456789")
@@ -225,12 +373,68 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         continueUrl = testContinueUrl,
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl
+        signOutUrl = testSignOutUrl,
+        businessEntity = LimitedCompany
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "123456789")
 
       testCaptureCtutrErrorMessagesInvalidCtutr(result, authStub, insertConfig)
+    }
+  }
+
+  "GET /no-ct-utr" should {
+    "redirect to CYA page" when {
+      "the ctutr is successfully removed" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = RegisteredSociety
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRemoveCtutr(testJourneyId)(NO_CONTENT)
+
+        val result = get(s"$baseUrl/$testJourneyId/no-ct-utr")
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
+        )
+      }
+    }
+
+    "throw an exception" when {
+      "the backend returns a failure" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = RegisteredSociety
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRemoveCtutr(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
+
+        val result = get(s"$baseUrl/$testJourneyId/no-ct-utr")
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
+    }
+
+    "throw an Internal Server Exception" when {
+      "the user does not have an internal ID" in {
+        stubAuth(OK, successfulAuthResponse(None))
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/no-ct-utr")
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+      }
     }
   }
 

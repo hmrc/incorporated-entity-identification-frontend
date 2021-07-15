@@ -86,6 +86,65 @@ trait CaptureCtutrViewTests {
     }
   }
 
+  def testCaptureOptionalCtutrView(result: => WSResponse,
+                                   authStub: => StubMapping,
+                                   insertJourneyConfig: => Future[WriteResult]): Unit = {
+
+    lazy val doc: Document = {
+      await(insertJourneyConfig)
+      authStub
+      Jsoup.parse(result.body)
+    }
+
+    lazy val config = app.injector.instanceOf[AppConfig]
+
+    "have a sign out link in the header" in {
+      doc.getSignOutText mustBe Header.signOut
+    }
+
+    "sign out link redirects to feedback page" in {
+      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
+    }
+
+    "have the correct title" in {
+      doc.title mustBe messages.registered_society_title
+    }
+
+    "have the correct heading" in {
+      doc.getH1Elements.text mustBe messages.registered_society_heading
+    }
+
+    "have the correct first line" in {
+      doc.getParagraphs.eq(1).text mustBe messages.line
+    }
+
+    "have the correct details summary" in {
+      doc.getDetailsSummaryText mustBe messages.noCtutr
+    }
+
+    "have the correct details drop down" in {
+      doc.getParagraphs.eq(2).text mustBe messages.dropdown_line_1
+      doc.getParagraphs.eq(3).text mustBe messages.dropdown_link_1
+      doc.getParagraphs.eq(4).text mustBe messages.dropdown_link_2
+    }
+
+    "have a continue and confirm button" in {
+      doc.getSubmitButton.first.text mustBe Base.saveAndContinue
+    }
+
+    "have a back link" in {
+      doc.getElementById("back-link").text mustBe Base.back
+    }
+  }
+
   def testCaptureCtutrErrorMessagesNoCtutr(result: => WSResponse,
                                            authStub: => StubMapping,
                                            insertJourneyConfig: => Future[WriteResult]): Unit = {

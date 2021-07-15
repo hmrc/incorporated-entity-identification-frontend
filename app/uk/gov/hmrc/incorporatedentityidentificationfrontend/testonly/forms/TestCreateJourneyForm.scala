@@ -22,7 +22,7 @@ import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.MappingUtil.optText
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 
 
@@ -69,6 +69,7 @@ object TestCreateJourneyForm {
 
     override def unbind(key: String, value: BusinessEntity): Map[String, String] = value match {
       case LimitedCompany => Map(key -> LtdCompanyKey)
+      case RegisteredSociety => Map(key -> RegisteredSocietyKey)
     }
   }
 

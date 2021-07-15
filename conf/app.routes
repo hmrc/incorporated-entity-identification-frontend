@@ -7,6 +7,7 @@ POST        /:journeyId/company-number                          uk.gov.hmrc.inco
 
 GET         /:journeyId/ct-utr                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.show(journeyId)
 POST        /:journeyId/ct-utr                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.submit(journeyId)
+GET         /:journeyId/no-ct-utr                               uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.noCtutr(journeyId: String)
 
 GET         /:journeyId/confirm-business-name                   uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.show(journeyId)
 POST        /:journeyId/confirm-business-name                   uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.submit(journeyId)

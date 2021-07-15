@@ -18,6 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityInformationConnector
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.RemoveIncorporatedEntityDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService._
 
@@ -67,6 +68,9 @@ class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEnti
   def retrieveIncorporatedEntityInformation(journeyId: String
                                            )(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityInformation]] =
     connector.retrieveIncorporatedEntityInformation(journeyId)
+
+  def removeCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    connector.removeIncorporatedEntityDetailsField(journeyId, CtutrKey)
 
 }
 

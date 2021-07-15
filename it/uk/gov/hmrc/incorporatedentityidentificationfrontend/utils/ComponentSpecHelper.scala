@@ -124,9 +124,10 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
                           continueUrl: String,
                           optServiceName: Option[String],
                           deskProServiceId: String,
-                          signOutUrl: String): Future[WriteResult] =
+                          signOutUrl: String,
+                          businessEntity: BusinessEntity): Future[WriteResult] =
     journeyConfigRepository.insertJourneyConfig(
-      journeyId, authInternalId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl), LimitedCompany)
+      journeyId, authInternalId, JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl), businessEntity)
     )
 
 }

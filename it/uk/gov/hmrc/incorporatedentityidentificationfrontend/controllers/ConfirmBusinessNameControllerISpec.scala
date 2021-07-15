@@ -21,6 +21,7 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableIRCTEnrolmentJourney, FeatureSwitching}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, CtEnrolled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -43,7 +44,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
 
         val jsonBody = Json.toJsObject(testCompanyProfile)
@@ -62,7 +64,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -82,7 +85,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             continueUrl = testContinueUrl,
             optServiceName = Some(testCallingServiceName),
             deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -106,7 +110,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
 
@@ -137,7 +142,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -153,7 +159,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -169,7 +176,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -224,7 +232,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             continueUrl = testContinueUrl,
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany
           ))
 
           val testMismatchCompanyNumber = "11111111"
@@ -253,7 +262,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
 
         val jsonBody = Json.toJsObject(testCompanyProfile)

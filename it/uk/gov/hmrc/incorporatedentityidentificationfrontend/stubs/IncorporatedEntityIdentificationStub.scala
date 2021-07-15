@@ -128,4 +128,12 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       body = JsString(body)
     )
   }
+
+  def stubRemoveCtutr(journeyId: String)(status: Int, body: String = ""): StubMapping =
+    when(method = DELETE,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
 }
