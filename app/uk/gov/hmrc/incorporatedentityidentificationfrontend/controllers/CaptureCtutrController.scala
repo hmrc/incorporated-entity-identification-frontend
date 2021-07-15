@@ -22,8 +22,9 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCtutrForm
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_ctutr_page
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.{capture_ctutr_page, capture_optional_ctutr_page}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
@@ -31,7 +32,8 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
-                                       view: capture_ctutr_page,
+                                       ctutr_view: capture_ctutr_page,
+                                       optional_ctutr_view: capture_optional_ctutr_page,
                                        incorporatedEntityInformationService: IncorporatedEntityInformationService,
                                        journeyService: JourneyService,
                                        val authConnector: AuthConnector
@@ -44,7 +46,12 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
             journeyConfig =>
-              Ok(view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+              journeyConfig.businessEntity match {
+                case LimitedCompany =>
+                  Ok(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+                case RegisteredSociety =>
+                  Ok(optional_ctutr_view(journeyId, journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+              }
           }
         case None =>
           throw new InternalServerException("Internal ID could not be retrieved from Auth")
@@ -59,7 +66,12 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => {
               journeyService.getJourneyConfig(journeyId, authInternalId).map {
                 journeyConfig =>
-                  BadRequest(view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
+                  journeyConfig.businessEntity match {
+                    case LimitedCompany =>
+                      BadRequest(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
+                    case RegisteredSociety =>
+                      BadRequest(optional_ctutr_view(journeyId, journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
+                  }
               }
             },
             ctutr =>
@@ -68,6 +80,21 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
               }
           )
         case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
+      }
+  }
+
+  def noCtutr(journeyId: String): Action[AnyContent] = Action.async {
+    implicit request =>
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
+            _ =>
+              incorporatedEntityInformationService.removeCtutr(journeyId).map {
+                _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+              }
+          }
+        case _ =>
           throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }

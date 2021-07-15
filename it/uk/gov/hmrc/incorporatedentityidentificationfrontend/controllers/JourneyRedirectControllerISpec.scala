@@ -28,7 +28,8 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -44,7 +45,8 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -60,7 +62,8 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
           continueUrl = testContinueUrl,
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 

@@ -16,13 +16,14 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.{Reads, Writes}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.IncorporatedEntityIdentificationStorageHttpParser.IncorporatedEntityIdentificationStorageHttpReads
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.RemoveIncorporatedEntityDetailsHttpParser.{RemoveIncorporatedEntityDetailsHttpReads, SuccessfullyRemoved}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, StorageResult}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -45,5 +46,10 @@ class IncorporatedEntityInformationConnector @Inject()(http: HttpClient,
                          )(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[StorageResult] = {
     http.PUT[DataType, StorageResult](s"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey", data)
   }
+
+  def removeIncorporatedEntityDetailsField(journeyId: String,
+                                           dataKey: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    http.DELETE[SuccessfullyRemoved.type](s"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey"
+    )(RemoveIncorporatedEntityDetailsHttpReads, hc, ec)
 
 }

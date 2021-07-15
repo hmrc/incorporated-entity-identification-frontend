@@ -31,6 +31,7 @@ object MessageLookup {
       val title = "There is a problem"
       val error = "Error: "
     }
+
   }
 
   object Header {
@@ -67,6 +68,12 @@ object MessageLookup {
     val heading = "What is the company’s Unique Taxpayer Reference?"
     val line = "This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’."
     val lostUtr = "Lost the company’s UTR number"
+    val registered_society_title = "What is your registered society’s Unique Taxpayer Reference?"
+    val registered_society_heading = "What is your registered society’s Unique Taxpayer Reference?"
+    val noCtutr = "The business does not have a Unique Taxpayer Reference"
+    val dropdown_line_1 = "The UTR helps us identify your business"
+    val dropdown_link_1 = "I have lost the businesses UTR number"
+    val dropdown_link_2 = "My business does not have a UTR"
 
     object Error {
       val noCtutrEntered = "Enter your company’s Unique Taxpayer Reference"

@@ -54,6 +54,11 @@ capture-ctutr.line                                          = This is 10 numbers
 capture-ctutr.lost_utr                                      = Lost the company’s UTR number
 capture-ctutr.error.no-entry                                = Enter your company’s Unique Taxpayer Reference
 capture-ctutr.error.incorrect-format                        = Unique Taxpayer Reference number must be 10 numbers
+capture-ctutr.registered_society_title                      = What is your registered society’s Unique Taxpayer Reference?
+capture-ctutr.no_utr                                        = The business does not have a Unique Taxpayer Reference
+capture-ctutr.dropdown.line_1                               = The UTR helps us identify your business
+capture-ctutr.dropdown.link_1                               = I have lost the businesses UTR number
+capture-ctutr.dropdown.link_2                               = My business does not have a UTR
 
 # Check Your Answers Page
 check-your-answers.title                                    = Check your answers
