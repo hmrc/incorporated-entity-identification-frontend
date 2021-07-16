@@ -65,6 +65,8 @@ check-your-answers.title                                    = Check your answers
 check-your-answers.heading                                  = Check your answers
 check-your-answers.company_number                           = Company number
 check-your-answers.ctutr                                    = Unique Taxpayers Reference number
+check-your-answers.no-ctutr                                 = The business does not have a UTR
+
 
 # CTUTR Mismatch Error Page
 ctutr-mismatch.title                                        = We could not confirm your business
