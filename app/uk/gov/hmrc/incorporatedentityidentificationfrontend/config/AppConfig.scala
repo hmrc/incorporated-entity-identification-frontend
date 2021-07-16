@@ -16,9 +16,10 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.config
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, CompaniesHouseStub, FeatureSwitching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
@@ -56,7 +57,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   def createJourneyUrl: String = s"$backendUrl/incorporated-entity-identification/journey"
 
-  def registerUrl: String = s"$backendUrl/incorporated-entity-identification/register"
+  def registerLimitedCompanyUrl: String = s"$backendUrl/incorporated-entity-identification/register-limited-company"
+
+  def registerRegisteredSocietyUrl: String = s"$backendUrl/incorporated-entity-identification/register-registered-society"
 
   def getCompanyProfileUrl(companyNumber: String): String = {
     if (isEnabled(CompaniesHouseStub))

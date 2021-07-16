@@ -16,11 +16,12 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RegistrationConnector
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, CtEnrolled, RegistrationNotCalled, RegistrationStatus}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -28,7 +29,7 @@ class RegistrationOrchestrationService @Inject()(incorporatedEntityInformationSe
                                                  registrationConnector: RegistrationConnector
                                                 )(implicit ec: ExecutionContext) {
 
-  def register(journeyId: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
+  def register(journeyId: String, businessEntity: BusinessEntity)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
     registrationStatus <- incorporatedEntityInformationService.retrieveBusinessVerificationStatus(journeyId).flatMap {
       case Some(BusinessVerificationPass) | Some(CtEnrolled) => for {
         optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
@@ -36,7 +37,10 @@ class RegistrationOrchestrationService @Inject()(incorporatedEntityInformationSe
         registrationStatus <-
           (optCompanyProfile, optCtutr) match {
             case (Some(companyProfile), Some(ctutr)) =>
-              registrationConnector.register(companyProfile.companyNumber, ctutr)
+              businessEntity match {
+                case LimitedCompany => registrationConnector.registerLimitedCompany(companyProfile.companyNumber, ctutr)
+                case RegisteredSociety => registrationConnector.registerRegisteredSociety(companyProfile.companyNumber, ctutr)
+              }
             case _ =>
               throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
 

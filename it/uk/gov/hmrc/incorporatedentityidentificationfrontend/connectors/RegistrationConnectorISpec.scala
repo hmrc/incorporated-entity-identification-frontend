@@ -29,23 +29,47 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
 
   private implicit val headerCarrier: HeaderCarrier = HeaderCarrier()
 
-  "register" should {
+  "registerLimitedCompany" should {
     "return Registered" when {
       "the registration has been successful" in {
-        stubRegister(testCompanyNumber, testCtutr)(OK, Registered(testSafeId))
+        stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(OK, Registered(testSafeId))
 
-        val result = await(registrationConnector.register(testCompanyNumber, testCtutr))
+        val result = await(registrationConnector.registerLimitedCompany(testCompanyNumber, testCtutr))
 
         result mustBe Registered(testSafeId)
+        verifyLimitedCompanyRegister(testCompanyNumber, testCtutr)
       }
     }
     "return RegistrationFailed" when {
       "the registration has not been successful" in {
-        stubRegister(testCompanyNumber, testCtutr)(OK, RegistrationFailed)
+        stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(OK, RegistrationFailed)
 
-        val result = await(registrationConnector.register(testCompanyNumber, testCtutr))
+        val result = await(registrationConnector.registerLimitedCompany(testCompanyNumber, testCtutr))
 
         result mustBe RegistrationFailed
+        verifyLimitedCompanyRegister(testCompanyNumber, testCtutr)
+      }
+    }
+  }
+  "registerRegisteredSociety" should {
+    "return Registered" when {
+      "the registration has been successful" in {
+        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(OK, Registered(testSafeId))
+
+        val result = await(registrationConnector.registerRegisteredSociety(testCompanyNumber, testCtutr))
+
+        result mustBe Registered(testSafeId)
+        verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr)
+      }
+    }
+    "return RegistrationFailed" when {
+      "the registration has not been successful" in {
+        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(OK, RegistrationFailed)
+
+        val result = await(registrationConnector.registerRegisteredSociety(testCompanyNumber, testCtutr))
+
+        result mustBe RegistrationFailed
+        verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr)
       }
     }
   }
