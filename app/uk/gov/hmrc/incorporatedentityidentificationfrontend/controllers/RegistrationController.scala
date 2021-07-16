@@ -17,8 +17,10 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.RegistrationOrchestrationService
+import uk.gov.hmrc.http.InternalServerException
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, RegistrationOrchestrationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
@@ -27,15 +29,22 @@ import scala.concurrent.ExecutionContext
 @Singleton
 class RegistrationController @Inject()(registrationOrchestrationService: RegistrationOrchestrationService,
                                        messagesControllerComponents: MessagesControllerComponents,
+                                       journeyService: JourneyService,
                                        val authConnector: AuthConnector)
                                       (implicit ec: ExecutionContext) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
   def register(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised() {
-        registrationOrchestrationService.register(journeyId) map {
-          _ => Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-        }
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
+            journeyConfig =>
+              registrationOrchestrationService.register(journeyId, journeyConfig.businessEntity).map {
+                _ => Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
+              }
+          }
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 }

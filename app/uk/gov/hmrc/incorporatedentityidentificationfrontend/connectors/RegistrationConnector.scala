@@ -30,16 +30,24 @@ class RegistrationConnector @Inject()(httpClient: HttpClient,
                                       appConfig: AppConfig
                                      )(implicit ec: ExecutionContext) {
 
-  def register(crn: String, ctutr: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = {
-
-    val jsonBody = Json.obj(
-      "company" -> Json.obj(
-        "crn" -> crn,
-        "ctutr" -> ctutr
-      )
+  private def buildRegisterJson(crn: String, ctutr: String): JsObject = {
+    Json.obj(
+      "crn" -> crn,
+      "ctutr" -> ctutr
     )
+  }
 
-    httpClient.POST[JsObject, RegistrationStatus](appConfig.registerUrl, jsonBody)(
+  def registerLimitedCompany(crn: String, ctutr: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = {
+    httpClient.POST[JsObject, RegistrationStatus](appConfig.registerLimitedCompanyUrl, buildRegisterJson(crn, ctutr))(
+      implicitly[Writes[JsObject]],
+      RegistrationHttpReads,
+      hc,
+      ec
+    )
+  }
+
+  def registerRegisteredSociety(crn: String, ctutr: String)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = {
+    httpClient.POST[JsObject, RegistrationStatus](appConfig.registerRegisteredSocietyUrl, buildRegisterJson(crn, ctutr))(
       implicitly[Writes[JsObject]],
       RegistrationHttpReads,
       hc,

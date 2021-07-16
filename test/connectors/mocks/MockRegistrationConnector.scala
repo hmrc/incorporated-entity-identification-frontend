@@ -37,16 +37,31 @@ trait MockRegistrationConnector extends MockitoSugar with BeforeAndAfterEach {
     reset(mockRegistrationConnector)
   }
 
-  def mockRegister(crn: String, ctutr: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
-    when(mockRegistrationConnector.register(
+  def mockRegisterLimitedCompany(crn: String, ctutr: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
+    when(mockRegistrationConnector.registerLimitedCompany(
       ArgumentMatchers.eq(crn),
       ArgumentMatchers.eq(ctutr)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
   }
 
-  def verifyRegistration(crn: String, ctutr: String): Unit = {
-    verify(mockRegistrationConnector).register(
+  def verifyRegistrationLimitedCompany(crn: String, ctutr: String): Unit = {
+    verify(mockRegistrationConnector).registerLimitedCompany(
+      ArgumentMatchers.eq(crn),
+      ArgumentMatchers.eq(ctutr)
+    )(ArgumentMatchers.any[HeaderCarrier])
+  }
+
+  def mockRegisterRegisteredSociety(crn: String, ctutr: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
+    when(mockRegistrationConnector.registerRegisteredSociety(
+      ArgumentMatchers.eq(crn),
+      ArgumentMatchers.eq(ctutr)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+  }
+
+  def verifyRegistrationRegisteredSociety(crn: String, ctutr: String): Unit = {
+    verify(mockRegistrationConnector).registerRegisteredSociety(
       ArgumentMatchers.eq(crn),
       ArgumentMatchers.eq(ctutr)
     )(ArgumentMatchers.any[HeaderCarrier])
