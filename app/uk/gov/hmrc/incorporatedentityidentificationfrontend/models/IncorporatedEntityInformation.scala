@@ -20,7 +20,7 @@ import play.api.libs.json._
 
 
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
-                                         ctutr: String,
+                                         ctutr: Option[String],
                                          identifiersMatch: Boolean,
                                          businessVerification: BusinessVerificationStatus,
                                          registration: RegistrationStatus
@@ -39,7 +39,7 @@ object IncorporatedEntityInformation {
     override def reads(json: JsValue): JsResult[IncorporatedEntityInformation] =
       for {
         companyProfile <- (json \ companyProfileKey).validate[CompanyProfile]
-        ctutr <- (json \ ctutrKey).validate[String]
+        ctutr <- (json \ ctutrKey).validateOpt[String]
         identifiersMatch <- (json \ identifiersMatchKey).validate[Boolean]
         businessVerification <- (json \ businessVerificationKey).validate[BusinessVerificationStatus]
         registrationStatus <- (json \ registrationKey).validate[RegistrationStatus]

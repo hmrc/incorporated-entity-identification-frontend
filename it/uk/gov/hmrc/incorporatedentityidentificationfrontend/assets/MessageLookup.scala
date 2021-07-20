@@ -86,6 +86,7 @@ object MessageLookup {
     val title = "Check your answers"
     val heading = "Check your answers"
     val ctutr = "Unique Taxpayers Reference number"
+    val noCtutr = "The business does not have a UTR"
     val companyNumber = "Company number"
   }
 

@@ -48,7 +48,7 @@ trait CheckYourAnswersViewTests {
       await(insertJourneyConfig)
       authStub
       companyNumberStub
-      ctutrStub
+      Some(ctutrStub)
       Jsoup.parse(result.body)
     }
 
@@ -99,6 +99,81 @@ trait CheckYourAnswersViewTests {
 
         ctutrRow.getSummaryListQuestion mustBe messages.ctutr
         ctutrRow.getSummaryListAnswer mustBe testCtutr
+        ctutrRow.getSummaryListChangeLink mustBe routes.CaptureCtutrController.show(journeyId).url
+        ctutrRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.ctutr}"
+      }
+
+      "have a continue and confirm button" in {
+        doc.getSubmitButton.first.text mustBe Base.confirmAndContinue
+      }
+
+      "have a back link" in {
+        doc.getElementById("back-link").text mustBe Base.back
+      }
+    }
+
+  }
+
+  def testCheckYourAnswersNoCtutrView(journeyId: String)
+                              (result: => WSResponse,
+                               companyNumberStub: => StubMapping,
+                               authStub: => StubMapping,
+                               insertJourneyConfig: => Future[WriteResult]): Unit = {
+
+    lazy val doc: Document = {
+      await(insertJourneyConfig)
+      authStub
+      companyNumberStub
+      Jsoup.parse(result.body)
+    }
+
+    lazy val config = app.injector.instanceOf[AppConfig]
+
+    "have a sign out link in the header" in {
+      doc.getSignOutText mustBe Header.signOut
+    }
+
+    "have a sign out link that redirects to feedback page" in {
+      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
+    }
+
+    "have the correct title" in {
+      doc.title mustBe messages.title
+    }
+
+    "have the correct heading" in {
+      doc.getH1Elements.text mustBe messages.heading
+    }
+
+    "have a summary list which" should {
+      lazy val summaryListRows = doc.getSummaryListRows.iterator().asScala.toList
+
+      "have 2 rows" in {
+        summaryListRows.size mustBe 2
+      }
+
+      "have a company number row" in {
+        val companyNumberRow = summaryListRows.head
+
+        companyNumberRow.getSummaryListQuestion mustBe messages.companyNumber
+        companyNumberRow.getSummaryListAnswer mustBe testCompanyNumber
+        companyNumberRow.getSummaryListChangeLink mustBe routes.CaptureCompanyNumberController.show(journeyId).url
+        companyNumberRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.companyNumber}"
+      }
+
+      "have a ctutr row" in {
+        val ctutrRow = summaryListRows.last
+
+        ctutrRow.getSummaryListQuestion mustBe messages.ctutr
+        ctutrRow.getSummaryListAnswer mustBe messages.noCtutr
         ctutrRow.getSummaryListChangeLink mustBe routes.CaptureCtutrController.show(journeyId).url
         ctutrRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.ctutr}"
       }

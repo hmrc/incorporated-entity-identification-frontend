@@ -44,7 +44,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
           body = Json.toJsObject(
             IncorporatedEntityInformation(
               companyProfile = testCompanyProfile,
-              ctutr = testCtutr,
+              ctutr = Some(testCtutr),
               identifiersMatch = true,
               businessVerification = BusinessVerificationPass,
               registration = testSuccessfulRegistration
@@ -57,7 +57,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
         result mustBe Some(
           IncorporatedEntityInformation(
             testCompanyProfile,
-            testCtutr,
+            Some(testCtutr),
             true,
             BusinessVerificationPass,
             testSuccessfulRegistration))
