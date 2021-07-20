@@ -52,7 +52,7 @@ object TestConstants {
   val testIncorporatedEntityInformation: IncorporatedEntityInformation =
     IncorporatedEntityInformation(
       testCompanyProfile,
-      testCtutr,
+      Some(testCtutr),
       testIdentifiersMatch,
       testPassedBusinessVerificationStatus,
       Registered(testSafeId)

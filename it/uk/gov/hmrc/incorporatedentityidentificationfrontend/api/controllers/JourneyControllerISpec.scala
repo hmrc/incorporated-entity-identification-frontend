@@ -151,7 +151,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
           body = Json.toJsObject(
             IncorporatedEntityInformation(
               companyProfile = testCompanyProfile,
-              ctutr = testCtutr,
+              ctutr = Some(testCtutr),
               identifiersMatch = true,
               businessVerification = BusinessVerificationPass,
               registration = testSuccessfulRegistration

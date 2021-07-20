@@ -24,6 +24,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsNotFound}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
@@ -50,11 +51,18 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
             optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
             optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
-          } yield (optCompanyProfile, optCtutr) match {
-            case (Some(companyProfile), Some(ctutr)) =>
+          } yield (journeyConfig.businessEntity, optCompanyProfile, optCtutr) match {
+            case (LimitedCompany, Some(companyProfile), Some(ctutr)) =>
               Ok(view(journeyConfig.pageConfig,
                 routes.CheckYourAnswersController.submit(journeyId),
-                ctutr,
+                Some(ctutr),
+                companyProfile.companyNumber,
+                journeyId
+              ))
+            case (RegisteredSociety, Some(companyProfile), optCtutr) =>
+              Ok(view(journeyConfig.pageConfig,
+                routes.CheckYourAnswersController.submit(journeyId),
+                optCtutr,
                 companyProfile.companyNumber,
                 journeyId
               ))
