@@ -20,7 +20,7 @@ import play.api.libs.json._
 
 
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
-                                         ctutr: Option[String],
+                                         optCtutr: Option[String],
                                          identifiersMatch: Boolean,
                                          businessVerification: BusinessVerificationStatus,
                                          registration: RegistrationStatus
@@ -39,22 +39,26 @@ object IncorporatedEntityInformation {
     override def reads(json: JsValue): JsResult[IncorporatedEntityInformation] =
       for {
         companyProfile <- (json \ companyProfileKey).validate[CompanyProfile]
-        ctutr <- (json \ ctutrKey).validateOpt[String]
+        optCtutr <- (json \ ctutrKey).validateOpt[String]
         identifiersMatch <- (json \ identifiersMatchKey).validate[Boolean]
         businessVerification <- (json \ businessVerificationKey).validate[BusinessVerificationStatus]
         registrationStatus <- (json \ registrationKey).validate[RegistrationStatus]
       } yield {
-        IncorporatedEntityInformation(companyProfile, ctutr, identifiersMatch, businessVerification, registrationStatus)
+        IncorporatedEntityInformation(companyProfile, optCtutr, identifiersMatch, businessVerification, registrationStatus)
       }
 
     override def writes(incorporatedEntityInformation: IncorporatedEntityInformation): JsObject =
       Json.obj(
         companyProfileKey -> incorporatedEntityInformation.companyProfile,
-        ctutrKey -> incorporatedEntityInformation.ctutr,
         identifiersMatchKey -> incorporatedEntityInformation.identifiersMatch,
         businessVerificationKey -> incorporatedEntityInformation.businessVerification,
         registrationKey -> incorporatedEntityInformation.registration
-      )
-  }
+      ) ++ {
+        incorporatedEntityInformation.optCtutr match {
+          case Some(ctutr) => Json.obj(ctutrKey -> ctutr)
+          case None => Json.obj()
+        }
+      }
 
+  }
 }

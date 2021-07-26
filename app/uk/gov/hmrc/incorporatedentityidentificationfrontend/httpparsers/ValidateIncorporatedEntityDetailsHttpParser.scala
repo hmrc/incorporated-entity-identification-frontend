@@ -31,6 +31,8 @@ object ValidateIncorporatedEntityDetailsHttpParser {
 
   case object DetailsMismatch extends IncorporatedEntityDetailsValidationResult
 
+  case object DetailsNotProvided extends IncorporatedEntityDetailsValidationResult
+
   implicit object ValidateIncorporatedEntityDetailsHttpReads extends HttpReads[IncorporatedEntityDetailsValidationResult] {
     override def read(method: String, url: String, response: HttpResponse): IncorporatedEntityDetailsValidationResult = {
       lazy val invalidResponseException: InternalServerException =

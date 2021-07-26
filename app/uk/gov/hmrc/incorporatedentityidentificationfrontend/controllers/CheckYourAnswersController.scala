@@ -23,7 +23,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsNotFound}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsNotFound, DetailsNotProvided}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
@@ -31,7 +31,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_you
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
@@ -76,37 +76,45 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised() {
-        for {
-          optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
-          optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
-          details <- (optCompanyProfile, optCtutr) match {
-            case (Some(companyProfile), Some(ctutr)) =>
-              validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr)
-            case _ =>
-              throw new InternalServerException("No data stored")
-          }
-          _ <- details match {
-            case DetailsMatched =>
-              incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
-            case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) =>
-              for {
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          for {
+            journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
+            optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
+            optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
+            details <- (journeyConfig.businessEntity, optCompanyProfile, optCtutr) match {
+              case (LimitedCompany | RegisteredSociety, Some(companyProfile), Some(ctutr)) =>
+                validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr)
+              case (RegisteredSociety, Some(companyProfile), None) => Future.successful(DetailsNotProvided)
+              case _ =>
+                throw new InternalServerException("No data stored")
+            }
+            result <- details match {
+              case DetailsMatched =>
+                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true).map {
+                  _ => Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
+                }
+              case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) =>
+                for {
+                  _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <- incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                  _ <- incorporatedEntityInformationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
+              case DetailsNotProvided => for {
                 _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
                 _ <- incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
                 _ <- incorporatedEntityInformationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-              } yield ()
-            case _ =>
-              incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
-          }
-        } yield details match {
-          case DetailsMatched =>
-            Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
-          case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) =>
-            Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-          case _ =>
-            Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
-        }
+              } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
+              case _ =>
+                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
+                  _ => Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
+                }
+            }
+          } yield result
+        case None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
-
 }
+
+
