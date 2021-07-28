@@ -269,7 +269,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         val jsonBody = Json.toJsObject(testCompanyProfile)
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
-        stubStoreIdentifiersMatch(testJourneyId)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId,identifiersMatch = true)(status = OK)
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)(status = OK)
 

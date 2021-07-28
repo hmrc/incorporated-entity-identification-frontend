@@ -44,7 +44,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
           body = Json.toJsObject(
             IncorporatedEntityInformation(
               companyProfile = testCompanyProfile,
-              ctutr = Some(testCtutr),
+              optCtutr = Some(testCtutr),
               identifiersMatch = true,
               businessVerification = BusinessVerificationPass,
               registration = testSuccessfulRegistration
@@ -144,7 +144,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
   }
   s"storeData($testJourneyId, $identifiersMatchKey)" should {
     "return SuccessfullyStored" in {
-      stubStoreIdentifiersMatch(testJourneyId)(status = OK)
+      stubStoreIdentifiersMatch(testJourneyId,identifiersMatch = true)(status = OK)
 
       val result = await(incorporatedEntityInformationConnector.storeData[Boolean](testJourneyId, identifiersMatchKey, true))
 

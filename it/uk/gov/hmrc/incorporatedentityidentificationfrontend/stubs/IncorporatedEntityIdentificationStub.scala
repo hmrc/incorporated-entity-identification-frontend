@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.{JsObject, JsString, JsValue, Json}
+import play.api.libs.json.{JsBoolean, JsObject, JsString, JsValue, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, CompanyProfile, RegistrationStatus}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.{WireMockMethods, WiremockHelper}
 
@@ -58,13 +58,20 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       status = status
     )
 
-  def stubStoreIdentifiersMatch(journeyId: String)(status: Int): StubMapping = {
+  def stubStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean)(status: Int): StubMapping = {
     when(method = PUT,
-      uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch"
+      uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch",
+      body = JsBoolean(identifiersMatch)
     ).thenReturn(
       status = status
     )
   }
+
+  def verifyStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean): Unit =
+    WiremockHelper.verifyPut(
+      uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch",
+      optBody = Some(Json.toJson(identifiersMatch).toString())
+    )
 
   def stubStoreRegistrationStatus(journeyId: String, registrationStatus: RegistrationStatus)(status: Int): StubMapping = {
     when(method = PUT,
