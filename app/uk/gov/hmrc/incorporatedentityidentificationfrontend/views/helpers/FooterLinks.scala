@@ -43,11 +43,17 @@ class FooterLinks @Inject()(implicit appConfig: AppConfig) {
     Some(appConfig.govukHelp)
   )
 
+  def accessibilityStatementLink()(implicit messages: Messages): FooterItem = FooterItem(
+    Some(messages("footer.links.accessibility.text")),
+    Some(appConfig.accessibilityStatement)
+  )
+
   def items(implicit messages: Messages): Seq[FooterItem] = Seq(
     cookieLink,
     privacyLink,
     termsConditionsLink,
-    govukHelpLink
+    govukHelpLink,
+    accessibilityStatementLink
   )
 
 }

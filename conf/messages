@@ -3,6 +3,7 @@ footer.links.help_page.text                                 = Help using GOV.UK
 footer.links.cookies.text                                   = Cookies
 footer.links.privacy_policy.text                            = Privacy policy
 footer.links.terms_and_conditions.text                      = Terms and conditions
+footer.links.accessibility.text                             = Accessibility Statement
 
 ## Header Links
 header.links.sign_out                                       = Sign Out

@@ -99,4 +99,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
 
   lazy val timeout: Int = servicesConfig.getInt("timeout.timeout")
   lazy val countdown: Int = servicesConfig.getInt("timeout.countdown")
+
+  lazy val accessibilityStatement: String = servicesConfig.getString("urls.footer.accessibilityStatement")
 }
