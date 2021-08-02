@@ -15,10 +15,9 @@
  *@
 
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.{Header, HmrcHeader, HmrcTimeoutDialog, TimeoutDialog}
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcTrackingConsentSnippet
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardFooter, HmrcTrackingConsentSnippet}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.FooterLinks
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.phaseBanner
 
 
@@ -26,14 +25,14 @@
         hmrcHeader: HmrcHeader,
         phaseBanner: phaseBanner,
         appConfig: AppConfig,
-        footerLinks: FooterLinks,
+        hmrcStandardFooter: HmrcStandardFooter,
         footer: govukFooter,
         timeoutDialog: HmrcTimeoutDialog,
         govukBackLink: GovukBackLink,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
 )
 
-@(pageConfig: PageConfig, title: String, timeout: Boolean = true, showBackLink: Boolean = true)(contentBlock: Html)(implicit messages: Messages, appConfig: AppConfig)
+@(pageConfig: PageConfig, title: String, timeout: Boolean = true, showBackLink: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @hmrcTrackingConsentSnippet()
 
@@ -84,10 +83,6 @@
     </div>
 }
 
-@footerBlock = {
-    @footer(Footer(meta = Some(Meta(items = Some(footerLinks.items)))))
-}
-
 @scripts = {
     <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascripts/jquery.min.js")'></script>
@@ -105,5 +100,5 @@
     headerBlock = Some(headerBlock),
     scriptsBlock = Some(scripts),
     footerItems = Seq.empty,
-    footerBlock = Some(footerBlock)
+    footerBlock = Some(hmrcStandardFooter())
 )(content)
