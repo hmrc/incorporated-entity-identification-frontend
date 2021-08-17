@@ -25,7 +25,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, CompanyProfile, RegistrationStatus, StorageResult}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService
 
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 trait MockIncorporationEntityInformationService extends MockitoSugar with BeforeAndAfterEach {
   self: Suite =>
@@ -53,6 +53,14 @@ trait MockIncorporationEntityInformationService extends MockitoSugar with Before
     ).thenReturn(response)
   }
 
+  def mockRetrieveCompanyNumber(journeyId: String)
+                                (response: Future[String]): OngoingStubbing[_] = {
+    when(mockIncorporationEntityInformationService.retrieveCompanyNumber(
+      ArgumentMatchers.eq(journeyId)
+    )(ArgumentMatchers.any[HeaderCarrier],ArgumentMatchers.any[ExecutionContext])
+    ).thenReturn(response)
+  }
+
   def mockRetrieveBusinessVerificationResponse(journeyId: String)
                                               (response: Future[Option[BusinessVerificationStatus]]): OngoingStubbing[_] = {
     when(mockIncorporationEntityInformationService.retrieveBusinessVerificationStatus(
@@ -60,6 +68,20 @@ trait MockIncorporationEntityInformationService extends MockitoSugar with Before
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
   }
+  def mockRetrieveRegistrationStatus(journeyId: String)
+                                              (response: Future[Option[RegistrationStatus]]): OngoingStubbing[_] = {
+    when(mockIncorporationEntityInformationService.retrieveRegistrationStatus(
+      ArgumentMatchers.eq(journeyId)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+  }
+
+  def mockRetrieveIdentifiersMatch(journeyId: String)
+                                  (response: Future[Option[Boolean]]): OngoingStubbing[_] =
+    when(mockIncorporationEntityInformationService.retrieveIdentifiersMatch(
+      ArgumentMatchers.eq(journeyId)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
 
   def mockStoreRegistrationResponse(journeyId: String, registrationStatus: RegistrationStatus)
                                    (response: Future[StorageResult]): OngoingStubbing[_] = {

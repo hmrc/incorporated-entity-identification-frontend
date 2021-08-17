@@ -26,15 +26,16 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.c
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsNotFound, DetailsNotProvided}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-
 import javax.inject.{Inject, Singleton}
+
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
+                                           auditService: AuditService,
                                            incorporatedEntityInformationService: IncorporatedEntityInformationService,
                                            validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService,
                                            mcc: MessagesControllerComponents,
@@ -90,25 +91,26 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                 throw new InternalServerException("No data stored")
             }
             result <- details match {
-              case DetailsMatched =>
-                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true).map {
-                  _ => Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
-                }
+              case DetailsMatched => for {
+                _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true) }
+                  yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
               case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) =>
                 for {
                   _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
                   _ <- incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
                   _ <- incorporatedEntityInformationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                  _ <- auditService.auditJourney(journeyId,authInternalId)
                 } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
               case DetailsNotProvided => for {
                 _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
                 _ <- incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
                 _ <- incorporatedEntityInformationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                _ <- auditService.auditJourney(journeyId,authInternalId)
               } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-              case _ =>
-                incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false).map {
-                  _ => Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
-                }
+              case _ => for {
+                _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                _ <- auditService.auditJourney(journeyId,authInternalId)
+              } yield Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
             }
           } yield result
         case None =>

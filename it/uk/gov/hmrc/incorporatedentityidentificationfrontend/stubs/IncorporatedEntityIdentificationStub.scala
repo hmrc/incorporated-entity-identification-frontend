@@ -119,6 +119,14 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       body = body
     )
 
+  def stubRetrieveRegistrationStatus(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
+    when(method = GET,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/registration"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
   def stubRetrieveIncorporatedEntityInformation(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
     when(method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId"
@@ -143,4 +151,13 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       status = status,
       body = body
     )
+
+  def stubRetrieveIdentifiersMatch(journeyId: String)(status: Int, body: Boolean): StubMapping = {
+    when(method = GET,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch"
+    ).thenReturn(
+      status = status,
+      body = JsBoolean(body)
+    )
+  }
 }
