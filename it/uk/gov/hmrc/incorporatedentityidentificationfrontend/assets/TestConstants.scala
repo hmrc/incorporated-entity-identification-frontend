@@ -57,4 +57,20 @@ object TestConstants {
       "registration" -> testSuccessfulRegistration)
   }
 
+  def testRegisterAuditEventJson(companyNumber: String,
+                                 isMatch: Boolean,
+                                 ctUtr: String,
+                                 verificationStatus: BusinessVerificationStatus,
+                                 registrationStatus: RegistrationStatus): JsObject = {
+    Json.obj(
+      "callingService" -> "Entity Validation Service",
+      "businessType" -> "UK Company",
+      "companyNumber" -> companyNumber,
+      "isMatch" -> isMatch,
+      "CTUTR" -> ctUtr,
+      "VerificationStatus" -> verificationStatus,
+      "RegisterApiStatus" -> registrationStatus
+    )
+  }
+
 }

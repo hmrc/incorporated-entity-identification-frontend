@@ -16,14 +16,14 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityInformationConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.RemoveIncorporatedEntityDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService._
-
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEntityInformationConnector) {
@@ -58,12 +58,27 @@ class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEnti
                             )(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
     connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, CompanyProfileKey)
 
+  def retrieveCompanyNumber(journeyId: String
+                            )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] =
+    connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, CompanyProfileKey).map {
+      case Some(companyNumber) =>
+        companyNumber.companyNumber
+      case _ =>
+        throw new NotFoundException(s"[IncorporatedEntityInformationService] [retrieveCompanyName] Company Profile was not found for journey ID $journeyId")
+    }
+
   def retrieveBusinessVerificationStatus(journeyId: String
                                         )(implicit hc: HeaderCarrier): Future[Option[BusinessVerificationStatus]] =
     connector.retrieveIncorporatedEntityInformation[BusinessVerificationStatus](journeyId, VerificationStatusKey)
 
   def retrieveCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveIncorporatedEntityInformation[String](journeyId, CtutrKey)
+
+  def retrieveRegistrationStatus(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationStatus]] =
+    connector.retrieveIncorporatedEntityInformation[RegistrationStatus](journeyId, RegistrationKey)
+
+  def retrieveIdentifiersMatch(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
+    connector.retrieveIncorporatedEntityInformation[Boolean](journeyId, IdentifiersMatchKey)
 
   def retrieveIncorporatedEntityInformation(journeyId: String
                                            )(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityInformation]] =

@@ -18,15 +18,18 @@ package helpers
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, _}
-
 import java.time.LocalDate
 import java.util.UUID
+
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany}
 
 
 object TestConstants {
 
   val testJourneyId: String = UUID.randomUUID().toString
   val testAuthInternalId: String = UUID.randomUUID().toString
+  val testServiceName: String = "Test Service"
+  val defaultServiceName: String = "Entity Validation Service"
   val testCompanyNumber: String = "12345678"
   val testCtutr: String = "1234567890"
   val testDateOfIncorporation: String = LocalDate.now().toString
@@ -59,4 +62,42 @@ object TestConstants {
     )
   val testContinueUrl = "/test"
   val testSignOutUrl = "/signOutUrl"
+
+  def testJourneyConfig(businessEntity: BusinessEntity = LimitedCompany): JourneyConfig = JourneyConfig(
+    continueUrl = testContinueUrl,
+    pageConfig = PageConfig(
+      optServiceName = Some(testServiceName),
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl
+    ),
+    businessEntity = businessEntity
+  )
+  val testUkCompanySuccessfulAuditEventJson: JsObject = Json.obj(
+    "callingService" -> defaultServiceName,
+    "businessType" -> "UK Company",
+    "companyNumber" -> testCompanyProfile.companyNumber,
+    "isMatch" -> true,
+    "VerificationStatus" -> testPassedBusinessVerificationStatus,
+    "RegisterApiStatus" -> Registered(testSafeId),
+    "CTUTR" -> testCtutr
+  )
+
+  val testDetailsNotFoundAuditEventJson: JsObject = Json.obj(
+    "callingService" -> defaultServiceName,
+    "businessType" -> "UK Company",
+    "companyNumber" -> testCompanyProfile.companyNumber,
+    "isMatch" -> false,
+    "VerificationStatus" -> testUnchallengedBusinessVerificationStatus,
+    "RegisterApiStatus" -> RegistrationNotCalled,
+    "CTUTR" -> testCtutr
+  )
+
+  val testDetailsUtrMismatchAuditEventJson: JsObject = Json.obj(
+    "callingService" -> defaultServiceName,
+    "businessType" -> "UK Company",
+    "companyNumber" -> testCompanyProfile.companyNumber,
+    "isMatch" -> false,
+    "VerificationStatus" -> testFailedBusinessVerificationStatus,
+    "RegisterApiStatus" -> RegistrationNotCalled
+  )
 }

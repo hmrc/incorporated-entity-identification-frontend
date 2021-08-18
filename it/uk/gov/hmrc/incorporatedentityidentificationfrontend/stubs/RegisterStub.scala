@@ -37,4 +37,10 @@ trait RegisterStub extends WireMockMethods {
   def verifyRegisteredSocietyRegister(crn: String, ctutr: String): Unit = {
     WiremockHelper.verifyPost(uri = "/incorporated-entity-identification/register-registered-society", optBody = Some(jsonBody(crn, ctutr).toString()))
   }
+
+  def verifyRegisterAudit(): Unit = {
+    WiremockHelper.verifyPost(uri = "/write/audit", optBody = Some("Audit"))
+//    WiremockHelper.verifyPost(uri = "/write/audit/merged")
+//    WiremockHelper.verifyPost(uri = "/write/audit")
+  }
 }
