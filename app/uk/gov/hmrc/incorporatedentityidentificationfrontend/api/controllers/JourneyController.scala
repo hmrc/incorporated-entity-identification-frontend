@@ -24,7 +24,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => controllerRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
@@ -42,6 +42,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
 
   def createLtdCompanyJourney: Action[JourneyConfig] = createJourney(LimitedCompany)
   def createRegisteredSocietyJourney: Action[JourneyConfig] = createJourney(RegisteredSociety)
+  def createCharitableIncorporatedOrganisationJourney: Action[JourneyConfig] = createJourney(CharitableIncorporatedOrganisation)
 
   private def createJourney(businessEntity: BusinessEntity): Action[JourneyConfig] =
     Action.async(parse.json[JourneyConfig] { json =>

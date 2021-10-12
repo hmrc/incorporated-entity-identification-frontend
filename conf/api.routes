@@ -1,11 +1,14 @@
 # microservice specific routes
 + nocsrf
-POST        /journey                         uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createLtdCompanyJourney()
+POST        /journey                                           uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createLtdCompanyJourney()
 
 + nocsrf
-POST        /limited-company-journey         uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createLtdCompanyJourney()
+POST        /limited-company-journey                           uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createLtdCompanyJourney()
 
 + nocsrf
-POST        /registered-society-journey      uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createRegisteredSocietyJourney()
+POST        /registered-society-journey                        uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createRegisteredSocietyJourney()
 
-GET         /journey/:journeyId              uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.retrieveJourneyData(journeyId: String)
++ nocsrf
+POST        /charitable-incorporated-organisation-journey      uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createCharitableIncorporatedOrganisationJourney()
+
+GET         /journey/:journeyId                                uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.retrieveJourneyData(journeyId: String)

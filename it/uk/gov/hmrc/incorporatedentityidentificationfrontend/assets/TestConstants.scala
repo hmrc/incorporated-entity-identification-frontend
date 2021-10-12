@@ -2,8 +2,9 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
+
 import java.time.LocalDate
 import java.util.UUID
 
@@ -45,8 +46,12 @@ object TestConstants {
     "region" -> "test region"
   )
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
-  val testJourneyConfig: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), LimitedCompany)
-  val testRegisteredSocietyJourneyConfig: JourneyConfig = JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), RegisteredSociety)
+  val testLimitedCompanyJourneyConfig: JourneyConfig = createTestJourneyConfig(LimitedCompany)
+  val testRegisteredSocietyJourneyConfig: JourneyConfig = createTestJourneyConfig(RegisteredSociety)
+  val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
+
+  private def createTestJourneyConfig(entityType: BusinessEntity) =
+    JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), entityType)
 
   val testIncorporatedEntityFullJourneyDataJson: JsObject = {
     Json.obj(
@@ -54,7 +59,8 @@ object TestConstants {
       "ctutr" -> testCtutr,
       "identifiersMatch" -> true,
       "businessVerification" -> BusinessVerificationPass,
-      "registration" -> testSuccessfulRegistration)
+      "registration" -> testSuccessfulRegistration
+    )
   }
 
   def testRegisterAuditEventJson(companyNumber: String,

@@ -93,16 +93,19 @@ object JourneyConfigRepository {
   val BusinessEntityKey = "businessEntity"
   val LtdCompanyKey = "LtdCompany"
   val RegisteredSocietyKey = "RegisteredSociety"
+  val CharitableIncorporatedOrganisationKey = "CharitableIncorporatedOrganisation"
 
   implicit val partnershipTypeMongoFormat: Format[BusinessEntity] = new Format[BusinessEntity] {
     override def reads(json: JsValue): JsResult[BusinessEntity] = json.validate[String].collect(JsonValidationError("Invalid entity type")) {
       case LtdCompanyKey => LimitedCompany
       case RegisteredSocietyKey => RegisteredSociety
+      case CharitableIncorporatedOrganisationKey => CharitableIncorporatedOrganisation
     }
 
     override def writes(partnershipType: BusinessEntity): JsValue = partnershipType match {
       case LimitedCompany => JsString(LtdCompanyKey)
       case RegisteredSociety => JsString(RegisteredSocietyKey)
+      case CharitableIncorporatedOrganisation => JsString(CharitableIncorporatedOrganisationKey)
     }
   }
   implicit val journeyConfigMongoFormat: OFormat[JourneyConfig] = Json.format[JourneyConfig]

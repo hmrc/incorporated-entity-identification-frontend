@@ -43,24 +43,24 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
 
   "documents" should {
     "successfully insert a new document" in {
-      await(repo.insertJourneyConfig(testJourneyId, testInternalId, testJourneyConfig))
+      await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
       await(repo.count) mustBe 1
     }
 
     "successfully insert journeyConfig" in {
-      await(repo.insertJourneyConfig(testJourneyId, testInternalId, testJourneyConfig))
-      await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testJourneyConfig)
+      await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
+      await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testLimitedCompanyJourneyConfig)
     }
 
     "successfully delete all documents" in {
-      await(repo.insertJourneyConfig(testJourneyId, testInternalId, testJourneyConfig))
+      await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
       await(repo.drop)
       await(repo.count) mustBe 0
     }
 
     "successfully delete one document" in {
-      await(repo.insertJourneyConfig(testJourneyId, testInternalId, testJourneyConfig))
-      await(repo.insertJourneyConfig(testJourneyId + 1, testInternalId, testJourneyConfig))
+      await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
+      await(repo.insertJourneyConfig(testJourneyId + 1, testInternalId, testLimitedCompanyJourneyConfig))
       await(repo.remove("_id" -> (testJourneyId + 1), "authInternalId" -> testInternalId))
       await(repo.count) mustBe 1
     }
