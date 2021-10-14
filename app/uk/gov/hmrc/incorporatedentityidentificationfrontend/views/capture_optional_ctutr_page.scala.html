@@ -42,7 +42,7 @@
             form = form,
             id = "ctutr",
             name = "ctutr",
-            label = messages("capture-ctutr.registered_society_title"),
+            label = messages("capture-ctutr.registered_society_heading"),
             isPageHeading = true,
             hint = Some(Html(s"""<p class="govuk-body">${messages("capture-ctutr.line")}</p>""")),
             classes = "govuk-input--width-20"
@@ -63,7 +63,7 @@
         @govukButton(Button(
             attributes = Map("id" -> "save-and-continue"),
             classes = "govuk-!-margin-right-1",
-            content = Text(Messages("base.save_and_continue"))
+            content = Text(messages("base.save_and_continue"))
         ))
     }
 

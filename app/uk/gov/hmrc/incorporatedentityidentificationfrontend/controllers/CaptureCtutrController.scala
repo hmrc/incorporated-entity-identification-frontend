@@ -92,12 +92,11 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
-          journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
-            _ =>
-              storageService.removeCtutr(journeyId).map {
-                _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
-              }
-          }
+          for {
+            _ <- journeyService.getJourneyConfig(journeyId, authInternalId)
+            _ <- storageService.removeCtutr(journeyId)
+          } yield
+            Redirect(routes.CheckYourAnswersController.show(journeyId))
         case _ =>
           throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }

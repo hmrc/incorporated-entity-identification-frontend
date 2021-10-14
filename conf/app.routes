@@ -5,6 +5,10 @@ GET         /assets/*file                                       controllers.Asse
 GET         /:journeyId/company-number                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCompanyNumberController.show(journeyId)
 POST        /:journeyId/company-number                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCompanyNumberController.submit(journeyId)
 
+GET         /:journeyId/chrn                                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCHRNController.show(journeyId)
+POST        /:journeyId/chrn                                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCHRNController.submit(journeyId)
+GET         /:journeyId/no-chrn                                 uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCHRNController.noChrn(journeyId: String)
+
 GET         /:journeyId/ct-utr                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.show(journeyId)
 POST        /:journeyId/ct-utr                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.submit(journeyId)
 GET         /:journeyId/no-ct-utr                               uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.noCtutr(journeyId: String)

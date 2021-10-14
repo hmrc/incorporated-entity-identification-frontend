@@ -31,6 +31,7 @@ object TestConstants {
   val companyNameKey: String = "companyName"
   val companyNumberKey: String = "companyNumber"
   val testCompanyName: String = "Test Company Ltd"
+  val testCaptureCHRN: String = "CE12345"
   val testCtutr: String = "1234567890"
   val testNoCtutr: String = "1234567890"
   val testJourneyId: String = UUID.randomUUID().toString
