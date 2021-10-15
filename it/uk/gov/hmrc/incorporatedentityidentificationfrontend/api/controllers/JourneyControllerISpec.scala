@@ -232,6 +232,40 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         )
       }
     }
+    "the journeyId exists with minimal data" in {
+      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+        status = OK,
+        body = Json.toJsObject(
+          IncorporatedEntityInformation(
+            companyProfile = testCompanyProfileMinimum,
+            optCtutr = None,
+            identifiersMatch = false,
+            businessVerification = BusinessVerificationUnchallenged,
+            registration = RegistrationNotCalled
+          )
+        )
+      )
+
+
+      lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+      result.status mustBe OK
+      result.json mustBe Json.obj(
+        "companyProfile" -> Json.obj(
+          "companyName" -> testCompanyName,
+          "companyNumber" -> testCompanyNumber
+        ),
+        "identifiersMatch" -> false,
+        "businessVerification" -> Json.obj(
+          "verificationStatus" -> "UNCHALLENGED"
+        ),
+        "registration" -> Json.obj(
+          "registrationStatus" -> "REGISTRATION_NOT_CALLED",
+        )
+      )
+    }
+
 
     "return not found" when {
       "the journey Id does not exist" in {
