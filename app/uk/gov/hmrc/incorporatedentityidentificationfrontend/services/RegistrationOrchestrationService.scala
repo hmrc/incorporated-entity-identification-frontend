@@ -18,28 +18,29 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RegistrationConnector
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, CtEnrolled, RegistrationNotCalled, RegistrationStatus}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class RegistrationOrchestrationService @Inject()(incorporatedEntityInformationService: IncorporatedEntityInformationService,
+class RegistrationOrchestrationService @Inject()(storageService: StorageService,
                                                  registrationConnector: RegistrationConnector
                                                 )(implicit ec: ExecutionContext) {
 
   def register(journeyId: String, businessEntity: BusinessEntity)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
-    registrationStatus <- incorporatedEntityInformationService.retrieveBusinessVerificationStatus(journeyId).flatMap {
+    registrationStatus <- storageService.retrieveBusinessVerificationStatus(journeyId).flatMap {
       case Some(BusinessVerificationPass) | Some(CtEnrolled) => for {
-        optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
-        optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
+        optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
+        optCtutr <- storageService.retrieveCtutr(journeyId)
         registrationStatus <-
           (optCompanyProfile, optCtutr) match {
             case (Some(companyProfile), Some(ctutr)) =>
               businessEntity match {
                 case LimitedCompany => registrationConnector.registerLimitedCompany(companyProfile.companyNumber, ctutr)
                 case RegisteredSociety => registrationConnector.registerRegisteredSociety(companyProfile.companyNumber, ctutr)
+                case CharitableIncorporatedOrganisation => Future.successful(RegistrationNotCalled) //Not currently registered
               }
             case _ =>
               throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
@@ -51,7 +52,7 @@ class RegistrationOrchestrationService @Inject()(incorporatedEntityInformationSe
       case None =>
         throw new InternalServerException(s"Missing business verification state in database for $journeyId")
     }
-    _ <- incorporatedEntityInformationService.storeRegistrationStatus(journeyId, registrationStatus)
+    _ <- storageService.storeRegistrationStatus(journeyId, registrationStatus)
   } yield registrationStatus
 
 }

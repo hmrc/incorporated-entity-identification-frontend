@@ -20,8 +20,8 @@ import play.api.libs.json.Json
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableIRCTEnrolmentJourney, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, CtEnrolled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -201,9 +201,17 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
   "POST /confirm-business-name" should {
     "redirect to Capture CTUTR Page" when {
-      "the feature switch is disabled" in {
-        disable(EnableIRCTEnrolmentJourney)
+      "the user has no IR_CT Enrolment" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
+        ))
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 
         result must have(
@@ -211,49 +219,35 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           redirectUri(routes.CaptureCtutrController.show(testJourneyId).url)
         )
       }
-      "the feature switch is enabled" when {
-        "the user has no IR_CT Enrolment" in {
-          enable(EnableIRCTEnrolmentJourney)
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
+      "the user has an IR_CT Enrolment but the ctutr does not match the ctutr on the enrolment" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId), irctEnrolment))
 
-          result must have(
-            httpStatus(SEE_OTHER),
-            redirectUri(routes.CaptureCtutrController.show(testJourneyId).url)
-          )
-        }
-        "the user has an IR_CT Enrolment but the ctutr does not match the ctutr on the enrolment" in {
-          enable(EnableIRCTEnrolmentJourney)
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId), irctEnrolment))
-
-          await(insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
-          ))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany
+        ))
 
           val testMismatchCompanyNumber = "11111111"
           val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testMismatchCompanyNumber, testDateOfIncorporation, testAddress))
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
           stubValidateIncorporatedEntityDetails(testMismatchCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
 
-          lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
+        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 
-          result must have(
-            httpStatus(SEE_OTHER),
-            redirectUri(routes.CaptureCtutrController.show(testJourneyId).url)
-          )
-        }
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CaptureCtutrController.show(testJourneyId).url)
+        )
       }
     }
 
     "redirect to the Registration Controller" when {
       "the user has an IR-CT enrolment and the ctutr matches the ctutr on the enrolment" in {
-        enable(EnableIRCTEnrolmentJourney)
         stubAuth(OK, successfulAuthResponse(Some(testInternalId), irctEnrolment))
 
         await(insertJourneyConfig(
@@ -269,7 +263,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         val jsonBody = Json.toJsObject(testCompanyProfile)
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
-        stubStoreIdentifiersMatch(testJourneyId,identifiersMatch = true)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)(status = OK)
 
@@ -278,6 +272,26 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri(routes.RegistrationController.register(testJourneyId).url)
+        )
+      }
+    }
+    "redirect to the check your answers the page" when {
+      "the user is identifying a CIO" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = CharitableIncorporatedOrganisation
+        ))
+        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
         )
       }
     }

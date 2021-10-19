@@ -45,7 +45,7 @@ class TestCreateCharitableIncorporatedOrganisationJourneyController @Inject()(me
   private val defaultJourneyConfig = JourneyConfig(
     continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig,
-    RegisteredSociety
+    CharitableIncorporatedOrganisation
   )
 
   val show: Action[AnyContent] = Action.async {
@@ -66,7 +66,7 @@ class TestCreateCharitableIncorporatedOrganisationJourneyController @Inject()(me
               BadRequest(view(defaultPageConfig, routes.TestCreateCharitableIncorporatedOrganisationJourneyController.submit(), formWithErrors))
             ),
           journeyConfig =>
-            testCreateJourneyConnector.createRegisteredSocietyJourney(journeyConfig).map {
+            testCreateJourneyConnector.createCharitableIncorporatedOrganisationJourney(journeyConfig).map {
               journeyUrl => SeeOther(journeyUrl)
             }
         )

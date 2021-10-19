@@ -26,7 +26,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => controllerRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{StorageService, JourneyService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import javax.inject.Inject
 
@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext
 
 class JourneyController @Inject()(controllerComponents: ControllerComponents,
                                   journeyService: JourneyService,
-                                  incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
+                                  incorporatedEntityInformationRetrievalService: StorageService,
                                   val authConnector: AuthConnector,
                                   appConfig: AppConfig
                                  )(implicit ec: ExecutionContext) extends BackendController(controllerComponents) with AuthorisedFunctions {

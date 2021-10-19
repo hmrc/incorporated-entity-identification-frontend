@@ -23,7 +23,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCtutrForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{StorageService, JourneyService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.{capture_ctutr_page, capture_optional_ctutr_page}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -34,7 +34,7 @@ import scala.concurrent.ExecutionContext
 class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                                        ctutr_view: capture_ctutr_page,
                                        optional_ctutr_view: capture_optional_ctutr_page,
-                                       incorporatedEntityInformationService: IncorporatedEntityInformationService,
+                                       storageService: StorageService,
                                        journeyService: JourneyService,
                                        val authConnector: AuthConnector
                                       )(implicit val config: AppConfig,
@@ -51,6 +51,8 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                   Ok(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
                 case RegisteredSociety =>
                   Ok(optional_ctutr_view(journeyId, journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+                case invalidEntity =>
+                  throw new InternalServerException(s"Invalid entity: $invalidEntity on CTUTR page")
               }
           }
         case None =>
@@ -71,11 +73,13 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                       BadRequest(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
                     case RegisteredSociety =>
                       BadRequest(optional_ctutr_view(journeyId, journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
+                    case invalidEntity =>
+                      throw new InternalServerException(s"Invalid entity: $invalidEntity on CTUTR page")
                   }
               }
             },
             ctutr =>
-              incorporatedEntityInformationService.storeCtutr(journeyId, ctutr).map {
+              storageService.storeCtutr(journeyId, ctutr).map {
                 _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
               }
           )
@@ -90,7 +94,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
             _ =>
-              incorporatedEntityInformationService.removeCtutr(journeyId).map {
+              storageService.removeCtutr(journeyId).map {
                 _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
               }
           }

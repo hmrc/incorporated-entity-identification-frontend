@@ -24,19 +24,19 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsNotFound, DetailsNotProvided}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, JourneyService, StorageService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import javax.inject.{Inject, Singleton}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                                            auditService: AuditService,
-                                           incorporatedEntityInformationService: IncorporatedEntityInformationService,
+                                           storageService: StorageService,
                                            validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService,
                                            mcc: MessagesControllerComponents,
                                            view: check_your_answers_page,
@@ -50,8 +50,8 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
         case Some(authInternalId) =>
           for {
             journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
-            optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
-            optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
+            optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
+            optCtutr <- storageService.retrieveCtutr(journeyId)
           } yield (journeyConfig.businessEntity, optCompanyProfile, optCtutr) match {
             case (LimitedCompany, Some(companyProfile), Some(ctutr)) =>
               Ok(view(journeyConfig.pageConfig,
@@ -64,6 +64,13 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
               Ok(view(journeyConfig.pageConfig,
                 routes.CheckYourAnswersController.submit(journeyId),
                 optCtutr,
+                companyProfile.companyNumber,
+                journeyId
+              ))
+            case (CharitableIncorporatedOrganisation, Some(companyProfile), None) =>
+              Ok(view(journeyConfig.pageConfig,
+                routes.CheckYourAnswersController.submit(journeyId),
+                None,
                 companyProfile.companyNumber,
                 journeyId
               ))
@@ -81,35 +88,35 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
         case Some(authInternalId) =>
           for {
             journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
-            optCompanyProfile <- incorporatedEntityInformationService.retrieveCompanyProfile(journeyId)
-            optCtutr <- incorporatedEntityInformationService.retrieveCtutr(journeyId)
+            optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
+            optCtutr <- storageService.retrieveCtutr(journeyId)
             details <- (journeyConfig.businessEntity, optCompanyProfile, optCtutr) match {
               case (LimitedCompany | RegisteredSociety, Some(companyProfile), Some(ctutr)) =>
                 validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr)
-              case (RegisteredSociety, Some(companyProfile), None) => Future.successful(DetailsNotProvided)
+              case (RegisteredSociety | CharitableIncorporatedOrganisation, Some(companyProfile), None) => Future.successful(DetailsNotProvided)
               case _ =>
                 throw new InternalServerException("No data stored")
             }
             result <- details match {
               case DetailsMatched => for {
-                _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = true) }
-                  yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
+                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)}
+                yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
               case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) =>
                 for {
-                  _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
-                  _ <- incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-                  _ <- incorporatedEntityInformationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-                  _ <- auditService.auditJourney(journeyId,authInternalId)
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <- storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                  _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                  _ <- auditService.auditJourney(journeyId, authInternalId)
                 } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
               case DetailsNotProvided => for {
-                _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
-                _ <- incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-                _ <- incorporatedEntityInformationService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-                _ <- auditService.auditJourney(journeyId,authInternalId)
+                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                _ <- storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                _ <- auditService.auditJourney(journeyId, authInternalId)
               } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
               case _ => for {
-                _ <- incorporatedEntityInformationService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
-                _ <- auditService.auditJourney(journeyId,authInternalId)
+                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                _ <- auditService.auditJourney(journeyId, authInternalId)
               } yield Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
             }
           } yield result

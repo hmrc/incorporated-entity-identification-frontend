@@ -22,7 +22,7 @@ import play.api.data.validation.Constraint
 import play.api.data.{Form, FormError}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.MappingUtil.optText
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 
 
@@ -58,18 +58,21 @@ object TestCreateJourneyForm {
 
   val LtdCompanyKey = "ltdCompany"
   val RegisteredSocietyKey = "registeredSociety"
+  val CharitableIncorporatedOrganisationKey = "charitableIncorporatedOrganisation"
 
   def entityTypeFormatter: Formatter[BusinessEntity] = new Formatter[BusinessEntity] {
     override def bind(key: String, data: Map[String, String]): Either[Seq[FormError], BusinessEntity] =
       data.get(key) match {
         case Some(LtdCompanyKey) => Right(LimitedCompany)
         case Some(RegisteredSocietyKey) => Right(LimitedCompany)
+        case Some(CharitableIncorporatedOrganisationKey) => Right(CharitableIncorporatedOrganisation)
         case _ => Left(Seq(FormError(key, "Invalid entity type")))
       }
 
     override def unbind(key: String, value: BusinessEntity): Map[String, String] = value match {
       case LimitedCompany => Map(key -> LtdCompanyKey)
       case RegisteredSociety => Map(key -> RegisteredSocietyKey)
+      case CharitableIncorporatedOrganisation => Map(key -> CharitableIncorporatedOrganisationKey)
     }
   }
 

@@ -24,7 +24,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -512,6 +512,38 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+        stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)
+        stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationUnchallenged))
+        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+        stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+        stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(RegistrationNotCalled))
+
+        lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+        verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+        verifyAudit()
+      }
+    }
+    "the Charitable Incorporated Organisation has provided only crn" should {
+      "return a redirect to the Business Verification Result page" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = CharitableIncorporatedOrganisation
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubAudit()
+
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCioProfile))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)

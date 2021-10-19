@@ -20,7 +20,7 @@ import connectors.mocks.MockAuditConnector
 import helpers.TestConstants._
 import play.api.test.Helpers._
 import org.scalatest.matchers.must.Matchers
-import services.mocks.{MockIncorporationEntityInformationService, MockJourneyService}
+import services.mocks.{MockStorageService, MockJourneyService}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig, Registered, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.AuditService
@@ -31,13 +31,13 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntit
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class AuditServiceSpec extends UnitSpec with Matchers with MockIncorporationEntityInformationService with MockJourneyService with MockAuditConnector {
+class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService with MockJourneyService with MockAuditConnector {
 
   object TestService extends AuditService(
     mockAuditConnector,
     mockJourneyService,
     mock[AppConfig],
-    mockIncorporationEntityInformationService
+    mockStorageService
   )
   implicit val hc: HeaderCarrier = HeaderCarrier()
 

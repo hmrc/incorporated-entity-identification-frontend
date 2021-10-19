@@ -20,7 +20,7 @@ import uk.gov.hmrc.auth.core.Enrolments
 
 object EnrolmentUtils {
 
-  def getEnrolmentCtutr(enrolments: Enrolments): Option[String] =
+  def getCtEnrolment(enrolments: Enrolments): Option[String] =
     enrolments.getEnrolment("IR-CT").flatMap {
       IRCTEnrolments =>
         IRCTEnrolments.getIdentifier("UTR").map {

@@ -20,7 +20,7 @@ import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, InjectedController}
 
 import javax.inject.Singleton
-import scala.concurrent.Future
+import scala.util.matching.Regex
 
 @Singleton
 class CompaniesHouseStubController extends InjectedController {
@@ -29,48 +29,52 @@ class CompaniesHouseStubController extends InjectedController {
   private val companyNumberKey = "company_number"
   private val dateOfIncorporationKey = "date_of_creation"
   private val stubCompanyName = "Test Company Ltd"
+  private val stubCharityName = "Test Charity"
   private val stubDateOfIncorporation = "2020-01-01"
   private val stubOldDateOfIncorporation = "2017-01-01"
   private val registeredOfficeAddressKey = "registered_office_address"
+  private val stubRegisteredOfficeAddress = Json.obj(
+    "address_line_1" -> "testLine1",
+    "address_line_2" -> "test town",
+    "care_of" -> "test name",
+    "country" -> "United Kingdom",
+    "locality" -> "test city",
+    "po_box" -> "123",
+    "postal_code" -> "AA11AA",
+    "premises" -> "1",
+    "region" -> "test region"
+  )
 
-  def getCompanyInformation(companyNumber: String): Action[AnyContent] = Action.async {
+  val CharitableIncorporatedOrganisation: Regex = "CE(.*)".r
 
-    Future.successful(companyNumber match {
-      case "00000001" => NotFound
-      case "00000002" => Ok(Json.obj(
-        companyNameKey -> stubCompanyName,
-        companyNumberKey -> companyNumber,
-        dateOfIncorporationKey -> stubOldDateOfIncorporation,
-        registeredOfficeAddressKey -> Json.obj(
-          "address_line_1" -> "testLine1",
-          "address_line_2" -> "test town",
-          "care_of" -> "test name",
-          "country" -> "United Kingdom",
-          "locality" -> "test city",
-          "po_box" -> "123",
-          "postal_code" -> "AA11AA",
-          "premises" -> "1",
-          "region" -> "test region"
-        )
-      ))
-      case _ => Ok(Json.obj(
-        companyNameKey -> stubCompanyName,
-        companyNumberKey -> companyNumber,
-        dateOfIncorporationKey -> stubDateOfIncorporation,
-        registeredOfficeAddressKey -> Json.obj(
-          "address_line_1" -> "testLine1",
-          "address_line_2" -> "test town",
-          "care_of" -> "test name",
-          "country" -> "United Kingdom",
-          "locality" -> "test city",
-          "po_box" -> "123",
-          "postal_code" -> "AA11AA",
-          "premises" -> "1",
-          "region" -> "test region"
-        )
-      ))
-    })
+  def getCompanyInformation(companyNumber: String): Action[AnyContent] = {
+    val stubLtdCompanyProfile = Json.obj(
+      companyNameKey -> stubCompanyName,
+      companyNumberKey -> companyNumber,
+      dateOfIncorporationKey -> stubDateOfIncorporation,
+      registeredOfficeAddressKey -> stubRegisteredOfficeAddress
+    )
+    val stubLtdCompanyProfileWithOldIncorporationDate = Json.obj(
+      companyNameKey -> stubCompanyName,
+      companyNumberKey -> companyNumber,
+      dateOfIncorporationKey -> stubOldDateOfIncorporation,
+      registeredOfficeAddressKey -> stubRegisteredOfficeAddress
+    )
 
+    val stubCioProfile = Json.obj(
+      companyNameKey -> stubCharityName,
+      companyNumberKey -> companyNumber,
+      dateOfIncorporationKey -> "",
+      registeredOfficeAddressKey -> Json.obj()
+    )
+
+    Action {
+      companyNumber match {
+        case "00000001" => NotFound
+        case "00000002" => Ok(stubLtdCompanyProfileWithOldIncorporationDate)
+        case CharitableIncorporatedOrganisation(_) => Ok(stubCioProfile)
+        case _ => Ok(stubLtdCompanyProfile)
+      }
+    }
   }
-
 }

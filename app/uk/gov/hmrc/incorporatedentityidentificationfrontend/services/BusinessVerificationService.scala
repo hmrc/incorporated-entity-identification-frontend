@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class BusinessVerificationService @Inject()(createBusinessVerificationJourneyConnector: CreateBusinessVerificationJourneyConnector,
                                             retrieveBusinessVerificationResultConnector: RetrieveBusinessVerificationStatusConnector,
-                                            incorporatedEntityInformationService: IncorporatedEntityInformationService)(implicit val executionContext: ExecutionContext) {
+                                            storageService: StorageService)(implicit val executionContext: ExecutionContext) {
 
   def createBusinessVerificationJourney(journeyId: String, ctutr: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     createBusinessVerificationJourneyConnector.createBusinessVerificationJourney(journeyId, ctutr).flatMap {
@@ -37,7 +37,7 @@ class BusinessVerificationService @Inject()(createBusinessVerificationJourneyCon
           case UserLockedOut => BusinessVerificationFail
           case _ => throw new InternalServerException(s"createBusinessVerificationJourney service failed with invalid BV status")
         }
-        incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, bvStatus).map {
+        storageService.storeBusinessVerificationStatus(journeyId, bvStatus).map {
           _ => None
         }
       }
