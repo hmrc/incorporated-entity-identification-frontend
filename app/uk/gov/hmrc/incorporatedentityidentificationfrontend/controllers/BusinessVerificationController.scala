@@ -19,7 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{BusinessVerificationService, IncorporatedEntityInformationService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{BusinessVerificationService, StorageService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
@@ -29,13 +29,13 @@ import scala.concurrent.{ExecutionContext, Future}
 class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents,
                                                val authConnector: AuthConnector,
                                                businessVerificationService: BusinessVerificationService,
-                                               incorporatedEntityInformationService: IncorporatedEntityInformationService
+                                               storageService: StorageService
                                               )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def startBusinessVerificationJourney(journeyId: String): Action[AnyContent] = Action.async {
     implicit req =>
       authorised() {
-        incorporatedEntityInformationService.retrieveCtutr(journeyId).flatMap {
+        storageService.retrieveCtutr(journeyId).flatMap {
           case Some(ctutr) =>
             businessVerificationService.createBusinessVerificationJourney(journeyId, ctutr).flatMap {
               case Some(redirectUri) =>
@@ -56,7 +56,7 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
           case Some(businessVerificationJourneyId) =>
             businessVerificationService.retrieveBusinessVerificationStatus(businessVerificationJourneyId).flatMap {
               verificationStatus =>
-                incorporatedEntityInformationService.storeBusinessVerificationStatus(journeyId, verificationStatus).map {
+                storageService.storeBusinessVerificationStatus(journeyId, verificationStatus).map {
                   _ => Redirect(routes.RegistrationController.register(journeyId))
                 }
             }

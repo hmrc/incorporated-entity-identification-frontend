@@ -20,14 +20,14 @@ import connectors.mocks.MockIncorporatedEntityInformationConnector
 import helpers.TestConstants._
 import play.api.test.Helpers._
 import uk.gov.hmrc.http.{GatewayTimeoutException, HeaderCarrier}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.StorageService
 import utils.UnitSpec
 
 import scala.concurrent.Future
 
-class IncorporatedEntityInformationServiceSpec extends UnitSpec with MockIncorporatedEntityInformationConnector {
+class StorageServiceSpec extends UnitSpec with MockIncorporatedEntityInformationConnector {
 
-  object TestService extends IncorporatedEntityInformationService(mockIncorporatedEntityInformationConnector)
+  object TestService extends StorageService(mockIncorporatedEntityInformationConnector)
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 

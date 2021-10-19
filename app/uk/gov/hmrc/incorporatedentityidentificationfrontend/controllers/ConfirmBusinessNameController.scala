@@ -18,14 +18,14 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{allEnrolments, internalId}
+import uk.gov.hmrc.auth.core.retrieve.~
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableIRCTEnrolmentJourney, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.DetailsMatched
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CtEnrolled
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{IncorporatedEntityInformationService, JourneyService, ValidateIncorporatedEntityDetailsService}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.EnrolmentUtils.getEnrolmentCtutr
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtEnrolmentService._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{CtEnrolmentService, JourneyService, StorageService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -33,9 +33,9 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetrievalService: IncorporatedEntityInformationService,
+class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetrievalService: StorageService,
                                               journeyService: JourneyService,
-                                              validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService,
+                                              ctEnrolmentService: CtEnrolmentService,
                                               mcc: MessagesControllerComponents,
                                               view: confirm_business_name_page,
                                               val authConnector: AuthConnector
@@ -62,29 +62,24 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
-      authorised().retrieve(allEnrolments) {
-        enrolments =>
-          if (isEnabled(EnableIRCTEnrolmentJourney)) {
-            getEnrolmentCtutr(enrolments) match {
-              case Some(ctutr) =>
-                incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).flatMap {
-                  case Some(companyProfile) =>
-                    validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr).flatMap {
-                      case DetailsMatched =>
-                        for {
-                          _ <- incorporatedEntityInformationRetrievalService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
-                          _ <- incorporatedEntityInformationRetrievalService.storeCtutr(journeyId, ctutr)
-                          _ <- incorporatedEntityInformationRetrievalService.storeBusinessVerificationStatus(journeyId, CtEnrolled)
-                        } yield Redirect(routes.RegistrationController.register(journeyId))
-                      case _ => Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
-                    }
-                  case _ =>
-                    throw new InternalServerException("No data stored")
-                }
-              case None => Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
-            }
+      authorised().retrieve(allEnrolments and internalId) {
+        case enrolments ~ Some(authInternalId) =>
+          journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
+            journeyConfig =>
+              journeyConfig.businessEntity match {
+                case LimitedCompany | RegisteredSociety =>
+                  ctEnrolmentService.checkCtEnrolment(journeyId, enrolments).map{
+                    case Enrolled =>
+                      Redirect(routes.RegistrationController.register(journeyId))
+                    case EnrolmentMismatch | NoEnrolmentFound =>
+                      Redirect(routes.CaptureCtutrController.show(journeyId))
+                  }
+                case CharitableIncorporatedOrganisation =>
+                  Future.successful(Redirect(routes.CheckYourAnswersController.show(journeyId)))
+              }
           }
-          else Future.successful(Redirect(routes.CaptureCtutrController.show(journeyId)))
+        case _ ~ None =>
+          throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 

@@ -17,10 +17,11 @@
 package helpers
 
 import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, _}
+
 import java.time.LocalDate
 import java.util.UUID
-
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany}
 
 
@@ -100,4 +101,6 @@ object TestConstants {
     "VerificationStatus" -> testFailedBusinessVerificationStatus,
     "RegisterApiStatus" -> RegistrationNotCalled
   )
+
+  val testIrCtEnrolment: Enrolment = Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", testCtutr)), "Activated", None)
 }

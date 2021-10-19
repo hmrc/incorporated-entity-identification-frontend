@@ -20,13 +20,13 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityInformationConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.RemoveIncorporatedEntityDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.IncorporatedEntityInformationService._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.StorageService._
 import javax.inject.{Inject, Singleton}
 
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEntityInformationConnector) {
+class StorageService @Inject()(connector: IncorporatedEntityInformationConnector) {
 
   def storeCompanyProfile(journeyId: String,
                           companyProfile: CompanyProfile
@@ -89,7 +89,7 @@ class IncorporatedEntityInformationService @Inject()(connector: IncorporatedEnti
 
 }
 
-object IncorporatedEntityInformationService {
+object StorageService {
   val CompanyProfileKey: String = "companyProfile"
   val CtutrKey: String = "ctutr"
   val IdentifiersMatchKey: String = "identifiersMatch"
