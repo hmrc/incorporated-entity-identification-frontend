@@ -45,8 +45,7 @@ object TestConstants {
     "premises" -> "1",
     "region" -> "test region"
   )
-  val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, Some(testDateOfIncorporation), Some(testAddress))
-  val testCompanyProfileMinimum: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, dateOfIncorporation = None, unsanitisedCHROAddress = None)
+  val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testLimitedCompanyJourneyConfig: JourneyConfig = createTestJourneyConfig(LimitedCompany)
   val testRegisteredSocietyJourneyConfig: JourneyConfig = createTestJourneyConfig(RegisteredSociety)
   val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
