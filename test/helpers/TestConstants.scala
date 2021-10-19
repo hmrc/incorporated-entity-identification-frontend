@@ -46,7 +46,7 @@ object TestConstants {
     "premises" -> "1",
     "region" -> "test region"
   )
-  val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, Some(testDateOfIncorporation), Some(testAddress))
+  val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testSafeId: String = UUID.randomUUID().toString
   val testPassedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationPass
   val testFailedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationFail

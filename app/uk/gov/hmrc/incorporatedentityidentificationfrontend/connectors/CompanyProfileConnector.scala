@@ -50,8 +50,8 @@ object CompanyProfileHttpParser {
   val companiesHouseReads: Reads[CompanyProfile] = (
     (__ \ companyNameKey).read[String] and
       (__ \ companyNumberKey).read[String] and
-      (__ \ dateOfIncorporationKey).readNullable[String] and
-      (__ \ registeredOfficeAddressKey).readNullable[JsObject]
+      (__ \ dateOfIncorporationKey).read[String] and
+      (__ \ registeredOfficeAddressKey).read[JsObject]
     ) (CompanyProfile.apply _)
 
   implicit object CompanyProfileHttpReads extends HttpReads[Option[CompanyProfile]] {

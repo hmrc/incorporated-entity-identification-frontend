@@ -237,7 +237,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           ))
 
           val testMismatchCompanyNumber = "11111111"
-          val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testMismatchCompanyNumber, Some(testDateOfIncorporation), Some(testAddress)))
+          val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testMismatchCompanyNumber, testDateOfIncorporation, testAddress))
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
           stubValidateIncorporatedEntityDetails(testMismatchCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
 
