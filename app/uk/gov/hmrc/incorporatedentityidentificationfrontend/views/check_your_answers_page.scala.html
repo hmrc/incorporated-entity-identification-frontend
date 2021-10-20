@@ -28,53 +28,71 @@
         govukSummaryList: GovukSummaryList,
         formWithCSRF: FormWithCSRF)
 
-@(pageConfig: PageConfig, formAction: Call, optCtutr: Option[String], companyNumber: String, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(pageConfig: PageConfig, formAction: Call, optCtutr: Option[String], companyNumber: String, journeyId: String, businessEntity: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @layout(pageConfig, messages("check-your-answers.title")) {
 
     @h1(messages("check-your-answers.heading"))
 
-    @govukSummaryList(SummaryList(
-        classes = "govuk-!-margin-bottom-9",
-        rows = Seq(
-            SummaryListRow(
-                key = Key(content = Text(messages("check-your-answers.company_number"))),
-                value = Value(content = Text(companyNumber)),
-                actions = Some(Actions(items = Seq(
-                    ActionItem(
-                        href = Routes.CaptureCompanyNumberController.show(journeyId).url,
-                        content = Text(messages("base.change")),
-                        visuallyHiddenText = Some(messages("check-your-answers.company_number"))
-                    )
-                )))
-            )) ++ (optCtutr match {
-            case Some(ctutr) =>
-                Seq(SummaryListRow(
-                    key = Key(content = Text(messages("check-your-answers.ctutr"))),
-                    value = Value(content = Text(ctutr)),
+    @if(!businessEntity.equals("CharitableIncorporatedOrganisation")){
+        @govukSummaryList(SummaryList(
+            classes = "govuk-!-margin-bottom-9",
+            rows = Seq(
+                SummaryListRow(
+                    key = Key(content = Text(messages("check-your-answers.company_number"))),
+                    value = Value(content = Text(companyNumber)),
                     actions = Some(Actions(items = Seq(
                         ActionItem(
-                            href = Routes.CaptureCtutrController.show(journeyId).url,
+                            href = Routes.CaptureCompanyNumberController.show(journeyId).url,
                             content = Text(messages("base.change")),
-                            visuallyHiddenText = Some(messages("check-your-answers.ctutr"))
+                            visuallyHiddenText = Some(messages("check-your-answers.company_number"))
                         )
                     )))
-                ))
-            case None =>
-                Seq(SummaryListRow(
-                    key = Key(content = Text(messages("check-your-answers.ctutr"))),
-                    value = Value(content = Text(messages("check-your-answers.no-ctutr"))),
+                )) ++ (optCtutr match {
+                case Some(ctutr) =>
+                    Seq(SummaryListRow(
+                        key = Key(content = Text(messages("check-your-answers.ctutr"))),
+                        value = Value(content = Text(ctutr)),
+                        actions = Some(Actions(items = Seq(
+                            ActionItem(
+                                href = Routes.CaptureCtutrController.show(journeyId).url,
+                                content = Text(messages("base.change")),
+                                visuallyHiddenText = Some(messages("check-your-answers.ctutr"))
+                            )
+                        )))
+                    ))
+                case None =>
+                    Seq(SummaryListRow(
+                        key = Key(content = Text(messages("check-your-answers.ctutr"))),
+                        value = Value(content = Text(messages("check-your-answers.no-ctutr"))),
+                        actions = Some(Actions(items = Seq(
+                            ActionItem(
+                                href = Routes.CaptureCtutrController.show(journeyId).url,
+                                content = Text(messages("base.change")),
+                                visuallyHiddenText = Some(messages("check-your-answers.ctutr"))
+                            )
+                        )))
+                    ))
+                })
+        ))
+    }else{
+        @govukSummaryList(SummaryList(
+            classes = "govuk-!-margin-bottom-9",
+            rows = Seq(
+                SummaryListRow(
+                    key = Key(content = Text(messages("check-your-answers.company_number"))),
+                    value = Value(content = Text(companyNumber)),
                     actions = Some(Actions(items = Seq(
                         ActionItem(
-                            href = Routes.CaptureCtutrController.show(journeyId).url,
+                            href = Routes.CaptureCompanyNumberController.show(journeyId).url,
                             content = Text(messages("base.change")),
-                            visuallyHiddenText = Some(messages("check-your-answers.ctutr"))
+                            visuallyHiddenText = Some(messages("check-your-answers.company_number"))
                         )
                     )))
-                ))
-            })
-    ))
-
+                )
+            )
+        ))
+    }
 
     @formWithCSRF(action = formAction) {
         @govukButton(Button(
