@@ -58,21 +58,24 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                 routes.CheckYourAnswersController.submit(journeyId),
                 Some(ctutr),
                 companyProfile.companyNumber,
-                journeyId
+                journeyId,
+                journeyConfig.businessEntity.toString
               ))
             case (RegisteredSociety, Some(companyProfile), optCtutr) =>
               Ok(view(journeyConfig.pageConfig,
                 routes.CheckYourAnswersController.submit(journeyId),
                 optCtutr,
                 companyProfile.companyNumber,
-                journeyId
+                journeyId,
+                journeyConfig.businessEntity.toString
               ))
             case (CharitableIncorporatedOrganisation, Some(companyProfile), None) =>
               Ok(view(journeyConfig.pageConfig,
                 routes.CheckYourAnswersController.submit(journeyId),
                 None,
                 companyProfile.companyNumber,
-                journeyId
+                journeyId,
+                journeyConfig.businessEntity.toString
               ))
             case _ =>
               throw new InternalServerException("Data could not be retrieved from database or does not exist in database")

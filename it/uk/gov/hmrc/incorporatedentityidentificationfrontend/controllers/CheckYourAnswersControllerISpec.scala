@@ -560,6 +560,24 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         verifyAudit()
       }
+      "return a view which" should {
+        lazy val insertConfig = insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = CharitableIncorporatedOrganisation
+        )
+        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val auditStub = stubAudit()
+        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+        lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+        testCheckYourAnswersNoCtutrCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveCtutrStub)
+      }
     }
   }
 }
