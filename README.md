@@ -75,11 +75,33 @@ Request body must contain the continueUrl and deskProServiceId fields. If nothin
   "deskProServiceId" : "DeskProServiceId",
 }
 ```
-
 #### Response:
 Status: **Created(201)**
 
-Example Response body: 
+Example Response body:
+
+```
+{“journeyStartUrl” : "/testUrl"}
+```
+
+## POST /charitable-incorporated-organisation-journey
+
+---
+Creates a new journey for Charitable Incorporated Organisation, storing the journeyConfig against the journeyId.
+#### Request:
+Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service name, ```Entity Validation Service``` will be used.
+
+```
+{
+  "continueUrl" : "/testUrl",
+  "optServiceName" : "Service Name",
+  "deskProServiceId" : "DeskProServiceId",
+}
+```
+#### Response:
+Status: **Created(201)**
+
+Example Response body:
 
 ```
 {“journeyStartUrl” : "/testUrl"}
@@ -100,7 +122,10 @@ Status:
 | ```OK(200)```                           |  ```JourneyId exists```       
 | ```NOT_FOUND(404)```                    | ```JourneyId doesn't exist```
 
-Example response body:
+Example response bodies:
+
+---
+Limited Company/Registered Society 
 ```
 {
   "companyProfile": {
@@ -128,6 +153,27 @@ Example response body:
      "registrationStatus":"REGISTERED",
      "registeredBusinessPartnerId":"X00000123456789"
   }
+}
+
+```
+Charitable Incorporated Organisation:
+```
+{
+   "identifiersMatch":false,
+   "companyProfile":{
+      "companyName":"Test Charity",
+      "companyNumber":"CE123456",
+      "dateOfIncorporation":"",
+      "unsanitisedCHROAddress":{
+         
+      }
+   },
+   "businessVerification":{
+      "verificationStatus":"UNCHALLENGED"
+   },
+   "registration":{
+      "registrationStatus":"REGISTRATION_NOT_CALLED"
+   }
 }
 ```
 ## Test End-Points
