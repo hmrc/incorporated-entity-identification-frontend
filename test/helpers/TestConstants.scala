@@ -18,11 +18,11 @@ package helpers
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, _}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
 import java.time.LocalDate
 import java.util.UUID
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany}
 
 
 object TestConstants {
@@ -63,6 +63,7 @@ object TestConstants {
     )
   val testContinueUrl = "/test"
   val testSignOutUrl = "/signOutUrl"
+  val testCharityNumber = "CE123456"
 
   def testJourneyConfig(businessEntity: BusinessEntity = LimitedCompany): JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
@@ -73,6 +74,7 @@ object TestConstants {
     ),
     businessEntity = businessEntity
   )
+
   val testUkCompanySuccessfulAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "UK Company",
@@ -99,6 +101,15 @@ object TestConstants {
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
     "VerificationStatus" -> testFailedBusinessVerificationStatus,
+    "RegisterApiStatus" -> RegistrationNotCalled
+  )
+
+  val testCIOAuditEventJson: JsObject = Json.obj(
+    "callingService" -> defaultServiceName,
+    "businessType" -> "CIO",
+    "companyNumber" -> testCharityNumber,
+    "identifiersMatch" -> false,
+    "VerificationStatus" -> testUnchallengedBusinessVerificationStatus,
     "RegisterApiStatus" -> RegistrationNotCalled
   )
 
