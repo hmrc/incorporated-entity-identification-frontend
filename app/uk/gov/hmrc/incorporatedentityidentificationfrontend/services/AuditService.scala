@@ -19,7 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, RegistrationNotCalled}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -60,6 +60,17 @@ class AuditService @Inject()(auditConnector: AuditConnector,
         val auditJson = Json.obj(
           "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
           "businessType" -> "UK Company",
+          "companyNumber" -> companyNumber,
+          "isMatch" -> optIdentifiersMatch
+        ) ++ ctutrBlock ++ businessVerificationStatusBlock ++ registrationStatusBlock
+
+        auditConnector.sendExplicitAudit(
+          auditType = "IncorporatedEntityRegistration",
+          detail = auditJson)
+      case RegisteredSociety =>
+        val auditJson = Json.obj(
+          "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
+          "businessType" -> "Registered Society",
           "companyNumber" -> companyNumber,
           "isMatch" -> optIdentifiersMatch
         ) ++ ctutrBlock ++ businessVerificationStatusBlock ++ registrationStatusBlock

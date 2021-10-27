@@ -104,6 +104,35 @@ object TestConstants {
     "RegisterApiStatus" -> RegistrationNotCalled
   )
 
+  val testRegisteredSocietyAuditEventJson: JsObject = Json.obj(
+    "callingService" -> defaultServiceName,
+    "businessType" -> "Registered Society",
+    "companyNumber" -> testCompanyProfile.companyNumber,
+    "isMatch" -> true,
+    "VerificationStatus" -> testPassedBusinessVerificationStatus,
+    "RegisterApiStatus" -> Registered(testSafeId),
+    "CTUTR" -> testCtutr
+  )
+
+  val testDetailsNotFoundRegisteredSocietyAuditEventJson: JsObject = Json.obj(
+    "callingService" -> defaultServiceName,
+    "businessType" -> "Registered Society",
+    "companyNumber" -> testCompanyProfile.companyNumber,
+    "isMatch" -> false,
+    "VerificationStatus" -> testUnchallengedBusinessVerificationStatus,
+    "RegisterApiStatus" -> RegistrationNotCalled,
+    "CTUTR" -> testCtutr
+  )
+
+  val testDetailsUtrMismatchRegisteredSocietyAuditEventJson: JsObject = Json.obj(
+    "callingService" -> defaultServiceName,
+    "businessType" -> "Registered Society",
+    "companyNumber" -> testCompanyProfile.companyNumber,
+    "isMatch" -> false,
+    "VerificationStatus" -> testFailedBusinessVerificationStatus,
+    "RegisterApiStatus" -> RegistrationNotCalled
+  )
+
   val testCIOAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "CIO",
