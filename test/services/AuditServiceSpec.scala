@@ -18,15 +18,15 @@ package services
 
 import connectors.mocks.MockAuditConnector
 import helpers.TestConstants._
-import play.api.test.Helpers._
 import org.scalatest.matchers.must.Matchers
-import services.mocks.{MockStorageService, MockJourneyService}
+import play.api.test.Helpers._
+import services.mocks.{MockJourneyService, MockStorageService}
 import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig, Registered, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.AuditService
 import utils.UnitSpec
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
@@ -39,6 +39,7 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
     mock[AppConfig],
     mockStorageService
   )
+
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
   val testJourneyConfigLimitedCompany: JourneyConfig = JourneyConfig(
@@ -61,10 +62,19 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
     RegisteredSociety
   )
 
+  val testJourneyConfigCIO: JourneyConfig = JourneyConfig(
+    continueUrl = testContinueUrl,
+    pageConfig = PageConfig(
+      optServiceName = Some(defaultServiceName),
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl
+    ),
+    CharitableIncorporatedOrganisation
+  )
+
   "auditJourney" should {
     "send an event for a Limited Company" when {
       "the business entity is successfully verified and then registered" in {
-
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
         mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
         mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
@@ -73,10 +83,52 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
 
         await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
-        verifySendExplicitAuditUkCompany
+        verifySendExplicitAuditUkCompany()
 
         auditEventCaptor.getValue mustBe testUkCompanySuccessfulAuditEventJson
       }
+      "the business entity does not have its details matched" in {
+
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testUnchallengedBusinessVerificationStatus)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
+        verifySendExplicitAuditUkCompany()
+
+        auditEventCaptor.getValue mustBe testDetailsNotFoundAuditEventJson
+      }
+      "the business entity has a UTR mismatch" in {
+
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(None))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(None))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
+        verifySendExplicitAuditUkCompany()
+
+        auditEventCaptor.getValue mustBe testDetailsUtrMismatchAuditEventJson
+      }
+    }
+
+    "send an event for a CIO" in {
+      mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigCIO))
+      mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCharityNumber))
+      mockRetrieveCtutr(testJourneyId)(Future.successful(None))
+      mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+      mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testUnchallengedBusinessVerificationStatus)))
+      mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+      await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
+      verifySendExplicitAuditCIO()
+
+      auditEventCaptor.getValue mustBe testCIOAuditEventJson
     }
 
     "not send an audit event" when {
@@ -89,45 +141,9 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
 
         await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
-        verifyNoAuditSent
+        verifyNoAuditSent()
 
       }
     }
-
-    "send an event for a Limited Company" when {
-      "the business entity does not have its details matched" in {
-
-        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
-        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
-        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testUnchallengedBusinessVerificationStatus)))
-        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
-
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
-        verifySendExplicitAuditUkCompany
-
-        auditEventCaptor.getValue mustBe testDetailsNotFoundAuditEventJson
-      }
-    }
-
-    "send an event for a Limited Company" when {
-      "the business entity has a UTR mismatch" in {
-
-        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
-        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
-        mockRetrieveCtutr(testJourneyId)(Future.successful(None))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
-        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(None))
-
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
-        verifySendExplicitAuditUkCompany
-
-        auditEventCaptor.getValue mustBe testDetailsUtrMismatchAuditEventJson
-      }
-    }
-
-
   }
 }

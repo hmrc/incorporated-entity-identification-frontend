@@ -46,6 +46,14 @@ trait MockAuditConnector extends MockitoSugar with BeforeAndAfterEach {
       ArgumentMatchers.any[ExecutionContext]
     )
 
+  def verifySendExplicitAuditCIO(): Unit =
+    verify(mockAuditConnector, times(1)).sendExplicitAudit(
+      ArgumentMatchers.eq("CIOEntityRegistration"),
+      auditEventCaptor.capture()
+    )(ArgumentMatchers.any[HeaderCarrier],
+      ArgumentMatchers.any[ExecutionContext]
+    )
+
   def verifyNoAuditSent(): Unit =
     verify(mockAuditConnector, times(0)).sendExplicitAudit(
       ArgumentMatchers.eq("IncorporatedEntityRegistration"),
