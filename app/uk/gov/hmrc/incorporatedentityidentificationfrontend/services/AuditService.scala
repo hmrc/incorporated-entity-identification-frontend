@@ -72,7 +72,7 @@ class AuditService @Inject()(auditConnector: AuditConnector,
           "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
           "businessType" -> "CIO",
           "companyNumber" -> companyNumber,
-          "identifiersMatch" -> optIdentifiersMatch,
+          "identifiersMatch" -> optIdentifiersMatch
         ) ++ businessVerificationStatusBlock ++ registrationStatusBlock
 
         auditConnector.sendExplicitAudit(
