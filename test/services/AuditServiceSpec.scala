@@ -117,6 +117,49 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
       }
     }
 
+    "send an event for a Registered Society" when {
+      "the business entity is successfully verified and then registered" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
+        verifySendExplicitAuditRegisterSociety()
+
+        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson
+      }
+
+      "the business entity does not have its details matched" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testUnchallengedBusinessVerificationStatus)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
+        verifySendExplicitAuditRegisterSociety()
+
+        auditEventCaptor.getValue mustBe testDetailsNotFoundRegisteredSocietyAuditEventJson
+      }
+
+      "the business entity has a UTR mismatch" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(None))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(None))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
+        verifySendExplicitAuditRegisterSociety()
+
+        auditEventCaptor.getValue mustBe testDetailsUtrMismatchRegisteredSocietyAuditEventJson
+      }
+    }
     "send an event for a CIO" in {
       mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigCIO))
       mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCharityNumber))
@@ -129,21 +172,6 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
       verifySendExplicitAuditCIO()
 
       auditEventCaptor.getValue mustBe testCIOAuditEventJson
-    }
-
-    "not send an audit event" when {
-      "the entity type is Registered Society" in {
-        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
-        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
-        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
-        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
-
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
-        verifyNoAuditSent()
-
-      }
     }
   }
 }
