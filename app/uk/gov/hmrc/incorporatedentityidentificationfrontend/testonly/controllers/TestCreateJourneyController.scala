@@ -45,7 +45,8 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
   private val defaultJourneyConfig = JourneyConfig(
     continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig,
-    LimitedCompany
+    LimitedCompany,
+    businessVerificationCheck = true
   )
 
   val show: Action[AnyContent] = Action.async {

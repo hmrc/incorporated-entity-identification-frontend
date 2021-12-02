@@ -18,5 +18,5 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.BusinessEntity
 
-case class JourneyConfig(continueUrl: String, pageConfig: PageConfig, businessEntity: BusinessEntity)
+case class JourneyConfig(continueUrl: String, pageConfig: PageConfig, businessEntity: BusinessEntity, businessVerificationCheck: Boolean)
 

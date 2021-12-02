@@ -50,7 +50,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -78,7 +79,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -119,7 +121,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -139,7 +142,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -159,7 +163,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -179,7 +184,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -202,7 +208,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -229,7 +236,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -270,7 +278,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -290,7 +299,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -310,7 +320,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -330,7 +341,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()

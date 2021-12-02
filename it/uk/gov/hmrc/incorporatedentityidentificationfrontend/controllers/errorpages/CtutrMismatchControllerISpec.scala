@@ -19,11 +19,11 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpa
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.AuthStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.errorpages.CtutrMismatchViewTests
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 
 
 class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatchViewTests with AuthStub {
@@ -37,7 +37,8 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        businessEntity = LimitedCompany
+        businessEntity = LimitedCompany,
+        businessVerificationCheck = true
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -54,7 +55,8 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        businessEntity = LimitedCompany
+        businessEntity = LimitedCompany,
+        businessVerificationCheck = true
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
@@ -70,7 +72,8 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
@@ -87,7 +90,8 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
           optServiceName = Some(testCallingServiceName),
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")

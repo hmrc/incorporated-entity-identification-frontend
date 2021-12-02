@@ -45,7 +45,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
 
         val jsonBody = Json.toJsObject(testCompanyProfile)
@@ -65,7 +66,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -86,7 +88,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             optServiceName = Some(testCallingServiceName),
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -111,7 +114,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
 
@@ -143,7 +147,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -160,7 +165,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -177,7 +183,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -210,7 +217,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 
@@ -229,13 +237,14 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
 
-          val testMismatchCompanyNumber = "11111111"
-          val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testMismatchCompanyNumber, testDateOfIncorporation, testAddress))
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
-          stubValidateIncorporatedEntityDetails(testMismatchCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
+        val testMismatchCompanyNumber = "11111111"
+        val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testMismatchCompanyNumber, testDateOfIncorporation, testAddress))
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
+        stubValidateIncorporatedEntityDetails(testMismatchCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
 
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 
@@ -257,7 +266,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
 
         val jsonBody = Json.toJsObject(testCompanyProfile)
@@ -285,7 +295,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = CharitableIncorporatedOrganisation
+          businessEntity = CharitableIncorporatedOrganisation,
+          businessVerificationCheck = true
         ))
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 

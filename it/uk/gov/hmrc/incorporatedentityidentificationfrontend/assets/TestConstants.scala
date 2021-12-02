@@ -4,6 +4,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms.TestCreateJourneyForm.businessVerificationCheck
 
 import java.time.LocalDate
 import java.util.UUID
@@ -52,7 +53,7 @@ object TestConstants {
   val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
 
   private def createTestJourneyConfig(entityType: BusinessEntity) =
-    JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), entityType)
+    JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), entityType, businessVerificationCheck = true)
 
   val testIncorporatedEntityFullJourneyDataJson: JsObject = {
     Json.obj(

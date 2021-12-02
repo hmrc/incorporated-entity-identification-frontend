@@ -65,16 +65,6 @@ object TestConstants {
   val testSignOutUrl = "/signOutUrl"
   val testCharityNumber = "CE123456"
 
-  def testJourneyConfig(businessEntity: BusinessEntity = LimitedCompany): JourneyConfig = JourneyConfig(
-    continueUrl = testContinueUrl,
-    pageConfig = PageConfig(
-      optServiceName = Some(testServiceName),
-      deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl
-    ),
-    businessEntity = businessEntity
-  )
-
   val testUkCompanySuccessfulAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "UK Company",
