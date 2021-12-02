@@ -12,7 +12,7 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
   "GET /journey/redirect/:journeyId" should {
     "redirect to the journey config continue url" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      await(journeyConfigRepository.insertJourneyConfig(testJourneyId, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), LimitedCompany)))
+      await(journeyConfigRepository.insertJourneyConfig(testJourneyId, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), LimitedCompany, true)))
 
       lazy val result = get(s"$baseUrl/journey/redirect/$testJourneyId")
 
@@ -29,7 +29,8 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -46,7 +47,8 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -63,7 +65,8 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 

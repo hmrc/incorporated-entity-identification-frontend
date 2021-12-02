@@ -58,7 +58,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         optServiceName = None,
         deskProServiceId = testDeskProServiceId,
         signOutUrl = testSignOutUrl,
-        businessEntity = LimitedCompany
+        businessEntity = LimitedCompany,
+        businessVerificationCheck = true
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubAudit()
@@ -80,7 +81,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()
@@ -105,7 +107,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = Some(testCallingServiceName),
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()
@@ -130,7 +133,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety
+            businessEntity = RegisteredSociety,        businessVerificationCheck = true
+
           )
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -150,7 +154,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety
+            businessEntity = RegisteredSociety,        businessVerificationCheck = true
+
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val auditStub = stubAudit()
@@ -172,7 +177,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuthFailure()
         stubAudit()
@@ -196,7 +202,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -215,7 +222,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -234,7 +242,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -272,7 +281,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -300,7 +310,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -333,7 +344,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -364,7 +376,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -397,7 +410,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -433,7 +447,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -479,7 +494,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = RegisteredSociety
+          businessEntity = RegisteredSociety,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -507,7 +523,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = RegisteredSociety
+          businessEntity = RegisteredSociety,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -538,7 +555,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = CharitableIncorporatedOrganisation
+          businessEntity = CharitableIncorporatedOrganisation,
+          businessVerificationCheck = true
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -568,7 +586,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           optServiceName = None,
           deskProServiceId = testDeskProServiceId,
           signOutUrl = testSignOutUrl,
-          businessEntity = CharitableIncorporatedOrganisation
+          businessEntity = CharitableIncorporatedOrganisation,
+          businessVerificationCheck = true
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()

@@ -45,7 +45,8 @@ class TestCreateRegisteredSocietyJourneyController @Inject()(messagesControllerC
   private val defaultJourneyConfig = JourneyConfig(
     continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig,
-    RegisteredSociety
+    RegisteredSociety,
+    businessVerificationCheck = true
   )
 
   val show: Action[AnyContent] = Action.async {

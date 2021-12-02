@@ -44,7 +44,8 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
       deskProServiceId = "vrs",
       signOutUrl = testSignOutUrl
     ),
-    LimitedCompany
+    LimitedCompany,
+    businessVerificationCheck = true
   )
 
   "createJourney" should {
