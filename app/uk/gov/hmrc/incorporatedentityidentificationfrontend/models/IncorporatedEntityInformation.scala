@@ -22,7 +22,7 @@ import play.api.libs.json._
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
                                          optCtutr: Option[String],
                                          identifiersMatch: Boolean,
-                                         businessVerification: BusinessVerificationStatus,
+                                         businessVerification: Option[BusinessVerificationStatus],
                                          registration: RegistrationStatus
                                         )
 
@@ -41,7 +41,7 @@ object IncorporatedEntityInformation {
         companyProfile <- (json \ companyProfileKey).validate[CompanyProfile]
         optCtutr <- (json \ ctutrKey).validateOpt[String]
         identifiersMatch <- (json \ identifiersMatchKey).validate[Boolean]
-        businessVerification <- (json \ businessVerificationKey).validate[BusinessVerificationStatus]
+        businessVerification <- (json \ businessVerificationKey).validateOpt[BusinessVerificationStatus]
         registrationStatus <- (json \ registrationKey).validate[RegistrationStatus]
       } yield {
         IncorporatedEntityInformation(companyProfile, optCtutr, identifiersMatch, businessVerification, registrationStatus)
@@ -51,11 +51,15 @@ object IncorporatedEntityInformation {
       Json.obj(
         companyProfileKey -> incorporatedEntityInformation.companyProfile,
         identifiersMatchKey -> incorporatedEntityInformation.identifiersMatch,
-        businessVerificationKey -> incorporatedEntityInformation.businessVerification,
         registrationKey -> incorporatedEntityInformation.registration
       ) ++ {
         incorporatedEntityInformation.optCtutr match {
           case Some(ctutr) => Json.obj(ctutrKey -> ctutr)
+          case None => Json.obj()
+        }
+      } ++ {
+        incorporatedEntityInformation.businessVerification match {
+          case Some(businessVerification) => Json.obj(businessVerificationKey -> businessVerification)
           case None => Json.obj()
         }
       }

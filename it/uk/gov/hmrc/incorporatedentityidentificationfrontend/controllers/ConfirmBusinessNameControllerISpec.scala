@@ -284,6 +284,32 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           redirectUri(routes.RegistrationController.register(testJourneyId).url)
         )
       }
+      "the user has an IR-CT enrolment and the ctutr matches the ctutr on the enrolment but businessVerificationCheck is disable" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId), irctEnrolment))
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = false
+        ))
+
+        val jsonBody = Json.toJsObject(testCompanyProfile)
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
+        stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
+        stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
+
+        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.RegistrationController.register(testJourneyId).url)
+        )
+      }
     }
     "redirect to the check your answers the page" when {
       "the user is identifying a CIO" in {

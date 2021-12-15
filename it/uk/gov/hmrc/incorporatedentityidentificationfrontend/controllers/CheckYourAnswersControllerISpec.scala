@@ -133,7 +133,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,        businessVerificationCheck = true
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = true
 
           )
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -154,7 +155,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             optServiceName = None,
             deskProServiceId = testDeskProServiceId,
             signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,        businessVerificationCheck = true
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = true
 
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -329,6 +331,34 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
           verifyAudit()
 
+        }
+      }
+      "return a redirect to Registration Controller" when {
+        "the feature switch is enabled and business verification check is disable" in {
+          enable(EnableUnmatchedCtutrJourney)
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = false
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          stubAudit()
+          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+          stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
+
+          lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
+
+          result.status mustBe SEE_OTHER
+          result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
+          verifyAudit()
         }
       }
     }
@@ -544,6 +574,65 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
         verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         verifyAudit()
+      }
+
+      "redirect to the journey redirect controller when businessVerificationCheck is disable" in {
+        await(insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          continueUrl = testContinueUrl,
+          optServiceName = None,
+          deskProServiceId = testDeskProServiceId,
+          signOutUrl = testSignOutUrl,
+          businessEntity = RegisteredSociety,
+          businessVerificationCheck = false
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubAudit()
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+        stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationUnchallenged))
+        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+        stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+        stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(RegistrationNotCalled))
+
+        lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+        verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+        verifyAudit()
+      }
+
+      "return a redirect to Registration Controller" when {
+        "the feature switch is enabled and business verification check is disable" in {
+          enable(EnableUnmatchedCtutrJourney)
+          await(insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            continueUrl = testContinueUrl,
+            optServiceName = None,
+            deskProServiceId = testDeskProServiceId,
+            signOutUrl = testSignOutUrl,
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = false
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          stubAudit()
+          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+          stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
+
+          lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
+
+          result.status mustBe SEE_OTHER
+          result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
+          verifyAudit()
+        }
       }
     }
     "the Charitable Incorporated Organisation has provided only crn" should {

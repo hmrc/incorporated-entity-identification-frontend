@@ -40,7 +40,7 @@ class RegistrationController @Inject()(registrationOrchestrationService: Registr
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
             journeyConfig => for {
-              _ <- registrationOrchestrationService.register(journeyId, journeyConfig.businessEntity)
+              _ <- registrationOrchestrationService.register(journeyId, journeyConfig)
               _ <-  auditService.auditJourney(journeyId,authInternalId)}
                 yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
               }

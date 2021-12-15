@@ -101,19 +101,33 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                 throw new InternalServerException("No data stored")
             }
             result <- details match {
-              case DetailsMatched => for {
+              case DetailsMatched if journeyConfig.businessVerificationCheck => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)}
-                yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
-              case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) =>
+              yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
+              case DetailsMatched if journeyConfig.businessVerificationCheck.equals(false) => for {
+                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
+              } yield Redirect(routes.RegistrationController.register(journeyId))
+              case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) && journeyConfig.businessVerificationCheck =>
                 for {
                   _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
                   _ <- storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
                   _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
                   _ <- auditService.auditJourney(journeyId, authInternalId)
                 } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-              case DetailsNotProvided => for {
+              case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) && !journeyConfig.businessVerificationCheck =>
+                for {
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                  _ <- auditService.auditJourney(journeyId, authInternalId)
+                } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
+              case DetailsNotProvided if journeyConfig.businessVerificationCheck  => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
                 _ <- storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                _ <- auditService.auditJourney(journeyId, authInternalId)
+              } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
+              case DetailsNotProvided if !journeyConfig.businessVerificationCheck  => for {
+                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
                 _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
                 _ <- auditService.auditJourney(journeyId, authInternalId)
               } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))

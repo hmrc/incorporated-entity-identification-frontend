@@ -52,7 +52,7 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
             mockStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)(Future.successful(SuccessfullyStored))
 
             val testEnrolments = Enrolments(Set(testIrCtEnrolment))
-            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments))
+            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments,testJourneyConfigRegisteredSociety()))
 
             res mustBe Enrolled
 
@@ -67,7 +67,7 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
             mockValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(Future.successful(DetailsMismatch))
 
             val testEnrolments = Enrolments(Set(testIrCtEnrolment))
-            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments))
+            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments,testJourneyConfigRegisteredSociety()))
 
             res mustBe EnrolmentMismatch
           }
@@ -78,14 +78,14 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(None))
 
           val testEnrolments = Enrolments(Set(testIrCtEnrolment))
-          intercept[InternalServerException](await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments)))
+          intercept[InternalServerException](await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfigRegisteredSociety())))
         }
       }
     }
     "the user does not have an IR-CT enrolment" should {
       s"return $NoEnrolmentFound" in {
         val testEnrolments = Enrolments(Set.empty)
-        val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments))
+        val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfigRegisteredSociety()))
 
         res mustBe NoEnrolmentFound
       }

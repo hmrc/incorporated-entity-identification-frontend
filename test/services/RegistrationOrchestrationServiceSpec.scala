@@ -19,9 +19,8 @@ package services
 import connectors.mocks.MockRegistrationConnector
 import helpers.TestConstants._
 import play.api.test.Helpers._
-import services.mocks.MockStorageService
+import services.mocks.{MockJourneyService, MockStorageService}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed, RegistrationNotCalled, SuccessfullyStored}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.RegistrationOrchestrationService
 import utils.UnitSpec
@@ -48,7 +47,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRegisterLimitedCompany(testCompanyNumber, testCtutr)(Future.successful(Registered(testSafeId)))
           mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, LimitedCompany)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany)) mustBe {
             Registered(testSafeId)
           }
           verifyRegistrationLimitedCompany(testCompanyNumber, testCtutr)
@@ -62,7 +61,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRegisterLimitedCompany(testCompanyNumber, testCtutr)(Future.successful(RegistrationFailed))
           mockStoreRegistrationStatus(testJourneyId, RegistrationFailed)(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, LimitedCompany)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany)) mustBe {
             RegistrationFailed
           }
           verifyRegistrationLimitedCompany(testCompanyNumber, testCtutr)
@@ -76,7 +75,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRegisterLimitedCompany(testCompanyNumber, testCtutr)(Future.successful(Registered(testSafeId)))
           mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, LimitedCompany)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany)) mustBe {
             Registered(testSafeId)
           }
           verifyRegistrationLimitedCompany(testCompanyNumber, testCtutr)
@@ -91,7 +90,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testFailedBusinessVerificationStatus)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, LimitedCompany)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany)) mustBe {
             RegistrationNotCalled
           }
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
@@ -103,7 +102,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testUnchallengedBusinessVerificationStatus)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, LimitedCompany)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany)) mustBe {
             RegistrationNotCalled
           }
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
@@ -117,7 +116,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
 
           intercept[InternalServerException](
-            await(TestService.register(testJourneyId, LimitedCompany))
+            await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany))
           )
         }
 
@@ -127,7 +126,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
 
           intercept[InternalServerException](
-            await(TestService.register(testJourneyId, LimitedCompany))
+            await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany))
           )
         }
 
@@ -137,7 +136,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
 
           intercept[InternalServerException](
-            await(TestService.register(testJourneyId, LimitedCompany))
+            await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany))
           )
         }
 
@@ -147,11 +146,28 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
 
           intercept[InternalServerException](
-            await(TestService.register(testJourneyId, LimitedCompany))
+            await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany))
           )
         }
       }
+
+      "register without business verification" when {
+        "identifiers match but business verification check is false" in {
+          mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
+          mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+          mockRegisterLimitedCompany(testCompanyNumber, testCtutr)(Future.successful(Registered(testSafeId)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
+          mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
+
+          await(TestService.register(testJourneyId, testJourneyConfigLimitedCompanyWithoutBV)) mustBe {
+            Registered(testSafeId)
+          }
+          verifyRegistrationLimitedCompany(testCompanyNumber, testCtutr)
+          verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
+        }
+      }
     }
+
 
     "the business entity is Registered Society" should {
       "store the registration response" when {
@@ -162,7 +178,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRegisterRegisteredSociety(testCompanyNumber, testCtutr)(Future.successful(Registered(testSafeId)))
           mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, RegisteredSociety)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety)) mustBe {
             Registered(testSafeId)
           }
           verifyRegistrationRegisteredSociety(testCompanyNumber, testCtutr)
@@ -176,7 +192,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRegisterRegisteredSociety(testCompanyNumber, testCtutr)(Future.successful(RegistrationFailed))
           mockStoreRegistrationStatus(testJourneyId, RegistrationFailed)(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, RegisteredSociety)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety)) mustBe {
             RegistrationFailed
           }
           verifyRegistrationRegisteredSociety(testCompanyNumber, testCtutr)
@@ -190,7 +206,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRegisterRegisteredSociety(testCompanyNumber, testCtutr)(Future.successful(Registered(testSafeId)))
           mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, RegisteredSociety)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety)) mustBe {
             Registered(testSafeId)
           }
           verifyRegistrationRegisteredSociety(testCompanyNumber, testCtutr)
@@ -205,7 +221,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testFailedBusinessVerificationStatus)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, RegisteredSociety)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety)) mustBe {
             RegistrationNotCalled
           }
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
@@ -217,7 +233,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testUnchallengedBusinessVerificationStatus)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
-          await(TestService.register(testJourneyId, RegisteredSociety)) mustBe {
+          await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety)) mustBe {
             RegistrationNotCalled
           }
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
@@ -231,7 +247,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
 
           intercept[InternalServerException](
-            await(TestService.register(testJourneyId, RegisteredSociety))
+            await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety))
           )
         }
 
@@ -241,7 +257,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
 
           intercept[InternalServerException](
-            await(TestService.register(testJourneyId, RegisteredSociety))
+            await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety))
           )
         }
 
@@ -251,7 +267,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
 
           intercept[InternalServerException](
-            await(TestService.register(testJourneyId, RegisteredSociety))
+            await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety))
           )
         }
 
@@ -261,8 +277,23 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
 
           intercept[InternalServerException](
-            await(TestService.register(testJourneyId, RegisteredSociety))
+            await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety))
           )
+        }
+      }
+      "register without business verification" when {
+        "identifiers match but business verification check is false" in {
+          mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
+          mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+          mockRegisterRegisteredSociety(testCompanyNumber, testCtutr)(Future.successful(Registered(testSafeId)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
+          mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
+
+          await(TestService.register(testJourneyId, testJourneyConfigRegisteredSocietyWithoutBV)) mustBe {
+            Registered(testSafeId)
+          }
+          verifyRegistrationRegisteredSociety(testCompanyNumber, testCtutr)
+          verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
         }
       }
     }
