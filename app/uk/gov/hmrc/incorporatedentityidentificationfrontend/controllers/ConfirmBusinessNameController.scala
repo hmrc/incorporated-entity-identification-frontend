@@ -68,7 +68,7 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
             journeyConfig =>
               journeyConfig.businessEntity match {
                 case LimitedCompany | RegisteredSociety =>
-                  ctEnrolmentService.checkCtEnrolment(journeyId, enrolments).map{
+                  ctEnrolmentService.checkCtEnrolment(journeyId, enrolments, journeyConfig).map{
                     case Enrolled =>
                       Redirect(routes.RegistrationController.register(journeyId))
                     case EnrolmentMismatch | NoEnrolmentFound =>

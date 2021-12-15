@@ -18,41 +18,41 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RegistrationConnector
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, CtEnrolled, RegistrationNotCalled, RegistrationStatus}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RegistrationOrchestrationService @Inject()(storageService: StorageService,
-                                                 registrationConnector: RegistrationConnector
+                                                 registrationConnector: RegistrationConnector,
                                                 )(implicit ec: ExecutionContext) {
 
-  def register(journeyId: String, businessEntity: BusinessEntity)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
-    registrationStatus <- storageService.retrieveBusinessVerificationStatus(journeyId).flatMap {
-      case Some(BusinessVerificationPass) | Some(CtEnrolled) => for {
-        optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
-        optCtutr <- storageService.retrieveCtutr(journeyId)
-        registrationStatus <-
-          (optCompanyProfile, optCtutr) match {
-            case (Some(companyProfile), Some(ctutr)) =>
-              businessEntity match {
-                case LimitedCompany => registrationConnector.registerLimitedCompany(companyProfile.companyNumber, ctutr)
-                case RegisteredSociety => registrationConnector.registerRegisteredSociety(companyProfile.companyNumber, ctutr)
-                case CharitableIncorporatedOrganisation => Future.successful(RegistrationNotCalled) //Not currently registered
-              }
-            case _ =>
-              throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
-
-          }
-      } yield registrationStatus
-      case Some(_) =>
-        Future.successful(RegistrationNotCalled)
+  def register(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
+    shouldRegister <- storageService.retrieveBusinessVerificationStatus(journeyId).map {
+      case Some(BusinessVerificationPass) | Some(CtEnrolled) => true
+      case None if !journeyConfig.businessVerificationCheck => true
+      case Some(_) => false
       case None =>
         throw new InternalServerException(s"Missing business verification state in database for $journeyId")
     }
+    registrationStatus <- if (shouldRegister) for {
+      optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
+      optCtutr <- storageService.retrieveCtutr(journeyId)
+      registrationStatus <-
+        (optCompanyProfile, optCtutr) match {
+          case (Some(companyProfile), Some(ctutr)) =>
+            journeyConfig.businessEntity match {
+              case LimitedCompany => registrationConnector.registerLimitedCompany(companyProfile.companyNumber, ctutr)
+              case RegisteredSociety => registrationConnector.registerRegisteredSociety(companyProfile.companyNumber, ctutr)
+              case CharitableIncorporatedOrganisation => Future.successful(RegistrationNotCalled) //Not currently registered
+            }
+          case _ =>
+            throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
+        }
+    } yield registrationStatus
+    else Future.successful(RegistrationNotCalled)
     _ <- storageService.storeRegistrationStatus(journeyId, registrationStatus)
   } yield registrationStatus
-
 }

@@ -18,7 +18,7 @@ package helpers
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
 import java.time.LocalDate
@@ -58,13 +58,51 @@ object TestConstants {
       testCompanyProfile,
       Some(testCtutr),
       testIdentifiersMatch,
-      testPassedBusinessVerificationStatus,
+      Some(testPassedBusinessVerificationStatus),
       Registered(testSafeId)
     )
   val testContinueUrl = "/test"
   val testSignOutUrl = "/signOutUrl"
   val testCharityNumber = "CE123456"
 
+  def testJourneyConfigLimitedCompany(): JourneyConfig = JourneyConfig(
+    continueUrl = testContinueUrl,
+    pageConfig = PageConfig(
+      optServiceName = None,
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl),
+    businessEntity = LimitedCompany,
+    businessVerificationCheck = true
+  )
+  def testJourneyConfigLimitedCompanyWithoutBV(): JourneyConfig = JourneyConfig(
+    continueUrl = testContinueUrl,
+    pageConfig = PageConfig(
+      optServiceName = None,
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl),
+    businessEntity = LimitedCompany,
+    businessVerificationCheck = false
+  )
+
+  def testJourneyConfigRegisteredSociety(): JourneyConfig = JourneyConfig(
+    continueUrl = testContinueUrl,
+    pageConfig = PageConfig(
+      optServiceName = None,
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl),
+    businessEntity = RegisteredSociety,
+    businessVerificationCheck = true
+  )
+
+  def testJourneyConfigRegisteredSocietyWithoutBV(): JourneyConfig = JourneyConfig(
+    continueUrl = testContinueUrl,
+    pageConfig = PageConfig(
+      optServiceName = None,
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl),
+    businessEntity = RegisteredSociety,
+    businessVerificationCheck = false
+  )
   val testUkCompanySuccessfulAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "UK Company",

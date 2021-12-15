@@ -193,7 +193,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
               companyProfile = testCompanyProfile,
               optCtutr = Some(testCtutr),
               identifiersMatch = true,
-              businessVerification = BusinessVerificationPass,
+              businessVerification = Some(BusinessVerificationPass),
               registration = testSuccessfulRegistration
             )
           )

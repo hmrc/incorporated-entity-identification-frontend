@@ -20,7 +20,7 @@ import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.DetailsMatched
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CtEnrolled
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CtEnrolled, JourneyConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtEnrolmentService._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.EnrolmentUtils.getCtEnrolment
 
@@ -30,17 +30,23 @@ import scala.concurrent.{ExecutionContext, Future}
 class CtEnrolmentService @Inject()(storageService: StorageService,
                                    validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService
                                   )(implicit ec: ExecutionContext) extends FeatureSwitching {
-  def checkCtEnrolment(journeyId: String, enrolments: Enrolments)(implicit hc: HeaderCarrier): Future[CtEnrolmentState] =
+
+  def checkCtEnrolment(journeyId: String, enrolments: Enrolments, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[CtEnrolmentState] =
     getCtEnrolment(enrolments) match {
       case Some(ctutr) =>
         storageService.retrieveCompanyProfile(journeyId).flatMap {
           case Some(companyProfile) =>
             validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr).flatMap {
-              case DetailsMatched =>
+              case DetailsMatched if journeyConfig.businessVerificationCheck =>
                 for {
                   _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
                   _ <- storageService.storeCtutr(journeyId, ctutr)
                   _ <- storageService.storeBusinessVerificationStatus(journeyId, CtEnrolled)
+                } yield Enrolled
+              case DetailsMatched if !journeyConfig.businessVerificationCheck =>
+                for {
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
+                  _ <- storageService.storeCtutr(journeyId, ctutr)
                 } yield Enrolled
               case _ =>
                 Future.successful(EnrolmentMismatch)
