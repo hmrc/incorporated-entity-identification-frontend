@@ -26,7 +26,7 @@ import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class RegistrationOrchestrationService @Inject()(storageService: StorageService,
-                                                 registrationConnector: RegistrationConnector,
+                                                 registrationConnector: RegistrationConnector
                                                 )(implicit ec: ExecutionContext) {
 
   def register(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
