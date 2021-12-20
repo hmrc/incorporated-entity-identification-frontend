@@ -24,7 +24,7 @@ import reactivemongo.bson.BSONDocument
 import reactivemongo.play.json._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository._
 import uk.gov.hmrc.mongo.ReactiveRepository
 
@@ -94,6 +94,9 @@ object JourneyConfigRepository {
   val LtdCompanyKey = "LtdCompany"
   val RegisteredSocietyKey = "RegisteredSociety"
   val CharitableIncorporatedOrganisationKey = "CharitableIncorporatedOrganisation"
+  val ContinueUrlKey = "continueUrl"
+  val PageConfigKey = "pageConfig"
+  val BusinessVerificationCheckKey = "businessVerificationCheck"
 
   implicit val partnershipTypeMongoFormat: Format[BusinessEntity] = new Format[BusinessEntity] {
     override def reads(json: JsValue): JsResult[BusinessEntity] = json.validate[String].collect(JsonValidationError("Invalid entity type")) {
@@ -108,6 +111,25 @@ object JourneyConfigRepository {
       case CharitableIncorporatedOrganisation => JsString(CharitableIncorporatedOrganisationKey)
     }
   }
-  implicit val journeyConfigMongoFormat: OFormat[JourneyConfig] = Json.format[JourneyConfig]
+
+  implicit val journeyConfigMongoFormat: OFormat[JourneyConfig] = new OFormat[JourneyConfig] {
+    override def reads(json: JsValue): JsResult[JourneyConfig] =
+      for {
+        continueUrl <- (json \ ContinueUrlKey).validate[String]
+        pageConfig <- (json \ PageConfigKey).validate[PageConfig]
+        businessEntity <- (json \ BusinessEntityKey).validate[BusinessEntity]
+        businessVerificationCheck <- (json \ BusinessVerificationCheckKey).validateOpt[Boolean]
+      } yield {
+        JourneyConfig(continueUrl, pageConfig, businessEntity, businessVerificationCheck.getOrElse(true))
+      }
+
+    override def writes(journeyConfig: JourneyConfig): JsObject = Json.obj(
+      ContinueUrlKey -> journeyConfig.continueUrl,
+      PageConfigKey -> journeyConfig.pageConfig,
+      BusinessEntityKey -> journeyConfig.businessEntity,
+      BusinessVerificationCheckKey -> journeyConfig.businessVerificationCheck
+    )
+
+  }
 
 }
