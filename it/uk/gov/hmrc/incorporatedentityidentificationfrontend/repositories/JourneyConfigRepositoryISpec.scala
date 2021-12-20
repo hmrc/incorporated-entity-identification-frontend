@@ -47,9 +47,16 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
       await(repo.count) mustBe 1
     }
 
-    "successfully insert journeyConfig" in {
-      await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
-      await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testLimitedCompanyJourneyConfig)
+    "successfully find journeyConfig" when {
+      "businessVerification field is found" in {
+        await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
+        await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testLimitedCompanyJourneyConfig)
+      }
+      "businessVerification field in missing" in {
+        await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
+        await(repo.removeById("businessVerificationCheck"))
+        await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testLimitedCompanyJourneyConfig)
+      }
     }
 
     "successfully delete all documents" in {
@@ -64,6 +71,5 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
       await(repo.remove("_id" -> (testJourneyId + 1), "authInternalId" -> testInternalId))
       await(repo.count) mustBe 1
     }
-
   }
 }
