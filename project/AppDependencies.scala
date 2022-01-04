@@ -4,12 +4,12 @@ import sbt._
 object AppDependencies {
 
   val compile: Seq[ModuleID] = Seq(
-    "uk.gov.hmrc" %% "bootstrap-frontend-play-27" % "5.10.0",
-    "uk.gov.hmrc" %% "bootstrap-backend-play-27" % "5.10.0",
-    "uk.gov.hmrc" %% "play-frontend-govuk" % "0.71.0-play-27",
-    "uk.gov.hmrc" %% "simple-reactivemongo" % "8.0.0-play-27",
-    "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.59.0-play-27"
-
+    "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % "5.18.0",
+    "uk.gov.hmrc" %% "bootstrap-backend-play-28" % "5.18.0",
+    "uk.gov.hmrc" %% "play-frontend-govuk" % "0.84.0-play-28",
+    "uk.gov.hmrc" %% "simple-reactivemongo" % "8.0.0-play-28",
+    "uk.gov.hmrc" %% "play-frontend-hmrc" % "0.94.0-play-28",
+    "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.3"
   )
 
   val sharedTestDependencies: Seq[ModuleID] = {
@@ -19,7 +19,7 @@ object AppDependencies {
       "org.jsoup" % "jsoup" % "1.11.1" % scope,
       "com.typesafe.play" %% "play-test" % current % scope,
       "com.vladsch.flexmark" % "flexmark-all" % "0.36.8" % scope,
-      "org.scalatestplus.play" %% "scalatestplus-play" % "4.0.3" % scope
+      "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % scope
     )
   }
 

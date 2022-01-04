@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -41,7 +41,7 @@ class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwi
     implicit req =>
       featureSwitchService.retrieveFeatureSwitches().map {
         featureSwitches =>
-          Ok(featureSwitchView(defaultPageConfig, featureSwitches, routes.FeatureSwitchFrontendController.submit()))
+          Ok(featureSwitchView(defaultPageConfig, featureSwitches, routes.FeatureSwitchFrontendController.submit))
       }
   }
 
@@ -49,7 +49,7 @@ class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwi
     implicit req =>
       featureSwitchService.updateFeatureSwitches(req.body.keys).map {
         featureSwitches =>
-          Ok(featureSwitchView(defaultPageConfig, featureSwitches, routes.FeatureSwitchFrontendController.submit()))
+          Ok(featureSwitchView(defaultPageConfig, featureSwitches, routes.FeatureSwitchFrontendController.submit))
       }
   }
 }

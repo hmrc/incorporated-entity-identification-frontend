@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -167,7 +167,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
           testCheckYourAnswersNoCtutrView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveCtutrStub)
         }
+
       }
+
     }
 
     "redirect to sign in page" when {
@@ -302,6 +304,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           verifyAudit()
         }
       }
+
       "return a redirect to the Business Verification Result page" when {
         "the feature switch is disabled" in {
           disable(EnableUnmatchedCtutrJourney)
@@ -384,9 +387,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
           stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
-          stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(RegistrationNotCalled))
+          stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
           lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
@@ -416,9 +419,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
           stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
-          stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(RegistrationNotCalled))
+          stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
           lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
@@ -488,9 +491,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)
           stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationUnchallenged))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationUnchallengedJson)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
-          stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(RegistrationNotCalled))
+          stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
           stubValidateIncorporatedEntityDetails(
             testCompanyNumber,
@@ -562,10 +565,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationUnchallenged))
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationUnchallengedJson)
         stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
-        stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(RegistrationNotCalled))
+        stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
@@ -592,10 +595,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationUnchallenged))
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationUnchallengedJson)
         stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
-        stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(RegistrationNotCalled))
+        stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
@@ -654,10 +657,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationUnchallenged))
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationUnchallengedJson)
         stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
-        stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(RegistrationNotCalled))
+        stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 

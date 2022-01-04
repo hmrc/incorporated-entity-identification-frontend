@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
     implicit request =>
       authorised() {
         Future.successful(
-          Ok(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit(), form(LimitedCompany).fill(defaultJourneyConfig)))
+          Ok(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit, form(LimitedCompany).fill(defaultJourneyConfig)))
         )
       }
   }
@@ -64,7 +64,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
         form(LimitedCompany).bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit(), formWithErrors))
+              BadRequest(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit, formWithErrors))
             ),
           journeyConfig =>
             testCreateJourneyConnector.createLtdCompanyJourney(journeyConfig).map {

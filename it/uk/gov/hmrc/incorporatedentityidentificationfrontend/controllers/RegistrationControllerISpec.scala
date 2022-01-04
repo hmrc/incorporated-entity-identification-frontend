@@ -1,5 +1,5 @@
 /*
- * Copyright 2019 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationPass
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, RegisterStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WiremockHelper.{stubAudit, verifyAuditDetail}
@@ -57,8 +57,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
-          stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(status = OK, body = testSuccessfulRegistration)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
+          stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(status = OK, body = testSuccessfulRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
@@ -86,8 +86,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
-          stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(status = OK, body = testFailedRegistration)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
+          stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(status = OK, body = testFailedRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testFailedRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
@@ -128,7 +128,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
 
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe INTERNAL_SERVER_ERROR
@@ -149,7 +149,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
 
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe INTERNAL_SERVER_ERROR
@@ -170,7 +170,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
 
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe INTERNAL_SERVER_ERROR
@@ -215,8 +215,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
-          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(status = OK, body = testSuccessfulRegistration)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
+          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(status = OK, body = testSuccessfulRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
@@ -243,8 +243,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationPass))
-          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(status = OK, body = testFailedRegistration)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
+          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(status = OK, body = testFailedRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testFailedRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
@@ -285,7 +285,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, testBusinessVerificationFailJson)
 
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe INTERNAL_SERVER_ERROR
@@ -306,7 +306,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
 
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe INTERNAL_SERVER_ERROR
@@ -327,7 +327,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = Json.toJson(BusinessVerificationFail))
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
 
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe INTERNAL_SERVER_ERROR
