@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,7 +18,9 @@ package helpers
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
 import java.time.LocalDate
@@ -49,10 +51,28 @@ object TestConstants {
   )
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testSafeId: String = UUID.randomUUID().toString
+
   val testPassedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationPass
   val testFailedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationFail
   val testUnchallengedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationUnchallenged
   val testCtEnrolledStatus: BusinessVerificationStatus = CtEnrolled
+
+  val testPassedBusinessVerificationStatusJson: JsObject =
+    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
+
+  val testFailedBusinessVerificationStatusJson: JsObject =
+    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
+
+  val testUnchallengedBusinessVerificationStatusJson: JsObject =
+    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationUnchallengedKey)
+
+  val testRegistrationStatusJson: JsObject = Json.obj(
+    registrationStatusKey -> RegisteredKey,
+    registeredBusinessPartnerIdKey -> testSafeId
+  )
+
+  val testRegistrationNotCalledJson: JsObject = Json.obj(registrationStatusKey -> RegistrationNotCalledKey)
+
   val testIncorporatedEntityInformation: IncorporatedEntityInformation =
     IncorporatedEntityInformation(
       testCompanyProfile,
@@ -108,8 +128,8 @@ object TestConstants {
     "businessType" -> "UK Company",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> true,
-    "VerificationStatus" -> testPassedBusinessVerificationStatus,
-    "RegisterApiStatus" -> Registered(testSafeId),
+    "VerificationStatus" -> testPassedBusinessVerificationStatusJson,
+    "RegisterApiStatus" -> testRegistrationStatusJson,
     "CTUTR" -> testCtutr
   )
 
@@ -118,8 +138,8 @@ object TestConstants {
     "businessType" -> "UK Company",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
-    "VerificationStatus" -> testUnchallengedBusinessVerificationStatus,
-    "RegisterApiStatus" -> RegistrationNotCalled,
+    "VerificationStatus" -> testUnchallengedBusinessVerificationStatusJson,
+    "RegisterApiStatus" -> testRegistrationNotCalledJson,
     "CTUTR" -> testCtutr
   )
 
@@ -128,8 +148,28 @@ object TestConstants {
     "businessType" -> "UK Company",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
-    "VerificationStatus" -> testFailedBusinessVerificationStatus,
-    "RegisterApiStatus" -> RegistrationNotCalled
+    "VerificationStatus" -> testFailedBusinessVerificationStatusJson,
+    "RegisterApiStatus" -> testRegistrationNotCalledJson
+  )
+
+  val testDetailsRegistrationStatusMissingAuditEventJson: JsObject = Json.obj(
+    "callingService" -> defaultServiceName,
+    "businessType" -> "UK Company",
+    "companyNumber" -> testCompanyProfile.companyNumber,
+    "isMatch" -> true,
+    "VerificationStatus" -> testPassedBusinessVerificationStatusJson,
+    "RegisterApiStatus" -> testRegistrationNotCalledJson,
+    "CTUTR" -> testCtutr
+  )
+
+  val testDetailsBusinessVerificationStatusMissingAuditEventJson: JsObject = Json.obj(
+    "callingService" -> defaultServiceName,
+    "businessType" -> "UK Company",
+    "companyNumber" -> testCompanyProfile.companyNumber,
+    "isMatch" -> true,
+    "VerificationStatus" -> testFailedBusinessVerificationStatusJson,
+    "RegisterApiStatus" -> testRegistrationNotCalledJson,
+    "CTUTR" -> testCtutr
   )
 
   val testRegisteredSocietyAuditEventJson: JsObject = Json.obj(
@@ -137,8 +177,8 @@ object TestConstants {
     "businessType" -> "Registered Society",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> true,
-    "VerificationStatus" -> testPassedBusinessVerificationStatus,
-    "RegisterApiStatus" -> Registered(testSafeId),
+    "VerificationStatus" -> testPassedBusinessVerificationStatusJson,
+    "RegisterApiStatus" -> testRegistrationStatusJson,
     "CTUTR" -> testCtutr
   )
 
@@ -147,8 +187,8 @@ object TestConstants {
     "businessType" -> "Registered Society",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
-    "VerificationStatus" -> testUnchallengedBusinessVerificationStatus,
-    "RegisterApiStatus" -> RegistrationNotCalled,
+    "VerificationStatus" -> testUnchallengedBusinessVerificationStatusJson,
+    "RegisterApiStatus" -> testRegistrationNotCalledJson,
     "CTUTR" -> testCtutr
   )
 
@@ -157,8 +197,8 @@ object TestConstants {
     "businessType" -> "Registered Society",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
-    "VerificationStatus" -> testFailedBusinessVerificationStatus,
-    "RegisterApiStatus" -> RegistrationNotCalled
+    "VerificationStatus" -> testFailedBusinessVerificationStatusJson,
+    "RegisterApiStatus" -> testRegistrationNotCalledJson
   )
 
   val testCIOAuditEventJson: JsObject = Json.obj(
@@ -166,8 +206,8 @@ object TestConstants {
     "businessType" -> "CIO",
     "companyNumber" -> testCharityNumber,
     "identifiersMatch" -> false,
-    "VerificationStatus" -> testUnchallengedBusinessVerificationStatus,
-    "RegisterApiStatus" -> RegistrationNotCalled
+    "VerificationStatus" -> testUnchallengedBusinessVerificationStatusJson,
+    "RegisterApiStatus" -> testRegistrationNotCalledJson
   )
 
   val testIrCtEnrolment: Enrolment = Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", testCtutr)), "Activated", None)

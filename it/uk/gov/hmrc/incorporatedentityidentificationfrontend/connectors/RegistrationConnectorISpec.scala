@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -32,7 +32,7 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
   "registerLimitedCompany" should {
     "return Registered" when {
       "the registration has been successful" in {
-        stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(OK, Registered(testSafeId))
+        stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(OK, testSuccessfulRegistrationJson)
 
         val result = await(registrationConnector.registerLimitedCompany(testCompanyNumber, testCtutr))
 
@@ -42,7 +42,7 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
     }
     "return RegistrationFailed" when {
       "the registration has not been successful" in {
-        stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(OK, RegistrationFailed)
+        stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(OK, testFailedRegistrationJson)
 
         val result = await(registrationConnector.registerLimitedCompany(testCompanyNumber, testCtutr))
 
@@ -54,7 +54,7 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
   "registerRegisteredSociety" should {
     "return Registered" when {
       "the registration has been successful" in {
-        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(OK, Registered(testSafeId))
+        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(OK, testSuccessfulRegistrationJson)
 
         val result = await(registrationConnector.registerRegisteredSociety(testCompanyNumber, testCtutr))
 
@@ -64,7 +64,7 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
     }
     "return RegistrationFailed" when {
       "the registration has not been successful" in {
-        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(OK, RegistrationFailed)
+        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(OK, testFailedRegistrationJson)
 
         val result = await(registrationConnector.registerRegisteredSociety(testCompanyNumber, testCtutr))
 

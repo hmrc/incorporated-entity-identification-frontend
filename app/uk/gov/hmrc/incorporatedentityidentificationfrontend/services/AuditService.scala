@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -20,7 +20,8 @@ import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, RegistrationNotCalled}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
@@ -48,12 +49,12 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     val businessVerificationStatusBlock =
       optBusinessVerificationStatus match {
         case Some(bvStatus) => Json.obj("VerificationStatus" -> bvStatus)
-        case _ => Json.obj("VerificationStatus" -> BusinessVerificationFail)
+        case _ => Json.obj("VerificationStatus" -> Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey))
       }
     val registrationStatusBlock =
       optRegistrationStatus match {
         case Some(regStatus) => Json.obj("RegisterApiStatus" -> regStatus)
-        case _ => Json.obj("RegisterApiStatus" -> RegistrationNotCalled)
+        case _ => Json.obj("RegisterApiStatus" -> Json.obj(registrationStatusKey -> RegistrationNotCalledKey))
       }
     journeyConfig.businessEntity match {
       case LimitedCompany =>

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -117,6 +117,34 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         verifySendExplicitAuditUkCompany()
 
         auditEventCaptor.getValue mustBe testDetailsUtrMismatchAuditEventJson
+      }
+
+      "the business entity is successfully verified but registration fails" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(None))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
+        verifySendExplicitAuditUkCompany()
+
+        auditEventCaptor.getValue mustBe testDetailsRegistrationStatusMissingAuditEventJson
+      }
+
+      "the business entity verification is undefined and registration is not called" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe()
+        verifySendExplicitAuditUkCompany()
+
+        auditEventCaptor.getValue mustBe testDetailsBusinessVerificationStatusMissingAuditEventJson
       }
     }
 

@@ -1,5 +1,5 @@
 /*
- * Copyright 2021 HM Revenue & Customs
+ * Copyright 2022 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -53,7 +53,7 @@ class TestCreateCharitableIncorporatedOrganisationJourneyController @Inject()(me
     implicit request =>
       authorised() {
         Future.successful(
-          Ok(view(defaultPageConfig, routes.TestCreateCharitableIncorporatedOrganisationJourneyController.submit(), form(CharitableIncorporatedOrganisation).fill(defaultJourneyConfig)))
+          Ok(view(defaultPageConfig, routes.TestCreateCharitableIncorporatedOrganisationJourneyController.submit, form(CharitableIncorporatedOrganisation).fill(defaultJourneyConfig)))
         )
       }
   }
@@ -64,7 +64,7 @@ class TestCreateCharitableIncorporatedOrganisationJourneyController @Inject()(me
         form(RegisteredSociety).bindFromRequest().fold(
           formWithErrors =>
             Future.successful(
-              BadRequest(view(defaultPageConfig, routes.TestCreateCharitableIncorporatedOrganisationJourneyController.submit(), formWithErrors))
+              BadRequest(view(defaultPageConfig, routes.TestCreateCharitableIncorporatedOrganisationJourneyController.submit, formWithErrors))
             ),
           journeyConfig =>
             testCreateJourneyConnector.createCharitableIncorporatedOrganisationJourney(journeyConfig).map {

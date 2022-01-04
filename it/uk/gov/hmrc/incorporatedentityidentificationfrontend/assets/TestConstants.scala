@@ -1,10 +1,25 @@
-
+/*
+ * Copyright 2022 HM Revenue & Customs
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms.TestCreateJourneyForm.businessVerificationCheck
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus._
 
 import java.time.LocalDate
 import java.util.UUID
@@ -30,8 +45,16 @@ object TestConstants {
   val testCallingServiceName: String = "Test Service"
   val testContinueUrl: String = "/test"
   val testSafeId: String = UUID.randomUUID().toString
-  val testSuccessfulRegistration: Registered = Registered(testSafeId)
+  val testBusinessVerificationPassJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
+  val testBusinessVerificationFailJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
+  val testBusinessVerificationUnchallengedJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationUnchallengedKey)
+  val testSuccessfulRegistration: RegistrationStatus = Registered(testSafeId)
   val testFailedRegistration: RegistrationStatus = RegistrationFailed
+  val testSuccessfulRegistrationJson: JsObject = Json.obj(
+    registrationStatusKey -> RegisteredKey,
+    registeredBusinessPartnerIdKey -> testSafeId)
+  val testFailedRegistrationJson: JsObject = Json.obj(registrationStatusKey -> RegistrationFailedKey)
+  val testRegistrationNotCalledJson: JsObject = Json.obj(registrationStatusKey -> RegistrationNotCalledKey)
   val testDeskProServiceId: String = "vrs"
   val IRCTEnrolmentKey = "IR-CT"
   val IRCTReferenceKey = "UTR"
@@ -60,8 +83,8 @@ object TestConstants {
       "companyProfile" -> testCompanyProfile,
       "ctutr" -> testCtutr,
       "identifiersMatch" -> true,
-      "businessVerification" -> BusinessVerificationPass,
-      "registration" -> testSuccessfulRegistration
+      "businessVerification" -> testBusinessVerificationPassJson,
+      "registration" -> testSuccessfulRegistrationJson
     )
   }
 
