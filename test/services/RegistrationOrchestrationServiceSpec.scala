@@ -19,7 +19,7 @@ package services
 import connectors.mocks.MockRegistrationConnector
 import helpers.TestConstants._
 import play.api.test.Helpers._
-import services.mocks.{MockJourneyService, MockStorageService}
+import services.mocks.MockStorageService
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed, RegistrationNotCalled, SuccessfullyStored}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.RegistrationOrchestrationService
