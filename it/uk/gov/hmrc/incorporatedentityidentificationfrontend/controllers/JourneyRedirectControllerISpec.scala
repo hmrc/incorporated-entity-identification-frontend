@@ -17,8 +17,6 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.AuthStub
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -27,7 +25,11 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
   "GET /journey/redirect/:journeyId" should {
     "redirect to the journey config continue url" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      await(journeyConfigRepository.insertJourneyConfig(testJourneyId, testInternalId, JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), LimitedCompany, true)))
+      await(insertJourneyConfig(
+        journeyId = testJourneyId,
+        authInternalId = testInternalId,
+        journeyConfig = testLimitedCompanyJourneyConfig
+      ))
 
       lazy val result = get(s"$baseUrl/journey/redirect/$testJourneyId")
 
@@ -40,12 +42,7 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
         await(insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -58,12 +55,7 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId + "1",
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -76,12 +68,7 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
         await(insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId + "1",
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 

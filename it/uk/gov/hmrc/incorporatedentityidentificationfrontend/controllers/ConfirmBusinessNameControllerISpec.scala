@@ -21,8 +21,8 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, CtEnrolled}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, CtEnrolled, JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.ConfirmBusinessNameViewTests
@@ -41,12 +41,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
 
         val jsonBody = Json.toJsObject(testCompanyProfile)
@@ -62,12 +57,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           lazy val insertConfig = insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -81,15 +71,17 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         }
 
         "there is a serviceName passed in the journeyConfig" should {
+          val testConfig = JourneyConfig(
+            continueUrl = testContinueUrl,
+            pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true,
+            regime = testRegime
+          )
           lazy val insertConfig = insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = Some(testCallingServiceName),
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testConfig
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -110,12 +102,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
 
@@ -143,12 +130,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -161,12 +143,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId + "1",
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -179,12 +156,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId + "1",
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -213,12 +185,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 
@@ -233,12 +200,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
 
         val testMismatchCompanyNumber = "11111111"
@@ -262,12 +224,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
 
         val jsonBody = Json.toJsObject(testCompanyProfile)
@@ -284,17 +241,12 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           redirectUri(routes.RegistrationController.register(testJourneyId).url)
         )
       }
-      "the user has an IR-CT enrolment and the ctutr matches the ctutr on the enrolment but businessVerificationCheck is disable" in {
+      "the user has an IR-CT enrolment and the ctutr matches the ctutr on the enrolment but businessVerificationCheck is disabled" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId), irctEnrolment))
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = false
+          journeyConfig = testLimitedCompanyJourneyConfig.copy(businessVerificationCheck = false)
         ))
 
         val jsonBody = Json.toJsObject(testCompanyProfile)
@@ -317,12 +269,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = CharitableIncorporatedOrganisation,
-          businessVerificationCheck = true
+          journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
         ))
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 

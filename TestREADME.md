@@ -1,9 +1,10 @@
-
 ## Test End-Points
+
 ### GET test-only/feature-switches
 
 ---
 Shows all feature switches:
+
 1. Incorporated Entity Identification Frontend
 
     - Companies House API stub
@@ -42,6 +43,12 @@ Test entry point for initial call to set up a create limited company journey.
     - Used for skipping further verification checks carried out currently by Business Verification (SI)
     - This is currently autofilled but can be changed
 
+6. Regime
+
+    - This is the Tax Regime Identifier
+    - It is passed down to the Registration API
+    - Accepted values are PPT or VATC
+
 ### GET test-only/create-registered-society-journey
 
 ---
@@ -49,27 +56,33 @@ Test entry point for initial call to set up a create registered society journey.
 
 1. ContinueURL(Required)
 
-     - Where to redirect the user after the journey has been completed
+    - Where to redirect the user after the journey has been completed
 
 2. Service Name (Optional)
 
-     - Service Name to use throughout the service
-     - If nothing is entered, ```Entity Validation Service``` will be used
+    - Service Name to use throughout the service
+    - If nothing is entered, ```Entity Validation Service``` will be used
 
 3. DeskPro Service ID (Required)
 
-     - Used for the `Get help with this page` link
-     - This is currently autofilled but can be changed
+    - Used for the `Get help with this page` link
+    - This is currently autofilled but can be changed
 
 4. Sign Out Link (Required)
 
-     - Shown in the HMRC header - typically a link to a feedback questionnaire
-     - This is currently autofilled but can be changed
+    - Shown in the HMRC header - typically a link to a feedback questionnaire
+    - This is currently autofilled but can be changed
 
 5. Business verification checkbox
 
-     - Used for skipping further verification checks carried out currently by Business Verification (SI)
-     - This is currently autofilled but can be changed
+    - Used for skipping further verification checks carried out currently by Business Verification (SI)
+    - This is currently autofilled but can be changed
+
+6. Regime
+
+    - This is the Tax Regime Identifier
+    - It is passed down to the Registration API
+    - Accepted values are PPT or VATC
 
 ### GET test-only/create-cio-journey
 
@@ -78,29 +91,36 @@ Test entry point for initial call to set up a create charitable incorporated org
 
 1. ContinueURL(Required)
 
-      - Where to redirect the user after the journey has been completed
+    - Where to redirect the user after the journey has been completed
 
 2. Service Name (Optional)
 
-      - Service Name to use throughout the service
-      - If nothing is entered, ```Entity Validation Service``` will be used
+    - Service Name to use throughout the service
+    - If nothing is entered, ```Entity Validation Service``` will be used
 
 3. DeskPro Service ID (Required)
 
-      - Used for the `Get help with this page` link
-      - This is currently autofilled but can be changed
+    - Used for the `Get help with this page` link
+    - This is currently autofilled but can be changed
 
 4. Sign Out Link (Required)
 
-      - Shown in the HMRC header - typically a link to a feedback questionnaire
-      - This is currently autofilled but can be changed
+    - Shown in the HMRC header - typically a link to a feedback questionnaire
+    - This is currently autofilled but can be changed
 
 5. Business verification checkbox
 
-      - Used for skipping further verification checks carried out currently by Business Verification (SI)
-      - This is currently autofilled but can be changed
+    - Used for skipping further verification checks carried out currently by Business Verification (SI)
+    - This is currently autofilled but can be changed
+
+6. Regime
+
+    - This is the Tax Regime Identifier
+    - It is passed down to the Registration API
+    - Accepted values are PPT or VATC
 
 ### GET test-only/create-journey
+
 #### Deprecated - use one of the specific journey urls instead (e.g. create-limited-company-journey)
 
 ---
@@ -130,23 +150,33 @@ Test entry point for initial call to set up a create limited company journey.
     - Used for skipping further verification checks carried out currently by Business Verification (SI)
     - This is currently autofilled but can be changed
 
+6. Regime
+
+    - This is the Tax Regime Identifier
+    - It is passed down to the Registration API
+    - Accepted values are PPT or VATC
+
 ### GET test-only/:companyNumber/incorporated-company-profile
 
 ---
-Stubs retrieving the Company Profile from Companies House. The Companies House API stub feature switch will need to be enabled.
+Stubs retrieving the Company Profile from Companies House. The Companies House API stub feature switch will need to be
+enabled.
 
 ##### Request:
+
 A valid company Number must be sent in the URI
 
 ##### Response:
+
 Status:
 
-| Expected Response                       | Reason                              | Example
-|-----------------------------------------|-------------------------------------|-------------------------------------
-| ```OK(200)```                           |  ```Company Number exists```        | ```Any other valid Company Number```
-| ```NOT_FOUND(404)```                    | ```Company Number doesn't exist```  | ```"00000001"```
+| Expected Response                       | Reason                              | Example                              |
+|-----------------------------------------|-------------------------------------|--------------------------------------|
+| ```OK(200)```                           |  ```Company Number exists```        | ```Any other valid Company Number``` |
+| ```NOT_FOUND(404)```                    | ```Company Number doesn't exist```  | ```"00000001"```                     |
 
 Example response body:
+
 ```
 {
   "companyProfile": {
@@ -174,17 +204,20 @@ Example response body:
 Retrieves all the journey data that is stored against a specific journeyID.
 
 ##### Request:
+
 A valid journeyId must be sent in the URI
 
 ##### Response:
+
 Status:
 
-| Expected Response                       | Reason  
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```JourneyId exists```       
-| ```NOT_FOUND(404)```                    | ```JourneyId doesn't exist```
+| Expected Response                       | Reason                        |
+|-----------------------------------------|-------------------------------|
+| ```OK(200)```                           | ```JourneyId exists```        |
+| ```NOT_FOUND(404)```                    | ```JourneyId doesn't exist``` |
 
 Example response body:
+
 ```
 {
   "companyProfile": {
@@ -221,9 +254,11 @@ Example response body:
 Stubs creating a Business Verification journey. The Business Verification Stub Feature Switch will need to be enabled.
 
 ##### Request:
+
 No body is required for this request
 
 ##### Response:
+
 Status: **Created(201)**
 
 Example Response body:
@@ -235,15 +270,19 @@ Example Response body:
 ### GET  test-only/verification-question/journey/:journeyId/status
 
 ---
-Stubs retrieving the result from the Business Verification Service. The Business Verification Stub feature switch will need to be enabled.
+Stubs retrieving the result from the Business Verification Service. The Business Verification Stub feature switch will
+need to be enabled.
 
 ##### Request:
+
 A valid Business Verification journeyId must be sent in the URI
 
 ##### Response:
+
 Status: **OK(200)**
 
 Example Response body:
+
 ```
 {
   "journeyType": "BUSINESS_VERIFICATION",
@@ -257,4 +296,5 @@ Example Response body:
 
 ### License
 
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+This code is open source software licensed under
+the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

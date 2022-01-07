@@ -33,6 +33,7 @@ object TestConstants {
   val testAuthInternalId: String = UUID.randomUUID().toString
   val testServiceName: String = "Test Service"
   val defaultServiceName: String = "Entity Validation Service"
+  val testRegime: String = "VATC"
   val testCompanyNumber: String = "12345678"
   val testCtutr: String = "1234567890"
   val testDateOfIncorporation: String = LocalDate.now().toString
@@ -92,17 +93,11 @@ object TestConstants {
       deskProServiceId = "vrs",
       signOutUrl = testSignOutUrl),
     businessEntity = LimitedCompany,
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    regime = testRegime
   )
-  def testJourneyConfigLimitedCompanyWithoutBV(): JourneyConfig = JourneyConfig(
-    continueUrl = testContinueUrl,
-    pageConfig = PageConfig(
-      optServiceName = None,
-      deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl),
-    businessEntity = LimitedCompany,
-    businessVerificationCheck = false
-  )
+
+  def testJourneyConfigLimitedCompanyWithoutBV(): JourneyConfig = testJourneyConfigLimitedCompany().copy(businessVerificationCheck = false)
 
   def testJourneyConfigRegisteredSociety(): JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
@@ -111,18 +106,12 @@ object TestConstants {
       deskProServiceId = "vrs",
       signOutUrl = testSignOutUrl),
     businessEntity = RegisteredSociety,
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    regime = testRegime
   )
 
-  def testJourneyConfigRegisteredSocietyWithoutBV(): JourneyConfig = JourneyConfig(
-    continueUrl = testContinueUrl,
-    pageConfig = PageConfig(
-      optServiceName = None,
-      deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl),
-    businessEntity = RegisteredSociety,
-    businessVerificationCheck = false
-  )
+  def testJourneyConfigRegisteredSocietyWithoutBV(): JourneyConfig = testJourneyConfigRegisteredSociety().copy(businessVerificationCheck = false)
+
   val testUkCompanySuccessfulAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "UK Company",

@@ -24,8 +24,8 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationUnchallenged, RegistrationNotCalled}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationUnchallenged, JourneyConfig, PageConfig, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WiremockHelper._
@@ -54,12 +54,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       await(insertJourneyConfig(
         journeyId = testJourneyId,
         authInternalId = testInternalId,
-        continueUrl = testContinueUrl,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        businessEntity = LimitedCompany,
-        businessVerificationCheck = true
+        journeyConfig = testLimitedCompanyJourneyConfig
       ))
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubAudit()
@@ -77,12 +72,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         lazy val insertConfig = insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()
@@ -100,15 +90,17 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
 
       "there is a serviceName passed in the journeyConfig" should {
+        val testJourneyConfig = JourneyConfig(
+          continueUrl = testContinueUrl,
+          pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
+          businessEntity = LimitedCompany,
+          businessVerificationCheck = true,
+          regime = testRegime
+        )
         lazy val insertConfig = insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = Some(testCallingServiceName),
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testJourneyConfig
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()
@@ -129,13 +121,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
-
+            journeyConfig = testRegisteredSocietyJourneyConfig
           )
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -151,13 +137,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           lazy val insertConfig = insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
-
+            journeyConfig = testRegisteredSocietyJourneyConfig
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val auditStub = stubAudit()
@@ -177,12 +157,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuthFailure()
         stubAudit()
@@ -202,12 +177,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -222,12 +192,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId + "1",
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -242,12 +207,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId + "1",
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -281,12 +241,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -311,12 +266,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -342,12 +292,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = false
+            journeyConfig = testLimitedCompanyJourneyConfig.copy(businessVerificationCheck = false)
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -373,12 +318,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -405,12 +345,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -439,12 +374,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -476,12 +406,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -523,12 +448,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = RegisteredSociety,
-          businessVerificationCheck = true
+          journeyConfig = testRegisteredSocietyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -552,12 +472,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = RegisteredSociety,
-          businessVerificationCheck = true
+          journeyConfig = testRegisteredSocietyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -583,12 +498,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = RegisteredSociety,
-          businessVerificationCheck = false
+          journeyConfig = testRegisteredSocietyJourneyConfig.copy(businessVerificationCheck = false)
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -615,12 +525,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = false
+            journeyConfig = testRegisteredSocietyJourneyConfig.copy(businessVerificationCheck = false)
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -643,12 +548,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = CharitableIncorporatedOrganisation,
-          businessVerificationCheck = true
+          journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
@@ -674,12 +574,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         lazy val insertConfig = insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = CharitableIncorporatedOrganisation,
-          businessVerificationCheck = true
+          journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()

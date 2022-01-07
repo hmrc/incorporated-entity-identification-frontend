@@ -64,5 +64,17 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
       await(repo.remove("_id" -> (testJourneyId + 1), "authInternalId" -> testInternalId))
       await(repo.count) mustBe 1
     }
+
+    "successfully find journey config" when {
+      "regime key is present" in {
+        await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
+        await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testLimitedCompanyJourneyConfig)
+      }
+      "regime key is missing" in {
+        await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
+        await(repo.removeById("regime"))
+        await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testLimitedCompanyJourneyConfig)
+      }
+    }
   }
 }

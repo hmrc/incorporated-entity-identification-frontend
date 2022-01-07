@@ -26,10 +26,10 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => controllerRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{StorageService, JourneyService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, StorageService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
-import javax.inject.Inject
 
+import javax.inject.Inject
 import scala.concurrent.ExecutionContext
 
 class JourneyController @Inject()(controllerComponents: ControllerComponents,
@@ -39,9 +39,10 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
                                   appConfig: AppConfig
                                  )(implicit ec: ExecutionContext) extends BackendController(controllerComponents) with AuthorisedFunctions {
 
-
   def createLtdCompanyJourney: Action[JourneyConfig] = createJourney(LimitedCompany)
+
   def createRegisteredSocietyJourney: Action[JourneyConfig] = createJourney(RegisteredSociety)
+
   def createCharitableIncorporatedOrganisationJourney: Action[JourneyConfig] = createJourney(CharitableIncorporatedOrganisation)
 
   private def createJourney(businessEntity: BusinessEntity): Action[JourneyConfig] =
@@ -52,7 +53,8 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         deskProServiceId <- (json \ deskProServiceIdKey).validate[String]
         signOutUrl <- (json \ signOutUrlKey).validate[String]
         businessVerificationCheck <- (json \ businessVerificationCheckKey).validateOpt[Boolean]
-      } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl), businessEntity,businessVerificationCheck.getOrElse(true))
+        regime <- (json \ regimeKey).validate[String]
+      } yield JourneyConfig(continueUrl, PageConfig(optServiceName, deskProServiceId, signOutUrl), businessEntity, businessVerificationCheck.getOrElse(true), regime)
     }) {
       implicit req =>
         authorised().retrieve(internalId) {
@@ -88,5 +90,5 @@ object JourneyController {
   val deskProServiceIdKey = "deskProServiceId"
   val signOutUrlKey = "signOutUrl"
   val businessVerificationCheckKey = "businessVerificationCheck"
+  val regimeKey = "regime"
 }
-

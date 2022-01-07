@@ -1,16 +1,17 @@
-
 # Incorporated-Entity-Identification-Frontend
+
 This is a Scala/Play frontend to allow Limited Companies to provide their information to HMRC.
 
 ### How to run the service
+
 1. Make sure any dependent services are running using the following service-manager command
-`sm --start INCORPORATED_ENTITY_IDENTIFICATION_ALL -r`
+   `sm --start INCORPORATED_ENTITY_IDENTIFICATION_ALL -r`
 
 2. Stop the frontend in service manager using
- `sm --stop INCORPORATED_ENTITY_IDENTIFICATION_FRONTEND`
+   `sm --stop INCORPORATED_ENTITY_IDENTIFICATION_FRONTEND`
 
 3. Run the frontend locally using
-`sbt 'run 9718 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
+   `sbt 'run 9718 -Dapplication.router=testOnlyDoNotUseInAppConf.Routes'`
 
 ## Testing
 
@@ -18,15 +19,22 @@ This is a Scala/Play frontend to allow Limited Companies to provide their inform
 See [TestREADME](TestREADME.md) for more information about test data and endpoints
 
 # End-Points
+
 ## POST /journey
+
 ### Deprecated - use POST /ltd-company/journey instead
 
 ---
 Creates a new journey, storing the journeyConfig against the journeyId.
-#### Request:
-Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service name, ```Entity Validation Service``` will be used.
 
-The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "false" and there is a successful match the entity will be registered. If not provided the default value used for this field is "true".
+#### Request:
+
+Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service
+name, ```Entity Validation Service``` will be used.
+
+The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "
+false" and there is a successful match the entity will be registered. If not provided the default value used for this
+field is "true".
 
 ```
 {
@@ -34,10 +42,12 @@ The field businessVerificationCheck enables calling services to bypass business 
   "businessVerificationCheck": false,
   "optServiceName" : "Service Name",
   "deskProServiceId" : "DeskProServiceId",
+  "regime" : "VATC"
 }
 ```
 
 #### Response:
+
 Status: **Created(201)**
 
 Example Response body:
@@ -46,16 +56,22 @@ Example Response body:
 {“journeyStartUrl” : "<protocol>://<host>:<port number>/identify-your-incorporated-business/<journey id>/company-number"}
 ```
 
-where protocol, host and port number are set to the values for the appropriate environment and journey id is used to identify the specific user journey.
+where protocol, host and port number are set to the values for the appropriate environment and journey id is used to
+identify the specific user journey.
 
 ## POST /limited-company-journey
 
 ---
 Creates a new journey for Ltd Company, storing the journeyConfig against the journeyId.
-#### Request:
-Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service name, ```Entity Validation Service``` will be used.
 
-The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "false" and there is a successful match the entity will be registered. If not provided the default value used for this field is "true".
+#### Request:
+
+Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service
+name, ```Entity Validation Service``` will be used.
+
+The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "
+false" and there is a successful match the entity will be registered. If not provided the default value used for this
+field is "true".
 
 ```
 {
@@ -63,10 +79,12 @@ The field businessVerificationCheck enables calling services to bypass business 
   "businessVerificationCheck": false,
   "optServiceName" : "Service Name",
   "deskProServiceId" : "DeskProServiceId",
+  "regime" : "VATC"
 }
 ```
 
 #### Response:
+
 Status: **Created(201)**
 
 Example Response body:
@@ -75,16 +93,22 @@ Example Response body:
 {“journeyStartUrl” : "<protocol>://<host>:<port number>/identify-your-incorporated-business/<journey id>/company-number"}
 ```
 
-where protocol, host and port number are set to the values for the appropriate environment and journey id is used to identify the specific user journey
+where protocol, host and port number are set to the values for the appropriate environment and journey id is used to
+identify the specific user journey
 
 ## POST /registered-society-journey
 
 ---
 Creates a new journey for Registered Society, storing the journeyConfig against the journeyId.
-#### Request:
-Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service name, ```Entity Validation Service``` will be used.
 
-The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "false" and there is a successful match the entity will be registered. If not provided the default value used for this field is "true".
+#### Request:
+
+Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service
+name, ```Entity Validation Service``` will be used.
+
+The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "
+false" and there is a successful match the entity will be registered. If not provided the default value used for this
+field is "true".
 
 ```
 {
@@ -92,9 +116,12 @@ The field businessVerificationCheck enables calling services to bypass business 
   "businessVerificationCheck": false,
   "optServiceName" : "Service Name",
   "deskProServiceId" : "DeskProServiceId",
+  "regime" : "VATC"
 }
 ```
+
 #### Response:
+
 Status: **Created(201)**
 
 Example Response body:
@@ -103,16 +130,22 @@ Example Response body:
 {“journeyStartUrl” : "<protocol>://<host>:<port number>/identify-your-incorporated-business/<journey id>/company-number"}
 ```
 
-where protocol, host and port number are set to the values for the appropriate environment and journey id is used to identify the specific user journey
+where protocol, host and port number are set to the values for the appropriate environment and journey id is used to
+identify the specific user journey
 
 ## POST /charitable-incorporated-organisation-journey
 
 ---
 Creates a new journey for Charitable Incorporated Organisation, storing the journeyConfig against the journeyId.
-#### Request:
-Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service name, ```Entity Validation Service``` will be used.
 
-The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "false" and there is a successful match the entity will be registered. If not provided the default value used for this field is "true".
+#### Request:
+
+Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service
+name, ```Entity Validation Service``` will be used.
+
+The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "
+false" and there is a successful match the entity will be registered. If not provided the default value used for this
+field is "true".
 
 ```
 {
@@ -120,9 +153,12 @@ The field businessVerificationCheck enables calling services to bypass business 
   "businessVerificationCheck": false,
   "optServiceName" : "Service Name",
   "deskProServiceId" : "DeskProServiceId",
+  "regime" : "VATC"
 }
 ```
+
 #### Response:
+
 Status: **Created(201)**
 
 Example Response body:
@@ -131,27 +167,32 @@ Example Response body:
 {“journeyStartUrl” : "<protocol>://<host>:<port number>/identify-your-incorporated-business/<journey id>/company-number"}
 ```
 
-where protocol, host and port number are set to the values for the appropriate environment and journey id is used to identify the specific user journey
+where protocol, host and port number are set to the values for the appropriate environment and journey id is used to
+identify the specific user journey
 
 ## GET /journey/:journeyId
 
 ---
 Retrieves all the journey data that is stored against a specific journeyID.
+
 #### Request:
+
 A valid journeyId must be sent in the URI
 
 #### Response:
+
 Status:
 
-| Expected Response                       | Reason  
-|-----------------------------------------|------------------------------
-| ```OK(200)```                           |  ```JourneyId exists```       
-| ```NOT_FOUND(404)```                    | ```JourneyId doesn't exist```
+| Expected Response                       | Reason                       |
+|-----------------------------------------|------------------------------|
+| ```OK(200)```                           |  ```JourneyId exists```      |
+| ```NOT_FOUND(404)```                    | ```JourneyId doesn't exist```|
 
 Example response bodies:
 
 ---
 Limited Company/Registered Society
+
 ```
 {
   "companyProfile": {
@@ -182,7 +223,9 @@ Limited Company/Registered Society
 }
 
 ```
+
 Charitable Incorporated Organisation:
+
 ```
 {
    "identifiersMatch":false,
@@ -205,4 +248,5 @@ Charitable Incorporated Organisation:
 
 ### License
 
-This code is open source software licensed under the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").
+This code is open source software licensed under
+the [Apache 2.0 License]("http://www.apache.org/licenses/LICENSE-2.0.html").

@@ -108,6 +108,16 @@
             ))
         ))
 
+        @inputText(
+            form = form,
+            id = "regime",
+            name = "regime",
+            label = "Regime",
+            isPageHeading = false,
+            hasFieldTitle = true,
+            classes = "govuk-input--width-20"
+        )
+
         @govukButton(Button(
             attributes = Map("id" -> "save-and-continue"),
             classes = "govuk-!-margin-right-1",

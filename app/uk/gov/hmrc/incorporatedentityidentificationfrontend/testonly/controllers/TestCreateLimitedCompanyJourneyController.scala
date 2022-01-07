@@ -46,7 +46,8 @@ class TestCreateLimitedCompanyJourneyController @Inject()(messagesControllerComp
     continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig,
     LimitedCompany,
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    regime = "VATC"
   )
 
   val show: Action[AnyContent] = Action.async {

@@ -35,6 +35,7 @@ object TestCreateJourneyForm {
   val signOutUrl = "signOutUrl"
   val entityType = "entityType"
   val businessVerificationCheck = "businessVerificationCheck"
+  val regime = "regime"
 
   def continueUrlEmpty: Constraint[String] = Constraint("continue_url.not_entered")(
     companyNumber => validate(
@@ -54,6 +55,13 @@ object TestCreateJourneyForm {
     signOutUrl => validate(
       constraint = signOutUrl.isEmpty,
       errMsg = "Sign Out Url is not entered"
+    )
+  )
+
+  def regimeEmpty: Constraint[String] = Constraint("regime.not_entered")(
+    regime => validate(
+      constraint = regime.isEmpty,
+      errMsg = "Regime is not entered"
     )
   )
 
@@ -83,12 +91,13 @@ object TestCreateJourneyForm {
       serviceName -> optText,
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
       signOutUrl -> text.verifying(signOutUrlEmpty),
-      businessVerificationCheck -> boolean
-    )((continueUrl, serviceName, deskProServiceId, signOutUrl, businessVerificationCheck) =>
-      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl), businessEntity, businessVerificationCheck)
+      businessVerificationCheck -> boolean,
+      regime -> text.verifying(regimeEmpty)
+    )((continueUrl, serviceName, deskProServiceId, signOutUrl, businessVerificationCheck, regime) =>
+      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl), businessEntity, businessVerificationCheck, regime)
     )(journeyConfig =>
       Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName,
-        journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl, journeyConfig.businessVerificationCheck
+        journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl, journeyConfig.businessVerificationCheck, journeyConfig.regime
       )))
   }
 

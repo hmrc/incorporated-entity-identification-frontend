@@ -44,8 +44,8 @@ class RegistrationOrchestrationService @Inject()(storageService: StorageService,
         (optCompanyProfile, optCtutr) match {
           case (Some(companyProfile), Some(ctutr)) =>
             journeyConfig.businessEntity match {
-              case LimitedCompany => registrationConnector.registerLimitedCompany(companyProfile.companyNumber, ctutr)
-              case RegisteredSociety => registrationConnector.registerRegisteredSociety(companyProfile.companyNumber, ctutr)
+              case LimitedCompany => registrationConnector.registerLimitedCompany(companyProfile.companyNumber, ctutr, journeyConfig.regime)
+              case RegisteredSociety => registrationConnector.registerRegisteredSociety(companyProfile.companyNumber, ctutr, journeyConfig.regime)
               case CharitableIncorporatedOrganisation => Future.successful(RegistrationNotCalled) //Not currently registered
             }
           case _ =>
