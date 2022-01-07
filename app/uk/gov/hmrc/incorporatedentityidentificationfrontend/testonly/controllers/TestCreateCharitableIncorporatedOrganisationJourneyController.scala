@@ -46,7 +46,8 @@ class TestCreateCharitableIncorporatedOrganisationJourneyController @Inject()(me
     continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig,
     CharitableIncorporatedOrganisation,
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    regime = "VATC"
   )
 
   val show: Action[AnyContent] = Action.async {

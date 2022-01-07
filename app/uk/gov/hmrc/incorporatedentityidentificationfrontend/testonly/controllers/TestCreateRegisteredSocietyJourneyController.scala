@@ -46,7 +46,8 @@ class TestCreateRegisteredSocietyJourneyController @Inject()(messagesControllerC
     continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig,
     RegisteredSociety,
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    regime = "VATC"
   )
 
   val show: Action[AnyContent] = Action.async {

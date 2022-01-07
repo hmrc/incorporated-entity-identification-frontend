@@ -37,33 +37,37 @@ trait MockRegistrationConnector extends MockitoSugar with BeforeAndAfterEach {
     reset(mockRegistrationConnector)
   }
 
-  def mockRegisterLimitedCompany(crn: String, ctutr: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
+  def mockRegisterLimitedCompany(crn: String, ctutr: String, regime: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
     when(mockRegistrationConnector.registerLimitedCompany(
       ArgumentMatchers.eq(crn),
-      ArgumentMatchers.eq(ctutr)
+      ArgumentMatchers.eq(ctutr),
+      ArgumentMatchers.eq(regime)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
   }
 
-  def verifyRegistrationLimitedCompany(crn: String, ctutr: String): Unit = {
+  def verifyRegistrationLimitedCompany(crn: String, ctutr: String, regime: String): Unit = {
     verify(mockRegistrationConnector).registerLimitedCompany(
       ArgumentMatchers.eq(crn),
-      ArgumentMatchers.eq(ctutr)
+      ArgumentMatchers.eq(ctutr),
+      ArgumentMatchers.eq(regime)
     )(ArgumentMatchers.any[HeaderCarrier])
   }
 
-  def mockRegisterRegisteredSociety(crn: String, ctutr: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
+  def mockRegisterRegisteredSociety(crn: String, ctutr: String, regime: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
     when(mockRegistrationConnector.registerRegisteredSociety(
       ArgumentMatchers.eq(crn),
-      ArgumentMatchers.eq(ctutr)
+      ArgumentMatchers.eq(ctutr),
+      ArgumentMatchers.eq(regime)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
   }
 
-  def verifyRegistrationRegisteredSociety(crn: String, ctutr: String): Unit = {
+  def verifyRegistrationRegisteredSociety(crn: String, ctutr: String, regime: String): Unit = {
     verify(mockRegistrationConnector).registerRegisteredSociety(
       ArgumentMatchers.eq(crn),
-      ArgumentMatchers.eq(ctutr)
+      ArgumentMatchers.eq(ctutr),
+      ArgumentMatchers.eq(regime)
     )(ArgumentMatchers.any[HeaderCarrier])
   }
 

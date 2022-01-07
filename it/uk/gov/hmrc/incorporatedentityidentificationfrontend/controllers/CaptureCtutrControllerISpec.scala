@@ -19,6 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCtutrViewTests
@@ -35,13 +36,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
-        ))
+          journeyConfig = testLimitedCompanyJourneyConfig))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -53,13 +48,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           lazy val insertConfig = insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
-          )
+            journeyConfig = testLimitedCompanyJourneyConfig)
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -68,16 +57,17 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         }
 
         "there is a serviceName passed in the journeyConfig" should {
+          val testJourneyConfig = JourneyConfig(
+            continueUrl = testContinueUrl,
+            pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true,
+            regime = testRegime
+          )
           lazy val insertConfig = insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = Some(testCallingServiceName),
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
-          )
+            journeyConfig = testJourneyConfig)
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -91,13 +81,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
-          ))
+            journeyConfig = testLimitedCompanyJourneyConfig))
           stubAuthFailure()
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -111,13 +95,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId + "1",
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
-          ))
+            journeyConfig = testLimitedCompanyJourneyConfig))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -129,13 +107,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId + "1",
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
-          ))
+            journeyConfig = testLimitedCompanyJourneyConfig))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -147,13 +119,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId + "1",
             authInternalId = testInternalId + "1",
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
-          ))
+            journeyConfig = testLimitedCompanyJourneyConfig))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -177,13 +143,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = RegisteredSociety,
-          businessVerificationCheck = true
-        ))
+          journeyConfig = testRegisteredSocietyJourneyConfig))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -195,13 +155,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           lazy val insertConfig = insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
-          )
+            journeyConfig = testRegisteredSocietyJourneyConfig)
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -210,15 +164,17 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         }
 
         "there is a serviceName passed in the journeyConfig" should {
+          val testJourneyConfig = JourneyConfig(
+            continueUrl = testContinueUrl,
+            pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
+            businessEntity = RegisteredSociety,
+            businessVerificationCheck = true,
+            regime = testRegime)
+
           lazy val insertConfig = insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = Some(testCallingServiceName),
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testJourneyConfig
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -233,12 +189,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuthFailure()
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -253,12 +204,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId + "1",
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -271,12 +217,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId + "1",
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -289,12 +230,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
           await(insertJourneyConfig(
             journeyId = testJourneyId + "1",
             authInternalId = testInternalId + "1",
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -337,12 +273,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "")
@@ -353,12 +284,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
       lazy val insertConfig = insertJourneyConfig(
         journeyId = testJourneyId,
         authInternalId = testInternalId,
-        continueUrl = testContinueUrl,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        businessEntity = LimitedCompany,
-        businessVerificationCheck = true
+        journeyConfig = testLimitedCompanyJourneyConfig
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "")
@@ -371,12 +297,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true
+          journeyConfig = testLimitedCompanyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "123456789")
@@ -387,12 +308,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
       lazy val insertConfig = insertJourneyConfig(
         journeyId = testJourneyId,
         authInternalId = testInternalId,
-        continueUrl = testContinueUrl,
-        optServiceName = None,
-        deskProServiceId = testDeskProServiceId,
-        signOutUrl = testSignOutUrl,
-        businessEntity = LimitedCompany,
-        businessVerificationCheck = true
+        journeyConfig = testLimitedCompanyJourneyConfig
       )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "123456789")
@@ -407,12 +323,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = RegisteredSociety,
-          businessVerificationCheck = true
+          journeyConfig = testRegisteredSocietyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRemoveCtutr(testJourneyId)(NO_CONTENT)
@@ -431,12 +342,7 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         await(insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          continueUrl = testContinueUrl,
-          optServiceName = None,
-          deskProServiceId = testDeskProServiceId,
-          signOutUrl = testSignOutUrl,
-          businessEntity = RegisteredSociety,
-          businessVerificationCheck = true
+          journeyConfig = testRegisteredSocietyJourneyConfig
         ))
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRemoveCtutr(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")

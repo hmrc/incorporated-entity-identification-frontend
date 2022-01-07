@@ -23,8 +23,6 @@ import reactivemongo.api.commands.WriteResult
 import reactivemongo.core.errors.GenericDriverException
 import repositories.mocks.MockJourneyConfigRepository
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import utils.UnitSpec
 
@@ -37,49 +35,39 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
 
   object TestService extends JourneyService(mockJourneyConnector, mockJourneyConfigRepository)
 
-  val testJourneyConfig: JourneyConfig = JourneyConfig(
-    continueUrl = testContinueUrl,
-    pageConfig = PageConfig(
-      optServiceName = None,
-      deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl
-    ),
-    LimitedCompany,
-    businessVerificationCheck = true
-  )
-
   "createJourney" should {
     "return a journeyID and store the provided journey config" in {
       mockCreateJourney(response = Future.successful(testJourneyId))
-      mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)(response = Future.successful(mock[WriteResult]))
+      mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfigLimitedCompany())(response = Future.successful(mock[WriteResult]))
 
-      val result = await(TestService.createJourney(testAuthInternalId, testJourneyConfig))
+      val result = await(TestService.createJourney(testAuthInternalId, testJourneyConfigLimitedCompany()))
 
       result mustBe testJourneyId
       verifyCreateJourney()
-      verifyInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)
+      verifyInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfigLimitedCompany())
     }
 
     "throw an exception" when {
       "create journey API returns an invalid response" in {
         mockCreateJourney(response = Future.failed(new InternalServerException("Invalid response returned from create journey API")))
-        mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)(response = Future.successful(mock[WriteResult]))
+        mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfigLimitedCompany())(response = Future.successful(mock[WriteResult]))
 
         intercept[InternalServerException](
-          await(TestService.createJourney(testAuthInternalId, testJourneyConfig))
+          await(TestService.createJourney(testAuthInternalId, testJourneyConfigLimitedCompany()))
         )
         verifyCreateJourney()
       }
 
       "the journey config is not stored" in {
         mockCreateJourney(response = Future.successful(testJourneyId))
-        mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)(response = Future.failed(GenericDriverException("failed to insert")))
+        mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfigLimitedCompany()
+        )(response = Future.failed(GenericDriverException("failed to insert")))
 
         intercept[GenericDriverException](
-          await(TestService.createJourney(testAuthInternalId, testJourneyConfig))
+          await(TestService.createJourney(testAuthInternalId, testJourneyConfigLimitedCompany()))
         )
         verifyCreateJourney()
-        verifyInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig)
+        verifyInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfigLimitedCompany())
       }
     }
   }
@@ -87,11 +75,11 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
   "getJourneyConfig" should {
     "return the journey config for a specific journey id and auth internal ID" when {
       "the journey id and auth internal id exists in the database" in {
-        mockFindJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(Some(testJourneyConfig)))
+        mockFindJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(Some(testJourneyConfigLimitedCompany())))
 
         val result = await(TestService.getJourneyConfig(testJourneyId, testAuthInternalId))
 
-        result mustBe testJourneyConfig
+        result mustBe testJourneyConfigLimitedCompany()
         verifyFindJourneyConfig(testJourneyId, testAuthInternalId)
       }
     }

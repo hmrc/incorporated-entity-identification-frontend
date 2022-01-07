@@ -50,7 +50,8 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
       signOutUrl = testSignOutUrl
     ),
     LimitedCompany,
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    regime = testRegime
   )
 
   val testJourneyConfigRegisteredSociety: JourneyConfig = JourneyConfig(
@@ -61,7 +62,8 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
       signOutUrl = testSignOutUrl
     ),
     RegisteredSociety,
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    regime = testRegime
   )
 
   val testJourneyConfigCIO: JourneyConfig = JourneyConfig(
@@ -72,7 +74,8 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
       signOutUrl = testSignOutUrl
     ),
     CharitableIncorporatedOrganisation,
-    businessVerificationCheck = true
+    businessVerificationCheck = true,
+    regime = testRegime
   )
 
   "auditJourney" should {

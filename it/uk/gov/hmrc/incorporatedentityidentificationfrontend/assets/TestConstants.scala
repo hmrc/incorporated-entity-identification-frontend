@@ -45,6 +45,7 @@ object TestConstants {
   val testCallingServiceName: String = "Test Service"
   val testContinueUrl: String = "/test"
   val testSafeId: String = UUID.randomUUID().toString
+  val testRegime: String = "VATC"
   val testBusinessVerificationPassJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
   val testBusinessVerificationFailJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
   val testBusinessVerificationUnchallengedJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationUnchallengedKey)
@@ -71,12 +72,13 @@ object TestConstants {
   )
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testCioProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, "", Json.obj())
+
   val testLimitedCompanyJourneyConfig: JourneyConfig = createTestJourneyConfig(LimitedCompany)
   val testRegisteredSocietyJourneyConfig: JourneyConfig = createTestJourneyConfig(RegisteredSociety)
   val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
 
   private def createTestJourneyConfig(entityType: BusinessEntity) =
-    JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), entityType, businessVerificationCheck = true)
+    JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), entityType, businessVerificationCheck = true, testRegime)
 
   val testIncorporatedEntityFullJourneyDataJson: JsObject = {
     Json.obj(

@@ -21,7 +21,6 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationPass
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, RegisterStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -46,19 +45,14 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(status = OK, body = testSuccessfulRegistrationJson)
+          stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
@@ -66,7 +60,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           lazy val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-          verifyLimitedCompanyRegister(testCompanyNumber, testCtutr)
+          verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
           verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, BusinessVerificationPass, testSuccessfulRegistration))
         }
@@ -75,19 +69,14 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubLimitedCompanyRegister(testCompanyNumber, testCtutr)(status = OK, body = testFailedRegistrationJson)
+          stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testFailedRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
@@ -95,7 +84,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-          verifyLimitedCompanyRegister(testCompanyNumber, testCtutr)
+          verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testFailedRegistration)
           verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, BusinessVerificationPass, testFailedRegistration))
         }
@@ -117,12 +106,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -138,12 +122,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -159,12 +138,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -180,12 +154,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true
+            journeyConfig = testLimitedCompanyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -204,19 +173,14 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(status = OK, body = testSuccessfulRegistrationJson)
+          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
@@ -224,7 +188,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-          verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr)
+          verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
         }
 
@@ -232,19 +196,14 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr)(status = OK, body = testFailedRegistrationJson)
+          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testFailedRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
@@ -253,7 +212,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-          verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr)
+          verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testFailedRegistration)
         }
       }
@@ -274,12 +233,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -295,12 +249,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -316,12 +265,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
@@ -337,12 +281,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           await(insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            continueUrl = testContinueUrl,
-            optServiceName = None,
-            deskProServiceId = testDeskProServiceId,
-            signOutUrl = testSignOutUrl,
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true
+            journeyConfig = testRegisteredSocietyJourneyConfig
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()

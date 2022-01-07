@@ -31,7 +31,8 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
   val testJourneyConfigJson: JsObject = Json.obj(
     "continueUrl" -> testLimitedCompanyJourneyConfig.continueUrl,
     "deskProServiceId" -> testLimitedCompanyJourneyConfig.pageConfig.deskProServiceId,
-    "signOutUrl" -> testLimitedCompanyJourneyConfig.pageConfig.signOutUrl
+    "signOutUrl" -> testLimitedCompanyJourneyConfig.pageConfig.signOutUrl,
+    "regime" -> testLimitedCompanyJourneyConfig.regime
   )
 
   "POST /api/journey" should {
