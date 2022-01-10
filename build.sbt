@@ -28,8 +28,7 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(JUnitXmlReportPlugin)
 
 TwirlKeys.templateImports ++= Seq(
-  "uk.gov.hmrc.govukfrontend.views.html.components._",
-  "uk.gov.hmrc.govukfrontend.views.html.helpers._"
+  "uk.gov.hmrc.govukfrontend.views.html.components._"
 )
 
 Keys.fork in Test := true

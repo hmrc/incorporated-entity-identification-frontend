@@ -39,7 +39,7 @@ object MessageLookup {
   }
 
   object BetaBanner {
-    val title = "This is a new service - your feedback (opens in new tab) will help us to improve it."
+    val title = "This is a new service – your feedback will help us to improve it."
   }
 
   object CaptureCompanyNumber {

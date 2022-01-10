@@ -37,10 +37,12 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
   "GET /company-number" should {
     "return OK" in {
-      await(insertJourneyConfig(
-        journeyId = testJourneyId,
+      await(journeyConfigRepository.insertJourneyConfig(
+        journeyId =  testJourneyId,
         authInternalId = testInternalId,
-        journeyConfig = testLimitedCompanyJourneyConfig))
+        journeyConfig = testLimitedCompanyJourneyConfig
+      ))
+
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/company-number")
 
@@ -49,10 +51,11 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
     "return a view" when {
       "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId,
-          journeyConfig = testLimitedCompanyJourneyConfig)
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/company-number")
 
@@ -61,17 +64,21 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
       }
 
       "there is a serviceName passed in the journeyConfig" should {
-        val testJourneyConfig = JourneyConfig(
-          continueUrl = testContinueUrl,
-          pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true,
-          regime = testRegime
-        )
-        lazy val insertConfig = insertJourneyConfig(
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          journeyConfig = testJourneyConfig)
+          journeyConfig = JourneyConfig(
+            continueUrl = testContinueUrl,
+            pageConfig = PageConfig(
+              optServiceName = Some(testCallingServiceName),
+              deskProServiceId = testDeskProServiceId,
+              signOutUrl = testSignOutUrl,
+              accessibilityUrl = testAccessibilityUrl),
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true,
+            regime = testRegime
+          )
+        )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/company-number")
 
@@ -92,7 +99,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
     "return NOT_FOUND" when {
       "the journeyId does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig)
@@ -105,10 +112,12 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
       }
 
       "the auth internal ID does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId + "1",
-          journeyConfig = testLimitedCompanyJourneyConfig))
+        await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId + "1",
+            journeyConfig = testLimitedCompanyJourneyConfig
+          )
+        )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
         lazy val result = get(s"$baseUrl/$testJourneyId/company-number")
@@ -117,10 +126,12 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
       }
 
       "neither the journey ID or auth internal ID are found in the journey config database" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId + "1",
-          authInternalId = testInternalId + "1",
-          journeyConfig = testLimitedCompanyJourneyConfig))
+        await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId + "1",
+            authInternalId = testInternalId + "1",
+            journeyConfig = testLimitedCompanyJourneyConfig
+          )
+        )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
         lazy val result = get(s"$baseUrl/$testJourneyId/company-number")
@@ -188,20 +199,23 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
         "the company number is missing" should {
           "return a bad request" in {
-            await(insertJourneyConfig(
+            await(journeyConfigRepository.insertJourneyConfig(
               journeyId = testJourneyId,
               authInternalId = testInternalId,
-              journeyConfig = testLimitedCompanyJourneyConfig))
+              journeyConfig = testLimitedCompanyJourneyConfig)
+            )
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "")
 
             result.status mustBe BAD_REQUEST
           }
 
-          lazy val insertConfig = insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig)
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testLimitedCompanyJourneyConfig
+            )
+
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "")
 
@@ -221,20 +235,23 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
         "the company number has more than 8 characters" should {
           "return a bad request" in {
-            await(insertJourneyConfig(
-              journeyId = testJourneyId,
-              authInternalId = testInternalId,
-              journeyConfig = testLimitedCompanyJourneyConfig))
+             await(journeyConfigRepository.insertJourneyConfig(
+               journeyId = testJourneyId,
+               authInternalId = testInternalId,
+               journeyConfig = testLimitedCompanyJourneyConfig
+               )
+             )
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
 
             result.status mustBe BAD_REQUEST
           }
 
-          lazy val insertConfig = insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig)
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testLimitedCompanyJourneyConfig
+            )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "0123456789")
 
@@ -243,20 +260,23 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
         "company number is not in the correct format" should {
           "return a bad request" in {
-            await(insertJourneyConfig(
-              journeyId = testJourneyId,
-              authInternalId = testInternalId,
-              journeyConfig = testLimitedCompanyJourneyConfig))
+            await(journeyConfigRepository.insertJourneyConfig(
+                journeyId = testJourneyId,
+                authInternalId = testInternalId,
+                journeyConfig = testLimitedCompanyJourneyConfig
+              )
+            )
             stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
             lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
 
             result.status mustBe BAD_REQUEST
           }
 
-          lazy val insertConfig = insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig)
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testLimitedCompanyJourneyConfig
+            )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> "13E!!!%")
 

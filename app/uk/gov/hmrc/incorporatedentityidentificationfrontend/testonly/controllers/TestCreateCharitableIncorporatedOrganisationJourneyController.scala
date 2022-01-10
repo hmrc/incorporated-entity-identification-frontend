@@ -36,13 +36,14 @@ class TestCreateCharitableIncorporatedOrganisationJourneyController @Inject()(me
                                                                              )(implicit ec: ExecutionContext,
                                                                                appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
-  private val defaultPageConfig = PageConfig(
+  private val defaultPageConfig: PageConfig = PageConfig(
     optServiceName = None,
     deskProServiceId = "vrs",
-    signOutUrl = appConfig.vatRegFeedbackUrl
+    signOutUrl = appConfig.vatRegFeedbackUrl,
+    accessibilityUrl = "/"
   )
 
-  private val defaultJourneyConfig = JourneyConfig(
+  private val defaultJourneyConfig: JourneyConfig = JourneyConfig(
     continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig,
     CharitableIncorporatedOrganisation,
@@ -54,7 +55,13 @@ class TestCreateCharitableIncorporatedOrganisationJourneyController @Inject()(me
     implicit request =>
       authorised() {
         Future.successful(
-          Ok(view(defaultPageConfig, routes.TestCreateCharitableIncorporatedOrganisationJourneyController.submit, form(CharitableIncorporatedOrganisation).fill(defaultJourneyConfig)))
+          Ok(
+            view(
+              defaultPageConfig,
+              routes.TestCreateCharitableIncorporatedOrganisationJourneyController.submit,
+              form(CharitableIncorporatedOrganisation).fill(defaultJourneyConfig)
+            )
+          )
         )
       }
   }

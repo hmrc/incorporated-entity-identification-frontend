@@ -36,13 +36,14 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
                                            )(implicit ec: ExecutionContext,
                                              appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
-  private val defaultPageConfig = PageConfig(
+  private val defaultPageConfig: PageConfig = PageConfig(
     optServiceName = None,
     deskProServiceId = "vrs",
-    signOutUrl = appConfig.vatRegFeedbackUrl
+    signOutUrl = appConfig.vatRegFeedbackUrl,
+    accessibilityUrl = "/"
   )
 
-  private val defaultJourneyConfig = JourneyConfig(
+  private val defaultJourneyConfig: JourneyConfig = JourneyConfig(
     continueUrl = s"${appConfig.selfUrl}/identify-your-incorporated-business/test-only/retrieve-journey",
     pageConfig = defaultPageConfig,
     LimitedCompany,

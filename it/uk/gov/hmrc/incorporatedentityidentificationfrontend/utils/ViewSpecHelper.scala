@@ -56,7 +56,7 @@ object ViewSpecHelper {
 
     lazy val getSummaryListRows: Elements = element.getElementsByClass("govuk-summary-list__row")
 
-    lazy val getServiceName: Elements = element.getElementsByClass("govuk-header__link--service-name")
+    lazy val getServiceName: Elements = element.getElementsByClass("hmrc-header__service-name")
 
     def getSpan(id: String): Elements = element.select(s"""span[id=$id]""")
 
@@ -80,10 +80,13 @@ object ViewSpecHelper {
 
     lazy val getSignOutText: String = element.select(".hmrc-sign-out-nav__link").text
 
-    lazy val getBannerLink: String = element.getElementsByClass("govuk-link-beta").attr("href")
+    lazy val getBannerLink: String = getBanner.select(".govuk-link").attr("href")
 
     lazy val getDetailsSummaryText: String = element.getElementsByClass("govuk-details__summary-text").text
 
+    lazy val getBackLinks: Elements = element.getElementsByClass("govuk-back-link")
+
+    lazy val getFooterLinks: Elements = element.getElementsByClass("govuk-footer__link")
   }
 
   def text(text: String): HavePropertyMatcher[Elements, String] =

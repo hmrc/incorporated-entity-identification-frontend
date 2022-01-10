@@ -38,7 +38,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
     "the company exists in Companies House" should {
       "return OK" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
@@ -54,11 +55,13 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
       "return a view" when {
         "there is no serviceName passed in the journeyConfig" should {
-          lazy val insertConfig = insertJourneyConfig(
+
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
           )
+
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
             status = OK,
@@ -71,18 +74,24 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         }
 
         "there is a serviceName passed in the journeyConfig" should {
-          val testConfig = JourneyConfig(
-            continueUrl = testContinueUrl,
-            pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true,
-            regime = testRegime
-          )
-          lazy val insertConfig = insertJourneyConfig(
+
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            journeyConfig = testConfig
+            journeyConfig = JourneyConfig(
+              continueUrl = testContinueUrl,
+              pageConfig = PageConfig(
+                optServiceName = Some(testCallingServiceName),
+                deskProServiceId = testDeskProServiceId,
+                signOutUrl = testSignOutUrl,
+                accessibilityUrl = testAccessibilityUrl
+              ),
+              businessEntity = LimitedCompany,
+              businessVerificationCheck = true,
+              regime = testRegime
+            )
           )
+
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
             status = OK,
@@ -99,11 +108,13 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
     "the company doesn't exist in the backend database" should {
       "throw an Internal Server Exception" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
+
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
 
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
@@ -127,11 +138,13 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
     "return NOT_FOUND" when {
       "the journeyId does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
         lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
@@ -140,11 +153,13 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
       }
 
       "the auth internal ID does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId + "1",
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
         lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
@@ -153,11 +168,13 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
       }
 
       "neither the journey ID or auth internal ID are found in the journey config database" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId + "1",
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
         lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
@@ -182,11 +199,13 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
     "redirect to Capture CTUTR Page" when {
       "the user has no IR_CT Enrolment" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
+
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 
         result must have(
@@ -194,10 +213,11 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           redirectUri(routes.CaptureCtutrController.show(testJourneyId).url)
         )
       }
+
       "the user has an IR_CT Enrolment but the ctutr does not match the ctutr on the enrolment" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId), irctEnrolment))
 
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
@@ -221,7 +241,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
       "the user has an IR-CT enrolment and the ctutr matches the ctutr on the enrolment" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId), irctEnrolment))
 
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
@@ -243,7 +263,8 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
       }
       "the user has an IR-CT enrolment and the ctutr matches the ctutr on the enrolment but businessVerificationCheck is disabled" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId), irctEnrolment))
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig.copy(businessVerificationCheck = false)
@@ -266,11 +287,13 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
     "redirect to the check your answers the page" when {
       "the user is identifying a CIO" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
         ))
+
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 
         result must have(
