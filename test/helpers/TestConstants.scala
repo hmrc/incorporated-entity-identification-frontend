@@ -84,6 +84,7 @@ object TestConstants {
     )
   val testContinueUrl = "/test"
   val testSignOutUrl = "/signOutUrl"
+  val testAccessibilityUrl = "/accessibility"
   val testCharityNumber = "CE123456"
 
   def testJourneyConfigLimitedCompany(): JourneyConfig = JourneyConfig(
@@ -91,7 +92,8 @@ object TestConstants {
     pageConfig = PageConfig(
       optServiceName = None,
       deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl),
+      signOutUrl = testSignOutUrl,
+      accessibilityUrl = testAccessibilityUrl),
     businessEntity = LimitedCompany,
     businessVerificationCheck = true,
     regime = testRegime
@@ -104,7 +106,8 @@ object TestConstants {
     pageConfig = PageConfig(
       optServiceName = None,
       deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl),
+      signOutUrl = testSignOutUrl,
+      accessibilityUrl = testAccessibilityUrl),
     businessEntity = RegisteredSociety,
     businessVerificationCheck = true,
     regime = testRegime

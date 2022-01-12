@@ -67,6 +67,7 @@ object TestCreateJourneyConnector {
     optServiceNameKey -> journeyConfig.pageConfig.optServiceName,
     deskProServiceIdKey -> journeyConfig.pageConfig.deskProServiceId,
     signOutUrlKey -> journeyConfig.pageConfig.signOutUrl,
+    accessibilityUrlKey -> journeyConfig.pageConfig.accessibilityUrl,
     businessVerificationCheckKey -> journeyConfig.businessVerificationCheck,
     regimeKey -> journeyConfig.regime
   )

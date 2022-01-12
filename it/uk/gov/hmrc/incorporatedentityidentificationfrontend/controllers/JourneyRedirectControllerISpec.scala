@@ -25,11 +25,14 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
   "GET /journey/redirect/:journeyId" should {
     "redirect to the journey config continue url" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      await(insertJourneyConfig(
-        journeyId = testJourneyId,
-        authInternalId = testInternalId,
-        journeyConfig = testLimitedCompanyJourneyConfig
-      ))
+      await(
+
+        journeyConfigRepository.insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          journeyConfig = testLimitedCompanyJourneyConfig
+        )
+      )
 
       lazy val result = get(s"$baseUrl/journey/redirect/$testJourneyId")
 
@@ -39,11 +42,13 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
 
     "return NOT_FOUND" when {
       "the journeyId does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
         lazy val result = get(s"$baseUrl/journey/redirect/$testJourneyId")
@@ -52,7 +57,8 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
       }
 
       "the auth internal ID does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId + "1",
           journeyConfig = testLimitedCompanyJourneyConfig
@@ -65,11 +71,13 @@ class JourneyRedirectControllerISpec extends ComponentSpecHelper with AuthStub {
       }
 
       "neither the journey ID or auth internal ID are found in the journey config database" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId + "1",
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
         lazy val result = get(s"$baseUrl/journey/redirect/$testJourneyId")

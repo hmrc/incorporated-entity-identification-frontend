@@ -30,13 +30,18 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
   with IncorporatedEntityIdentificationStub
   with AuthStub {
 
+  private val basGatewaySignInUrl =
+    s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fct-utr&origin=incorporated-entity-identification-frontend"
+
   "GET /ct-utr" when {
     "the Business Entity is LimitedCompany" should {
       "return OK" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          journeyConfig = testLimitedCompanyJourneyConfig))
+          journeyConfig = testLimitedCompanyJourneyConfig
+          )
+        )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -45,10 +50,11 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
       "return a view" when {
         "there is no serviceName passed in the journeyConfig" should {
-          lazy val insertConfig = insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig)
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testLimitedCompanyJourneyConfig
+            )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -57,17 +63,22 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         }
 
         "there is a serviceName passed in the journeyConfig" should {
-          val testJourneyConfig = JourneyConfig(
-            continueUrl = testContinueUrl,
-            pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
-            businessEntity = LimitedCompany,
-            businessVerificationCheck = true,
-            regime = testRegime
-          )
-          lazy val insertConfig = insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testJourneyConfig)
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = JourneyConfig(
+                continueUrl = testContinueUrl,
+                pageConfig = PageConfig(
+                  optServiceName = Some(testCallingServiceName),
+                  deskProServiceId = testDeskProServiceId,
+                  signOutUrl = testSignOutUrl,
+                  accessibilityUrl = testAccessibilityUrl
+                ),
+                businessEntity = LimitedCompany,
+                businessVerificationCheck = true,
+                regime = testRegime
+              )
+            )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -78,24 +89,28 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
       "redirect to sign in page" when {
         "the user is not logged in" in {
-          await(insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig))
+          await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testLimitedCompanyJourneyConfig
+            )
+          )
           stubAuthFailure()
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
           result.status mustBe SEE_OTHER
-          result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fct-utr&origin=incorporated-entity-identification-frontend")
+          result.header(LOCATION) mustBe Some(basGatewaySignInUrl)
         }
       }
 
       "return NOT_FOUND" when {
         "the journeyId does not match what is stored in the journey config database" in {
-          await(insertJourneyConfig(
-            journeyId = testJourneyId + "1",
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig))
+          await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId + "1",
+              authInternalId = testInternalId,
+              journeyConfig = testLimitedCompanyJourneyConfig
+            )
+          )
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -104,10 +119,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         }
 
         "the auth internal ID does not match what is stored in the journey config database" in {
-          await(insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId + "1",
-            journeyConfig = testLimitedCompanyJourneyConfig))
+          await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId + "1",
+              journeyConfig = testLimitedCompanyJourneyConfig
+            )
+          )
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -116,10 +133,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         }
 
         "neither the journey ID or auth internal ID are found in the journey config database" in {
-          await(insertJourneyConfig(
-            journeyId = testJourneyId + "1",
-            authInternalId = testInternalId + "1",
-            journeyConfig = testLimitedCompanyJourneyConfig))
+          await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId + "1",
+              authInternalId = testInternalId + "1",
+              journeyConfig = testLimitedCompanyJourneyConfig
+            )
+          )
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -140,10 +159,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
     }
     "the Business Entity is RegisteredSociety" should {
       "return OK" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId,
-          journeyConfig = testRegisteredSocietyJourneyConfig))
+        await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testRegisteredSocietyJourneyConfig
+          )
+        )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -152,10 +173,11 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
       "return a view" when {
         "there is no serviceName passed in the journeyConfig" should {
-          lazy val insertConfig = insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testRegisteredSocietyJourneyConfig)
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testRegisteredSocietyJourneyConfig
+            )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -164,18 +186,22 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         }
 
         "there is a serviceName passed in the journeyConfig" should {
-          val testJourneyConfig = JourneyConfig(
-            continueUrl = testContinueUrl,
-            pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
-            businessEntity = RegisteredSociety,
-            businessVerificationCheck = true,
-            regime = testRegime)
-
-          lazy val insertConfig = insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testJourneyConfig
-          )
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = JourneyConfig(
+                continueUrl = testContinueUrl,
+                pageConfig = PageConfig(
+                  optServiceName = Some(testCallingServiceName),
+                  deskProServiceId = testDeskProServiceId,
+                  signOutUrl = testSignOutUrl,
+                  accessibilityUrl = testAccessibilityUrl
+                ),
+                businessEntity = RegisteredSociety,
+                businessVerificationCheck = true,
+                regime = testRegime
+              )
+            )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
@@ -186,26 +212,28 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
       "redirect to sign in page" when {
         "the user is not logged in" in {
-          await(insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testRegisteredSocietyJourneyConfig
-          ))
+          await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testRegisteredSocietyJourneyConfig
+            )
+          )
           stubAuthFailure()
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
           result.status mustBe SEE_OTHER
-          result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fct-utr&origin=incorporated-entity-identification-frontend")
+          result.header(LOCATION) mustBe Some(basGatewaySignInUrl)
         }
       }
 
       "return NOT_FOUND" when {
         "the journeyId does not match what is stored in the journey config database" in {
-          await(insertJourneyConfig(
-            journeyId = testJourneyId + "1",
-            authInternalId = testInternalId,
-            journeyConfig = testRegisteredSocietyJourneyConfig
-          ))
+          await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId + "1",
+              authInternalId = testInternalId,
+              journeyConfig = testRegisteredSocietyJourneyConfig
+            )
+          )
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -214,11 +242,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         }
 
         "the auth internal ID does not match what is stored in the journey config database" in {
-          await(insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId + "1",
-            journeyConfig = testRegisteredSocietyJourneyConfig
-          ))
+          await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId + "1",
+              journeyConfig = testRegisteredSocietyJourneyConfig
+            )
+          )
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -227,11 +256,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         }
 
         "neither the journey ID or auth internal ID are found in the journey config database" in {
-          await(insertJourneyConfig(
-            journeyId = testJourneyId + "1",
-            authInternalId = testInternalId + "1",
-            journeyConfig = testRegisteredSocietyJourneyConfig
-          ))
+          await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId + "1",
+              authInternalId = testInternalId + "1",
+             journeyConfig = testRegisteredSocietyJourneyConfig
+            )
+          )
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
@@ -270,18 +300,19 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
     "no ctutr is submitted" should {
       "return a bad request" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId,
-          journeyConfig = testLimitedCompanyJourneyConfig
-        ))
+        await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          )
+        )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "")
 
         result.status mustBe BAD_REQUEST
       }
 
-      lazy val insertConfig = insertJourneyConfig(
+      lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
         authInternalId = testInternalId,
         journeyConfig = testLimitedCompanyJourneyConfig
@@ -294,22 +325,23 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
     "an invalid ctutr is submitted" should {
       "return a bad request" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId,
-          journeyConfig = testLimitedCompanyJourneyConfig
-        ))
+        await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          )
+        )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "123456789")
 
         result.status mustBe BAD_REQUEST
       }
 
-      lazy val insertConfig = insertJourneyConfig(
-        journeyId = testJourneyId,
-        authInternalId = testInternalId,
-        journeyConfig = testLimitedCompanyJourneyConfig
-      )
+      lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          journeyConfig = testLimitedCompanyJourneyConfig
+        )
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "123456789")
 
@@ -320,11 +352,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
   "GET /no-ct-utr" should {
     "redirect to CYA page" when {
       "the ctutr is successfully removed" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId,
-          journeyConfig = testRegisteredSocietyJourneyConfig
-        ))
+        await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testRegisteredSocietyJourneyConfig
+          )
+        )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRemoveCtutr(testJourneyId)(NO_CONTENT)
 
@@ -339,11 +372,12 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
     "throw an exception" when {
       "the backend returns a failure" in {
-        await(insertJourneyConfig(
-          journeyId = testJourneyId,
-          authInternalId = testInternalId,
-          journeyConfig = testRegisteredSocietyJourneyConfig
-        ))
+        await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testRegisteredSocietyJourneyConfig
+          )
+        )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRemoveCtutr(testJourneyId)(INTERNAL_SERVER_ERROR, "Failed to remove field")
 

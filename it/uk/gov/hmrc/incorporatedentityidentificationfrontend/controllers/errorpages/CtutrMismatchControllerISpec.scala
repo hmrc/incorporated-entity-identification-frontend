@@ -31,11 +31,13 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
 
   "GET /error/could-not-confirm-business" when {
     "return ok" in {
-      await(insertJourneyConfig(
+
+      await(journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
         authInternalId = testInternalId,
         journeyConfig = testLimitedCompanyJourneyConfig
       ))
+
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
       lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
@@ -44,11 +46,13 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
     }
 
     "return a view which" should {
-      lazy val insertConfig = insertJourneyConfig(
+
+      lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
         authInternalId = testInternalId,
         journeyConfig = testLimitedCompanyJourneyConfig
       )
+
       lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
 
@@ -56,11 +60,13 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
     }
     "return a view" when {
       "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(
+
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
         )
+
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
 
@@ -69,18 +75,24 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
       }
 
       "there is a serviceName passed in the journeyConfig" should {
-        val testJourneyConfig = JourneyConfig(
-          continueUrl = testContinueUrl,
-          pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true,
-          regime = testRegime
-        )
-        lazy val insertConfig = insertJourneyConfig(
+
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          journeyConfig = testJourneyConfig
+          journeyConfig = JourneyConfig(
+            continueUrl = testContinueUrl,
+            pageConfig = PageConfig(
+              optServiceName = Some(testCallingServiceName),
+              deskProServiceId = testDeskProServiceId,
+              signOutUrl = testSignOutUrl,
+              accessibilityUrl = testAccessibilityUrl
+            ),
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true,
+            regime = testRegime
+          )
         )
+
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")
 

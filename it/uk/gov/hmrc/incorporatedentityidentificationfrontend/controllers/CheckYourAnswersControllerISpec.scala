@@ -51,7 +51,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
   "GET /check-your-answers-business" should {
     "return OK" in {
-      await(insertJourneyConfig(
+      await(journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
         authInternalId = testInternalId,
         journeyConfig = testLimitedCompanyJourneyConfig
@@ -69,7 +69,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "return a view" when {
       "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
@@ -90,18 +90,20 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
 
       "there is a serviceName passed in the journeyConfig" should {
-        val testJourneyConfig = JourneyConfig(
-          continueUrl = testContinueUrl,
-          pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true,
-          regime = testRegime
-        )
-        lazy val insertConfig = insertJourneyConfig(
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          journeyConfig = testJourneyConfig
-        )
+          journeyConfig = JourneyConfig(
+            continueUrl = testContinueUrl,
+            pageConfig = PageConfig(
+              optServiceName = Some(testCallingServiceName),
+              deskProServiceId = testDeskProServiceId,
+              signOutUrl = testSignOutUrl,
+              accessibilityUrl = testAccessibilityUrl),
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true,
+            regime = testRegime
+          ))
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()
         lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
@@ -118,7 +120,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
       "the applicant does not have a CTUTR" should {
         "return OK" in {
-          insertJourneyConfig(
+          journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testRegisteredSocietyJourneyConfig
@@ -134,7 +136,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
 
         "return a view which" should {
-          lazy val insertConfig = insertJourneyConfig(
+          lazy val insertConfig =  journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testRegisteredSocietyJourneyConfig
@@ -154,7 +156,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "redirect to sign in page" when {
       "the user is not logged in" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
@@ -174,7 +176,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "return NOT_FOUND" when {
       "the journeyId does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
@@ -189,7 +191,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
 
       "the auth internal ID does not match what is stored in the journey config database" in {
-        await(insertJourneyConfig(
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId + "1",
           journeyConfig = testLimitedCompanyJourneyConfig
@@ -204,7 +206,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
 
       "neither the journey ID or auth internal ID are found in the journey config database" in {
-        await(insertJourneyConfig(
+        await( journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId + "1",
           authInternalId = testInternalId + "1",
           journeyConfig = testLimitedCompanyJourneyConfig
@@ -238,7 +240,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "return a redirect to the Business Verification Result page" when {
         "the feature switch is enabled" in {
           enable(EnableUnmatchedCtutrJourney)
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
@@ -263,12 +265,11 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "return a redirect to the Business Verification Result page" when {
         "the feature switch is disabled" in {
           disable(EnableUnmatchedCtutrJourney)
-          await(insertJourneyConfig(
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
           ))
-
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -289,11 +290,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "return a redirect to Registration Controller" when {
         "the feature switch is enabled and business verification check is disable" in {
           enable(EnableUnmatchedCtutrJourney)
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig.copy(businessVerificationCheck = false)
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -315,7 +318,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "redirect to ctutr mismatch page" when {
         "the feature switch is enabled" in {
           enable(EnableUnmatchedCtutrJourney)
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
@@ -342,7 +346,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "redirect to ctutr mismatch page" when {
         "the feature switch is disabled" in {
           disable(EnableUnmatchedCtutrJourney)
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
@@ -371,7 +376,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "throw an exception" when {
         "the feature switch is disabled" in { //TODO - handle this in the case of entities without corporation tax
           disable(EnableUnmatchedCtutrJourney)
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
@@ -403,7 +409,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "redirect to continueUrl" when {
         "feature switch is enabled" in {
           enable(EnableUnmatchedCtutrJourney)
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
@@ -445,11 +452,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
     "the Registered Society has provided ctutr and crn" should {
       "return a redirect to the Business Verification Result page" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testRegisteredSocietyJourneyConfig
         ))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
 
@@ -469,11 +478,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     }
     "the Registered Society has provided only crn" should {
       "redirect to the journey redirect controller" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testRegisteredSocietyJourneyConfig
         ))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -495,11 +506,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
 
       "redirect to the journey redirect controller when businessVerificationCheck is disable" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testRegisteredSocietyJourneyConfig.copy(businessVerificationCheck = false)
         ))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -522,11 +535,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       "return a redirect to Registration Controller" when {
         "the feature switch is enabled and business verification check is disable" in {
           enable(EnableUnmatchedCtutrJourney)
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testRegisteredSocietyJourneyConfig.copy(businessVerificationCheck = false)
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -543,13 +558,16 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         }
       }
     }
+
     "the Charitable Incorporated Organisation has provided only crn" should {
       "return a redirect to the Business Verification Result page" in {
-        await(insertJourneyConfig(
+
+        await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
         ))
+
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
 
@@ -571,11 +589,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         verifyAudit()
       }
       "return a view which" should {
-        lazy val insertConfig = insertJourneyConfig(
+
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
         )
+
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()
         lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))

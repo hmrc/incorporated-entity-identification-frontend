@@ -47,7 +47,8 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
     pageConfig = PageConfig(
       optServiceName = Some(defaultServiceName),
       deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl
+      signOutUrl = testSignOutUrl,
+      accessibilityUrl = testAccessibilityUrl
     ),
     LimitedCompany,
     businessVerificationCheck = true,
@@ -59,7 +60,8 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
     pageConfig = PageConfig(
       optServiceName = Some(defaultServiceName),
       deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl
+      signOutUrl = testSignOutUrl,
+      accessibilityUrl = testAccessibilityUrl
     ),
     RegisteredSociety,
     businessVerificationCheck = true,
@@ -71,7 +73,8 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
     pageConfig = PageConfig(
       optServiceName = Some(defaultServiceName),
       deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl
+      signOutUrl = testSignOutUrl,
+      accessibilityUrl = testAccessibilityUrl
     ),
     CharitableIncorporatedOrganisation,
     businessVerificationCheck = true,

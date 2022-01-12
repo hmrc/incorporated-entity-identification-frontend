@@ -32,6 +32,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
     "continueUrl" -> testLimitedCompanyJourneyConfig.continueUrl,
     "deskProServiceId" -> testLimitedCompanyJourneyConfig.pageConfig.deskProServiceId,
     "signOutUrl" -> testLimitedCompanyJourneyConfig.pageConfig.signOutUrl,
+    "accessibilityUrl" -> testLimitedCompanyJourneyConfig.pageConfig.accessibilityUrl,
     "regime" -> testLimitedCompanyJourneyConfig.regime
   )
 

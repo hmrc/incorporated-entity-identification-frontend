@@ -25,12 +25,9 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{WSClient, WSRequest, WSResponse}
 import play.api.test.Helpers._
-import reactivemongo.api.commands.WriteResult
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
 
 import scala.concurrent.ExecutionContext.Implicits.global
-import scala.concurrent.Future
 
 trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with CustomMatchers
@@ -117,10 +114,5 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   val baseUrl: String = "/identify-your-incorporated-business"
 
   private def buildClient(path: String): WSRequest = ws.url(s"http://localhost:$port$path").withFollowRedirects(false)
-
-  def insertJourneyConfig(journeyId: String,
-                          authInternalId: String,
-                          journeyConfig: JourneyConfig): Future[WriteResult] =
-    journeyConfigRepository.insertJourneyConfig(journeyId, authInternalId, journeyConfig)
 
 }

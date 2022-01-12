@@ -31,11 +31,13 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
 
   "GET /error/company-name-not-found" when {
     "return ok" in {
-      await(insertJourneyConfig(
+
+      await(journeyConfigRepository.insertJourneyConfig(
         journeyId = testJourneyId,
         authInternalId = testInternalId,
         journeyConfig = testLimitedCompanyJourneyConfig
       ))
+
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
       lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/company-name-not-found")
@@ -45,11 +47,13 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
 
     "return a view" when {
       "there is no serviceName passed in the journeyConfig" should {
-        lazy val insertConfig = insertJourneyConfig(
+
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
         )
+
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/company-name-not-found")
 
@@ -58,18 +62,23 @@ class CompanyNumberNotFoundControllerISpec extends ComponentSpecHelper with Comp
       }
 
       "there is a serviceName passed in the journeyConfig" should {
-        val testJourneyConfig = JourneyConfig(
-          continueUrl = testContinueUrl,
-          pageConfig = PageConfig(optServiceName = Some(testCallingServiceName), deskProServiceId = testDeskProServiceId, signOutUrl = testSignOutUrl),
-          businessEntity = LimitedCompany,
-          businessVerificationCheck = true,
-          regime = testRegime
-        )
-        lazy val insertConfig = insertJourneyConfig(
+
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
-          journeyConfig = testJourneyConfig
+          journeyConfig = JourneyConfig(
+            continueUrl = testContinueUrl,
+            pageConfig = PageConfig(
+              optServiceName = Some(testCallingServiceName),
+              deskProServiceId = testDeskProServiceId,
+              signOutUrl = testSignOutUrl,
+              accessibilityUrl = testAccessibilityUrl),
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true,
+            regime = testRegime
+          )
         )
+
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/error/company-name-not-found")
 

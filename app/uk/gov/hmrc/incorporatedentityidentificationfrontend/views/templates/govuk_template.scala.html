@@ -14,60 +14,30 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.{Header, HmrcHeader, HmrcTimeoutDialog, TimeoutDialog}
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardFooter, HmrcTrackingConsentSnippet}
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcTrackingConsentSnippet, HmrcLayout, HmrcTimeoutDialogHelper}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.phaseBanner
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
+@import views.html.helper.CSPNonce
 
 
-@this(govukLayout: GovukLayout,
+@this(hmrcLayout: HmrcLayout,
         hmrcHeader: HmrcHeader,
-        phaseBanner: phaseBanner,
         appConfig: AppConfig,
-        hmrcStandardFooter: HmrcStandardFooter,
-        footer: govukFooter,
-        timeoutDialog: HmrcTimeoutDialog,
-        govukBackLink: GovukBackLink,
-        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet
+        hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
+        standardBetaBanner: StandardBetaBanner,
+        hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper
 )
 
 @(pageConfig: PageConfig, title: String, timeout: Boolean = true, showBackLink: Boolean = true)(contentBlock: Html)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
-
-@hmrcTrackingConsentSnippet()
 
 @head = {
         <!--[if lte IE 8]><link href=' @controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" type="text/css" /><![endif]-->
         <!--[if gt IE 8]><!--> <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" type="text/css" />
         <!--<![endif]-->
-    @if(timeout) {
-        @timeoutDialog(
-            TimeoutDialog(
-                timeout = Some(appConfig.timeout),
-                countdown = Some(appConfig.countdown),
-                keepAliveUrl = Some("#"),
-                keepAliveButtonText = Some(messages("timeout.keepAlive")),
-                signOutUrl = Some(pageConfig.signOutUrl),
-                signOutButtonText = Some(messages("timeout.signOut")),
-                title = None,
-                message = Some(messages("timeout.message"))
-                )
-        )
-    }
-}
 
-@headerBlock = {
-    @hmrcHeader(Header(
-        serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
-        signOutHref = Some(appConfig.vatRegFeedbackUrl)
-    ))
-}
-
-@beforeContentBlock = {
-    @phaseBanner("beta", pageConfig)
-    @if(showBackLink) {
-        @govukBackLink(BackLink(href = "#", content = Text(messages("app.common.back")), attributes = Map("id" -> "back-link")))
-    }
+    @hmrcTimeoutDialogHelper(signOutUrl = pageConfig.signOutUrl)
 }
 
 @content = {
@@ -83,21 +53,19 @@
 }
 
 @scripts = {
-    <script src='@controllers.routes.Assets.versioned("lib/govuk-frontend/govuk/all.js")'></script>
     <script src='@controllers.routes.Assets.versioned("javascripts/jquery.min.js")'></script>
-    <script src='@controllers.routes.Assets.versioned("lib/hmrc-frontend/hmrc/all.js")'></script>
-    <script>window.GOVUKFrontend.initAll();</script>
-    <script>window.HMRCFrontend.initAll();</script>
     <script src='@controllers.routes.Assets.versioned("javascripts/backLink.js")'></script>
-
 }
 
-@govukLayout(
+@hmrcLayout(
     pageTitle = Some(title),
-    headBlock = Some(head),
-    beforeContentBlock = Some(beforeContentBlock),
-    headerBlock = Some(headerBlock),
-    scriptsBlock = Some(scripts),
-    footerItems = Seq.empty,
-    footerBlock = Some(hmrcStandardFooter())
+    isWelshTranslationAvailable = false,
+    signOutUrl = Some(appConfig.vatRegFeedbackUrl),
+    additionalHeadBlock = Some(head),
+    accessibilityStatementUrl = Some(pageConfig.accessibilityUrl),
+    nonce = CSPNonce.get,
+    phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl(pageConfig.deskProServiceId))),
+    serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
+    backLinkUrl = Some("#"),
+    additionalScriptsBlock = Some(scripts)
 )(content)

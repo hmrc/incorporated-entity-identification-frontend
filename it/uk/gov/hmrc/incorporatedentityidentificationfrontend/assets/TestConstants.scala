@@ -44,6 +44,8 @@ object TestConstants {
   val testDefaultServiceName: String = "Entity Validation Service"
   val testCallingServiceName: String = "Test Service"
   val testContinueUrl: String = "/test"
+  val testAccessibilityUrl: String = "/accessibility"
+  val testDefaultAccessibilityUrl: String = "/accessibility-statement/vat-registration"
   val testSafeId: String = UUID.randomUUID().toString
   val testRegime: String = "VATC"
   val testBusinessVerificationPassJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
@@ -78,7 +80,12 @@ object TestConstants {
   val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
 
   private def createTestJourneyConfig(entityType: BusinessEntity) =
-    JourneyConfig(testContinueUrl, PageConfig(None, testDeskProServiceId, testSignOutUrl), entityType, businessVerificationCheck = true, testRegime)
+    JourneyConfig(
+      testContinueUrl,
+      PageConfig(None, testDeskProServiceId, testSignOutUrl, testAccessibilityUrl),
+      entityType,
+      businessVerificationCheck = true,
+      testRegime)
 
   val testIncorporatedEntityFullJourneyDataJson: JsObject = {
     Json.obj(
@@ -105,5 +112,31 @@ object TestConstants {
       "RegisterApiStatus" -> registrationStatus
     )
   }
+
+  val testJourneyConfigWithoutAccessibilityUrlAsJsObject: JsObject =
+    Json.obj(
+      "continueUrl" -> testContinueUrl,
+      "pageConfig" -> Json.obj(
+        "deskProServiceId" -> testDeskProServiceId,
+               "signOutUrl" -> testSignOutUrl
+      ),
+      "businessEntity" -> "LtdCompany",
+      "businessVerificationCheck" -> true,
+      "regime" -> testRegime
+    )
+
+  val testJourneyConfigWithDefaultAccessibilityUrl: JourneyConfig =
+    JourneyConfig(
+      continueUrl = testContinueUrl,
+      pageConfig = PageConfig(
+        None,
+        testDeskProServiceId,
+        testSignOutUrl,
+        testDefaultAccessibilityUrl
+      ),
+      businessEntity = LimitedCompany,
+      businessVerificationCheck = true,
+      regime = testRegime
+    )
 
 }

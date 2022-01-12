@@ -20,6 +20,7 @@ import org.scalatest.concurrent.{AbstractPatienceConfiguration, Eventually}
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
+import play.api.libs.json.Json
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -75,6 +76,12 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
         await(repo.removeById("regime"))
         await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testLimitedCompanyJourneyConfig)
       }
+      "accessibility url is missing" in {
+        await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
+        await(repo.findAndUpdate(Json.obj("_id" -> testJourneyId), Json.obj( "$set" -> testJourneyConfigWithoutAccessibilityUrlAsJsObject)))
+        await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testJourneyConfigWithDefaultAccessibilityUrl)
+      }
     }
+
   }
 }

@@ -42,11 +42,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
     "the business entity is Limited Company" should {
       "redirect to continueUrl" when {
         "registration is successful and registration status is successfully stored" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -66,11 +68,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         }
 
         "registration failed and registration status is successfully stored" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -103,11 +107,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
       "throw an exception" when {
         "business verification is in an invalid state" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -119,11 +125,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         }
 
         "company profile is missing" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
@@ -135,11 +143,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         }
 
         "ctutr is missing" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -151,11 +161,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         }
 
         "business verification status is missing" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testLimitedCompanyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -170,11 +182,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
     "the business entity is Registered Society" should {
       "redirect to continueUrl" when {
         "registration is successful and registration status is successfully stored" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testRegisteredSocietyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -193,11 +207,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         }
 
         "registration failed and registration status is successfully stored" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testRegisteredSocietyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -230,11 +246,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
       "throw an exception" when {
         "business verification is in an invalid state" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testRegisteredSocietyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -246,11 +264,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         }
 
         "company profile is missing" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testRegisteredSocietyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
@@ -262,11 +282,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         }
 
         "ctutr is missing" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testRegisteredSocietyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
@@ -278,11 +300,13 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         }
 
         "business verification status is missing" in {
-          await(insertJourneyConfig(
+
+          await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
             journeyConfig = testRegisteredSocietyJourneyConfig
           ))
+
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))

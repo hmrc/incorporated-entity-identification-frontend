@@ -19,6 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.views
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
+import org.jsoup.select.Elements
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
@@ -26,6 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testAccessibilityUrl
 
 import scala.concurrent.Future
 
@@ -84,7 +86,19 @@ trait ConfirmBusinessNameViewTests {
     }
 
     "have a back link" in {
-      doc.getElementById("back-link").text mustBe Base.back
+      val backLinks: Elements = doc.getBackLinks
+
+      backLinks.size mustBe 1
+
+      backLinks.first.text mustBe Base.back
+    }
+
+    "have a link to the service's accessibility statement" in {
+      val footerLinks: Elements = doc.getFooterLinks
+
+      footerLinks.size() must be >= 2
+
+      footerLinks.eq(1).attr("href") mustBe testAccessibilityUrl
     }
   }
 

@@ -33,6 +33,7 @@ object TestCreateJourneyForm {
   val deskProServiceId = "deskProServiceId"
   val alphanumericRegex = "^[A-Z0-9]*$"
   val signOutUrl = "signOutUrl"
+  val accessibilityUrl = "accessibilityUrl"
   val entityType = "entityType"
   val businessVerificationCheck = "businessVerificationCheck"
   val regime = "regime"
@@ -65,6 +66,13 @@ object TestCreateJourneyForm {
     )
   )
 
+  def accessibilityUrlEmpty: Constraint[String] = Constraint("accessibility_url.not_entered")(
+    accessibilityUrl => validate(
+      constraint = accessibilityUrl.isEmpty,
+      errMsg = "Accessibility Url is not entered"
+    )
+  )
+
   val LtdCompanyKey = "ltdCompany"
   val RegisteredSocietyKey = "registeredSociety"
   val CharitableIncorporatedOrganisationKey = "charitableIncorporatedOrganisation"
@@ -91,13 +99,25 @@ object TestCreateJourneyForm {
       serviceName -> optText,
       deskProServiceId -> text.verifying(deskProServiceIdEmpty),
       signOutUrl -> text.verifying(signOutUrlEmpty),
+      accessibilityUrl -> text.verifying(accessibilityUrlEmpty),
       businessVerificationCheck -> boolean,
       regime -> text.verifying(regimeEmpty)
-    )((continueUrl, serviceName, deskProServiceId, signOutUrl, businessVerificationCheck, regime) =>
-      JourneyConfig.apply(continueUrl, PageConfig(serviceName, deskProServiceId, signOutUrl), businessEntity, businessVerificationCheck, regime)
+    )((continueUrl, serviceName, deskProServiceId, signOutUrl, accessibilityUrl, businessVerificationCheck, regime) =>
+      JourneyConfig.apply(
+        continueUrl,
+        PageConfig(serviceName, deskProServiceId, signOutUrl, accessibilityUrl),
+        businessEntity,
+        businessVerificationCheck,
+        regime)
     )(journeyConfig =>
-      Some(journeyConfig.continueUrl, journeyConfig.pageConfig.optServiceName,
-        journeyConfig.pageConfig.deskProServiceId, journeyConfig.pageConfig.signOutUrl, journeyConfig.businessVerificationCheck, journeyConfig.regime
+      Some(
+        journeyConfig.continueUrl,
+        journeyConfig.pageConfig.optServiceName,
+        journeyConfig.pageConfig.deskProServiceId,
+        journeyConfig.pageConfig.signOutUrl,
+        journeyConfig.pageConfig.accessibilityUrl,
+        journeyConfig.businessVerificationCheck,
+        journeyConfig.regime
       )))
   }
 

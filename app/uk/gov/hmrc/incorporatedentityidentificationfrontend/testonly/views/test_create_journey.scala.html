@@ -118,6 +118,16 @@
             classes = "govuk-input--width-20"
         )
 
+        @inputText(
+            form = form,
+            id = "accessibilityUrl",
+            name = "accessibilityUrl",
+            label = "Accessibility Url",
+            isPageHeading = false,
+            hasFieldTitle = true,
+            classes = "govuk-input--width-20"
+        )
+
         @govukButton(Button(
             attributes = Map("id" -> "save-and-continue"),
             classes = "govuk-!-margin-right-1",
