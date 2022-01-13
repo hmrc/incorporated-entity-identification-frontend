@@ -128,7 +128,7 @@ object JourneyConfigRepository {
         accessibilityUrl <- (json \ PageConfigKey \ AccessibilityUrlKey).validateOpt[String]
         businessEntity <- (json \ BusinessEntityKey).validate[BusinessEntity]
         businessVerificationCheck <- (json \ BusinessVerificationCheckKey).validate[Boolean]
-        regime <- (json \ RegimeKey).validateOpt[String]
+        regime <- (json \ RegimeKey).validate[String]
       } yield {
         JourneyConfig(
           continueUrl,
@@ -139,7 +139,7 @@ object JourneyConfigRepository {
           ),
           businessEntity,
           businessVerificationCheck,
-          regime.getOrElse("VATC"))
+          regime)
       }
 
     override def writes(journeyConfig: JourneyConfig): JsObject = Json.obj(
