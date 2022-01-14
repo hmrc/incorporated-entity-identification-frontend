@@ -19,7 +19,7 @@ Shows all feature switches:
 ---
 Test entry point for initial call to set up a create limited company journey.
 
-1. ContinueURL(Required)
+1. ContinueURL (Required)
 
     - Where to redirect the user after the journey has been completed
 
@@ -43,18 +43,23 @@ Test entry point for initial call to set up a create limited company journey.
     - Used for skipping further verification checks carried out currently by Business Verification (SI)
     - This is currently autofilled but can be changed
 
-6. Regime
+6. Regime (Required)
 
     - This is the Tax Regime Identifier
     - It is passed down to the Registration API
     - Accepted values are PPT or VATC
+
+7. Accessibility statement URL (Required)
+
+    - Shown in the footer - a link to the accessibility statement for the calling service
+    - This is currently autofilled but can be changed
 
 ### GET test-only/create-registered-society-journey
 
 ---
 Test entry point for initial call to set up a create registered society journey.
 
-1. ContinueURL(Required)
+1. ContinueURL (Required)
 
     - Where to redirect the user after the journey has been completed
 
@@ -78,19 +83,23 @@ Test entry point for initial call to set up a create registered society journey.
     - Used for skipping further verification checks carried out currently by Business Verification (SI)
     - This is currently autofilled but can be changed
 
-6. Regime
+6. Regime (Required)
 
     - This is the Tax Regime Identifier
     - It is passed down to the Registration API
     - Accepted values are PPT or VATC
+
+7. Accessibility statement URL (Required)
+
+     - Shown in the footer - a link to the accessibility statement for the calling service
+     - This is currently autofilled but can be changed
 
 ### GET test-only/create-cio-journey
 
 ---
 Test entry point for initial call to set up a create charitable incorporated organisation journey.
 
-1. ContinueURL(Required)
-
+1. ContinueURL (Required)
     - Where to redirect the user after the journey has been completed
 
 2. Service Name (Optional)
@@ -113,11 +122,16 @@ Test entry point for initial call to set up a create charitable incorporated org
     - Used for skipping further verification checks carried out currently by Business Verification (SI)
     - This is currently autofilled but can be changed
 
-6. Regime
+6. Regime (Required)
 
     - This is the Tax Regime Identifier
     - It is passed down to the Registration API
     - Accepted values are PPT or VATC
+
+7. Accessibility statement URL (Required)
+
+     - Shown in the footer - a link to the accessibility statement for the calling service
+     - This is currently autofilled but can be changed
 
 ### GET test-only/create-journey
 
@@ -126,35 +140,40 @@ Test entry point for initial call to set up a create charitable incorporated org
 ---
 Test entry point for initial call to set up a create limited company journey.
 
-1. ContinueURL(Required)
+1. ContinueURL (Required)
 
-    - Where to redirect the user after the journey has been completed
+     - Where to redirect the user after the journey has been completed
 
 2. Service Name (Optional)
 
-    - Service Name to use throughout the service
-    - If nothing is entered, ```Entity Validation Service``` will be used
+     - Service Name to use throughout the service
+     - If nothing is entered, ```Entity Validation Service``` will be used
 
 3. DeskPro Service ID (Required)
 
-    - Used for the `Get help with this page` link
-    - This is currently autofilled but can be changed
+     - Used for the `Get help with this page` link
+     - This is currently autofilled but can be changed
 
 4. Sign Out Link (Required)
 
-    - Shown in the HMRC header - typically a link to a feedback questionnaire
-    - This is currently autofilled but can be changed
+     - Shown in the HMRC header - typically a link to a feedback questionnaire
+     - This is currently autofilled but can be changed
 
 5. Business verification checkbox
 
-    - Used for skipping further verification checks carried out currently by Business Verification (SI)
-    - This is currently autofilled but can be changed
+     - Used for skipping further verification checks carried out currently by Business Verification (SI)
+     - This is currently autofilled but can be changed
 
-6. Regime
+6. Regime (Required)
 
-    - This is the Tax Regime Identifier
-    - It is passed down to the Registration API
-    - Accepted values are PPT or VATC
+     - This is the Tax Regime Identifier
+     - It is passed down to the Registration API
+     - Accepted values are PPT or VATC
+
+7. Accessibility statement URL (Required)
+
+     - Shown in the footer - a link to the accessibility statement for the calling service
+     - This is currently autofilled but can be changed
 
 ### GET test-only/:companyNumber/incorporated-company-profile
 
