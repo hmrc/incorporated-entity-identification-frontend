@@ -52,4 +52,7 @@ class IncorporatedEntityInformationConnector @Inject()(http: HttpClient,
     http.DELETE[SuccessfullyRemoved.type](s"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey"
     )(RemoveIncorporatedEntityDetailsHttpReads, hc, ec)
 
+  def removeAllData(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    http.DELETE[SuccessfullyRemoved.type](appConfig.incorporatedEntityInformationUrl(journeyId))(RemoveIncorporatedEntityDetailsHttpReads, hc, ec)
+
 }

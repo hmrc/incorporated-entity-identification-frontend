@@ -21,8 +21,8 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.Incorpora
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.RemoveIncorporatedEntityDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.StorageService._
-import javax.inject.{Inject, Singleton}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -86,6 +86,9 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
 
   def removeCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeIncorporatedEntityDetailsField(journeyId, CtutrKey)
+
+  def removeAllData(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
+    connector.removeAllData(journeyId)
 
 }
 
