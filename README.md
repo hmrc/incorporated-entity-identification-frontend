@@ -187,10 +187,10 @@ A valid journeyId must be sent in the URI
 
 Status:
 
-| Expected Response                       | Reason                       |
-|-----------------------------------------|------------------------------|
-| ```OK(200)```                           |  ```JourneyId exists```      |
-| ```NOT_FOUND(404)```                    | ```JourneyId doesn't exist```|
+| Expected Response                       | Reason                        |
+|-----------------------------------------|-------------------------------|
+| ```OK(200)```                           | ```JourneyId exists```        |
+| ```NOT_FOUND(404)```                    | ```JourneyId doesn't exist``` |
 
 Example response bodies:
 

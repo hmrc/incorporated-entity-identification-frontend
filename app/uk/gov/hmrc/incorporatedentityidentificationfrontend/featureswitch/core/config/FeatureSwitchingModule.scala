@@ -24,7 +24,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.m
 @Singleton
 class FeatureSwitchingModule extends Module with FeatureSwitchRegistry {
 
-  val switches = Seq(CompaniesHouseStub, BusinessVerificationStub, EnableUnmatchedCtutrJourney)
+  val switches = Seq(CompaniesHouseStub, BusinessVerificationStub)
 
   override def bindings(environment: Environment, configuration: Configuration): Seq[Binding[_]] = {
     Seq(
@@ -41,9 +41,4 @@ case object CompaniesHouseStub extends FeatureSwitch {
 case object BusinessVerificationStub extends FeatureSwitch {
   override val configName: String = "feature-switch.business-verification-stub"
   override val displayName: String = "Use stub for Business Verification flow"
-}
-
-case object EnableUnmatchedCtutrJourney extends FeatureSwitch {
-  override val configName: String = "feature-switch.enable-unmatched-ctutr-journey"
-  override val displayName: String = "Enable unmatched CTUTR journey"
 }
