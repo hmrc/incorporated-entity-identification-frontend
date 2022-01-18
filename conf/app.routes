@@ -21,6 +21,9 @@ POST        /:journeyId/error/could-not-confirm-business        uk.gov.hmrc.inco
 GET         /:journeyId/error/company-name-not-found            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.show(journeyId)
 POST        /:journeyId/error/company-name-not-found            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.submit(journeyId)
 
+GET         /:journeyId/error/details-not-found-ctutr           uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrNotFoundController.show(journeyId)
+GET         /:journeyId/error/try-again                         uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrNotFoundController.tryAgain(journeyId)
+
 GET         /:journeyId/start-business-verification             uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.BusinessVerificationController.startBusinessVerificationJourney(journeyId)
 GET         /:journeyId/business-verification-result            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId)
 

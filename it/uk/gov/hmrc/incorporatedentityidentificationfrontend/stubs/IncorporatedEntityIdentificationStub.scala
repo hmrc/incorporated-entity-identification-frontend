@@ -160,4 +160,12 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       body = JsBoolean(body)
     )
   }
+
+  def stubRemoveAllData(journeyId: String)(status: Int, body: String = ""): StubMapping =
+    when(method = DELETE,
+      uri = s"/incorporated-entity-identification/journey/$journeyId"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
 }

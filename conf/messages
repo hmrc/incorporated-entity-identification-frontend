@@ -68,7 +68,6 @@ check-your-answers.company_number                           = Company number
 check-your-answers.ctutr                                    = Unique Taxpayers Reference number
 check-your-answers.no-ctutr                                 = The business does not have a UTR
 
-
 # CTUTR Mismatch Error Page
 ctutr-mismatch.title                                        = We could not confirm your business
 ctutr-mismatch.heading                                      = We could not confirm your business
@@ -79,3 +78,13 @@ company-number-not-found.title                              = We could not confi
 company-number-not-found.heading                            = We could not confirm your company
 company-number-not-found.paragraph                          = The company number you entered is not on our system.
 
+# CTUTR Not Found Page
+ctutr-not-found.title                                       = The details you entered did not match our records
+ctutr-not-found.heading                                     = The details you entered did not match our records
+ctutr-not-found.line_1                                      = We could not match the details you entered with records held by HMRC.
+ctutr-not-found.line_2                                      = If you used the wrong details, you can
+ctutr-not-found.line_2_link                                 = try again using different details.
+ctutr-not-found.line_3                                      = If you entered the correct details, you cannot continue to register using this online service.
+ctutr-not-found.line_4                                      = You need to
+ctutr-not-found.line_4_link                                 = contact the Corporation Tax team (opens in a new tab)
+ctutr-not-found.line_5                                      = and tell them there is an issue with your Corporation Tax Unique Tax Reference.

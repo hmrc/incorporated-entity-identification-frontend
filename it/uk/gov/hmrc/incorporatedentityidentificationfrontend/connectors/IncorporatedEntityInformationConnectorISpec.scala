@@ -171,4 +171,13 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
       }
     }
   }
+  s"removeAllData($testJourneyId)" should {
+    "return SuccessfullyRemoved" in {
+      stubRemoveAllData(testJourneyId)(NO_CONTENT)
+
+      val result = await(incorporatedEntityInformationConnector.removeAllData(testJourneyId))
+
+      result mustBe SuccessfullyRemoved
+    }
+  }
 }
