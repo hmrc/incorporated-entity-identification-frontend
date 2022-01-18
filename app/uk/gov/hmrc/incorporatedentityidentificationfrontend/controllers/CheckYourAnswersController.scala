@@ -22,13 +22,14 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{EnableUnmatchedCtutrJourney, FeatureSwitching}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsNotFound, DetailsNotProvided}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, JourneyService, StorageService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -96,7 +97,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             details <- (journeyConfig.businessEntity, optCompanyProfile, optCtutr) match {
               case (LimitedCompany | RegisteredSociety, Some(companyProfile), Some(ctutr)) =>
                 validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr)
-              case (RegisteredSociety | CharitableIncorporatedOrganisation, Some(companyProfile), None) => Future.successful(DetailsNotProvided)
+              case (RegisteredSociety | CharitableIncorporatedOrganisation, Some(_), None) => Future.successful(DetailsNotProvided)
               case _ =>
                 throw new InternalServerException("No data stored")
             }
@@ -107,27 +108,19 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
               case DetailsMatched if journeyConfig.businessVerificationCheck.equals(false) => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
               } yield Redirect(routes.RegistrationController.register(journeyId))
-              case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) && journeyConfig.businessVerificationCheck =>
+              case DetailsNotFound =>
                 for {
                   _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
-                  _ <- storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                  _ <-
+                    if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                    else Future.successful(())
                   _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
                   _ <- auditService.auditJourney(journeyId, authInternalId)
-                } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-              case DetailsNotFound if isEnabled(EnableUnmatchedCtutrJourney) && !journeyConfig.businessVerificationCheck =>
-                for {
-                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
-                  _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-                  _ <- auditService.auditJourney(journeyId, authInternalId)
-                } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-              case DetailsNotProvided if journeyConfig.businessVerificationCheck  => for {
+                } yield Redirect(errorRoutes.CtutrNotFoundController.show(journeyId))
+              case DetailsNotProvided => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
-                _ <- storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
-                _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
-                _ <- auditService.auditJourney(journeyId, authInternalId)
-              } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-              case DetailsNotProvided if !journeyConfig.businessVerificationCheck  => for {
-                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                _ <- if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                else Future.successful(())
                 _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
                 _ <- auditService.auditJourney(journeyId, authInternalId)
               } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
@@ -142,5 +135,3 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
       }
   }
 }
-
-
