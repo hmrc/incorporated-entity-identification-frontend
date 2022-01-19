@@ -99,11 +99,6 @@ object JourneyConfigRepository {
   val BusinessVerificationCheckKey = "businessVerificationCheck"
   val RegimeKey = "regime"
 
-  val OptServiceNameKey = "optServiceName"
-  val DeskProServiceIdKey = "deskProServiceId"
-  val AccessibilityUrlKey = "accessibilityUrl"
-  val SignOutUrlKey = "signOutUrl"
-
   implicit val partnershipTypeMongoFormat: Format[BusinessEntity] = new Format[BusinessEntity] {
     override def reads(json: JsValue): JsResult[BusinessEntity] = json.validate[String].collect(JsonValidationError("Invalid entity type")) {
       case LtdCompanyKey => LimitedCompany
@@ -122,21 +117,14 @@ object JourneyConfigRepository {
     override def reads(json: JsValue): JsResult[JourneyConfig] =
       for {
         continueUrl <- (json \ ContinueUrlKey).validate[String]
-        optServiceName <- (json \ PageConfigKey \ OptServiceNameKey).validateOpt[String]
-        deskProServiceId <- (json \ PageConfigKey \ DeskProServiceIdKey).validate[String]
-        signOutUrl <- (json \ PageConfigKey \ SignOutUrlKey).validate[String]
-        accessibilityUrl <- (json \ PageConfigKey \ AccessibilityUrlKey).validateOpt[String]
+        pageConfig <- (json \ PageConfigKey).validate[PageConfig]
         businessEntity <- (json \ BusinessEntityKey).validate[BusinessEntity]
         businessVerificationCheck <- (json \ BusinessVerificationCheckKey).validate[Boolean]
         regime <- (json \ RegimeKey).validate[String]
       } yield {
         JourneyConfig(
           continueUrl,
-          PageConfig(optServiceName,
-            deskProServiceId,
-            signOutUrl,
-            accessibilityUrl.getOrElse("/accessibility-statement/vat-registration")
-          ),
+          pageConfig,
           businessEntity,
           businessVerificationCheck,
           regime)
