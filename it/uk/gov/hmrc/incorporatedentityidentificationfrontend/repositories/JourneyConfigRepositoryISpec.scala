@@ -18,7 +18,6 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories
 
 import org.scalatest.concurrent.{AbstractPatienceConfiguration, Eventually}
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Json
 import play.api.test.Helpers._
 import play.api.{Application, Environment, Mode}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
@@ -48,7 +47,7 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
       await(repo.count) mustBe 1
     }
 
-    "successfully insert journeyConfig" in {
+    "successfully insert and retrieve journeyConfig" in {
       await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
       await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testLimitedCompanyJourneyConfig)
     }
@@ -64,14 +63,6 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
       await(repo.insertJourneyConfig(testJourneyId + 1, testInternalId, testLimitedCompanyJourneyConfig))
       await(repo.remove("_id" -> (testJourneyId + 1), "authInternalId" -> testInternalId))
       await(repo.count) mustBe 1
-    }
-
-    "successfully find journey config" when {
-      "accessibility url is missing" in {
-        await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
-        await(repo.findAndUpdate(Json.obj("_id" -> testJourneyId), Json.obj("$set" -> testJourneyConfigWithoutAccessibilityUrlAsJsObject)))
-        await(repo.findJourneyConfig(testJourneyId, testInternalId)) must contain(testJourneyConfigWithDefaultAccessibilityUrl)
-      }
     }
 
   }
