@@ -101,7 +101,7 @@ object TestConstants {
                                  isMatch: Boolean,
                                  ctUtr: String,
                                  verificationStatus: BusinessVerificationStatus,
-                                 registrationStatus: RegistrationStatus): JsObject = {
+                                 registrationStatus: String): JsObject = {
     Json.obj(
       "callingService" -> "Entity Validation Service",
       "businessType" -> "UK Company",

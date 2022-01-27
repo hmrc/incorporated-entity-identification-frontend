@@ -64,7 +64,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
           verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
-          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, BusinessVerificationPass, testSuccessfulRegistration))
+          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, BusinessVerificationPass, "success"))
         }
 
         "registration failed and registration status is successfully stored" in {
@@ -90,7 +90,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
           verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testFailedRegistration)
-          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, BusinessVerificationPass, testFailedRegistration))
+          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, BusinessVerificationPass, "fail"))
         }
       }
 

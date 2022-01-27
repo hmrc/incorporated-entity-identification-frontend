@@ -302,7 +302,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
           verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
-          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, BusinessVerificationFail, RegistrationNotCalled))
+          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, BusinessVerificationFail, "not called"))
         }
         "the business verification check is disabled" in {
           await(journeyConfigRepository.insertJourneyConfig(
@@ -326,7 +326,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
 
           verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
-          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, BusinessVerificationFail, RegistrationNotCalled))
+          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, BusinessVerificationFail, "not called"))
         }
       }
     }

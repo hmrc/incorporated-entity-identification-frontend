@@ -121,7 +121,7 @@ object TestConstants {
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> true,
     "VerificationStatus" -> testPassedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> testRegistrationStatusJson,
+    "RegisterApiStatus" -> "success",
     "CTUTR" -> testCtutr
   )
 
@@ -131,7 +131,7 @@ object TestConstants {
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
     "VerificationStatus" -> testUnchallengedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> testRegistrationNotCalledJson,
+    "RegisterApiStatus" -> "not called",
     "CTUTR" -> testCtutr
   )
 
@@ -141,7 +141,7 @@ object TestConstants {
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
     "VerificationStatus" -> testFailedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> testRegistrationNotCalledJson
+    "RegisterApiStatus" -> "not called"
   )
 
   val testDetailsRegistrationStatusMissingAuditEventJson: JsObject = Json.obj(
@@ -150,7 +150,7 @@ object TestConstants {
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> true,
     "VerificationStatus" -> testPassedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> testRegistrationNotCalledJson,
+    "RegisterApiStatus" -> "fail",
     "CTUTR" -> testCtutr
   )
 
@@ -160,7 +160,7 @@ object TestConstants {
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> true,
     "VerificationStatus" -> testFailedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> testRegistrationNotCalledJson,
+    "RegisterApiStatus" -> "success",
     "CTUTR" -> testCtutr
   )
 
@@ -170,7 +170,7 @@ object TestConstants {
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> true,
     "VerificationStatus" -> testPassedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> testRegistrationStatusJson,
+    "RegisterApiStatus" -> "success",
     "CTUTR" -> testCtutr
   )
 
@@ -180,7 +180,7 @@ object TestConstants {
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
     "VerificationStatus" -> testUnchallengedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> testRegistrationNotCalledJson,
+    "RegisterApiStatus" -> "not called",
     "CTUTR" -> testCtutr
   )
 
@@ -190,7 +190,7 @@ object TestConstants {
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
     "VerificationStatus" -> testFailedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> testRegistrationNotCalledJson
+    "RegisterApiStatus" -> "not called"
   )
 
   val testCIOAuditEventJson: JsObject = Json.obj(
@@ -199,7 +199,7 @@ object TestConstants {
     "companyNumber" -> testCharityNumber,
     "identifiersMatch" -> false,
     "VerificationStatus" -> testUnchallengedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> testRegistrationNotCalledJson
+    "RegisterApiStatus" -> "not called"
   )
 
   val testIrCtEnrolment: Enrolment = Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", testCtutr)), "Activated", None)
