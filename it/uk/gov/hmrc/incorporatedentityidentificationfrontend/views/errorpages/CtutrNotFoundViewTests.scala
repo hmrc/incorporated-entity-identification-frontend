@@ -73,12 +73,12 @@ trait CtutrNotFoundViewTests {
 
     "have the correct content" in {
       doc.getParagraphs.eq(1).text mustBe messages.line1
-      doc.getParagraphs.eq(2).text mustBe messages.line2 + messages.line2Link
-      doc.getElementById("try-again").attr("href") mustBe routes.CtutrNotFoundController.tryAgain(testJourneyId).url
-      doc.getParagraphs.eq(3).text mustBe messages.line3
-      doc.getParagraphs.eq(4).text mustBe messages.line4 + messages.line4Link + messages.line5
+      doc.getParagraphs.eq(2).text mustBe messages.line2
+      doc.getParagraphs.eq(3).text mustBe messages.line3a + messages.line3Link + messages.line3b
       doc.getElementById("contact-corporation-tax-team").attr("href") mustBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries"
-    }
+      doc.getParagraphs.eq(4).text mustBe messages.line4 + messages.line4Link
+      doc.getElementById("try-again").attr("href") mustBe routes.CtutrNotFoundController.tryAgain(testJourneyId).url
+        }
 
     "have a link to the service's accessibility statement" in {
       val footerLinks: Elements = doc.getFooterLinks

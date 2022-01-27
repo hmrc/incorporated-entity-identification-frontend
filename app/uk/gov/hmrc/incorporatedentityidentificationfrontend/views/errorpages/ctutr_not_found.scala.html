@@ -31,21 +31,22 @@
 
     <p class="govuk-body">@messages("ctutr-not-found.line_1")</p>
 
-    <p class="govuk-body">
-        @messages("ctutr-not-found.line_2")
-        <a class="govuk-link" id="try-again" href=@redirectLocation.url>
-            @messages("ctutr-not-found.line_2_link")
-        </a>
-    </p>
+    <p class="govuk-body">@messages("ctutr-not-found.line_2")</p>
 
-    <p class="govuk-body">@messages("ctutr-not-found.line_3")</p>
+    <p class="govuk-body">
+        @messages("ctutr-not-found.line_3a")
+        <a class="govuk-link" target="_blank" id="contact-corporation-tax-team" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries">
+            @messages("ctutr-not-found.line_3_link")
+        </a>
+        @messages("ctutr-not-found.line_3b")
+        <strong>@messages("ctutr-not-found.line_3c")</strong>
+    </p>
 
     <p class="govuk-body">
         @messages("ctutr-not-found.line_4")
-        <a class="govuk-link" target="_blank" id="contact-corporation-tax-team" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries">
+        <a class="govuk-link" id="try-again" href=@redirectLocation.url>
             @messages("ctutr-not-found.line_4_link")
         </a>
-        @messages("ctutr-not-found.line_5")
     </p>
 
 }
