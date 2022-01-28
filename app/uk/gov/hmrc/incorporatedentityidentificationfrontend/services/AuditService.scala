@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed, RegistrationNotCalled}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
@@ -55,7 +55,7 @@ class AuditService @Inject()(auditConnector: AuditConnector,
       optRegistrationStatus match {
         case Some(Registered(_)) => "success"
         case Some(RegistrationFailed) => "fail"
-        case Some(RegistrationNotCalled) => "not called"
+        case _ => "not called"
       }
     journeyConfig.businessEntity match {
       case LimitedCompany =>
