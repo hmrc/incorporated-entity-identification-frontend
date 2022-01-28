@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed, RegistrationNotCalled}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
@@ -51,10 +51,11 @@ class AuditService @Inject()(auditConnector: AuditConnector,
         case Some(bvStatus) => Json.obj("VerificationStatus" -> bvStatus)
         case _ => Json.obj("VerificationStatus" -> Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey))
       }
-    val registrationStatusBlock =
+    val registrationStatus =
       optRegistrationStatus match {
-        case Some(regStatus) => Json.obj("RegisterApiStatus" -> regStatus)
-        case _ => Json.obj("RegisterApiStatus" -> Json.obj(registrationStatusKey -> RegistrationNotCalledKey))
+        case Some(Registered(_)) => "success"
+        case Some(RegistrationFailed) => "fail"
+        case Some(RegistrationNotCalled) => "not called"
       }
     journeyConfig.businessEntity match {
       case LimitedCompany =>
@@ -62,35 +63,39 @@ class AuditService @Inject()(auditConnector: AuditConnector,
           "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
           "businessType" -> "UK Company",
           "companyNumber" -> companyNumber,
-          "isMatch" -> optIdentifiersMatch
-        ) ++ ctutrBlock ++ businessVerificationStatusBlock ++ registrationStatusBlock
+          "isMatch" -> optIdentifiersMatch,
+          "RegisterApiStatus" -> registrationStatus
+        ) ++ ctutrBlock ++ businessVerificationStatusBlock
 
         auditConnector.sendExplicitAudit(
           auditType = "IncorporatedEntityRegistration",
           detail = auditJson)
+
       case RegisteredSociety =>
         val auditJson = Json.obj(
           "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
           "businessType" -> "Registered Society",
           "companyNumber" -> companyNumber,
-          "isMatch" -> optIdentifiersMatch
-        ) ++ ctutrBlock ++ businessVerificationStatusBlock ++ registrationStatusBlock
+          "isMatch" -> optIdentifiersMatch,
+          "RegisterApiStatus" -> registrationStatus
+        ) ++ ctutrBlock ++ businessVerificationStatusBlock
 
         auditConnector.sendExplicitAudit(
-          auditType = "IncorporatedEntityRegistration",
+          auditType = "RegisteredSocietyRegistration",
           detail = auditJson)
+
       case CharitableIncorporatedOrganisation =>
         val auditJson = Json.obj(
           "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
           "businessType" -> "CIO",
           "companyNumber" -> companyNumber,
-          "identifiersMatch" -> optIdentifiersMatch
-        ) ++ businessVerificationStatusBlock ++ registrationStatusBlock
+          "identifiersMatch" -> optIdentifiersMatch,
+          "RegisterApiStatus" -> registrationStatus
+        ) ++ businessVerificationStatusBlock
 
         auditConnector.sendExplicitAudit(
           auditType = "CIOEntityRegistration",
           detail = auditJson)
-      case _ =>
     }
   }
 
