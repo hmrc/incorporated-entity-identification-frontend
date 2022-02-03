@@ -18,21 +18,23 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json._
 
-
 sealed trait BusinessVerificationStatus
 
 case object BusinessVerificationPass extends BusinessVerificationStatus
 
 case object BusinessVerificationFail extends BusinessVerificationStatus
 
-case object BusinessVerificationUnchallenged extends BusinessVerificationStatus
+case object BusinessVerificationNotEnoughInformationToChallenge extends BusinessVerificationStatus
+
+case object BusinessVerificationNotEnoughInformationToCallBV extends BusinessVerificationStatus
 
 case object CtEnrolled extends BusinessVerificationStatus
 
 object BusinessVerificationStatus {
   val BusinessVerificationPassKey = "PASS"
   val BusinessVerificationFailKey = "FAIL"
-  val BusinessVerificationUnchallengedKey = "UNCHALLENGED"
+  val BusinessVerificationNotEnoughInfoToChallengeKey = "NOT_ENOUGH_INFORMATION_TO_CHALLENGE"
+  val BusinessVerificationNotEnoughInfoToCallBVKey = "NOT_ENOUGH_INFORMATION_TO_CALL_BV"
   val BusinessVerificationCtEnrolledKey = "CT_ENROLLED"
   val BusinessVerificationStatusKey = "verificationStatus"
 
@@ -41,7 +43,8 @@ object BusinessVerificationStatus {
       val businessVerificationStatusString = businessVerificationStatus match {
         case BusinessVerificationPass => BusinessVerificationPassKey
         case BusinessVerificationFail => BusinessVerificationFailKey
-        case BusinessVerificationUnchallenged => BusinessVerificationUnchallengedKey
+        case BusinessVerificationNotEnoughInformationToChallenge => BusinessVerificationNotEnoughInfoToChallengeKey
+        case BusinessVerificationNotEnoughInformationToCallBV => BusinessVerificationNotEnoughInfoToCallBVKey
         case CtEnrolled => BusinessVerificationCtEnrolledKey
       }
 
@@ -52,7 +55,8 @@ object BusinessVerificationStatus {
       (json \ BusinessVerificationStatusKey).validate[String].collect(JsonValidationError("Invalid business validation state")) {
         case BusinessVerificationPassKey => BusinessVerificationPass
         case BusinessVerificationFailKey => BusinessVerificationFail
-        case BusinessVerificationUnchallengedKey => BusinessVerificationUnchallenged
+        case BusinessVerificationNotEnoughInfoToChallengeKey => BusinessVerificationNotEnoughInformationToChallenge
+        case BusinessVerificationNotEnoughInfoToCallBVKey => BusinessVerificationNotEnoughInformationToCallBV
         case BusinessVerificationCtEnrolledKey => CtEnrolled
       }
   }

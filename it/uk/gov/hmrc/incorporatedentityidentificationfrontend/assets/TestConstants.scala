@@ -50,7 +50,6 @@ object TestConstants {
   val testRegime: String = "VATC"
   val testBusinessVerificationPassJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
   val testBusinessVerificationFailJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
-  val testBusinessVerificationUnchallengedJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationUnchallengedKey)
   val testSuccessfulRegistration: RegistrationStatus = Registered(testSafeId)
   val testFailedRegistration: RegistrationStatus = RegistrationFailed
   val testSuccessfulRegistrationJson: JsObject = Json.obj(
@@ -79,7 +78,7 @@ object TestConstants {
   val testRegisteredSocietyJourneyConfig: JourneyConfig = createTestJourneyConfig(RegisteredSociety)
   val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
 
-  private def createTestJourneyConfig(entityType: BusinessEntity) =
+  private def createTestJourneyConfig(entityType: BusinessEntity): JourneyConfig =
     JourneyConfig(
       testContinueUrl,
       PageConfig(None, testDeskProServiceId, testSignOutUrl, testAccessibilityUrl),
@@ -138,5 +137,7 @@ object TestConstants {
       businessVerificationCheck = true,
       regime = testRegime
     )
+
+  def testBusinessVerificationJson(businessVerificationValue:String): JsObject = Json.obj(BusinessVerificationStatusKey -> businessVerificationValue)
 
 }

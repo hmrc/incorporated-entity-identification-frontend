@@ -21,7 +21,7 @@ import helpers.TestConstants._
 import play.api.test.Helpers._
 import services.mocks.MockStorageService
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed, RegistrationNotCalled, SuccessfullyStored}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.RegistrationOrchestrationService
 import utils.UnitSpec
 
@@ -84,10 +84,10 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
       }
 
       "store a registration state of registration not called" when {
-        "the business entity did not pass verification" in {
+        "business verification status is BusinessVerificationNotEnoughInformationToChallenge" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testFailedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToChallenge)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany())) mustBe {
@@ -96,10 +96,22 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         }
 
-        "the business entity was not challenged to verify" in {
+        "business verification status is BusinessVerificationNotEnoughInformationToCallBV" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testUnchallengedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToCallBV)))
+          mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+
+          await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany())) mustBe {
+            RegistrationNotCalled
+          }
+          verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+        }
+
+        "business verification status is BusinessVerificationFail" in {
+          mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
+          mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testFailedBusinessVerificationStatus)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany())) mustBe {
@@ -215,10 +227,10 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
       }
 
       "store a registration state of registration not called" when {
-        "the business entity did not pass verification" in {
+        "business verification status is BusinessVerificationNotEnoughInformationToChallenge" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testFailedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToChallenge)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety())) mustBe {
@@ -227,10 +239,22 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         }
 
-        "the business entity was not challenged to verify" in {
+        "business verification status is BusinessVerificationNotEnoughInformationToCallBV" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testUnchallengedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToCallBV)))
+          mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
+
+          await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety())) mustBe {
+            RegistrationNotCalled
+          }
+          verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+        }
+
+        "business verification status is BusinessVerificationFail" in {
+          mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
+          mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testFailedBusinessVerificationStatus)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety())) mustBe {

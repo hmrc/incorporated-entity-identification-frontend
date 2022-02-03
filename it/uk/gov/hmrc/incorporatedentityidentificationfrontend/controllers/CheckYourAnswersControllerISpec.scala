@@ -24,6 +24,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus.BusinessVerificationNotEnoughInfoToChallengeKey
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -355,9 +356,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             )
           )
           stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
-          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)
+          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
           stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationUnchallengedJson)
+
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(BusinessVerificationNotEnoughInfoToChallengeKey))
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
@@ -365,7 +367,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrNotFoundController.show(testJourneyId).url)
-          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
           verifyAudit()
         }
@@ -443,9 +445,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
-        stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)
+        stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationUnchallengedJson)
+
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(BusinessVerificationNotEnoughInfoToChallengeKey))
         stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
@@ -471,7 +474,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationUnchallengedJson)
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(BusinessVerificationNotEnoughInfoToChallengeKey))
         stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
@@ -523,9 +526,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCioProfile))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
-        stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(status = OK)
+        stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationUnchallengedJson)
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(BusinessVerificationNotEnoughInfoToChallengeKey))
         stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)

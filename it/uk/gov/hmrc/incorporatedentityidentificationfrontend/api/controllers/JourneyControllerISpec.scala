@@ -186,7 +186,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
   "GET /api/journey/:journeyId" should {
     "return captured data" when {
-      "the journeyId exists" in {
+      "the journeyId exists and verificationStatus is BusinessVerificationPass" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveIncorporatedEntityInformation(testJourneyId)(
           status = OK,
@@ -201,6 +201,153 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
           )
         )
 
+
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+
+        result.json mustBe Json.obj(
+          "ctutr" -> testCtutr,
+          "companyProfile" -> Json.obj(
+            "companyName" -> testCompanyName,
+            "companyNumber" -> testCompanyNumber,
+            "dateOfIncorporation" -> testDateOfIncorporation,
+            "unsanitisedCHROAddress" -> Json.obj(
+              "address_line_1" -> "testLine1",
+              "address_line_2" -> "test town",
+              "care_of" -> "test name",
+              "country" -> "United Kingdom",
+              "locality" -> "test city",
+              "po_box" -> "123",
+              "postal_code" -> "AA11AA",
+              "premises" -> "1",
+              "region" -> "test region"
+            )
+          ),
+          "identifiersMatch" -> true,
+          "businessVerification" -> Json.obj(
+            "verificationStatus" -> "PASS"
+          ),
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTERED",
+            "registeredBusinessPartnerId" -> testSafeId
+          )
+        )
+      }
+    }
+    "return captured data" when {
+      "the journeyId exists and verificationStatus is BusinessVerificationFail" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyProfile = testCompanyProfile,
+              optCtutr = Some(testCtutr),
+              identifiersMatch = false,
+              businessVerification = Some(BusinessVerificationFail),
+              registration = testSuccessfulRegistration
+            )
+          )
+        )
+
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+
+        result.json mustBe Json.obj(
+          "ctutr" -> testCtutr,
+          "companyProfile" -> Json.obj(
+            "companyName" -> testCompanyName,
+            "companyNumber" -> testCompanyNumber,
+            "dateOfIncorporation" -> testDateOfIncorporation,
+            "unsanitisedCHROAddress" -> Json.obj(
+              "address_line_1" -> "testLine1",
+              "address_line_2" -> "test town",
+              "care_of" -> "test name",
+              "country" -> "United Kingdom",
+              "locality" -> "test city",
+              "po_box" -> "123",
+              "postal_code" -> "AA11AA",
+              "premises" -> "1",
+              "region" -> "test region"
+            )
+          ),
+          "identifiersMatch" -> false,
+          "businessVerification" -> Json.obj(
+            "verificationStatus" -> "FAIL"
+          ),
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTERED",
+            "registeredBusinessPartnerId" -> testSafeId
+          )
+        )
+      }
+    }
+    "return captured data" when {
+      "the journeyId exists and verificationStatus is BusinessVerificationNotEnoughInformationToChallenge (remapped to UNCHALLENGED)" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyProfile = testCompanyProfile,
+              optCtutr = Some(testCtutr),
+              identifiersMatch = true,
+              businessVerification = Some(BusinessVerificationNotEnoughInformationToChallenge),
+              registration = testSuccessfulRegistration
+            )
+          )
+        )
+
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+
+        result.json mustBe Json.obj(
+          "ctutr" -> testCtutr,
+          "companyProfile" -> Json.obj(
+            "companyName" -> testCompanyName,
+            "companyNumber" -> testCompanyNumber,
+            "dateOfIncorporation" -> testDateOfIncorporation,
+            "unsanitisedCHROAddress" -> Json.obj(
+              "address_line_1" -> "testLine1",
+              "address_line_2" -> "test town",
+              "care_of" -> "test name",
+              "country" -> "United Kingdom",
+              "locality" -> "test city",
+              "po_box" -> "123",
+              "postal_code" -> "AA11AA",
+              "premises" -> "1",
+              "region" -> "test region"
+            )
+          ),
+          "identifiersMatch" -> true,
+          "businessVerification" -> Json.obj(
+            "verificationStatus" -> "UNCHALLENGED"
+          ),
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTERED",
+            "registeredBusinessPartnerId" -> testSafeId
+          )
+        )
+      }
+    }
+    "return captured data" when {
+      "the journeyId exists and verificationStatus is BusinessVerificationNotEnoughInformationToCallBV (remapped to UNCHALLENGED)" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyProfile = testCompanyProfile,
+              optCtutr = Some(testCtutr),
+              identifiersMatch = true,
+              businessVerification = Some(BusinessVerificationNotEnoughInformationToCallBV),
+              registration = testSuccessfulRegistration
+            )
+          )
+        )
 
         lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
 
@@ -225,7 +372,55 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
           ),
           "identifiersMatch" -> true,
           "businessVerification" -> Json.obj(
-            "verificationStatus" -> "PASS"
+            "verificationStatus" -> "UNCHALLENGED"
+          ),
+          "registration" -> Json.obj(
+            "registrationStatus" -> "REGISTERED",
+            "registeredBusinessPartnerId" -> testSafeId
+          )
+        )
+      }
+    }
+    "return captured data" when {
+      "the journeyId exists and verificationStatus is CtEnrolled" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(
+            IncorporatedEntityInformation(
+              companyProfile = testCompanyProfile,
+              optCtutr = Some(testCtutr),
+              identifiersMatch = true,
+              businessVerification = Some(CtEnrolled),
+              registration = testSuccessfulRegistration
+            )
+          )
+        )
+
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+        result.json mustBe Json.obj(
+          "ctutr" -> testCtutr,
+          "companyProfile" -> Json.obj(
+            "companyName" -> testCompanyName,
+            "companyNumber" -> testCompanyNumber,
+            "dateOfIncorporation" -> testDateOfIncorporation,
+            "unsanitisedCHROAddress" -> Json.obj(
+              "address_line_1" -> "testLine1",
+              "address_line_2" -> "test town",
+              "care_of" -> "test name",
+              "country" -> "United Kingdom",
+              "locality" -> "test city",
+              "po_box" -> "123",
+              "postal_code" -> "AA11AA",
+              "premises" -> "1",
+              "region" -> "test region"
+            )
+          ),
+          "identifiersMatch" -> true,
+          "businessVerification" -> Json.obj(
+            "verificationStatus" -> "CT_ENROLLED"
           ),
           "registration" -> Json.obj(
             "registrationStatus" -> "REGISTERED",

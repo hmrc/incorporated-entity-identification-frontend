@@ -55,17 +55,19 @@ object TestConstants {
 
   val testPassedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationPass
   val testFailedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationFail
-  val testUnchallengedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationUnchallenged
+  val testBusinessVerificationNotEnoughInformationToChallenge: BusinessVerificationStatus = BusinessVerificationNotEnoughInformationToChallenge
+  val testBusinessVerificationNotEnoughInformationToCallBV: BusinessVerificationStatus = BusinessVerificationNotEnoughInformationToCallBV
   val testCtEnrolledStatus: BusinessVerificationStatus = CtEnrolled
 
-  val testPassedBusinessVerificationStatusJson: JsObject =
-    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
+  private val testPassedBusinessVerificationStatusJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
 
-  val testFailedBusinessVerificationStatusJson: JsObject =
-    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
+  private val testFailedBusinessVerificationStatusJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
 
-  val testUnchallengedBusinessVerificationStatusJson: JsObject =
-    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationUnchallengedKey)
+  private val testBusinessVerificationNotEnoughInformationToChallengeJson: JsObject =
+    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationNotEnoughInfoToChallengeKey)
+
+  private val testBusinessVerificationNotEnoughInformationToCallBVJson: JsObject =
+    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationNotEnoughInfoToCallBVKey)
 
   val testRegistrationStatusJson: JsObject = Json.obj(
     registrationStatusKey -> RegisteredKey,
@@ -87,35 +89,7 @@ object TestConstants {
   val testAccessibilityUrl = "/accessibility"
   val testCharityNumber = "CE123456"
 
-  def testJourneyConfigLimitedCompany(): JourneyConfig = JourneyConfig(
-    continueUrl = testContinueUrl,
-    pageConfig = PageConfig(
-      optServiceName = None,
-      deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl,
-      accessibilityUrl = testAccessibilityUrl),
-    businessEntity = LimitedCompany,
-    businessVerificationCheck = true,
-    regime = testRegime
-  )
-
-  def testJourneyConfigLimitedCompanyWithoutBV(): JourneyConfig = testJourneyConfigLimitedCompany().copy(businessVerificationCheck = false)
-
-  def testJourneyConfigRegisteredSociety(): JourneyConfig = JourneyConfig(
-    continueUrl = testContinueUrl,
-    pageConfig = PageConfig(
-      optServiceName = None,
-      deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl,
-      accessibilityUrl = testAccessibilityUrl),
-    businessEntity = RegisteredSociety,
-    businessVerificationCheck = true,
-    regime = testRegime
-  )
-
-  def testJourneyConfigRegisteredSocietyWithoutBV(): JourneyConfig = testJourneyConfigRegisteredSociety().copy(businessVerificationCheck = false)
-
-  val testUkCompanySuccessfulAuditEventJson: JsObject = Json.obj(
+  val testLimitedCompanySuccessfulAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "UK Company",
     "companyNumber" -> testCompanyProfile.companyNumber,
@@ -125,12 +99,11 @@ object TestConstants {
     "CTUTR" -> testCtutr
   )
 
-  val testDetailsNotFoundAuditEventJson: JsObject = Json.obj(
+  val testLimitedCompanyUnmatchedDefaultAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "UK Company",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
-    "VerificationStatus" -> testUnchallengedBusinessVerificationStatusJson,
     "RegisterApiStatus" -> "not called",
     "CTUTR" -> testCtutr
   )
@@ -174,12 +147,11 @@ object TestConstants {
     "CTUTR" -> testCtutr
   )
 
-  val testDetailsNotFoundRegisteredSocietyAuditEventJson: JsObject = Json.obj(
+  val testRegisteredSocietyUnmatchedDefaultAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "Registered Society",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
-    "VerificationStatus" -> testUnchallengedBusinessVerificationStatusJson,
     "RegisterApiStatus" -> "not called",
     "CTUTR" -> testCtutr
   )
@@ -193,14 +165,48 @@ object TestConstants {
     "RegisterApiStatus" -> "not called"
   )
 
-  val testCIOAuditEventJson: JsObject = Json.obj(
+  val testCIODefaultAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "CIO",
     "companyNumber" -> testCharityNumber,
     "identifiersMatch" -> false,
-    "VerificationStatus" -> testUnchallengedBusinessVerificationStatusJson,
     "RegisterApiStatus" -> "not called"
   )
 
+  val testAuditVerificationStatusNotEnoughInformationToChallengeJson: JsObject = Json.obj("VerificationStatus" -> testBusinessVerificationNotEnoughInformationToChallengeJson)
+
+  val testAuditVerificationStatusNotEnoughInformationToCallBVJson: JsObject = Json.obj("VerificationStatus" -> testBusinessVerificationNotEnoughInformationToCallBVJson)
+
+  val testAuditVerificationStatusFailedJson: JsObject = Json.obj("VerificationStatus" -> testFailedBusinessVerificationStatusJson)
+
   val testIrCtEnrolment: Enrolment = Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", testCtutr)), "Activated", None)
+
+  def testJourneyConfigLimitedCompanyWithoutBV(): JourneyConfig = testJourneyConfigLimitedCompany().copy(businessVerificationCheck = false)
+
+  def testJourneyConfigLimitedCompany(): JourneyConfig = JourneyConfig(
+    continueUrl = testContinueUrl,
+    pageConfig = PageConfig(
+      optServiceName = None,
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl,
+      accessibilityUrl = testAccessibilityUrl),
+    businessEntity = LimitedCompany,
+    businessVerificationCheck = true,
+    regime = testRegime
+  )
+
+  def testJourneyConfigRegisteredSocietyWithoutBV(): JourneyConfig = testJourneyConfigRegisteredSociety().copy(businessVerificationCheck = false)
+
+  def testJourneyConfigRegisteredSociety(): JourneyConfig = JourneyConfig(
+    continueUrl = testContinueUrl,
+    pageConfig = PageConfig(
+      optServiceName = None,
+      deskProServiceId = "vrs",
+      signOutUrl = testSignOutUrl,
+      accessibilityUrl = testAccessibilityUrl),
+    businessEntity = RegisteredSociety,
+    businessVerificationCheck = true,
+    regime = testRegime
+  )
+
 }

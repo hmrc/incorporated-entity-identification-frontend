@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.{CreateBusinessVerificationJourneyConnector, RetrieveBusinessVerificationStatusConnector}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationStatus, BusinessVerificationUnchallenged, JourneyCreated, NotEnoughEvidence, UserLockedOut}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -31,16 +31,15 @@ class BusinessVerificationService @Inject()(createBusinessVerificationJourneyCon
   def createBusinessVerificationJourney(journeyId: String, ctutr: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     createBusinessVerificationJourneyConnector.createBusinessVerificationJourney(journeyId, ctutr).flatMap {
       case Right(JourneyCreated(redirectUrl)) => Future.successful(Option(redirectUrl))
-      case Left(failureReason) => {
+      case Left(failureReason) =>
         val bvStatus = failureReason match {
-          case NotEnoughEvidence => BusinessVerificationUnchallenged
+          case NotEnoughEvidence => BusinessVerificationNotEnoughInformationToChallenge
           case UserLockedOut => BusinessVerificationFail
           case _ => throw new InternalServerException(s"createBusinessVerificationJourney service failed with invalid BV status")
         }
         storageService.storeBusinessVerificationStatus(journeyId, bvStatus).map {
           _ => None
         }
-      }
     }
 
   def retrieveBusinessVerificationStatus(businessVerificationJourneyId: String)(implicit hc: HeaderCarrier): Future[BusinessVerificationStatus] =
