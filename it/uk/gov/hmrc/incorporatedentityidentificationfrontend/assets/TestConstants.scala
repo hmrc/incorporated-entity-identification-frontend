@@ -17,9 +17,9 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
 import java.time.LocalDate
 import java.util.UUID
@@ -48,8 +48,8 @@ object TestConstants {
   val testDefaultAccessibilityUrl: String = "/accessibility-statement/vat-registration"
   val testSafeId: String = UUID.randomUUID().toString
   val testRegime: String = "VATC"
-  val testBusinessVerificationPassJson: JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationPassKey)
-  val testBusinessVerificationFailJson: JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationFailKey)
+  val testBusinessVerificationPassJson: JsObject = testBusinessVerificationJson(value = businessVerificationPassKey)
+  val testBusinessVerificationFailJson: JsObject = testBusinessVerificationJson(value = businessVerificationFailKey)
   val testSuccessfulRegistration: RegistrationStatus = Registered(testSafeId)
   val testFailedRegistration: RegistrationStatus = RegistrationFailed
   val testSuccessfulRegistrationJson: JsObject = Json.obj(
@@ -138,6 +138,6 @@ object TestConstants {
       regime = testRegime
     )
 
-  def testBusinessVerificationJson(businessVerificationValue:String): JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationValue)
+  def testBusinessVerificationJson(value: String): JsObject = Json.obj(businessVerificationStatusKey -> value)
 
 }
