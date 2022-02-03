@@ -53,12 +53,6 @@ object TestConstants {
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testSafeId: String = UUID.randomUUID().toString
 
-  val testPassedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationPass
-  val testFailedBusinessVerificationStatus: BusinessVerificationStatus = BusinessVerificationFail
-  val testBusinessVerificationNotEnoughInformationToChallenge: BusinessVerificationStatus = BusinessVerificationNotEnoughInformationToChallenge
-  val testBusinessVerificationNotEnoughInformationToCallBV: BusinessVerificationStatus = BusinessVerificationNotEnoughInformationToCallBV
-  val testCtEnrolledStatus: BusinessVerificationStatus = CtEnrolled
-
   private val testPassedBusinessVerificationStatusJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
 
   private val testFailedBusinessVerificationStatusJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
@@ -81,7 +75,7 @@ object TestConstants {
       testCompanyProfile,
       Some(testCtutr),
       testIdentifiersMatch,
-      Some(testPassedBusinessVerificationStatus),
+      Some(BusinessVerificationPass),
       Registered(testSafeId)
     )
   val testContinueUrl = "/test"

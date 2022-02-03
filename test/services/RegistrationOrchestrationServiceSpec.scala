@@ -43,7 +43,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "the business entity is successfully verified and then registered" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
           mockRegisterLimitedCompany(testCompanyNumber, testCtutr, testRegime)(Future.successful(Registered(testSafeId)))
           mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
@@ -57,7 +57,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "when the business entity is verified but fails to register" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
           mockRegisterLimitedCompany(testCompanyNumber, testCtutr, testRegime)(Future.successful(RegistrationFailed))
           mockStoreRegistrationStatus(testJourneyId, RegistrationFailed)(Future.successful(SuccessfullyStored))
 
@@ -71,7 +71,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "the business has an IR-CT enrolment and then registers" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testCtEnrolledStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(CtEnrolled)))
           mockRegisterLimitedCompany(testCompanyNumber, testCtutr, testRegime)(Future.successful(Registered(testSafeId)))
           mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
@@ -111,7 +111,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "business verification status is BusinessVerificationFail" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testFailedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationFail)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany())) mustBe {
@@ -125,7 +125,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "there is no ctutr in the database" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(None))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
 
           intercept[InternalServerException](
             await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany()))
@@ -135,7 +135,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "there is no company profile in the database" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(None))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
 
           intercept[InternalServerException](
             await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany()))
@@ -186,7 +186,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "the business entity is successfully verified and then registered" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
           mockRegisterRegisteredSociety(testCompanyNumber, testCtutr, testRegime)(Future.successful(Registered(testSafeId)))
           mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
@@ -200,7 +200,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "when the business entity is verified but fails to register" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
           mockRegisterRegisteredSociety(testCompanyNumber, testCtutr, testRegime)(Future.successful(RegistrationFailed))
           mockStoreRegistrationStatus(testJourneyId, RegistrationFailed)(Future.successful(SuccessfullyStored))
 
@@ -214,7 +214,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "the business has an IR-CT enrolment and then registers" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testCtEnrolledStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(CtEnrolled)))
           mockRegisterRegisteredSociety(testCompanyNumber, testCtutr, testRegime)(Future.successful(Registered(testSafeId)))
           mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
@@ -254,7 +254,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "business verification status is BusinessVerificationFail" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testFailedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationFail)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety())) mustBe {
@@ -268,7 +268,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "there is no ctutr in the database" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(None))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
 
           intercept[InternalServerException](
             await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety()))
@@ -278,7 +278,7 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "there is no company profile in the database" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(None))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(testPassedBusinessVerificationStatus)))
+          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
 
           intercept[InternalServerException](
             await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety()))
