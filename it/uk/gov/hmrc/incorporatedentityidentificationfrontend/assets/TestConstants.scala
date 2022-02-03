@@ -48,8 +48,8 @@ object TestConstants {
   val testDefaultAccessibilityUrl: String = "/accessibility-statement/vat-registration"
   val testSafeId: String = UUID.randomUUID().toString
   val testRegime: String = "VATC"
-  val testBusinessVerificationPassJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
-  val testBusinessVerificationFailJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
+  val testBusinessVerificationPassJson: JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationPassKey)
+  val testBusinessVerificationFailJson: JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationFailKey)
   val testSuccessfulRegistration: RegistrationStatus = Registered(testSafeId)
   val testFailedRegistration: RegistrationStatus = RegistrationFailed
   val testSuccessfulRegistrationJson: JsObject = Json.obj(
@@ -138,6 +138,6 @@ object TestConstants {
       regime = testRegime
     )
 
-  def testBusinessVerificationJson(businessVerificationValue:String): JsObject = Json.obj(BusinessVerificationStatusKey -> businessVerificationValue)
+  def testBusinessVerificationJson(businessVerificationValue:String): JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationValue)
 
 }

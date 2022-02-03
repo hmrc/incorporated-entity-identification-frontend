@@ -49,7 +49,7 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     val businessVerificationStatusBlock =
       optBusinessVerificationStatus match {
         case Some(bvStatus) => Json.obj("VerificationStatus" -> bvStatus)
-        case _ => Json.obj("VerificationStatus" -> Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey))
+        case _ => Json.obj("VerificationStatus" -> Json.obj(businessVerificationStatusKey -> businessVerificationFailKey))
       }
     val registrationStatus =
       optRegistrationStatus match {

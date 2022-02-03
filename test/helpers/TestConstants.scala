@@ -53,15 +53,15 @@ object TestConstants {
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testSafeId: String = UUID.randomUUID().toString
 
-  private val testPassedBusinessVerificationStatusJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
+  private val testPassedBusinessVerificationStatusJson: JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationPassKey)
 
-  private val testFailedBusinessVerificationStatusJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
+  private val testFailedBusinessVerificationStatusJson: JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationFailKey)
 
   private val testBusinessVerificationNotEnoughInformationToChallengeJson: JsObject =
-    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationNotEnoughInfoToChallengeKey)
+    Json.obj(businessVerificationStatusKey -> businessVerificationNotEnoughInfoToChallengeKey)
 
   private val testBusinessVerificationNotEnoughInformationToCallBVJson: JsObject =
-    Json.obj(BusinessVerificationStatusKey -> BusinessVerificationNotEnoughInfoToCallBVKey)
+    Json.obj(businessVerificationStatusKey -> businessVerificationNotEnoughInfoToCallBVKey)
 
   val testRegistrationStatusJson: JsObject = Json.obj(
     registrationStatusKey -> RegisteredKey,

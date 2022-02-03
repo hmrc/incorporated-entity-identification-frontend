@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus.{BusinessVerificationPassKey, _}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus.{businessVerificationPassKey, _}
 
 
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
@@ -75,11 +75,11 @@ object IncorporatedEntityInformation {
           val businessVerificationStatusForCallingServices: String = businessVerification match {
             case BusinessVerificationNotEnoughInformationToCallBV |
                  BusinessVerificationNotEnoughInformationToChallenge => businessVerificationUnchallengedKey
-            case BusinessVerificationPass => BusinessVerificationPassKey
-            case BusinessVerificationFail => BusinessVerificationFailKey
-            case CtEnrolled => BusinessVerificationCtEnrolledKey
+            case BusinessVerificationPass => businessVerificationPassKey
+            case BusinessVerificationFail => businessVerificationFailKey
+            case CtEnrolled => businessVerificationCtEnrolledKey
           }
-          Json.obj(businessVerificationKey ->  Json.obj(BusinessVerificationStatusKey -> businessVerificationStatusForCallingServices))
+          Json.obj(businessVerificationKey ->  Json.obj(businessVerificationStatusKey -> businessVerificationStatusForCallingServices))
         })
         .getOrElse(Json.obj())
     }

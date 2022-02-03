@@ -31,33 +31,33 @@ case object BusinessVerificationNotEnoughInformationToCallBV extends BusinessVer
 case object CtEnrolled extends BusinessVerificationStatus
 
 object BusinessVerificationStatus {
-  val BusinessVerificationPassKey = "PASS"
-  val BusinessVerificationFailKey = "FAIL"
-  val BusinessVerificationNotEnoughInfoToChallengeKey = "NOT_ENOUGH_INFORMATION_TO_CHALLENGE"
-  val BusinessVerificationNotEnoughInfoToCallBVKey = "NOT_ENOUGH_INFORMATION_TO_CALL_BV"
-  val BusinessVerificationCtEnrolledKey = "CT_ENROLLED"
-  val BusinessVerificationStatusKey = "verificationStatus"
+  val businessVerificationPassKey = "PASS"
+  val businessVerificationFailKey = "FAIL"
+  val businessVerificationNotEnoughInfoToChallengeKey = "NOT_ENOUGH_INFORMATION_TO_CHALLENGE"
+  val businessVerificationNotEnoughInfoToCallBVKey = "NOT_ENOUGH_INFORMATION_TO_CALL_BV"
+  val businessVerificationCtEnrolledKey = "CT_ENROLLED"
+  val businessVerificationStatusKey = "verificationStatus"
 
   implicit val format: Format[BusinessVerificationStatus] = new Format[BusinessVerificationStatus] {
     override def writes(businessVerificationStatus: BusinessVerificationStatus): JsObject = {
       val businessVerificationStatusString = businessVerificationStatus match {
-        case BusinessVerificationPass => BusinessVerificationPassKey
-        case BusinessVerificationFail => BusinessVerificationFailKey
-        case BusinessVerificationNotEnoughInformationToChallenge => BusinessVerificationNotEnoughInfoToChallengeKey
-        case BusinessVerificationNotEnoughInformationToCallBV => BusinessVerificationNotEnoughInfoToCallBVKey
-        case CtEnrolled => BusinessVerificationCtEnrolledKey
+        case BusinessVerificationPass => businessVerificationPassKey
+        case BusinessVerificationFail => businessVerificationFailKey
+        case BusinessVerificationNotEnoughInformationToChallenge => businessVerificationNotEnoughInfoToChallengeKey
+        case BusinessVerificationNotEnoughInformationToCallBV => businessVerificationNotEnoughInfoToCallBVKey
+        case CtEnrolled => businessVerificationCtEnrolledKey
       }
 
-      Json.obj(BusinessVerificationStatusKey -> businessVerificationStatusString)
+      Json.obj(businessVerificationStatusKey -> businessVerificationStatusString)
     }
 
     override def reads(json: JsValue): JsResult[BusinessVerificationStatus] =
-      (json \ BusinessVerificationStatusKey).validate[String].collect(JsonValidationError("Invalid business validation state")) {
-        case BusinessVerificationPassKey => BusinessVerificationPass
-        case BusinessVerificationFailKey => BusinessVerificationFail
-        case BusinessVerificationNotEnoughInfoToChallengeKey => BusinessVerificationNotEnoughInformationToChallenge
-        case BusinessVerificationNotEnoughInfoToCallBVKey => BusinessVerificationNotEnoughInformationToCallBV
-        case BusinessVerificationCtEnrolledKey => CtEnrolled
+      (json \ businessVerificationStatusKey).validate[String].collect(JsonValidationError("Invalid business validation state")) {
+        case `businessVerificationPassKey` => BusinessVerificationPass
+        case `businessVerificationFailKey` => BusinessVerificationFail
+        case `businessVerificationNotEnoughInfoToChallengeKey` => BusinessVerificationNotEnoughInformationToChallenge
+        case `businessVerificationNotEnoughInfoToCallBVKey` => BusinessVerificationNotEnoughInformationToCallBV
+        case `businessVerificationCtEnrolledKey` => CtEnrolled
       }
   }
 
