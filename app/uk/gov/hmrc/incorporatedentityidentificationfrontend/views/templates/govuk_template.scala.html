@@ -60,7 +60,7 @@
 @hmrcLayout(
     pageTitle = Some(title),
     isWelshTranslationAvailable = false,
-    signOutUrl = Some(appConfig.vatRegFeedbackUrl),
+    signOutUrl = Some(pageConfig.signOutUrl),
     additionalHeadBlock = Some(head),
     accessibilityStatementUrl = Some(pageConfig.accessibilityUrl),
     nonce = CSPNonce.get,
