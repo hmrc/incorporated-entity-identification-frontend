@@ -140,4 +140,11 @@ object TestConstants {
 
   def testBusinessVerificationJson(value: String): JsObject = Json.obj(businessVerificationStatusKey -> value)
 
+  def testDefaultIncorporatedEntityInformation(businessVerificationStatus:BusinessVerificationStatus): IncorporatedEntityInformation =  IncorporatedEntityInformation(
+    companyProfile = testCompanyProfile,
+    optCtutr = Some(testCtutr),
+    identifiersMatch = true,
+    businessVerification = Some(businessVerificationStatus),
+    registration = testSuccessfulRegistration
+  )
 }

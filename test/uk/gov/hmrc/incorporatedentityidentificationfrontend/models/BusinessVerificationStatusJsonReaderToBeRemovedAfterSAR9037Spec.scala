@@ -28,8 +28,8 @@ class BusinessVerificationStatusJsonReaderToBeRemovedAfterSAR9037Spec extends An
     BusinessVerificationStatus.format.writes(BusinessVerificationPass) should be( Json.obj(businessVerificationStatusKey -> businessVerificationPassKey))
   }
 
-  "writing BusinessVerificationUnchallenged json" should "be illegal (left only to prove they we did not forget) and throw an exception" in {
-    an [IllegalArgumentException] should be thrownBy BusinessVerificationStatus.format.writes(BusinessVerificationUnchallenged)
+  "BusinessVerificationUnchallenged" should "be serialized into into UNCHALLENGED" in {
+    BusinessVerificationStatus.format.writes(BusinessVerificationUnchallenged) should be( Json.obj(businessVerificationStatusKey -> "UNCHALLENGED"))
   }
 
   "{\"verificationStatus\":\"UNCHALLENGED\"}" should "be deserialized into BusinessVerificationUnchallenged" in {

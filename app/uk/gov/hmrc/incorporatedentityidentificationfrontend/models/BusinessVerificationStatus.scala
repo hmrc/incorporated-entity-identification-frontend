@@ -52,7 +52,7 @@ object BusinessVerificationStatus {
         case BusinessVerificationNotEnoughInformationToChallenge => businessVerificationNotEnoughInfoToChallengeKey
         case BusinessVerificationNotEnoughInformationToCallBV => businessVerificationNotEnoughInfoToCallBVKey
         case CtEnrolled => businessVerificationCtEnrolledKey
-        case BusinessVerificationUnchallenged => throw new IllegalArgumentException("This should not happen because nobody should use BusinessVerificationUnchallenged")
+        case BusinessVerificationUnchallenged => businessVerificationUnchallengedKey
       }
 
       Json.obj(businessVerificationStatusKey -> businessVerificationStatusString)

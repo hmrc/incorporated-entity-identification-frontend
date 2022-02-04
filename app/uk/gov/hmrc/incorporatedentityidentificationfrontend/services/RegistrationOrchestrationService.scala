@@ -34,6 +34,7 @@ class RegistrationOrchestrationService @Inject()(storageService: StorageService,
       case Some(BusinessVerificationPass | CtEnrolled) => true
       case Some(BusinessVerificationNotEnoughInformationToChallenge |
                 BusinessVerificationNotEnoughInformationToCallBV |
+                BusinessVerificationUnchallenged |
                 BusinessVerificationFail) => false
       case None if !journeyConfig.businessVerificationCheck => true
       case None =>
