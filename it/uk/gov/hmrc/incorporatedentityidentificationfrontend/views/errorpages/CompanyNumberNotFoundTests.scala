@@ -27,7 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testAccessibilityUrl
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testSignOutUrl}
 
 import scala.concurrent.Future
 
@@ -50,8 +50,8 @@ trait CompanyNumberNotFoundTests {
       doc.getSignOutText mustBe Header.signOut
     }
 
-    "have a sign out link that redirects to feedback page" in {
-      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    "have a sign out link that redirects to correct page" in {
+      doc.getSignOutLink mustBe testSignOutUrl
     }
 
     "have the correct beta banner" in {
@@ -84,7 +84,7 @@ trait CompanyNumberNotFoundTests {
       footerLinks.size() must be >= 2
 
       footerLinks.eq(1).attr("href") mustBe testAccessibilityUrl
-    }
+  }
   }
 
   def testServiceName(serviceName: String,

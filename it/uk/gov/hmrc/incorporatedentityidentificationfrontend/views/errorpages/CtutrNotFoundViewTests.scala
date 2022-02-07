@@ -24,7 +24,7 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{BetaBanner, Header, CtutrNotFound => messages}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testJourneyId}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testJourneyId, testSignOutUrl}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -51,8 +51,8 @@ trait CtutrNotFoundViewTests {
       doc.getSignOutText mustBe Header.signOut
     }
 
-    "sign out link redirects to feedback page" in {
-      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    "have a sign out link that redirects to correct page" in {
+      doc.getSignOutLink mustBe testSignOutUrl
     }
 
     "have the correct beta banner" in {

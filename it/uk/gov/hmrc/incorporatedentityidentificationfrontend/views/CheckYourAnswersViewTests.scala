@@ -24,12 +24,11 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CheckYourAnswers => messages}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCompanyNumber, testCtutr}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testCompanyNumber, testCtutr, testSignOutUrl}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testAccessibilityUrl
 
 import scala.collection.JavaConverters._
 import scala.concurrent.Future
@@ -61,8 +60,8 @@ trait CheckYourAnswersViewTests {
       doc.getSignOutText mustBe Header.signOut
     }
 
-    "have a sign out link that redirects to feedback page" in {
-      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    "have a sign out link that redirects to correct page" in {
+      doc.getSignOutLink mustBe testSignOutUrl
     }
 
     "have the correct beta banner" in {
@@ -152,8 +151,8 @@ trait CheckYourAnswersViewTests {
       doc.getSignOutText mustBe Header.signOut
     }
 
-    "have a sign out link that redirects to feedback page" in {
-      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    "have a sign out link that redirects to correct page" in {
+      doc.getSignOutLink mustBe testSignOutUrl
     }
 
     "have the correct beta banner" in {
@@ -235,8 +234,8 @@ trait CheckYourAnswersViewTests {
       doc.getSignOutText mustBe Header.signOut
     }
 
-    "have a sign out link that redirects to feedback page" in {
-      doc.getSignOutLink mustBe config.vatRegFeedbackUrl
+    "have a sign out link that redirects to correct page" in {
+      doc.getSignOutLink mustBe testSignOutUrl
     }
 
     "have the correct beta banner" in {

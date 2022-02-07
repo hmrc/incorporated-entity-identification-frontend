@@ -42,6 +42,7 @@ field is "true".
   "businessVerificationCheck": false,
   "optServiceName" : "Service Name",
   "deskProServiceId" : "DeskProServiceId",
+  "signOutUrl" : "/testSignOutUrl",
   "regime" : "VATC",
   "accessibilityUrl" : "/accessibility-statement/my-service"
 }
@@ -80,6 +81,7 @@ field is "true".
   "businessVerificationCheck": false,
   "optServiceName" : "Service Name",
   "deskProServiceId" : "DeskProServiceId",
+  "signOutUrl" : "/testSignOutUrl",
   "regime" : "VATC",
   "accessibilityUrl" : "/accessibility-statement/my-service"
 }
@@ -118,6 +120,7 @@ field is "true".
   "businessVerificationCheck": false,
   "optServiceName" : "Service Name",
   "deskProServiceId" : "DeskProServiceId",
+  "signOutUrl" : "/testSignOutUrl",
   "regime" : "VATC",
   "accessibilityUrl" : "/accessibility-statement/my-service"
 }
@@ -156,6 +159,7 @@ field is "true".
   "businessVerificationCheck": false,
   "optServiceName" : "Service Name",
   "deskProServiceId" : "DeskProServiceId",
+  "signOutUrl" : "/testSignOutUrl",
   "regime" : "VATC",
   "accessibilityUrl" : "/accessibility-statement/my-service"
 }

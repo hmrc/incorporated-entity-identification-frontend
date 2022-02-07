@@ -35,7 +35,7 @@ Test entry point for initial call to set up a create limited company journey.
 
 4. Sign Out Link (Required)
 
-    - Shown in the HMRC header - typically a link to a feedback questionnaire
+    - Shown in the HMRC header - a link to the sign out page for the calling service
     - This is currently autofilled but can be changed
 
 5. Business verification checkbox
@@ -75,7 +75,7 @@ Test entry point for initial call to set up a create registered society journey.
 
 4. Sign Out Link (Required)
 
-    - Shown in the HMRC header - typically a link to a feedback questionnaire
+    - Shown in the HMRC header - a link to the sign out page for the calling service
     - This is currently autofilled but can be changed
 
 5. Business verification checkbox
@@ -114,7 +114,7 @@ Test entry point for initial call to set up a create charitable incorporated org
 
 4. Sign Out Link (Required)
 
-    - Shown in the HMRC header - typically a link to a feedback questionnaire
+    - Shown in the HMRC header - a link to the sign out page for the calling service
     - This is currently autofilled but can be changed
 
 5. Business verification checkbox
@@ -156,7 +156,7 @@ Test entry point for initial call to set up a create limited company journey.
 
 4. Sign Out Link (Required)
 
-     - Shown in the HMRC header - typically a link to a feedback questionnaire
+     - Shown in the HMRC header - a link to the sign out page for the calling service
      - This is currently autofilled but can be changed
 
 5. Business verification checkbox
