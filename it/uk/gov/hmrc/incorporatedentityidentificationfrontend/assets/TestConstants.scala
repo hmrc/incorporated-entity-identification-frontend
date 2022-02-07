@@ -17,9 +17,9 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
 import java.time.LocalDate
 import java.util.UUID
@@ -48,9 +48,8 @@ object TestConstants {
   val testDefaultAccessibilityUrl: String = "/accessibility-statement/vat-registration"
   val testSafeId: String = UUID.randomUUID().toString
   val testRegime: String = "VATC"
-  val testBusinessVerificationPassJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationPassKey)
-  val testBusinessVerificationFailJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationFailKey)
-  val testBusinessVerificationUnchallengedJson: JsObject = Json.obj(BusinessVerificationStatusKey -> BusinessVerificationUnchallengedKey)
+  val testBusinessVerificationPassJson: JsObject = testBusinessVerificationJson(value = businessVerificationPassKey)
+  val testBusinessVerificationFailJson: JsObject = testBusinessVerificationJson(value = businessVerificationFailKey)
   val testSuccessfulRegistration: RegistrationStatus = Registered(testSafeId)
   val testFailedRegistration: RegistrationStatus = RegistrationFailed
   val testSuccessfulRegistrationJson: JsObject = Json.obj(
@@ -79,7 +78,7 @@ object TestConstants {
   val testRegisteredSocietyJourneyConfig: JourneyConfig = createTestJourneyConfig(RegisteredSociety)
   val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
 
-  private def createTestJourneyConfig(entityType: BusinessEntity) =
+  private def createTestJourneyConfig(entityType: BusinessEntity): JourneyConfig =
     JourneyConfig(
       testContinueUrl,
       PageConfig(None, testDeskProServiceId, testSignOutUrl, testAccessibilityUrl),
@@ -139,4 +138,13 @@ object TestConstants {
       regime = testRegime
     )
 
+  def testBusinessVerificationJson(value: String): JsObject = Json.obj(businessVerificationStatusKey -> value)
+
+  def testDefaultIncorporatedEntityInformation(businessVerificationStatus:BusinessVerificationStatus): IncorporatedEntityInformation =  IncorporatedEntityInformation(
+    companyProfile = testCompanyProfile,
+    optCtutr = Some(testCtutr),
+    identifiersMatch = true,
+    businessVerification = Some(businessVerificationStatus),
+    registration = testSuccessfulRegistration
+  )
 }

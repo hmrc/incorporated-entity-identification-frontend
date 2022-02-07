@@ -25,7 +25,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.Jour
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => controllerRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, StorageService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
@@ -81,7 +81,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
       authorised() {
         incorporatedEntityInformationRetrievalService.retrieveIncorporatedEntityInformation(journeyId).map {
           case Some(journeyData) =>
-            Ok(Json.toJson(journeyData))
+            Ok(Json.toJson(journeyData)(IncorporatedEntityInformation.jsonWriterForCallingServices))
           case None =>
             NotFound
         }

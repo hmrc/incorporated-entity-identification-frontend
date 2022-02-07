@@ -31,9 +31,12 @@ class RegistrationOrchestrationService @Inject()(storageService: StorageService,
 
   def register(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
     shouldRegister <- storageService.retrieveBusinessVerificationStatus(journeyId).map {
-      case Some(BusinessVerificationPass) | Some(CtEnrolled) => true
+      case Some(BusinessVerificationPass | CtEnrolled) => true
+      case Some(BusinessVerificationNotEnoughInformationToChallenge |
+                BusinessVerificationNotEnoughInformationToCallBV |
+                BusinessVerificationUnchallenged |
+                BusinessVerificationFail) => false
       case None if !journeyConfig.businessVerificationCheck => true
-      case Some(_) => false
       case None =>
         throw new InternalServerException(s"Missing business verification state in database for $journeyId")
     }

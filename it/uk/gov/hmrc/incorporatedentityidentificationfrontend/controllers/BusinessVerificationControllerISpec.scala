@@ -22,7 +22,7 @@ import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, FeatureSwitching}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationPass, BusinessVerificationUnchallenged}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationNotEnoughInformationToChallenge, BusinessVerificationPass}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
@@ -101,19 +101,19 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
         }
       }
 
-      "store a verification state of UNCHALLENGED and redirect to the registration controller" when {
+      "store a verification state of BusinessVerificationNotEnoughInformationToChallenge and redirect to the registration controller" when {
         "business verification does not have enough information to create a verification journey" in {
           enable(BusinessVerificationStub)
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
           stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId)(NOT_FOUND)
-          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
+          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
-          verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationUnchallenged)
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)
         }
       }
       "store a verification state of FAIL and redirect to the registration controller" when {
@@ -128,7 +128,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
-          verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationFail)
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)
         }
       }
     }
@@ -147,18 +147,18 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
         }
       }
 
-      "store a verification state of UNCHALLENGED and redirect to the registration controller" when {
+      "store a verification state of BusinessVerificationNotEnoughInformationToChallenge and redirect to the registration controller" when {
         "business verification does not have enough information to create a verification journey" in {
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
           stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(NOT_FOUND)
-          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationUnchallenged)(OK)
+          stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
-          verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationUnchallenged)
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)
         }
       }
       "store a verification state of FAIL and redirect to the registration controller" when {

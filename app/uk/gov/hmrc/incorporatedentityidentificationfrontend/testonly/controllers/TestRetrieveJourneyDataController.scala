@@ -16,30 +16,24 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers
 
-import javax.inject.{Inject, Singleton}
-import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityInformationConnector
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors.TestRetrieveJourneyDataConnector
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
 class TestRetrieveJourneyDataController @Inject()(messagesControllerComponents: MessagesControllerComponents,
-                                                  incorporatedEntityInformationConnector: IncorporatedEntityInformationConnector,
+                                                  testRetrieveJourneyDataConnector: TestRetrieveJourneyDataConnector,
                                                   val authConnector: AuthConnector
                                                  )(implicit ec: ExecutionContext) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
   def retrieveIncorporatedEntityInformation(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
-        incorporatedEntityInformationConnector.retrieveIncorporatedEntityInformation(journeyId).map {
-          case Some(journeyData) =>
-            Ok(Json.toJson(journeyData))
-          case None =>
-            NotFound
-        }
+        testRetrieveJourneyDataConnector.retrieveJourneyData(journeyId).map(Ok(_))
       }
   }
 

@@ -25,11 +25,10 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpag
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsNotFound, DetailsNotProvided}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, RegistrationNotCalled}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationNotEnoughInformationToCallBV, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, JourneyService, StorageService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -112,14 +111,14 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                 for {
                   _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
                   _ <-
-                    if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                    if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
                     else Future.successful(())
                   _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
                   _ <- auditService.auditJourney(journeyId, authInternalId)
                 } yield Redirect(errorRoutes.CtutrNotFoundController.show(journeyId))
               case DetailsNotProvided => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
-                _ <- if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationUnchallenged)
+                _ <- if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
                 else Future.successful(())
                 _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
                 _ <- auditService.auditJourney(journeyId, authInternalId)

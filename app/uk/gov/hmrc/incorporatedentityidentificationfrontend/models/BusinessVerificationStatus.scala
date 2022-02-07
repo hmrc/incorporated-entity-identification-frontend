@@ -18,42 +18,54 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json._
 
-
 sealed trait BusinessVerificationStatus
 
 case object BusinessVerificationPass extends BusinessVerificationStatus
 
 case object BusinessVerificationFail extends BusinessVerificationStatus
 
+case object BusinessVerificationNotEnoughInformationToChallenge extends BusinessVerificationStatus
+
+case object BusinessVerificationNotEnoughInformationToCallBV extends BusinessVerificationStatus
+
+// to be removed after SAR-9037 release
 case object BusinessVerificationUnchallenged extends BusinessVerificationStatus
 
 case object CtEnrolled extends BusinessVerificationStatus
 
 object BusinessVerificationStatus {
-  val BusinessVerificationPassKey = "PASS"
-  val BusinessVerificationFailKey = "FAIL"
-  val BusinessVerificationUnchallengedKey = "UNCHALLENGED"
-  val BusinessVerificationCtEnrolledKey = "CT_ENROLLED"
-  val BusinessVerificationStatusKey = "verificationStatus"
+  val businessVerificationPassKey = "PASS"
+  val businessVerificationFailKey = "FAIL"
+  val businessVerificationNotEnoughInfoToChallengeKey = "NOT_ENOUGH_INFORMATION_TO_CHALLENGE"
+  val businessVerificationNotEnoughInfoToCallBVKey = "NOT_ENOUGH_INFORMATION_TO_CALL_BV"
+  val businessVerificationCtEnrolledKey = "CT_ENROLLED"
+  val businessVerificationStatusKey = "verificationStatus"
+
+  // to be removed after SAR-9037 release
+  val businessVerificationUnchallengedKey = "UNCHALLENGED"
 
   implicit val format: Format[BusinessVerificationStatus] = new Format[BusinessVerificationStatus] {
     override def writes(businessVerificationStatus: BusinessVerificationStatus): JsObject = {
       val businessVerificationStatusString = businessVerificationStatus match {
-        case BusinessVerificationPass => BusinessVerificationPassKey
-        case BusinessVerificationFail => BusinessVerificationFailKey
-        case BusinessVerificationUnchallenged => BusinessVerificationUnchallengedKey
-        case CtEnrolled => BusinessVerificationCtEnrolledKey
+        case BusinessVerificationPass => businessVerificationPassKey
+        case BusinessVerificationFail => businessVerificationFailKey
+        case BusinessVerificationNotEnoughInformationToChallenge => businessVerificationNotEnoughInfoToChallengeKey
+        case BusinessVerificationNotEnoughInformationToCallBV => businessVerificationNotEnoughInfoToCallBVKey
+        case CtEnrolled => businessVerificationCtEnrolledKey
+        case BusinessVerificationUnchallenged => businessVerificationUnchallengedKey
       }
 
-      Json.obj(BusinessVerificationStatusKey -> businessVerificationStatusString)
+      Json.obj(businessVerificationStatusKey -> businessVerificationStatusString)
     }
 
     override def reads(json: JsValue): JsResult[BusinessVerificationStatus] =
-      (json \ BusinessVerificationStatusKey).validate[String].collect(JsonValidationError("Invalid business validation state")) {
-        case BusinessVerificationPassKey => BusinessVerificationPass
-        case BusinessVerificationFailKey => BusinessVerificationFail
-        case BusinessVerificationUnchallengedKey => BusinessVerificationUnchallenged
-        case BusinessVerificationCtEnrolledKey => CtEnrolled
+      (json \ businessVerificationStatusKey).validate[String].collect(JsonValidationError("Invalid business validation state")) {
+        case `businessVerificationPassKey` => BusinessVerificationPass
+        case `businessVerificationFailKey` => BusinessVerificationFail
+        case `businessVerificationNotEnoughInfoToChallengeKey` => BusinessVerificationNotEnoughInformationToChallenge
+        case `businessVerificationNotEnoughInfoToCallBVKey` => BusinessVerificationNotEnoughInformationToCallBV
+        case `businessVerificationCtEnrolledKey` => CtEnrolled
+        case `businessVerificationUnchallengedKey` => BusinessVerificationUnchallenged
       }
   }
 

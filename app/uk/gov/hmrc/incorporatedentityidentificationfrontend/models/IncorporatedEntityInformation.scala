@@ -17,6 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
 
 
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
@@ -34,6 +35,7 @@ object IncorporatedEntityInformation {
   val businessVerificationKey = "businessVerification"
   val verificationStatusKey = "verificationStatus"
   val registrationKey = "registration"
+  val businessVerificationUnchallengedKey = "UNCHALLENGED"
 
   implicit val format: OFormat[IncorporatedEntityInformation] = new OFormat[IncorporatedEntityInformation] {
     override def reads(json: JsValue): JsResult[IncorporatedEntityInformation] =
@@ -65,4 +67,21 @@ object IncorporatedEntityInformation {
       }
 
   }
+
+  val jsonWriterForCallingServices: Writes[IncorporatedEntityInformation] = (incorporatedEntityInformation: IncorporatedEntityInformation) =>
+    format.writes(incorporatedEntityInformation) ++ {
+      incorporatedEntityInformation.businessVerification
+        .map(businessVerification => {
+          val businessVerificationStatusForCallingServices: String = businessVerification match {
+            case BusinessVerificationNotEnoughInformationToCallBV |
+                 BusinessVerificationNotEnoughInformationToChallenge |
+                 BusinessVerificationUnchallenged => businessVerificationUnchallengedKey
+            case BusinessVerificationPass => businessVerificationPassKey
+            case BusinessVerificationFail => businessVerificationFailKey
+            case CtEnrolled => businessVerificationCtEnrolledKey
+          }
+          Json.obj(businessVerificationKey ->  Json.obj(businessVerificationStatusKey -> businessVerificationStatusForCallingServices))
+        })
+        .getOrElse(Json.obj())
+    }
 }

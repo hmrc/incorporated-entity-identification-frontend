@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers
 
 import play.api.http.Status.CREATED
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsObject, JsPath, JsValue, Json}
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
@@ -235,6 +235,107 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
       }
     }
 
+    "return correct BusinessVerification json" when {
+      "the journeyId exists and verificationStatus is BusinessVerificationFail" in {
+        val testIncorporatedEntityInformation: IncorporatedEntityInformation =
+          testDefaultIncorporatedEntityInformation(businessVerificationStatus = BusinessVerificationFail)
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(testIncorporatedEntityInformation)
+        )
+
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+
+        extractBusinessVerificationJsonBranch(fullJson = result.json) mustBe
+          testJourneyControllerBusinessVerificationJson(verificationStatus = "FAIL")
+
+      }
+    }
+
+    "return correct BusinessVerification json" when {
+      "the journeyId exists and verificationStatus is BusinessVerificationNotEnoughInformationToChallenge (remapped to UNCHALLENGED)" in {
+        val testIncorporatedEntityInformation: IncorporatedEntityInformation =
+          testDefaultIncorporatedEntityInformation(businessVerificationStatus = BusinessVerificationNotEnoughInformationToChallenge)
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(testIncorporatedEntityInformation)
+        )
+
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+
+        extractBusinessVerificationJsonBranch(fullJson = result.json) mustBe
+          testJourneyControllerBusinessVerificationJson(verificationStatus = "UNCHALLENGED")
+
+      }
+    }
+    "return correct BusinessVerification json" when {
+      "the journeyId exists and verificationStatus is BusinessVerificationNotEnoughInformationToCallBV (remapped to UNCHALLENGED)" in {
+        val testIncorporatedEntityInformation: IncorporatedEntityInformation =
+          testDefaultIncorporatedEntityInformation(businessVerificationStatus = BusinessVerificationNotEnoughInformationToCallBV)
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(testIncorporatedEntityInformation)
+        )
+
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+
+        extractBusinessVerificationJsonBranch(fullJson = result.json) mustBe
+          testJourneyControllerBusinessVerificationJson(verificationStatus = "UNCHALLENGED")
+      }
+    }
+    "return correct BusinessVerification json" when {
+      "the journeyId exists and verificationStatus is BusinessVerificationUnchallenged (to be removed after SAR-9037 release)" in {
+        val testIncorporatedEntityInformation: IncorporatedEntityInformation =
+          testDefaultIncorporatedEntityInformation(businessVerificationStatus = BusinessVerificationUnchallenged)
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(testIncorporatedEntityInformation)
+        )
+
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+
+        extractBusinessVerificationJsonBranch(fullJson = result.json) mustBe
+          testJourneyControllerBusinessVerificationJson(verificationStatus = "UNCHALLENGED")
+      }
+    }
+
+    "return correct BusinessVerification json" when {
+      "the journeyId exists and verificationStatus is CtEnrolled" in {
+        val testIncorporatedEntityInformation: IncorporatedEntityInformation =
+          testDefaultIncorporatedEntityInformation(businessVerificationStatus = CtEnrolled)
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
+          status = OK,
+          body = Json.toJsObject(testIncorporatedEntityInformation)
+        )
+
+        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
+
+        result.status mustBe OK
+
+        extractBusinessVerificationJsonBranch(fullJson = result.json) mustBe
+          testJourneyControllerBusinessVerificationJson(verificationStatus = "CT_ENROLLED")
+
+      }
+    }
+
     "return not found" when {
       "the journey Id does not exist" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
@@ -259,4 +360,13 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
       result.status mustBe SEE_OTHER
     }
   }
+
+  def testJourneyControllerBusinessVerificationJson(verificationStatus: String): JsObject = Json.obj(
+    "businessVerification" -> Json.obj(
+      "verificationStatus" -> verificationStatus
+    )
+  )
+
+  private def extractBusinessVerificationJsonBranch(fullJson: JsValue): JsObject = fullJson.transform((JsPath \ "businessVerification").json.pickBranch).get
+
 }
