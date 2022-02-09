@@ -21,7 +21,6 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationPass
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, RegisterStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WiremockHelper.{stubAudit, verifyAuditDetail}
@@ -64,7 +63,9 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
           verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
-          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, BusinessVerificationPass, "success"))
+          verifyAuditDetail(
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, verificationStatus = "success", registrationStatus = "success")
+          )
         }
 
         "registration failed and registration status is successfully stored" in {
@@ -90,7 +91,9 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
           verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testFailedRegistration)
-          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, BusinessVerificationPass, "fail"))
+          verifyAuditDetail(
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, verificationStatus = "success", registrationStatus ="fail")
+          )
         }
       }
 

@@ -20,7 +20,8 @@ import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, BusinessVerificationFail, CtEnrolled}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, BusinessVerificationNotEnoughInformationToCallBV, BusinessVerificationNotEnoughInformationToChallenge}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -41,16 +42,23 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     optBusinessVerificationStatus <- storageService.retrieveBusinessVerificationStatus(journeyId)
     optRegistrationStatus <- storageService.retrieveRegistrationStatus(journeyId)
   } yield {
-    val ctutrBlock =
+    val ctutrBlock = {
       optCtutr match {
         case Some(ctutr) => Json.obj("CTUTR" -> ctutr)
         case _ => Json.obj()
       }
-    val businessVerificationStatusBlock =
-      optBusinessVerificationStatus match {
-        case Some(bvStatus) => Json.obj("VerificationStatus" -> bvStatus)
-        case _ => Json.obj("VerificationStatus" -> Json.obj(businessVerificationStatusKey -> businessVerificationFailKey))
+    }
+    val businessVerificationStatus: String = optBusinessVerificationStatus match {
+        case Some (BusinessVerificationPass) => "success"
+        case Some (BusinessVerificationFail) => "fail"
+        case Some (BusinessVerificationUnchallenged) => "fail"
+        case Some (BusinessVerificationNotEnoughInformationToChallenge) => "Not Enough Information to challenge"
+        case Some (BusinessVerificationNotEnoughInformationToCallBV) => "Not Enough Information to call BV"
+        case Some (CtEnrolled) => "Enrolled"
+        case None => "not requested"
       }
+
+    val businessVerificationStatusBlock = Json.obj("VerificationStatus" -> businessVerificationStatus)
     val registrationStatus =
       optRegistrationStatus match {
         case Some(Registered(_)) => "success"

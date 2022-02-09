@@ -303,7 +303,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
           verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
-          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, BusinessVerificationFail, "not called"))
+          verifyAuditDetail(
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, verificationStatus = "fail", registrationStatus = "not called")
+          )
         }
         "the business verification check is disabled" in {
           await(journeyConfigRepository.insertJourneyConfig(
@@ -327,7 +329,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
 
           verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
-          verifyAuditDetail(testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, BusinessVerificationFail, "not called"))
+          verifyAuditDetail(
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, verificationStatus = "not requested", registrationStatus = "not called")
+          )
         }
       }
     }
@@ -528,7 +532,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(value = businessVerificationNotEnoughInfoToCallBVKey))
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(
+          status = OK, body = testBusinessVerificationJson(value = businessVerificationNotEnoughInfoToCallBVKey)
+        )
         stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)

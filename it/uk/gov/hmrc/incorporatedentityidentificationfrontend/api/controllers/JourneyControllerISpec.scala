@@ -186,7 +186,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
   "GET /api/journey/:journeyId" should {
     "return captured data" when {
-      "the journeyId exists" in {
+      "the journeyId exists and verificationStatus is BusinessVerificationPass" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubRetrieveIncorporatedEntityInformation(testJourneyId)(
           status = OK,
@@ -205,6 +205,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
 
         result.status mustBe OK
+
         result.json mustBe Json.obj(
           "ctutr" -> testCtutr,
           "companyProfile" -> Json.obj(
