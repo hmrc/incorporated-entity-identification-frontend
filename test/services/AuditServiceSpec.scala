@@ -91,23 +91,23 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe (())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditUkCompany()
 
-        auditEventCaptor.getValue mustBe testLimitedCompanySuccessfulAuditEventJson
+        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = true, bvStatus = success, regStatus = success)
       }
       "the business entity verification status is BusinessVerificationNotEnoughInformationToChallenge" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
         mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
         mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToChallenge)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditUkCompany()
 
-        auditEventCaptor.getValue mustBe (testLimitedCompanyUnmatchedDefaultAuditEventJson ++ testAuditVerificationStatusNotEnoughInformationToChallengeJson)
+        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = true, bvStatus = notEnoughInfoToChallenge, regStatus = notCalled)
       }
       "the business entity verification status is BusinessVerificationNotEnoughInformationToCallBV" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
@@ -117,23 +117,23 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToCallBV)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditUkCompany()
 
-        auditEventCaptor.getValue mustBe  (testLimitedCompanyUnmatchedDefaultAuditEventJson ++ testAuditVerificationStatusNotEnoughInformationToCallBVJson)
+        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = false, bvStatus = notEnoughInfoToCall, regStatus = notCalled)
       }
       "the business entity verification status is BusinessVerificationFail" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
         mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
         mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationFail)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditUkCompany()
 
-        auditEventCaptor.getValue mustBe  (testLimitedCompanyUnmatchedDefaultAuditEventJson ++ testAuditVerificationStatusFailedJson)
+        auditEventCaptor.getValue mustBe  testLimitedCompanyAuditEventJson(isMatch = true, bvStatus = failure, regStatus = notCalled)
       }
       "the business entity has a UTR mismatch" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
@@ -143,7 +143,7 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(None))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditUkCompany()
 
         auditEventCaptor.getValue mustBe testDetailsUtrMismatchAuditEventJson
@@ -156,10 +156,10 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationFailed)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditUkCompany()
 
-        auditEventCaptor.getValue mustBe testDetailsRegistrationStatusMissingAuditEventJson
+        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = true, bvStatus = success, regStatus = failure)
       }
       "the business entity verification is undefined and registration is called" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
@@ -169,10 +169,49 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditUkCompany()
 
-        auditEventCaptor.getValue mustBe testDetailsBusinessVerificationStatusMissingAuditEventJson
+        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = true, bvStatus = notRequested, regStatus = success)
+      }
+      "the business entity is not successfully verified" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationFail)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
+        verifySendExplicitAuditUkCompany()
+
+        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = true, bvStatus = failure, regStatus = notCalled)
+      }
+      "the business entity is successfully verified as CT Enrolled and then registered" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(CtEnrolled)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
+        verifySendExplicitAuditUkCompany()
+
+        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = true, bvStatus = ctEnrolled, regStatus = success)
+      }
+      "the business entity verification status is BusinessVerificationUnchallenged" in { // TODO Remove when unchallenged no longer used
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
+        verifySendExplicitAuditUkCompany()
+
+        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = false, bvStatus = failure, regStatus = notCalled)
       }
     }
 
@@ -185,23 +224,23 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditRegisterSociety()
 
-        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson
+        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson(isMatch = true, bvStatus = success, regStatus = success)
       }
       "the business entity verification status is BusinessVerificationNotEnoughInformationToChallenge" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
         mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
         mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToChallenge)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditRegisterSociety()
 
-        auditEventCaptor.getValue mustBe (testRegisteredSocietyUnmatchedDefaultAuditEventJson ++ testAuditVerificationStatusNotEnoughInformationToChallengeJson)
+        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson(isMatch = true, bvStatus = notEnoughInfoToChallenge, regStatus = notCalled)
       }
       "the business entity verification status is BusinessVerificationNotEnoughInformationToCallBV" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
@@ -211,23 +250,23 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToCallBV)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditRegisterSociety()
 
-        auditEventCaptor.getValue mustBe (testRegisteredSocietyUnmatchedDefaultAuditEventJson ++ testAuditVerificationStatusNotEnoughInformationToCallBVJson)
+        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson(isMatch = false, bvStatus = notEnoughInfoToCall, regStatus = notCalled)
       }
       "the business entity verification status is BusinessVerificationFail" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
         mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
         mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationFail)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditRegisterSociety()
 
-        auditEventCaptor.getValue mustBe (testRegisteredSocietyUnmatchedDefaultAuditEventJson ++ testAuditVerificationStatusFailedJson)
+        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson(isMatch = true, bvStatus = failure, regStatus = notCalled)
       }
       "the business entity has a UTR mismatch" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
@@ -237,26 +276,55 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(None))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe(())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditRegisterSociety()
 
         auditEventCaptor.getValue mustBe testDetailsUtrMismatchRegisteredSocietyAuditEventJson
       }
-    }
-    "send an event for a CIO" when {
-      "the business entity verification status is BusinessVerificationNotEnoughInformationToChallenge" in {
-        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigCIO))
-        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCharityNumber))
-        mockRetrieveCtutr(testJourneyId)(Future.successful(None))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToChallenge)))
+
+      "the business entity is not verified" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationFail)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe (())
-        verifySendExplicitAuditCIO()
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
+        verifySendExplicitAuditRegisterSociety()
 
-        auditEventCaptor.getValue mustBe (testCIODefaultAuditEventJson ++ testAuditVerificationStatusNotEnoughInformationToChallengeJson)
+        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson(isMatch = true, bvStatus = failure, regStatus = notCalled)
       }
+
+      "the business entity is successfully verified as Ct enrolled and then registered" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(true)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(CtEnrolled)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(Registered(testSafeId))))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
+        verifySendExplicitAuditRegisterSociety()
+
+        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson(isMatch = true, bvStatus = ctEnrolled, regStatus = success)
+      }
+
+      "the business entity verification status is BusinessVerificationUnchallenged" in { // TODO Remove when unchallenged is no longer used
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
+        verifySendExplicitAuditRegisterSociety()
+
+        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson(isMatch = false, bvStatus = failure, regStatus = notCalled)
+      }
+    }
+    "send an event for a CIO" when {
       "the business entity verification status is BusinessVerificationNotEnoughInformationToCallBV" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigCIO))
         mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCharityNumber))
@@ -265,24 +333,36 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToCallBV)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe (())
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditCIO()
 
-        auditEventCaptor.getValue mustBe (testCIODefaultAuditEventJson ++ testAuditVerificationStatusNotEnoughInformationToCallBVJson)
+        auditEventCaptor.getValue mustBe testCIOAuditEventJson(isMatch = false, bvStatus = notEnoughInfoToCall, regStatus = notCalled)
       }
-      "the business entity verification status is BusinessVerificationFail" in {
+      "business verification is disabled" in {
+        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigCIO.copy(businessVerificationCheck = false)))
+        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCharityNumber))
+        mockRetrieveCtutr(testJourneyId)(Future.successful(None))
+        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(None))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
+
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
+        verifySendExplicitAuditCIO()
+
+        auditEventCaptor.getValue mustBe testCIOAuditEventJson(isMatch = false, bvStatus = notRequested, regStatus = notCalled)
+      }
+      "the business entity verification status is BusinessVerificationUnchallenged" in { // TODO Remove when unchallenged is no longer used
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigCIO))
         mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCharityNumber))
         mockRetrieveCtutr(testJourneyId)(Future.successful(None))
         mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationFail)))
+        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
         mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
 
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId)) mustBe (())
-
+        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditCIO()
 
-        auditEventCaptor.getValue mustBe (testCIODefaultAuditEventJson ++ testAuditVerificationStatusFailedJson)
+        auditEventCaptor.getValue mustBe testCIOAuditEventJson(isMatch = false, bvStatus = failure, regStatus = notCalled)
       }
     }
   }

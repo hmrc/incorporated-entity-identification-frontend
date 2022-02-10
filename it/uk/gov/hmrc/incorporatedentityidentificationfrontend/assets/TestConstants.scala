@@ -99,7 +99,7 @@ object TestConstants {
   def testRegisterAuditEventJson(companyNumber: String,
                                  isMatch: Boolean,
                                  ctUtr: String,
-                                 verificationStatus: BusinessVerificationStatus,
+                                 verificationStatus: String,
                                  registrationStatus: String): JsObject = {
     Json.obj(
       "callingService" -> "Entity Validation Service",
@@ -140,11 +140,13 @@ object TestConstants {
 
   def testBusinessVerificationJson(value: String): JsObject = Json.obj(businessVerificationStatusKey -> value)
 
-  def testDefaultIncorporatedEntityInformation(businessVerificationStatus:BusinessVerificationStatus): IncorporatedEntityInformation =  IncorporatedEntityInformation(
+  def testDefaultIncorporatedEntityInformation(businessVerificationStatus:BusinessVerificationStatus): IncorporatedEntityInformation =
+    IncorporatedEntityInformation(
     companyProfile = testCompanyProfile,
     optCtutr = Some(testCtutr),
     identifiersMatch = true,
     businessVerification = Some(businessVerificationStatus),
     registration = testSuccessfulRegistration
   )
+
 }

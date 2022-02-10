@@ -19,8 +19,6 @@ package helpers
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
 import java.time.LocalDate
@@ -53,23 +51,6 @@ object TestConstants {
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testSafeId: String = UUID.randomUUID().toString
 
-  private val testPassedBusinessVerificationStatusJson: JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationPassKey)
-
-  private val testFailedBusinessVerificationStatusJson: JsObject = Json.obj(businessVerificationStatusKey -> businessVerificationFailKey)
-
-  private val testBusinessVerificationNotEnoughInformationToChallengeJson: JsObject =
-    Json.obj(businessVerificationStatusKey -> businessVerificationNotEnoughInfoToChallengeKey)
-
-  private val testBusinessVerificationNotEnoughInformationToCallBVJson: JsObject =
-    Json.obj(businessVerificationStatusKey -> businessVerificationNotEnoughInfoToCallBVKey)
-
-  val testRegistrationStatusJson: JsObject = Json.obj(
-    registrationStatusKey -> RegisteredKey,
-    registeredBusinessPartnerIdKey -> testSafeId
-  )
-
-  val testRegistrationNotCalledJson: JsObject = Json.obj(registrationStatusKey -> RegistrationNotCalledKey)
-
   val testIncorporatedEntityInformation: IncorporatedEntityInformation =
     IncorporatedEntityInformation(
       testCompanyProfile,
@@ -83,80 +64,52 @@ object TestConstants {
   val testAccessibilityUrl = "/accessibility"
   val testCharityNumber = "CE123456"
 
-  val testLimitedCompanySuccessfulAuditEventJson: JsObject = Json.obj(
-    "callingService" -> defaultServiceName,
-    "businessType" -> "UK Company",
-    "companyNumber" -> testCompanyProfile.companyNumber,
-    "isMatch" -> true,
-    "VerificationStatus" -> testPassedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> "success",
-    "CTUTR" -> testCtutr
-  )
+  val success: String = "success"
+  val failure: String = "fail"
+  val notCalled: String = "not called"
+  val notRequested: String = "not requested"
+  val notEnoughInfoToChallenge: String = "Not Enough Information to challenge"
+  val notEnoughInfoToCall: String = "Not Enough Information to call BV"
+  val ctEnrolled: String = "Enrolled"
 
-  val testLimitedCompanyUnmatchedDefaultAuditEventJson: JsObject = Json.obj(
-    "callingService" -> defaultServiceName,
-    "businessType" -> "UK Company",
-    "companyNumber" -> testCompanyProfile.companyNumber,
-    "isMatch" -> false,
-    "RegisterApiStatus" -> "not called",
-    "CTUTR" -> testCtutr
-  )
+  def testLimitedCompanyAuditEventJson(isMatch: Boolean, bvStatus: String, regStatus: String): JsObject =
+    Json.obj(
+      "callingService" -> defaultServiceName,
+      "businessType" -> "UK Company",
+      "companyNumber" -> testCompanyProfile.companyNumber,
+      "isMatch" -> isMatch,
+      "VerificationStatus" -> bvStatus,
+      "RegisterApiStatus" -> regStatus,
+      "CTUTR" -> testCtutr
+    )
 
   val testDetailsUtrMismatchAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "UK Company",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
-    "VerificationStatus" -> testFailedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> "not called"
+    "VerificationStatus" -> notRequested,
+    "RegisterApiStatus" -> notCalled
   )
 
-  val testDetailsRegistrationStatusMissingAuditEventJson: JsObject = Json.obj(
-    "callingService" -> defaultServiceName,
-    "businessType" -> "UK Company",
-    "companyNumber" -> testCompanyProfile.companyNumber,
-    "isMatch" -> true,
-    "VerificationStatus" -> testPassedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> "fail",
-    "CTUTR" -> testCtutr
-  )
-
-  val testDetailsBusinessVerificationStatusMissingAuditEventJson: JsObject = Json.obj(
-    "callingService" -> defaultServiceName,
-    "businessType" -> "UK Company",
-    "companyNumber" -> testCompanyProfile.companyNumber,
-    "isMatch" -> true,
-    "VerificationStatus" -> testFailedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> "success",
-    "CTUTR" -> testCtutr
-  )
-
-  val testRegisteredSocietyAuditEventJson: JsObject = Json.obj(
-    "callingService" -> defaultServiceName,
-    "businessType" -> "Registered Society",
-    "companyNumber" -> testCompanyProfile.companyNumber,
-    "isMatch" -> true,
-    "VerificationStatus" -> testPassedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> "success",
-    "CTUTR" -> testCtutr
-  )
-
-  val testRegisteredSocietyUnmatchedDefaultAuditEventJson: JsObject = Json.obj(
-    "callingService" -> defaultServiceName,
-    "businessType" -> "Registered Society",
-    "companyNumber" -> testCompanyProfile.companyNumber,
-    "isMatch" -> false,
-    "RegisterApiStatus" -> "not called",
-    "CTUTR" -> testCtutr
-  )
+  def testRegisteredSocietyAuditEventJson(isMatch: Boolean, bvStatus: String, regStatus: String): JsObject =
+    Json.obj(
+      "callingService" -> defaultServiceName,
+      "businessType" -> "Registered Society",
+      "companyNumber" -> testCompanyProfile.companyNumber,
+      "isMatch" -> isMatch,
+      "VerificationStatus" -> bvStatus,
+      "RegisterApiStatus" -> regStatus,
+      "CTUTR" -> testCtutr
+    )
 
   val testDetailsUtrMismatchRegisteredSocietyAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "Registered Society",
     "companyNumber" -> testCompanyProfile.companyNumber,
     "isMatch" -> false,
-    "VerificationStatus" -> testFailedBusinessVerificationStatusJson,
-    "RegisterApiStatus" -> "not called"
+    "VerificationStatus" -> notRequested,
+    "RegisterApiStatus" -> notCalled
   )
 
   val testCIODefaultAuditEventJson: JsObject = Json.obj(
@@ -167,11 +120,15 @@ object TestConstants {
     "RegisterApiStatus" -> "not called"
   )
 
-  val testAuditVerificationStatusNotEnoughInformationToChallengeJson: JsObject = Json.obj("VerificationStatus" -> testBusinessVerificationNotEnoughInformationToChallengeJson)
-
-  val testAuditVerificationStatusNotEnoughInformationToCallBVJson: JsObject = Json.obj("VerificationStatus" -> testBusinessVerificationNotEnoughInformationToCallBVJson)
-
-  val testAuditVerificationStatusFailedJson: JsObject = Json.obj("VerificationStatus" -> testFailedBusinessVerificationStatusJson)
+  def testCIOAuditEventJson(isMatch: Boolean, bvStatus: String, regStatus: String): JsObject =
+    Json.obj(
+      "callingService" -> defaultServiceName,
+      "businessType" -> "CIO",
+      "companyNumber" -> testCharityNumber,
+      "identifiersMatch" -> isMatch,
+      "VerificationStatus" -> bvStatus,
+      "RegisterApiStatus" -> regStatus
+    )
 
   val testIrCtEnrolment: Enrolment = Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", testCtutr)), "Activated", None)
 
