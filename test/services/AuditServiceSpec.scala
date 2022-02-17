@@ -200,19 +200,6 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
 
         auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = true, bvStatus = ctEnrolled, regStatus = success)
       }
-      "the business entity verification status is BusinessVerificationUnchallenged" in { // TODO Remove when unchallenged no longer used
-        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))
-        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
-        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
-        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
-
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
-        verifySendExplicitAuditUkCompany()
-
-        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = false, bvStatus = failure, regStatus = notCalled)
-      }
     }
 
     "send an event for a Registered Society" when {
@@ -309,20 +296,6 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
 
         auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson(isMatch = true, bvStatus = ctEnrolled, regStatus = success)
       }
-
-      "the business entity verification status is BusinessVerificationUnchallenged" in { // TODO Remove when unchallenged is no longer used
-        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigRegisteredSociety))
-        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCompanyProfile.companyNumber))
-        mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
-        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
-
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
-        verifySendExplicitAuditRegisterSociety()
-
-        auditEventCaptor.getValue mustBe testRegisteredSocietyAuditEventJson(isMatch = false, bvStatus = failure, regStatus = notCalled)
-      }
     }
     "send an event for a CIO" when {
       "the business entity verification status is BusinessVerificationNotEnoughInformationToCallBV" in {
@@ -350,19 +323,6 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         verifySendExplicitAuditCIO()
 
         auditEventCaptor.getValue mustBe testCIOAuditEventJson(isMatch = false, bvStatus = notRequested, regStatus = notCalled)
-      }
-      "the business entity verification status is BusinessVerificationUnchallenged" in { // TODO Remove when unchallenged is no longer used
-        mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigCIO))
-        mockRetrieveCompanyNumber(testJourneyId)(Future.successful(testCharityNumber))
-        mockRetrieveCtutr(testJourneyId)(Future.successful(None))
-        mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(false)))
-        mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
-        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationNotCalled)))
-
-        await(TestService.auditJourney(testJourneyId, testAuthInternalId))
-        verifySendExplicitAuditCIO()
-
-        auditEventCaptor.getValue mustBe testCIOAuditEventJson(isMatch = false, bvStatus = failure, regStatus = notCalled)
       }
     }
   }

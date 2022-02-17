@@ -28,9 +28,6 @@ case object BusinessVerificationNotEnoughInformationToChallenge extends Business
 
 case object BusinessVerificationNotEnoughInformationToCallBV extends BusinessVerificationStatus
 
-// to be removed after SAR-9037 release
-case object BusinessVerificationUnchallenged extends BusinessVerificationStatus
-
 case object CtEnrolled extends BusinessVerificationStatus
 
 object BusinessVerificationStatus {
@@ -42,15 +39,11 @@ object BusinessVerificationStatus {
   val businessVerificationCtEnrolledKey = "CT_ENROLLED"
   val businessVerificationStatusKey = "verificationStatus"
 
-  // to be removed after SAR-9037 release
-  val businessVerificationUnchallengedKey = "UNCHALLENGED"
-
   implicit val format: Format[BusinessVerificationStatus] = new Format[BusinessVerificationStatus] {
     override def writes(businessVerificationStatus: BusinessVerificationStatus): JsObject = {
       val businessVerificationStatusString = businessVerificationStatus match {
         case BusinessVerificationPass => businessVerificationPassKey
         case BusinessVerificationFail => businessVerificationFailKey
-        case BusinessVerificationUnchallenged => businessVerificationUnchallengedKey
         case BusinessVerificationNotEnoughInformationToChallenge => businessVerificationNotEnoughInfoToChallengeKey
         case BusinessVerificationNotEnoughInformationToCallBV => businessVerificationNotEnoughInfoToCallBVKey
         case CtEnrolled => businessVerificationCtEnrolledKey
@@ -63,7 +56,6 @@ object BusinessVerificationStatus {
       (json \ businessVerificationStatusKey).validate[String].collect(JsonValidationError("Invalid business validation state")) {
         case `businessVerificationPassKey` => BusinessVerificationPass
         case `businessVerificationFailKey` => BusinessVerificationFail
-        case `businessVerificationUnchallengedKey` => BusinessVerificationUnchallenged
         case `businessVerificationNotEnoughInfoToChallengeKey` => BusinessVerificationNotEnoughInformationToChallenge
         case `businessVerificationNotEnoughInfoToCallBVKey` => BusinessVerificationNotEnoughInformationToCallBV
         case `businessVerificationCtEnrolledKey` => CtEnrolled

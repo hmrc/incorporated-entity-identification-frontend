@@ -74,8 +74,7 @@ object IncorporatedEntityInformation {
         .map(businessVerification => {
           val businessVerificationStatusForCallingServices: String = businessVerification match {
             case BusinessVerificationNotEnoughInformationToCallBV |
-                 BusinessVerificationNotEnoughInformationToChallenge |
-                 BusinessVerificationUnchallenged => businessVerificationUnchallengedKey
+                 BusinessVerificationNotEnoughInformationToChallenge => businessVerificationUnchallengedKey
             case BusinessVerificationPass => businessVerificationPassKey
             case BusinessVerificationFail => businessVerificationFailKey
             case CtEnrolled => businessVerificationCtEnrolledKey
