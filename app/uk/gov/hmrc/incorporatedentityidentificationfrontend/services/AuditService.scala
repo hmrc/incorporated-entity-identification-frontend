@@ -21,7 +21,7 @@ import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, BusinessVerificationFail, CtEnrolled}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationUnchallenged, BusinessVerificationNotEnoughInformationToCallBV, BusinessVerificationNotEnoughInformationToChallenge}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationNotEnoughInformationToCallBV, BusinessVerificationNotEnoughInformationToChallenge}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -51,7 +51,6 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     val businessVerificationStatus: String = optBusinessVerificationStatus match {
         case Some (BusinessVerificationPass) => "success"
         case Some (BusinessVerificationFail) => "fail"
-        case Some (BusinessVerificationUnchallenged) => "fail"
         case Some (BusinessVerificationNotEnoughInformationToChallenge) => "Not Enough Information to challenge"
         case Some (BusinessVerificationNotEnoughInformationToCallBV) => "Not Enough Information to call BV"
         case Some (CtEnrolled) => "Enrolled"

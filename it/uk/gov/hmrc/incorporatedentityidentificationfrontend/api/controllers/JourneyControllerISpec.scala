@@ -296,25 +296,6 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
           testJourneyControllerBusinessVerificationJson(verificationStatus = "UNCHALLENGED")
       }
     }
-    "return correct BusinessVerification json" when {
-      "the journeyId exists and verificationStatus is BusinessVerificationUnchallenged (to be removed after SAR-9037 release)" in {
-        val testIncorporatedEntityInformation: IncorporatedEntityInformation =
-          testDefaultIncorporatedEntityInformation(businessVerificationStatus = BusinessVerificationUnchallenged)
-
-        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-        stubRetrieveIncorporatedEntityInformation(testJourneyId)(
-          status = OK,
-          body = Json.toJsObject(testIncorporatedEntityInformation)
-        )
-
-        lazy val result = get(s"/incorporated-entity-identification/api/journey/$testJourneyId")
-
-        result.status mustBe OK
-
-        extractBusinessVerificationJsonBranch(fullJson = result.json) mustBe
-          testJourneyControllerBusinessVerificationJson(verificationStatus = "UNCHALLENGED")
-      }
-    }
 
     "return correct BusinessVerification json" when {
       "the journeyId exists and verificationStatus is CtEnrolled" in {

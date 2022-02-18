@@ -108,18 +108,6 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         }
 
-        "business verification status is BusinessVerificationUnchallenged (to be removed after SAR-9037 release)" in {
-          mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
-          mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
-          mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
-
-          await(TestService.register(testJourneyId, testJourneyConfigLimitedCompany())) mustBe {
-            RegistrationNotCalled
-          }
-          verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
-        }
-
         "business verification status is BusinessVerificationFail" in {
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
@@ -255,18 +243,6 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationNotEnoughInformationToCallBV)))
-          mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
-
-          await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety())) mustBe {
-            RegistrationNotCalled
-          }
-          verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
-        }
-
-        "business verification status is BusinessVerificationUnchallenged (to be removed after SAR-9037 release)" in {
-          mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
-          mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
-          mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationUnchallenged)))
           mockStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testJourneyConfigRegisteredSociety())) mustBe {
