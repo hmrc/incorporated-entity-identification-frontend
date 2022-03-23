@@ -117,7 +117,7 @@ object TestConstants {
       "continueUrl" -> testContinueUrl,
       "pageConfig" -> Json.obj(
         "deskProServiceId" -> testDeskProServiceId,
-               "signOutUrl" -> testSignOutUrl
+        "signOutUrl" -> testSignOutUrl
       ),
       "businessEntity" -> "LtdCompany",
       "businessVerificationCheck" -> true,
@@ -140,13 +140,13 @@ object TestConstants {
 
   def testBusinessVerificationJson(value: String): JsObject = Json.obj(businessVerificationStatusKey -> value)
 
-  def testDefaultIncorporatedEntityInformation(businessVerificationStatus:BusinessVerificationStatus): IncorporatedEntityInformation =
+  def testDefaultIncorporatedEntityInformation(businessVerificationStatus: BusinessVerificationStatus): IncorporatedEntityInformation =
     IncorporatedEntityInformation(
-    companyProfile = testCompanyProfile,
-    optCtutr = Some(testCtutr),
-    identifiersMatch = true,
-    businessVerification = Some(businessVerificationStatus),
-    registration = testSuccessfulRegistration
-  )
+      companyProfile = testCompanyProfile,
+      optCtutr = Some(testCtutr),
+      identifiersMatch = true,
+      businessVerification = Some(businessVerificationStatus),
+      registration = testSuccessfulRegistration
+    )
 
 }

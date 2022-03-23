@@ -23,7 +23,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsNotFound, DetailsNotProvided}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch, DetailsNotFound, DetailsNotProvided}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationNotEnoughInformationToCallBV, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, JourneyService, StorageService, ValidateIncorporatedEntityDetailsService}
@@ -93,12 +93,10 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
             optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
             optCtutr <- storageService.retrieveCtutr(journeyId)
-            details <- (journeyConfig.businessEntity, optCompanyProfile, optCtutr) match {
-              case (LimitedCompany | RegisteredSociety, Some(companyProfile), Some(ctutr)) =>
-                validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr)
-              case (RegisteredSociety | CharitableIncorporatedOrganisation, Some(_), None) => Future.successful(DetailsNotProvided)
-              case _ =>
-                throw new InternalServerException("No data stored")
+            details <- (journeyConfig.businessEntity, optCompanyProfile) match {
+              case (LimitedCompany | RegisteredSociety, Some(companyProfile)) => validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, optCtutr)
+              case (CharitableIncorporatedOrganisation, Some(_)) => Future.successful(DetailsNotProvided)
+              case _ => throw new InternalServerException("Invalid state in Check Your Answers Controller for journeyId: " + journeyId)
             }
             result <- details match {
               case DetailsMatched if journeyConfig.businessVerificationCheck => for {
@@ -107,6 +105,15 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
               case DetailsMatched if journeyConfig.businessVerificationCheck.equals(false) => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
               } yield Redirect(routes.RegistrationController.register(journeyId))
+              case DetailsNotFound if optCtutr.isEmpty =>
+                for {
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <-
+                    if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
+                    else Future.successful(())
+                  _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                  _ <- auditService.auditJourney(journeyId, authInternalId)
+                } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
               case DetailsNotFound =>
                 for {
                   _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
@@ -123,10 +130,24 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                 _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
                 _ <- auditService.auditJourney(journeyId, authInternalId)
               } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-              case _ => for {
-                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
-                _ <- auditService.auditJourney(journeyId, authInternalId)
-              } yield Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
+              case DetailsMismatch if optCtutr.isEmpty =>
+                for {
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <-
+                    if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
+                    else Future.successful(())
+                  _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                  _ <- auditService.auditJourney(journeyId, authInternalId)
+                } yield Redirect(errorRoutes.CtutrNotFoundController.show(journeyId))
+              case _ =>
+                for {
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <-
+                    if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
+                    else Future.successful(())
+                  _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
+                  _ <- auditService.auditJourney(journeyId, authInternalId)
+                } yield Redirect(errorRoutes.CtutrMismatchController.show(journeyId))
             }
           } yield result
         case None =>

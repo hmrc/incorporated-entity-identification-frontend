@@ -28,7 +28,7 @@ class ValidateIncorporatedEntityDetailsConnector @Inject()(http: HttpClient,
                                                            appConfig: AppConfig
                                                           )(implicit ec: ExecutionContext) {
 
-  def validateIncorporatedEntityDetails(companyNumber: String, ctutr: String)(implicit hc: HeaderCarrier): Future[IncorporatedEntityDetailsValidationResult] = {
+  def validateIncorporatedEntityDetails(companyNumber: String, ctutr: Option[String])(implicit hc: HeaderCarrier): Future[IncorporatedEntityDetailsValidationResult] = {
     val jsonBody: JsObject =
       Json.obj(
         "companyNumber" -> companyNumber,
