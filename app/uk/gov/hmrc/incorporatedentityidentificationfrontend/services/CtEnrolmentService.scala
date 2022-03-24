@@ -36,7 +36,7 @@ class CtEnrolmentService @Inject()(storageService: StorageService,
       case Some(ctutr) =>
         storageService.retrieveCompanyProfile(journeyId).flatMap {
           case Some(companyProfile) =>
-            validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, ctutr).flatMap {
+            validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, Some(ctutr)).flatMap {
               case DetailsMatched if journeyConfig.businessVerificationCheck =>
                 for {
                   _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)

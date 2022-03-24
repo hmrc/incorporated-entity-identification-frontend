@@ -38,8 +38,8 @@ trait MockValidateIncorporatedEntityDetailsService extends MockitoSugar with Bef
   }
 
   def mockValidateIncorporatedEntityDetails(companyNumber: String,
-                                           ctutr: String)
-                                          (response: Future[IncorporatedEntityDetailsValidationResult]): OngoingStubbing[_] = {
+                                            ctutr: Option[String])
+                                           (response: Future[IncorporatedEntityDetailsValidationResult]): OngoingStubbing[_] = {
     when(mockValidateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(
       ArgumentMatchers.eq(companyNumber),
       ArgumentMatchers.eq(ctutr)

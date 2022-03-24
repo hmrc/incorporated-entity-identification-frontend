@@ -46,13 +46,13 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
         "the enrolment CTUTR matches what is stored" should {
           s"return $Enrolled" in {
             mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
-            mockValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(Future.successful(DetailsMatched))
+            mockValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(Future.successful(DetailsMatched))
             mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
             mockStoreCtutr(testJourneyId, testCtutr)(Future.successful(SuccessfullyStored))
             mockStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)(Future.successful(SuccessfullyStored))
 
             val testEnrolments = Enrolments(Set(testIrCtEnrolment))
-            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments,testJourneyConfigRegisteredSociety()))
+            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfigRegisteredSociety()))
 
             res mustBe Enrolled
 
@@ -64,10 +64,10 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
         "the enrolment CTUTR does not match what is stored" should {
           s"return $EnrolmentMismatch" in {
             mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
-            mockValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(Future.successful(DetailsMismatch))
+            mockValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(Future.successful(DetailsMismatch))
 
             val testEnrolments = Enrolments(Set(testIrCtEnrolment))
-            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments,testJourneyConfigRegisteredSociety()))
+            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfigRegisteredSociety()))
 
             res mustBe EnrolmentMismatch
           }

@@ -226,7 +226,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         val testMismatchCompanyNumber = "11111111"
         val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testMismatchCompanyNumber, testDateOfIncorporation, testAddress))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
-        stubValidateIncorporatedEntityDetails(testMismatchCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
+        stubValidateIncorporatedEntityDetails(testMismatchCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> false))
 
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
 
@@ -249,7 +249,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
         val jsonBody = Json.toJsObject(testCompanyProfile)
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
-        stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
+        stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)(status = OK)
@@ -272,7 +272,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
         val jsonBody = Json.toJsObject(testCompanyProfile)
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
-        stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
+        stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
 

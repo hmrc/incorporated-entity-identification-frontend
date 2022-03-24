@@ -129,12 +129,12 @@ trait CheckYourAnswersViewTests {
   }
 
   def testCheckYourAnswersNoCtutrView(journeyId: String)
-                              (result: => WSResponse,
-                               companyNumberStub: => StubMapping,
-                               authStub: => StubMapping,
-                               insertJourneyConfig: => Future[WriteResult],
-                               auditStub: => StubMapping,
-                               retrieveCtutrStub: => StubMapping): Unit = {
+                                     (result: => WSResponse,
+                                      companyNumberStub: => StubMapping,
+                                      authStub: => StubMapping,
+                                      insertJourneyConfig: => Future[WriteResult],
+                                      auditStub: => StubMapping,
+                                      retrieveCtutrStub: => StubMapping): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
@@ -212,12 +212,12 @@ trait CheckYourAnswersViewTests {
   }
 
   def testCheckYourAnswersNoCtutrCIOView(journeyId: String)
-                                     (result: => WSResponse,
-                                      companyNumberStub: => StubMapping,
-                                      authStub: => StubMapping,
-                                      insertJourneyConfig: => Future[WriteResult],
-                                      auditStub: => StubMapping,
-                                      retrieveCtutrStub: => StubMapping): Unit = {
+                                        (result: => WSResponse,
+                                         companyNumberStub: => StubMapping,
+                                         authStub: => StubMapping,
+                                         insertJourneyConfig: => Future[WriteResult],
+                                         auditStub: => StubMapping,
+                                         retrieveCtutrStub: => StubMapping): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)

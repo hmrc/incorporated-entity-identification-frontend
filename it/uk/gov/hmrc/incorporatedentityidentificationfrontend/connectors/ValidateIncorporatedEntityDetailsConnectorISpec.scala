@@ -32,26 +32,26 @@ class ValidateIncorporatedEntityDetailsConnectorISpec extends ComponentSpecHelpe
 
   "validateIncorporatedEntityDetails" should {
     "return DetailsMatched" in {
-      stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> true))
+      stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
 
-      val result = await(validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(testCompanyNumber, testCtutr))
+      val result = await(validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr)))
 
       result mustBe DetailsMatched
     }
     "return DetailsNotFound" in {
-      stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(BAD_REQUEST, body = Json.obj(
+      stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(BAD_REQUEST, body = Json.obj(
         "code" -> "NOT_FOUND",
         "reason" -> "The back end has indicated that CT UTR cannot be returned"
       ))
 
-      val result = await(validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(testCompanyNumber, testCtutr))
+      val result = await(validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr)))
 
       result mustBe DetailsNotFound
     }
     "return DetailsMismatch" in {
-      stubValidateIncorporatedEntityDetails(testCompanyNumber, testCtutr)(OK, Json.obj("matched" -> false))
+      stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> false))
 
-      val result = await(validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(testCompanyNumber, testCtutr))
+      val result = await(validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr)))
 
       result mustBe DetailsMismatch
     }

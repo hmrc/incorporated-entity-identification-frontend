@@ -88,7 +88,7 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
   }
 
   def stubValidateIncorporatedEntityDetails(companyNumber: String,
-                                            ctutr: String
+                                            ctutr: Option[String]
                                            )(status: Int,
                                              body: JsObject = Json.obj()): StubMapping = {
     when(method = POST,
