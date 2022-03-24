@@ -58,6 +58,13 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       status = status
     )
 
+  def stubStoreCHRN(journeyId: String, chrn: String)(status: Int): StubMapping =
+    when(method = PUT,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/chrn", body = JsString(chrn)
+    ).thenReturn(
+      status = status
+    )
+
   def stubStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean)(status: Int): StubMapping = {
     when(method = PUT,
       uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch",
@@ -147,6 +154,14 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
   def stubRemoveCtutr(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = DELETE,
       uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr"
+    ).thenReturn(
+      status = status,
+      body = body
+    )
+
+  def stubRemoveCHRN(journeyId: String)(status: Int, body: String = ""): StubMapping =
+    when(method = DELETE,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/chrn"
     ).thenReturn(
       status = status,
       body = body

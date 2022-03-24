@@ -26,7 +26,6 @@ object MessageLookup {
     val tryAgain = "Try Again"
     val back = "Back"
 
-
     object Error {
       val title = "There is a problem"
       val error = "Error: "
@@ -61,6 +60,21 @@ object MessageLookup {
     val title = "Confirm the company name"
     val heading = "Confirm the company name"
     val change_company = "Change company"
+  }
+
+  object CaptureCHRN {
+    val title = "What is the charity’s HMRC reference number?"
+    val heading = "What is the charity’s HMRC reference number?"
+    val insetText = "If the charity has registered for Gift Aid then their HMRC reference number will be the same as their Gift Aid number. This is not the same as the charity number available on the charity register."
+    val hintText = "This could be up to 7 characters and must begin with either one or two letters at the beginning followed by 1-5 numbers. For example, A999 or AB99999."
+    val noChrnLink = "The charity does not have a HMRC reference number"
+
+    object Error {
+      val noChrnEntered = "Enter the HMRC reference number"
+      val invalidChrnEntered = "Enter the HMRC reference number in the correct format"
+      val invalidLengthChrnEntered = "Enter a HMRC reference number that is 7 characters or less"
+    }
+
   }
 
   object CaptureCtutr {

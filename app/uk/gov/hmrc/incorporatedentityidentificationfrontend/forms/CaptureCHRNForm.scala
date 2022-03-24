@@ -23,35 +23,37 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.Constrai
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
 
 
-object CaptureCompanyNumberForm {
+object CaptureCHRNForm {
 
-  val companyNumber = "companyNumber"
-  val alphanumericRegex = "^[A-Z0-9]*$"
+  val chrnKey = "chrn"
+  val chrnRegex = "^([A-Z]{1,2}[0-9]{1,5})*$"
 
-  def companyNumberEmpty: Constraint[String] = Constraint("company_number.not_entered")(
-    companyNumber => validate(
-      constraint = companyNumber.isEmpty,
-      errMsg = "capture-company-number.error.no-entry"
+  def chrnNumberEmpty: Constraint[String] = Constraint("chrn.not_entered")(
+    chrn => validate(
+      constraint = chrn.isEmpty,
+      errMsg = "chrn.error.no-entry"
     )
   )
 
-  def companyNumberLength: Constraint[String] = Constraint("company_number.min_max_length")(
-    companyNumber => validateNot(
-      constraint = companyNumber.nonEmpty && (companyNumber.length <= 8),
-      errMsg = "capture-company-number.error.invalid-length"
+  def chrnInvalidLength: Constraint[String] = Constraint("chrn.min_max_length")(
+    chrn => validateNot(
+      constraint = chrn.nonEmpty && (chrn.length <= 7),
+      errMsg = "chrn.error.invalid-length"
     )
   )
 
-  def companyNumberFormat: Constraint[String] = Constraint("company_number.wrong_format")(
-    companyNumber => validateNot(
-      constraint = companyNumber.toUpperCase matches alphanumericRegex,
-      errMsg = "capture-company-number.error.invalid-format"
+  def chrnInvalidCharacters: Constraint[String] = Constraint("chrn.wrong_format")(
+    chrn => validateNot(
+      constraint = chrn.toUpperCase matches chrnRegex,
+      errMsg = "chrn.error.invalid-format"
     )
   )
 
   val form: Form[String] = {
     Form(
-      companyNumber -> text.verifying(companyNumberEmpty andThen companyNumberLength andThen companyNumberFormat)
+      chrnKey -> text.verifying(
+        chrnNumberEmpty andThen chrnInvalidLength andThen chrnInvalidCharacters
+      )
     )
 
   }
