@@ -23,9 +23,10 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus.{businessVerificationNotEnoughInfoToCallBVKey, businessVerificationNotEnoughInfoToChallengeKey}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, BusinessVerificationStub, IncorporatedEntityIdentificationStub}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WiremockHelper._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CheckYourAnswersViewTests
@@ -46,188 +47,287 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
     .configure(config ++ extraConfig)
     .build
 
-  //  "GET /check-your-answers-business" should {
-  //    "return OK" in {
-  //      await(journeyConfigRepository.insertJourneyConfig(
-  //        journeyId = testJourneyId,
-  //        authInternalId = testInternalId,
-  //        journeyConfig = testLimitedCompanyJourneyConfig
-  //      ))
-  //      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-  //      stubAudit()
-  //      stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-  //      stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-  //
-  //      lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //
-  //      result.status mustBe OK
-  //      verifyAudit()
-  //    }
-  //
-  //    "return a view" when {
-  //      "there is no serviceName passed in the journeyConfig" should {
-  //        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
-  //          journeyId = testJourneyId,
-  //          authInternalId = testInternalId,
-  //          journeyConfig = testLimitedCompanyJourneyConfig
-  //        )
-  //        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-  //        lazy val auditStub = stubAudit()
-  //
-  //        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
-  //          status = OK,
-  //          body = Json.toJsObject(testCompanyProfile)
-  //        )
-  //        lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-  //
-  //        lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //
-  //        testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig, auditStub)
-  //        testServiceName(testDefaultServiceName, result, authStub, insertConfig)
-  //      }
-  //
-  //      "there is a serviceName passed in the journeyConfig" should {
-  //        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
-  //          journeyId = testJourneyId,
-  //          authInternalId = testInternalId,
-  //          journeyConfig = JourneyConfig(
-  //            continueUrl = testContinueUrl,
-  //            pageConfig = PageConfig(
-  //              optServiceName = Some(testCallingServiceName),
-  //              deskProServiceId = testDeskProServiceId,
-  //              signOutUrl = testSignOutUrl,
-  //              accessibilityUrl = testAccessibilityUrl),
-  //            businessEntity = LimitedCompany,
-  //            businessVerificationCheck = true,
-  //            regime = testRegime
-  //          ))
-  //        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-  //        lazy val auditStub = stubAudit()
-  //        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
-  //          status = OK,
-  //          body = Json.toJsObject(testCompanyProfile)
-  //        )
-  //        lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-  //
-  //        lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //
-  //        testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig, auditStub)
-  //        testServiceName(testCallingServiceName, result, authStub, insertConfig)
-  //      }
-  //
-  //      "the applicant does not have a CTUTR" should {
-  //        "return OK" in {
-  //          await(journeyConfigRepository.insertJourneyConfig(
-  //            journeyId = testJourneyId,
-  //            authInternalId = testInternalId,
-  //            journeyConfig = testRegisteredSocietyJourneyConfig
-  //          ))
-  //          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-  //          stubAudit()
-  //          stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
-  //          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-  //
-  //          lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //          result.status mustBe OK
-  //          verifyAudit()
-  //        }
-  //
-  //        "return a view which" should {
-  //          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
-  //            journeyId = testJourneyId,
-  //            authInternalId = testInternalId,
-  //            journeyConfig = testRegisteredSocietyJourneyConfig
-  //          )
-  //          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-  //          lazy val auditStub = stubAudit()
-  //          lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-  //          lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
-  //          lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //
-  //          testCheckYourAnswersNoCtutrView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveCtutrStub)
-  //        }
-  //      }
-  //    }
-  //
-  //    "redirect to sign in page" when {
-  //      "the user is not logged in" in {
-  //        await(journeyConfigRepository.insertJourneyConfig(
-  //          journeyId = testJourneyId,
-  //          authInternalId = testInternalId,
-  //          journeyConfig = testLimitedCompanyJourneyConfig
-  //        ))
-  //        stubAuthFailure()
-  //        stubAudit()
-  //        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-  //        stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-  //
-  //        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //
-  //        result.status mustBe SEE_OTHER
-  //        result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fcheck-your-answers-business&origin=incorporated-entity-identification-frontend")
-  //        verifyAudit()
-  //      }
-  //    }
-  //
-  //    "return NOT_FOUND" when {
-  //      "the journeyId does not match what is stored in the journey config database" in {
-  //        await(journeyConfigRepository.insertJourneyConfig(
-  //          journeyId = testJourneyId + "1",
-  //          authInternalId = testInternalId,
-  //          journeyConfig = testLimitedCompanyJourneyConfig
-  //        ))
-  //        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-  //        stubAudit()
-  //
-  //        lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //
-  //        result.status mustBe NOT_FOUND
-  //        verifyAudit()
-  //      }
-  //
-  //      "the auth internal ID does not match what is stored in the journey config database" in {
-  //        await(journeyConfigRepository.insertJourneyConfig(
-  //          journeyId = testJourneyId,
-  //          authInternalId = testInternalId + "1",
-  //          journeyConfig = testLimitedCompanyJourneyConfig
-  //        ))
-  //        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-  //        stubAudit()
-  //
-  //        lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //
-  //        result.status mustBe NOT_FOUND
-  //        verifyAudit()
-  //      }
-  //
-  //      "neither the journey ID or auth internal ID are found in the journey config database" in {
-  //        await(journeyConfigRepository.insertJourneyConfig(
-  //          journeyId = testJourneyId + "1",
-  //          authInternalId = testInternalId + "1",
-  //          journeyConfig = testLimitedCompanyJourneyConfig
-  //        ))
-  //        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-  //        stubAudit()
-  //
-  //        lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //
-  //        result.status mustBe NOT_FOUND
-  //        verifyAudit()
-  //      }
-  //    }
-  //
-  //    "throw an Internal Server Exception" when {
-  //      "the user does not have an internal ID" in {
-  //        stubAuth(OK, successfulAuthResponse(None))
-  //        stubAudit()
-  //
-  //        lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
-  //
-  //        result.status mustBe INTERNAL_SERVER_ERROR
-  //        verifyAudit()
-  //      }
-  //    }
-  //  }
+    "GET /check-your-answers-business" should {
+      "return OK" in {
+        await(journeyConfigRepository.insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          journeyConfig = testLimitedCompanyJourneyConfig
+        ))
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubAudit()
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+        stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+        result.status mustBe OK
+        verifyAudit()
+      }
+
+      "return a view" when {
+        "there is no serviceName passed in the journeyConfig" should {
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          )
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val auditStub = stubAudit()
+
+          lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+            status = OK,
+            body = Json.toJsObject(testCompanyProfile)
+          )
+          lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+          testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig, auditStub)
+          testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+        }
+
+        "there is a serviceName passed in the journeyConfig" should {
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = JourneyConfig(
+              continueUrl = testContinueUrl,
+              pageConfig = PageConfig(
+                optServiceName = Some(testCallingServiceName),
+                deskProServiceId = testDeskProServiceId,
+                signOutUrl = testSignOutUrl,
+                accessibilityUrl = testAccessibilityUrl),
+              businessEntity = LimitedCompany,
+              businessVerificationCheck = true,
+              regime = testRegime
+            ))
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val auditStub = stubAudit()
+          lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+            status = OK,
+            body = Json.toJsObject(testCompanyProfile)
+          )
+          lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+          testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig, auditStub)
+          testServiceName(testCallingServiceName, result, authStub, insertConfig)
+        }
+
+        "the applicant does have CRN and CTUTR" should {
+          "return OK" in {
+            await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testRegisteredSocietyJourneyConfig
+            ))
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            stubAudit()
+            stubRetrieveCtutr(testJourneyId)(OK, body = testCtutr)
+            stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+
+            lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+            result.status mustBe OK
+            verifyAudit()
+          }
+
+          "return a view which" should {
+            lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testRegisteredSocietyJourneyConfig
+            )
+            lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            lazy val auditStub = stubAudit()
+            lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+            lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+            lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+            testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, retrieveCtutrStub, authStub, insertConfig, auditStub)
+          }
+        }
+
+        "the applicant does have CRN but no CTUTR" should {
+          "return OK" in {
+            await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testRegisteredSocietyJourneyConfig
+            ))
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            stubAudit()
+            stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+            stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+
+            lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+            result.status mustBe OK
+            verifyAudit()
+          }
+
+          "return a view which" should {
+            lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testRegisteredSocietyJourneyConfig
+            )
+            lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            lazy val auditStub = stubAudit()
+            lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+            lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+            lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+            testCheckYourAnswersNoCtutrView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveCtutrStub)
+          }
+        }
+
+        "the applicant does have CRN and CHRN" should {
+          "return OK" in {
+            await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
+            ))
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            stubAudit()
+            stubRetrieveChrn(testJourneyId)(status = OK, body = testCHRN)
+            stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+
+            lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+            result.status mustBe OK
+            verifyAudit()
+          }
+
+          "return a view which" should {
+            lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
+            )
+            lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            lazy val auditStub = stubAudit()
+            lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+            lazy val retrieveChrnStub = stubRetrieveChrn(testJourneyId)(status = OK, body = testCHRN)
+            lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+            testCheckYourAnswersCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveChrnStub)
+          }
+        }
+
+        "the applicant does have CRN but no CHRN" should {
+          "return OK" in {
+            await(journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
+            ))
+            stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            stubAudit()
+            stubRetrieveChrn(testJourneyId)(status = NOT_FOUND, body = "No data")
+            stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+
+            lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+            result.status mustBe OK
+            verifyAudit()
+          }
+
+          "return a view which" should {
+            lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+              journeyId = testJourneyId,
+              authInternalId = testInternalId,
+              journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
+            )
+            lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+            lazy val auditStub = stubAudit()
+            lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+            lazy val retrieveChrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND, body = "No data")
+            lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+            testCheckYourAnswersOnlyCRNCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveChrnStub)
+          }
+        }
+      }
+
+      "redirect to sign in page" when {
+        "the user is UNAUTHORISED" in {
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
+          stubAuthFailure()
+          stubAudit()
+          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+
+          lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+          result.status mustBe SEE_OTHER
+          result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fcheck-your-answers-business&origin=incorporated-entity-identification-frontend")
+          verifyAudit()
+        }
+      }
+
+      "return NOT_FOUND" when {
+        "the journeyId does not match what is stored in the journey config database" in {
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId + "1",
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          stubAudit()
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+          result.status mustBe NOT_FOUND
+          verifyAudit()
+        }
+
+        "the auth internal ID does not match what is stored in the journey config database" in {
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId + "1",
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          stubAudit()
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+          result.status mustBe NOT_FOUND
+          verifyAudit()
+        }
+
+        "neither the journey ID or auth internal ID are found in the journey config database" in {
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId + "1",
+            authInternalId = testInternalId + "1",
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          stubAudit()
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+          result.status mustBe NOT_FOUND
+          verifyAudit()
+        }
+      }
+
+      "throw an Internal Server Exception" when {
+        "the user does not have an internal ID" in {
+          stubAuth(OK, successfulAuthResponse(None))
+          stubAudit()
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+          result.status mustBe INTERNAL_SERVER_ERROR
+          verifyAudit()
+        }
+      }
+    }
 
   "POST /check-your-answers-business" when {
     "the limited company details are successfully matched" should {
@@ -661,7 +761,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
       }
     }
 
-    "the Charitable Incorporated Organisation has provided only crn" should {
+    "the Charitable Incorporated Organisation has provided crn and CHRN" should {
       "redirect to Business Verification" in {
         await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
@@ -701,11 +801,61 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()
         lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-        lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+        lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = OK, body = testCHRN)
+
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
-        testCheckYourAnswersNoCtutrCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveCtutrStub)
+        testCheckYourAnswersCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, chrnStub)
       }
     }
+
+    "the Charitable Incorporated Organisation has provided crn and No CHRN" should {
+      "redirect to Business Verification" in {
+        await(journeyConfigRepository.insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
+        ))
+
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubAudit()
+
+        stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCioProfile))
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+        stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
+        stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(
+          status = OK, body = testBusinessVerificationJson(value = businessVerificationNotEnoughInfoToCallBVKey)
+        )
+        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+        stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+        stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
+
+        lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+        verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
+        verifyAudit()
+      }
+      "return a view which" should {
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
+        )
+
+        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val auditStub = stubAudit()
+        lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+        lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND, body = "No data")
+
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+        testCheckYourAnswersOnlyCRNCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, chrnStub)
+      }
+    }
+
   }
 }

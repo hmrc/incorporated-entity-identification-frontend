@@ -22,6 +22,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerif
 
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
                                          optCtutr: Option[String],
+                                         optChrn: Option[String],
                                          identifiersMatch: Boolean,
                                          businessVerification: Option[BusinessVerificationStatus],
                                          registration: RegistrationStatus
@@ -31,6 +32,7 @@ object IncorporatedEntityInformation {
 
   val companyProfileKey = "companyProfile"
   val ctutrKey = "ctutr"
+  val chrnKey = "chrn"
   val identifiersMatchKey = "identifiersMatch"
   val businessVerificationKey = "businessVerification"
   val verificationStatusKey = "verificationStatus"
@@ -42,11 +44,12 @@ object IncorporatedEntityInformation {
       for {
         companyProfile <- (json \ companyProfileKey).validate[CompanyProfile]
         optCtutr <- (json \ ctutrKey).validateOpt[String]
+        optChrn <- (json \ chrnKey).validateOpt[String]
         identifiersMatch <- (json \ identifiersMatchKey).validate[Boolean]
         businessVerification <- (json \ businessVerificationKey).validateOpt[BusinessVerificationStatus]
         registrationStatus <- (json \ registrationKey).validate[RegistrationStatus]
       } yield {
-        IncorporatedEntityInformation(companyProfile, optCtutr, identifiersMatch, businessVerification, registrationStatus)
+        IncorporatedEntityInformation(companyProfile, optCtutr, optChrn, identifiersMatch, businessVerification, registrationStatus)
       }
 
     override def writes(incorporatedEntityInformation: IncorporatedEntityInformation): JsObject =
@@ -57,6 +60,11 @@ object IncorporatedEntityInformation {
       ) ++ {
         incorporatedEntityInformation.optCtutr match {
           case Some(ctutr) => Json.obj(ctutrKey -> ctutr)
+          case None => Json.obj()
+        }
+      } ++ {
+        incorporatedEntityInformation.optChrn match {
+          case Some(chrn) => Json.obj(chrnKey -> chrn)
           case None => Json.obj()
         }
       } ++ {
@@ -79,7 +87,7 @@ object IncorporatedEntityInformation {
             case BusinessVerificationFail => businessVerificationFailKey
             case CtEnrolled => businessVerificationCtEnrolledKey
           }
-          Json.obj(businessVerificationKey ->  Json.obj(businessVerificationStatusKey -> businessVerificationStatusForCallingServices))
+          Json.obj(businessVerificationKey -> Json.obj(businessVerificationStatusKey -> businessVerificationStatusForCallingServices))
         })
         .getOrElse(Json.obj())
     }

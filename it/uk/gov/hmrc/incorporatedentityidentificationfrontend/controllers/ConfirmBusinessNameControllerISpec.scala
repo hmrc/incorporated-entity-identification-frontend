@@ -284,7 +284,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         )
       }
     }
-    "redirect to the check your answers the page" when {
+    "redirect to the CHRN page" when {
       "the user is identifying a CIO" in {
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
 
@@ -298,7 +298,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
         result must have(
           httpStatus(SEE_OTHER),
-          redirectUri(routes.CheckYourAnswersController.show(testJourneyId).url)
+          redirectUri(routes.CaptureCHRNController.show(testJourneyId).url)
         )
       }
     }

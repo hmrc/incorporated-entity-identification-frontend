@@ -24,7 +24,7 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CheckYourAnswers => messages}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testCompanyNumber, testCtutr, testSignOutUrl}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testCHRN, testCompanyNumber, testCtutr, testSignOutUrl}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -211,19 +211,19 @@ trait CheckYourAnswersViewTests {
 
   }
 
-  def testCheckYourAnswersNoCtutrCIOView(journeyId: String)
-                                        (result: => WSResponse,
-                                         companyNumberStub: => StubMapping,
-                                         authStub: => StubMapping,
-                                         insertJourneyConfig: => Future[WriteResult],
-                                         auditStub: => StubMapping,
-                                         retrieveCtutrStub: => StubMapping): Unit = {
+  def testCheckYourAnswersCIOView(journeyId: String)
+                                 (result: => WSResponse,
+                                  companyNumberStub: => StubMapping,
+                                  authStub: => StubMapping,
+                                  insertJourneyConfig: => Future[WriteResult],
+                                  auditStub: => StubMapping,
+                                  retrieveChrnStub: => StubMapping): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
       auditStub
-      retrieveCtutrStub
+      retrieveChrnStub
       companyNumberStub
       Jsoup.parse(result.body)
     }
@@ -257,8 +257,8 @@ trait CheckYourAnswersViewTests {
     "have a summary list which" should {
       lazy val summaryListRows = doc.getSummaryListRows.iterator().asScala.toList
 
-      "have 1 rows" in {
-        summaryListRows.size mustBe 1
+      "have 2 rows" in {
+        summaryListRows.size mustBe 2
       }
 
       "have a company number row" in {
@@ -268,6 +268,98 @@ trait CheckYourAnswersViewTests {
         companyNumberRow.getSummaryListAnswer mustBe testCompanyNumber
         companyNumberRow.getSummaryListChangeLink mustBe routes.CaptureCompanyNumberController.show(journeyId).url
         companyNumberRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.companyNumber}"
+      }
+
+      "have a CHRN row" in {
+        val chrnRow = summaryListRows.last
+
+        chrnRow.getSummaryListQuestion mustBe messages.chrn
+        chrnRow.getSummaryListAnswer mustBe testCHRN
+        chrnRow.getSummaryListChangeLink mustBe routes.CaptureCHRNController.show(journeyId).url
+        chrnRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.chrn}"
+      }
+
+      "have a continue and confirm button" in {
+        doc.getSubmitButton.first.text mustBe Base.confirmAndContinue
+      }
+
+      "have a back link" in {
+        val backLinks: Elements = doc.getBackLinks
+
+        backLinks.size mustBe 1
+
+        backLinks.first.text mustBe Base.back
+      }
+    }
+
+  }
+
+  def testCheckYourAnswersOnlyCRNCIOView(journeyId: String)
+                                 (result: => WSResponse,
+                                  companyNumberStub: => StubMapping,
+                                  authStub: => StubMapping,
+                                  insertJourneyConfig: => Future[WriteResult],
+                                  auditStub: => StubMapping,
+                                  retrieveChrnStub: => StubMapping): Unit = {
+
+    lazy val doc: Document = {
+      await(insertJourneyConfig)
+      authStub
+      auditStub
+      retrieveChrnStub
+      companyNumberStub
+      Jsoup.parse(result.body)
+    }
+
+    lazy val config = app.injector.instanceOf[AppConfig]
+
+    "have a sign out link in the header" in {
+      doc.getSignOutText mustBe Header.signOut
+    }
+
+    "have a sign out link that redirects to correct page" in {
+      doc.getSignOutLink mustBe testSignOutUrl
+    }
+
+    "have the correct beta banner" in {
+      doc.getBanner.text mustBe BetaBanner.title
+    }
+
+    "have a banner link that redirects to beta feedback" in {
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
+    }
+
+    "have the correct title" in {
+      doc.title mustBe messages.title
+    }
+
+    "have the correct heading" in {
+      doc.getH1Elements.text mustBe messages.heading
+    }
+
+    "have a summary list which" should {
+      lazy val summaryListRows = doc.getSummaryListRows.iterator().asScala.toList
+
+      "have 2 rows" in {
+        summaryListRows.size mustBe 2
+      }
+
+      "have a company number row" in {
+        val companyNumberRow = summaryListRows.head
+
+        companyNumberRow.getSummaryListQuestion mustBe messages.companyNumber
+        companyNumberRow.getSummaryListAnswer mustBe testCompanyNumber
+        companyNumberRow.getSummaryListChangeLink mustBe routes.CaptureCompanyNumberController.show(journeyId).url
+        companyNumberRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.companyNumber}"
+      }
+
+      "have a CHRN row" in {
+        val chrnRow = summaryListRows.last
+
+        chrnRow.getSummaryListQuestion mustBe messages.chrn
+        chrnRow.getSummaryListAnswer mustBe messages.noChrn
+        chrnRow.getSummaryListChangeLink mustBe routes.CaptureCHRNController.show(journeyId).url
+        chrnRow.getSummaryListChangeText mustBe s"${Base.change} ${messages.chrn}"
       }
 
       "have a continue and confirm button" in {

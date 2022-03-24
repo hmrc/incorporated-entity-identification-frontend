@@ -79,6 +79,9 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
   def retrieveCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveIncorporatedEntityInformation[String](journeyId, CtutrKey)
 
+  def retrieveCHRN(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+    connector.retrieveIncorporatedEntityInformation[String](journeyId, ChrnKey)
+
   def retrieveRegistrationStatus(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationStatus]] =
     connector.retrieveIncorporatedEntityInformation[RegistrationStatus](journeyId, RegistrationKey)
 

@@ -159,9 +159,9 @@ class CaptureCHRNControllerISpec extends ComponentSpecHelper
       "a valid chrn is submitted" should {
         "store chrn and redirect to Check Your Answers page" in {
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          stubStoreCHRN(testJourneyId, testCaptureCHRN)(status = OK)
+          stubStoreCHRN(testJourneyId, testCHRN)(status = OK)
 
-          val result = post(s"$baseUrl/$testJourneyId/chrn")("chrn" -> testCaptureCHRN)
+          val result = post(s"$baseUrl/$testJourneyId/chrn")("chrn" -> testCHRN)
 
           result must have(
             httpStatus(SEE_OTHER),
@@ -253,7 +253,7 @@ class CaptureCHRNControllerISpec extends ComponentSpecHelper
 
         stubAuthFailure()
 
-        val result = post(s"$baseUrl/$testJourneyId/chrn")("chrn" -> testCaptureCHRN)
+        val result = post(s"$baseUrl/$testJourneyId/chrn")("chrn" -> testCHRN)
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -319,7 +319,7 @@ class CaptureCHRNControllerISpec extends ComponentSpecHelper
 
         stubAuthFailure()
 
-        val result = post(s"$baseUrl/$testJourneyId/chrn")("chrn" -> testCaptureCHRN)
+        val result = post(s"$baseUrl/$testJourneyId/chrn")("chrn" -> testCHRN)
 
         result must have(
           httpStatus(SEE_OTHER),

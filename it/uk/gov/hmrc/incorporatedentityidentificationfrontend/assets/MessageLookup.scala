@@ -101,6 +101,8 @@ object MessageLookup {
     val heading = "Check your answers"
     val ctutr = "Unique Taxpayers Reference number"
     val noCtutr = "The business does not have a UTR"
+    val chrn = "HMRC reference number"
+    val noChrn = "The charity does not have a HMRC reference number"
     val companyNumber = "Company number"
   }
 

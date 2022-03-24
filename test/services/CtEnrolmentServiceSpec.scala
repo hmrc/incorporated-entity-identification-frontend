@@ -23,6 +23,7 @@ import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.RegisteredSociety
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CtEnrolled, SuccessfullyStored}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtEnrolmentService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtEnrolmentService.{Enrolled, EnrolmentMismatch, NoEnrolmentFound}
@@ -52,7 +53,7 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
             mockStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)(Future.successful(SuccessfullyStored))
 
             val testEnrolments = Enrolments(Set(testIrCtEnrolment))
-            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfigRegisteredSociety()))
+            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfig(RegisteredSociety)))
 
             res mustBe Enrolled
 
@@ -67,7 +68,7 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
             mockValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(Future.successful(DetailsMismatch))
 
             val testEnrolments = Enrolments(Set(testIrCtEnrolment))
-            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfigRegisteredSociety()))
+            val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfig(RegisteredSociety)))
 
             res mustBe EnrolmentMismatch
           }
@@ -78,14 +79,14 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(None))
 
           val testEnrolments = Enrolments(Set(testIrCtEnrolment))
-          intercept[InternalServerException](await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfigRegisteredSociety())))
+          intercept[InternalServerException](await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfig(RegisteredSociety))))
         }
       }
     }
     "the user does not have an IR-CT enrolment" should {
       s"return $NoEnrolmentFound" in {
         val testEnrolments = Enrolments(Set.empty)
-        val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfigRegisteredSociety()))
+        val res = await(TestCtEnrolmentService.checkCtEnrolment(testJourneyId, testEnrolments, testJourneyConfig(RegisteredSociety)))
 
         res mustBe NoEnrolmentFound
       }

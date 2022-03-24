@@ -27,6 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.Validate
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationNotEnoughInformationToCallBV, RegistrationNotCalled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, JourneyService, StorageService, ValidateIncorporatedEntityDetailsService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.CheckYourAnswersRowBuilder
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -40,6 +41,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                                            validateIncorporatedEntityDetailsService: ValidateIncorporatedEntityDetailsService,
                                            mcc: MessagesControllerComponents,
                                            view: check_your_answers_page,
+                                           rowBuilder: CheckYourAnswersRowBuilder,
                                            val authConnector: AuthConnector)
                                           (implicit val config: AppConfig,
                                            ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
@@ -52,36 +54,15 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
             optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
             optCtutr <- storageService.retrieveCtutr(journeyId)
-          } yield (journeyConfig.businessEntity, optCompanyProfile, optCtutr) match {
-            case (LimitedCompany, Some(companyProfile), Some(ctutr)) =>
-              Ok(view(journeyConfig.pageConfig,
-                routes.CheckYourAnswersController.submit(journeyId),
-                Some(ctutr),
-                companyProfile.companyNumber,
-                journeyId,
-                journeyConfig.businessEntity.toString
-              ))
-            case (RegisteredSociety, Some(companyProfile), optCtutr) =>
-              Ok(view(journeyConfig.pageConfig,
-                routes.CheckYourAnswersController.submit(journeyId),
-                optCtutr,
-                companyProfile.companyNumber,
-                journeyId,
-                journeyConfig.businessEntity.toString
-              ))
-            case (CharitableIncorporatedOrganisation, Some(companyProfile), None) =>
-              Ok(view(journeyConfig.pageConfig,
-                routes.CheckYourAnswersController.submit(journeyId),
-                None,
-                companyProfile.companyNumber,
-                journeyId,
-                journeyConfig.businessEntity.toString
-              ))
-            case _ =>
-              throw new InternalServerException("Data could not be retrieved from database or does not exist in database")
-          }
-        case None =>
-          throw new InternalServerException("Internal ID could not be retrieved from Auth")
+            optChrn <- storageService.retrieveCHRN(journeyId)
+            summaryRows = rowBuilder.buildSummaryListRows(journeyId, optCompanyProfile, optCtutr, optChrn, journeyConfig)
+          } yield
+            Ok(view(
+              pageConfig = journeyConfig.pageConfig,
+              formAction = routes.CheckYourAnswersController.submit(journeyId),
+              summaryRows = summaryRows
+            ))
+        case None => throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
@@ -101,7 +82,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             result <- details match {
               case DetailsMatched if journeyConfig.businessVerificationCheck => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)}
-              yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
+                yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
               case DetailsMatched if journeyConfig.businessVerificationCheck.equals(false) => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
               } yield Redirect(routes.RegistrationController.register(journeyId))
