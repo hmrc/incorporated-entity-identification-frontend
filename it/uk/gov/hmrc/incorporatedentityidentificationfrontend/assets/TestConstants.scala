@@ -31,9 +31,8 @@ object TestConstants {
   val companyNameKey: String = "companyName"
   val companyNumberKey: String = "companyNumber"
   val testCompanyName: String = "Test Company Ltd"
-  val testCaptureCHRN: String = "CE12345"
+  val testCHRN: String = "AB12345"
   val testCtutr: String = "1234567890"
-  val testNoCtutr: String = "1234567890"
   val testJourneyId: String = UUID.randomUUID().toString
   val testSignOutUrl: String = "signOutUrl"
   val testBusinessVerificationJourneyId = "TestBusinessVerificationJourneyId"
@@ -145,6 +144,7 @@ object TestConstants {
     IncorporatedEntityInformation(
       companyProfile = testCompanyProfile,
       optCtutr = Some(testCtutr),
+      optChrn = Some(testCHRN),
       identifiersMatch = true,
       businessVerification = Some(businessVerificationStatus),
       registration = testSuccessfulRegistration

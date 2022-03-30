@@ -194,6 +194,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
             IncorporatedEntityInformation(
               companyProfile = testCompanyProfile,
               optCtutr = Some(testCtutr),
+              optChrn = Some(testCHRN),
               identifiersMatch = true,
               businessVerification = Some(BusinessVerificationPass),
               registration = testSuccessfulRegistration
@@ -208,6 +209,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         result.json mustBe Json.obj(
           "ctutr" -> testCtutr,
+          "chrn" -> testCHRN,
           "companyProfile" -> Json.obj(
             "companyName" -> testCompanyName,
             "companyNumber" -> testCompanyNumber,

@@ -75,7 +75,7 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
                       Redirect(routes.CaptureCtutrController.show(journeyId))
                   }
                 case CharitableIncorporatedOrganisation =>
-                  Future.successful(Redirect(routes.CheckYourAnswersController.show(journeyId)))
+                  Future.successful(Redirect(routes.CaptureCHRNController.show(journeyId)))
               }
           }
         case _ ~ None =>

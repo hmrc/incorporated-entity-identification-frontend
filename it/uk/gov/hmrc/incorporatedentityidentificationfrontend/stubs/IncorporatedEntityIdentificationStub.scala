@@ -151,6 +151,15 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
     )
   }
 
+  def stubRetrieveChrn(journeyId: String)(status: Int, body: String = ""): StubMapping = {
+    when(method = GET,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/chrn"
+    ).thenReturn(
+      status = status,
+      body = JsString(body)
+    )
+  }
+
   def stubRemoveCtutr(journeyId: String)(status: Int, body: String = ""): StubMapping =
     when(method = DELETE,
       uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr"

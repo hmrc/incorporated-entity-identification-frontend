@@ -18,7 +18,7 @@ package helpers
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.auth.core.{Enrolment, EnrolmentIdentifier}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
 import java.time.LocalDate
@@ -27,6 +27,9 @@ import java.util.UUID
 
 object TestConstants {
 
+  val companyNameKey: String = "companyName"
+  val companyNumberKey: String = "companyNumber"
+  val testCHRN: String = "AB12345"
   val testJourneyId: String = UUID.randomUUID().toString
   val testAuthInternalId: String = UUID.randomUUID().toString
   val testServiceName: String = "Test Service"
@@ -55,6 +58,7 @@ object TestConstants {
     IncorporatedEntityInformation(
       testCompanyProfile,
       Some(testCtutr),
+      Some(testCHRN),
       testIdentifiersMatch,
       Some(BusinessVerificationPass),
       Registered(testSafeId)
@@ -132,32 +136,20 @@ object TestConstants {
 
   val testIrCtEnrolment: Enrolment = Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", testCtutr)), "Activated", None)
 
-  def testJourneyConfigLimitedCompanyWithoutBV(): JourneyConfig = testJourneyConfigLimitedCompany().copy(businessVerificationCheck = false)
+  def testJourneyConfigLimitedCompanyWithoutBV(): JourneyConfig = testJourneyConfig(LimitedCompany).copy(businessVerificationCheck = false)
 
-  def testJourneyConfigLimitedCompany(): JourneyConfig = JourneyConfig(
+  def testJourneyConfig(businessEntity: BusinessEntity): JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
     pageConfig = PageConfig(
       optServiceName = None,
       deskProServiceId = "vrs",
       signOutUrl = testSignOutUrl,
       accessibilityUrl = testAccessibilityUrl),
-    businessEntity = LimitedCompany,
+    businessEntity = businessEntity,
     businessVerificationCheck = true,
     regime = testRegime
   )
 
-  def testJourneyConfigRegisteredSocietyWithoutBV(): JourneyConfig = testJourneyConfigRegisteredSociety().copy(businessVerificationCheck = false)
-
-  def testJourneyConfigRegisteredSociety(): JourneyConfig = JourneyConfig(
-    continueUrl = testContinueUrl,
-    pageConfig = PageConfig(
-      optServiceName = None,
-      deskProServiceId = "vrs",
-      signOutUrl = testSignOutUrl,
-      accessibilityUrl = testAccessibilityUrl),
-    businessEntity = RegisteredSociety,
-    businessVerificationCheck = true,
-    regime = testRegime
-  )
+  def testJourneyConfigRegisteredSocietyWithoutBV(): JourneyConfig = testJourneyConfig(RegisteredSociety).copy(businessVerificationCheck = false)
 
 }

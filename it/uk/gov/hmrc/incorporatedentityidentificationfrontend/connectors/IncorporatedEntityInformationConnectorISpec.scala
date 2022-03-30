@@ -45,6 +45,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
             IncorporatedEntityInformation(
               companyProfile = testCompanyProfile,
               optCtutr = Some(testCtutr),
+              optChrn = Some(testCHRN),
               identifiersMatch = true,
               businessVerification = Some(BusinessVerificationPass),
               registration = testSuccessfulRegistration
@@ -58,6 +59,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
           IncorporatedEntityInformation(
             testCompanyProfile,
             Some(testCtutr),
+            Some(testCHRN),
             true,
             Some(BusinessVerificationPass),
             testSuccessfulRegistration))
