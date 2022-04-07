@@ -43,10 +43,8 @@ object MessageLookup {
 
   object CaptureCompanyNumber {
     val title = "What is the company registration number?"
-    val link = "search Companies House for the company registration number (opens in new tab)"
-    val line_1 = s"You can $link."
+    val line_1 = "You can search Companies House for the company registration number (opens in a new tab)"
     val hint = "For example, 01234567"
-
 
     object Error {
       val emptyCompanyNumber = "Enter a Company Registration number"

@@ -20,6 +20,8 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.{errorSummary, inputText}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcNewTabLinkHelper
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.newtablinkhelper.NewTabLinkHelper
 
 @this(layout: govuk_template,
         h1: h1,
@@ -28,7 +30,8 @@
         govukButton: GovukButton,
         formWithCSRF: FormWithCSRF,
         inputText: inputText,
-        errorSummary: errorSummary
+        errorSummary: errorSummary,
+        hmrcNewTabLinkHelper: HmrcNewTabLinkHelper
 )
 
 @(pageConfig: PageConfig, formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
@@ -41,7 +44,11 @@
     @formWithCSRF(action = formAction) {
 
         <p class="govuk-body">
-            @Html(messages("capture-company-number.line_1", appConfig.companiesHouse))
+            @messages("capture-company-number.line_1.part1")
+            @hmrcNewTabLinkHelper(NewTabLinkHelper(
+                text = messages("capture-company-number.line_1.part2"),
+                href = Some(appConfig.companiesHouse)
+            ))
         </p>
 
         @inputText(

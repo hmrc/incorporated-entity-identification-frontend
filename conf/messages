@@ -37,7 +37,8 @@ timeout.signOut                                             = Sign out
 ## Company Number
 capture-company-number.title                                = What is the company registration number?
 capture-company-number.heading                              = What is the company registration number?
-capture-company-number.line_1                               = You can <a id="companiesHouse" href="{0}" target="_blank"> search Companies House for the company registration number (opens in new tab)</a>.
+capture-company-number.line_1.part1                         = You can
+capture-company-number.line_1.part2                         = search Companies House for the company registration number
 capture-company-number.hint                                 = For example, 01234567
 capture-company-number.error.no-entry                       = Enter a Company Registration number
 capture-company-number.error.invalid-length                 = Enter a Company Registration number using 8 characters or fewer

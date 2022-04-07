@@ -66,12 +66,8 @@ trait CaptureCompanyNumberTests {
       doc.title mustBe messages.title
     }
 
-    "have the correct first line" in {
-      doc.getParagraphs.eq(1).text mustBe messages.line_1
-    }
-
     "have the correct link" in {
-      doc.getLink("companiesHouse").text mustBe messages.link
+      doc.getParagraphs.eq(1).text mustBe messages.line_1
     }
 
     "have a correct details hint" in {
