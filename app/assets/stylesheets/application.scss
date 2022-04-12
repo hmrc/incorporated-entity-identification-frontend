@@ -5,6 +5,7 @@ $hmrc-assets-path: "/identify-your-incorporated-business/assets/lib/hmrc-fronten
 @import "lib/hmrc-frontend/hmrc/all";
 
 @import "timeout-dialog";
+@import "iei.scss";
 
 .app-reference-number {
   display: block;
