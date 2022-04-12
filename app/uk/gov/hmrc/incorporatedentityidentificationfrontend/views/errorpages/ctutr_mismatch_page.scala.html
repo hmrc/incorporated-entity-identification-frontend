@@ -18,6 +18,7 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
 
 
 @this(govukLayout: govuk_template,
@@ -27,7 +28,8 @@
 
 @(pageConfig: PageConfig, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@govukLayout(pageConfig, messages("ctutr-mismatch.title")) {
+@govukLayout(pageConfig, title = title("ctutr-mismatch.title", pageConfig)) {
+
 
     @h1(messages("ctutr-mismatch.heading"))
     <p class="govuk-body">@messages("ctutr-mismatch.paragraph")</p>

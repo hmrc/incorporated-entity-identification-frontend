@@ -24,7 +24,7 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{BetaBanner, Header, CtutrNotFound => messages}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testJourneyId, testSignOutUrl}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -64,7 +64,12 @@ trait CtutrNotFoundViewTests {
     }
 
     "have the correct title" in {
-      doc.title mustBe messages.title
+      if (doc.getServiceName.text.equals("Entity Validation Service")){
+        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
+      } else {
+        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
+      }
+
     }
 
     "have the correct heading" in {
