@@ -124,12 +124,12 @@ object TestConstants {
     "RegisterApiStatus" -> "not called"
   )
 
-  def testCIOAuditEventJson(isMatch: Boolean, bvStatus: String, regStatus: String): JsObject =
+  def testCIOAuditEventJson(bvStatus: String, regStatus: String): JsObject =
     Json.obj(
       "callingService" -> defaultServiceName,
       "businessType" -> "CIO",
       "companyNumber" -> testCharityNumber,
-      "identifiersMatch" -> isMatch,
+      "isMatch" -> "unmatchable",
       "VerificationStatus" -> bvStatus,
       "RegisterApiStatus" -> regStatus
     )
