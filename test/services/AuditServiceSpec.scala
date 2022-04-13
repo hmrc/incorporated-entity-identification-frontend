@@ -309,7 +309,7 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditCIO()
 
-        auditEventCaptor.getValue mustBe testCIOAuditEventJson(isMatch = false, bvStatus = notEnoughInfoToCall, regStatus = notCalled)
+        auditEventCaptor.getValue mustBe testCIOAuditEventJson(bvStatus = notEnoughInfoToCall, regStatus = notCalled)
       }
       "business verification is disabled" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigCIO.copy(businessVerificationCheck = false)))
@@ -322,7 +322,7 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditCIO()
 
-        auditEventCaptor.getValue mustBe testCIOAuditEventJson(isMatch = false, bvStatus = notRequested, regStatus = notCalled)
+        auditEventCaptor.getValue mustBe testCIOAuditEventJson(bvStatus = notRequested, regStatus = notCalled)
       }
     }
   }
