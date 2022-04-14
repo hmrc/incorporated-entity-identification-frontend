@@ -20,6 +20,7 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
 @import uk.gov.hmrc.govukfrontend.views.Aliases.SummaryListRow
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
 
 @this(layout: govuk_template,
         h1: h1,
@@ -30,7 +31,7 @@
 
 @(pageConfig: PageConfig, formAction: Call, summaryRows: Seq[SummaryListRow])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@layout(pageConfig, title = messages("check-your-answers.title")) {
+@layout(pageConfig, title = title("check-your-answers.title", pageConfig)) {
 
     @h1(messages("check-your-answers.heading"))
 

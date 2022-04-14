@@ -19,6 +19,7 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
 
 @this(govukLayout: govuk_template,
         govUkHeader: GovukHeader,
@@ -28,7 +29,7 @@
 
 @(pageConfig: PageConfig, formAction: Call, companyName: String, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@govukLayout(pageConfig, messages("confirm-business.title")) {
+@govukLayout(pageConfig, title = title("confirm-business.title", pageConfig)) {
 
     @h1(messages("confirm-business.heading"))
     <p class="govuk-body">@companyName</p>

@@ -24,7 +24,7 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CheckYourAnswers => messages}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testCHRN, testCompanyNumber, testCtutr, testSignOutUrl}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -73,7 +73,12 @@ trait CheckYourAnswersViewTests {
     }
 
     "have the correct title" in {
-      doc.title mustBe messages.title
+      if (doc.getServiceName.text.equals("Entity Validation Service")){
+        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
+      } else {
+        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
+      }
+
     }
 
     "have the correct heading" in {
@@ -164,7 +169,12 @@ trait CheckYourAnswersViewTests {
     }
 
     "have the correct title" in {
-      doc.title mustBe messages.title
+      if (doc.getServiceName.text.equals("Entity Validation Service")){
+        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
+      } else {
+        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
+      }
+
     }
 
     "have the correct heading" in {
@@ -247,7 +257,12 @@ trait CheckYourAnswersViewTests {
     }
 
     "have the correct title" in {
-      doc.title mustBe messages.title
+      if (doc.getServiceName.text.equals("Entity Validation Service")){
+        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
+      } else {
+        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
+      }
+
     }
 
     "have the correct heading" in {
@@ -330,7 +345,12 @@ trait CheckYourAnswersViewTests {
     }
 
     "have the correct title" in {
-      doc.title mustBe messages.title
+      if (doc.getServiceName.text.equals("Entity Validation Service")){
+        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
+      } else {
+        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
+      }
+
     }
 
     "have the correct heading" in {

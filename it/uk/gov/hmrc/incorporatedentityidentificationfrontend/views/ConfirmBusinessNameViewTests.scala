@@ -27,7 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testSignOutUrl}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 
 import scala.concurrent.Future
 
@@ -50,7 +50,12 @@ trait ConfirmBusinessNameViewTests {
     lazy val config = app.injector.instanceOf[AppConfig]
 
     "have the correct title" in {
-      doc.title mustBe messages.title
+      if (doc.getServiceName.text.equals("Entity Validation Service")){
+        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
+      } else {
+        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
+      }
+
     }
 
     "have a sign out link in the header" in {
