@@ -20,7 +20,7 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.test.Helpers._
 import reactivemongo.api.commands.WriteResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CaptureCHRN => messages}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.testSignOutUrl
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
@@ -28,6 +28,7 @@ import org.jsoup.Jsoup
 import org.jsoup.nodes.{Document, Element}
 import org.jsoup.select.Elements
 import play.api.libs.ws.WSResponse
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms.TestCreateJourneyForm.serviceName
 
 import scala.concurrent.Future
 
@@ -72,15 +73,20 @@ trait CaptureCHRNumberViewTests {
     }
 
     "have the correct title" in {
-      doc.title mustBe messages.title
+      if (doc.getServiceName.text.equals("Entity Validation Service")){
+        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
+      } else {
+        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
+      }
+
     }
 
-    "have the correct page haeder" in {
+    "have the correct page header" in {
       val headers: Elements = doc.getElementsByTag("h1")
 
       headers.size mustBe >=(1)
 
-      headers.first.text mustBe messages.title
+      headers.first.text mustBe messages.heading
     }
 
     "have the correct inset text" in {
@@ -130,6 +136,10 @@ trait CaptureCHRNumberViewTests {
       Jsoup.parse(result.body)
     }
 
+    "have the correct title" in {
+      doc.title mustBe s"${Base.Error.error}${messages.title} - $testDefaultServiceName - GOV.UK"
+    }
+
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
       doc.getErrorSummaryBody.text mustBe messages.Error.noChrnEntered
@@ -149,6 +159,10 @@ trait CaptureCHRNumberViewTests {
       Jsoup.parse(result.body)
     }
 
+    "have the correct title" in {
+      doc.title mustBe s"${Base.Error.error}${messages.title} - $testDefaultServiceName - GOV.UK"
+    }
+
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
       doc.getErrorSummaryBody.text mustBe messages.Error.invalidLengthChrnEntered
@@ -166,6 +180,10 @@ trait CaptureCHRNumberViewTests {
       await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
+    }
+
+    "have the correct title" in {
+      doc.title mustBe s"${Base.Error.error}${messages.title} - $testDefaultServiceName - GOV.UK"
     }
 
     "correctly display the error summary" in {

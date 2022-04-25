@@ -27,7 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testAccessibilityUrl, testSignOutUrl}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 
 import scala.concurrent.Future
 
@@ -62,8 +62,13 @@ trait CaptureCompanyNumberTests {
       doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
     }
 
-    "have a view with the correct title" in {
-      doc.title mustBe messages.title
+    "have the correct title" in {
+      if (doc.getServiceName.text.equals("Entity Validation Service")){
+        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
+      } else {
+        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
+      }
+
     }
 
     "have the correct link" in {
@@ -105,6 +110,10 @@ trait CaptureCompanyNumberTests {
       Jsoup.parse(result.body)
     }
 
+    "have the correct title" in {
+      doc.title mustBe s"${Base.Error.error}${messages.title} - $testDefaultServiceName - GOV.UK"
+    }
+
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
       doc.getErrorSummaryBody.text mustBe messages.Error.emptyCompanyNumber
@@ -123,6 +132,10 @@ trait CaptureCompanyNumberTests {
       Jsoup.parse(result.body)
     }
 
+    "have the correct title" in {
+      doc.title mustBe s"${Base.Error.error}${messages.title} - $testDefaultServiceName - GOV.UK"
+    }
+
     "correctly display the error summary" in {
       doc.getErrorSummaryTitle.text mustBe Base.Error.title
       doc.getErrorSummaryBody.text mustBe messages.Error.lengthCompanyNumber
@@ -139,6 +152,10 @@ trait CaptureCompanyNumberTests {
       await(insertJourneyConfig)
       authStub
       Jsoup.parse(result.body)
+    }
+
+    "have the correct title" in {
+      doc.title mustBe s"${Base.Error.error}${messages.title} - $testDefaultServiceName - GOV.UK"
     }
 
     "correctly display the error summary" in {
