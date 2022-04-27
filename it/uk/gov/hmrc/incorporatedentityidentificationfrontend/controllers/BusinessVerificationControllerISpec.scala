@@ -90,23 +90,36 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
       "redirect to business verification redirectUri" when {
         "business verification returns a journey to redirect to" in {
           enable(BusinessVerificationStub)
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
+          stubCreateBusinessVerificationJourneyFromStub(
+            testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(testContinueUrl)
+
+          verifyCreateBusinessVerificationJourneyFromStub(testBVCreationPostData(testCtutr, testJourneyId))
         }
       }
 
       "store a verification state of BusinessVerificationNotEnoughInformationToChallenge and redirect to the registration controller" when {
         "business verification does not have enough information to create a verification journey" in {
           enable(BusinessVerificationStub)
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testRegisteredSocietyJourneyConfig
+          ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId)(NOT_FOUND)
+          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId, testRegisteredSocietyJourneyConfig)(NOT_FOUND)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
@@ -114,14 +127,20 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)
+          verifyCreateBusinessVerificationJourneyFromStub(testBVCreationPostData(testCtutr, testJourneyId))
         }
       }
       "store a verification state of FAIL and redirect to the registration controller" when {
         "business verification reports the user is locked out" in {
           enable(BusinessVerificationStub)
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId)(FORBIDDEN)
+          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(FORBIDDEN)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
@@ -129,6 +148,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)
+          verifyCreateBusinessVerificationJourneyFromStub(testBVCreationPostData(testCtutr, testJourneyId))
         }
       }
     }
@@ -137,21 +157,33 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
       "redirect to business verification redirectUri" when {
         "business verification returns a journey to redirect to" in {
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
+          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(testContinueUrl)
+
+          verifyCreateBusinessVerificationJourney(testBVCreationPostData(testCtutr, testJourneyId))
         }
       }
 
       "store a verification state of BusinessVerificationNotEnoughInformationToChallenge and redirect to the registration controller" when {
         "business verification does not have enough information to create a verification journey" in {
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(NOT_FOUND)
+          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(NOT_FOUND)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
@@ -159,13 +191,19 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)
+          verifyCreateBusinessVerificationJourney(testBVCreationPostData(testCtutr, testJourneyId))
         }
       }
       "store a verification state of FAIL and redirect to the registration controller" when {
         "business verification reports the user is locked out" in {
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(FORBIDDEN)
+          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(FORBIDDEN)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
@@ -173,8 +211,22 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
           verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationFail)
+          verifyCreateBusinessVerificationJourney(testBVCreationPostData(testCtutr, testJourneyId))
         }
       }
+    }
+
+    "the user is unauthorized" should {
+
+      "redirect to the sign in page" in {
+        stubAuthFailure()
+
+        lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
+
+        result.status mustBe SEE_OTHER
+        result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fstart-business-verification&origin=incorporated-entity-identification-frontend")
+      }
+
     }
   }
 }

@@ -150,4 +150,16 @@ object TestConstants {
       registration = testSuccessfulRegistration
     )
 
+  def testBVCreationPostData(ctUtr: String, journeyId: String): JsObject = Json.obj(
+    "journeyType" -> "BUSINESS_VERIFICATION",
+           "origin" -> "vat",
+           "identifiers" -> Json.arr(
+              Json.obj(
+        "ctUtr" -> ctUtr
+             )
+           ),
+           "continueUrl" -> s"/identify-your-incorporated-business/$journeyId/business-verification-result",
+           "accessibilityStatementUrl" -> "/accessibility"
+  )
+
 }
