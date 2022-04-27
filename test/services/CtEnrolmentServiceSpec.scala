@@ -22,9 +22,8 @@ import services.mocks.{MockStorageService, MockValidateIncorporatedEntityDetails
 import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.RegisteredSociety
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CtEnrolled, SuccessfullyStored}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CtEnrolled, DetailsMatched, DetailsMismatch, SuccessfullyStored}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtEnrolmentService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtEnrolmentService.{Enrolled, EnrolmentMismatch, NoEnrolmentFound}
 import utils.UnitSpec
@@ -48,7 +47,7 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
           s"return $Enrolled" in {
             mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
             mockValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(Future.successful(DetailsMatched))
-            mockStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(Future.successful(SuccessfullyStored))
+            mockStoreIdentifiersMatch(testJourneyId, DetailsMatched)(Future.successful(SuccessfullyStored))
             mockStoreCtutr(testJourneyId, testCtutr)(Future.successful(SuccessfullyStored))
             mockStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)(Future.successful(SuccessfullyStored))
 
@@ -57,7 +56,7 @@ class CtEnrolmentServiceSpec extends UnitSpec with MockStorageService with MockV
 
             res mustBe Enrolled
 
-            verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
+            verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)
             verifyStoreCtutr(testJourneyId, testCtutr)
             verifyStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)
           }

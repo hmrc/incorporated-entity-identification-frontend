@@ -16,19 +16,20 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import javax.inject.Inject
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityDetailsMatching
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class ValidateIncorporatedEntityDetailsConnector @Inject()(http: HttpClient,
                                                            appConfig: AppConfig
                                                           )(implicit ec: ExecutionContext) {
 
-  def validateIncorporatedEntityDetails(companyNumber: String, ctutr: Option[String])(implicit hc: HeaderCarrier): Future[IncorporatedEntityDetailsValidationResult] = {
+  def validateIncorporatedEntityDetails(companyNumber: String, ctutr: Option[String])(implicit hc: HeaderCarrier): Future[IncorporatedEntityDetailsMatching] = {
     val jsonBody: JsObject =
       Json.obj(
         "companyNumber" -> companyNumber,

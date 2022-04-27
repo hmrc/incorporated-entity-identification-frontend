@@ -17,24 +17,14 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers
 
 import play.api.http.Status._
-import play.api.libs.json.JsSuccess
+import play.api.libs.json.{JsError, JsSuccess}
 import uk.gov.hmrc.http.{HttpReads, HttpResponse, InternalServerException}
-
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{DetailsMatched, DetailsMismatch, DetailsNotFound, IncorporatedEntityDetailsMatching}
 
 object ValidateIncorporatedEntityDetailsHttpParser {
 
-  sealed trait IncorporatedEntityDetailsValidationResult
-
-  case object DetailsNotFound extends IncorporatedEntityDetailsValidationResult
-
-  case object DetailsMatched extends IncorporatedEntityDetailsValidationResult
-
-  case object DetailsMismatch extends IncorporatedEntityDetailsValidationResult
-
-  case object DetailsNotProvided extends IncorporatedEntityDetailsValidationResult
-
-  implicit object ValidateIncorporatedEntityDetailsHttpReads extends HttpReads[IncorporatedEntityDetailsValidationResult] {
-    override def read(method: String, url: String, response: HttpResponse): IncorporatedEntityDetailsValidationResult = {
+  implicit object ValidateIncorporatedEntityDetailsHttpReads extends HttpReads[IncorporatedEntityDetailsMatching] {
+    override def read(method: String, url: String, response: HttpResponse): IncorporatedEntityDetailsMatching = {
       lazy val invalidResponseException: InternalServerException =
         new InternalServerException(s"Invalid response from validate incorporated entity details: ${response.status}: ${response.body}")
 
@@ -55,5 +45,4 @@ object ValidateIncorporatedEntityDetailsHttpParser {
       }
     }
   }
-
 }

@@ -20,8 +20,8 @@ import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationPass, BusinessVerificationFail, CtEnrolled}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationNotEnoughInformationToCallBV, BusinessVerificationNotEnoughInformationToChallenge}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{DetailsMatched, DetailsNotProvided}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationNotEnoughInformationToCallBV, BusinessVerificationNotEnoughInformationToChallenge, BusinessVerificationPass, CtEnrolled}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed}
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
@@ -48,6 +48,13 @@ class AuditService @Inject()(auditConnector: AuditConnector,
         case _ => Json.obj()
       }
     }
+
+    val identifiersMatchStatus: String = optIdentifiersMatch  match {
+      case Some(DetailsMatched) => "true"
+      case Some(DetailsNotProvided) => "unmatchable"
+      case _ => "false"
+    }
+
     val businessVerificationStatus: String = optBusinessVerificationStatus match {
         case Some (BusinessVerificationPass) => "success"
         case Some (BusinessVerificationFail) => "fail"
@@ -57,22 +64,23 @@ class AuditService @Inject()(auditConnector: AuditConnector,
         case None => "not requested"
       }
 
-    val businessVerificationStatusBlock = Json.obj("VerificationStatus" -> businessVerificationStatus)
     val registrationStatus =
       optRegistrationStatus match {
         case Some(Registered(_)) => "success"
         case Some(RegistrationFailed) => "fail"
         case _ => "not called"
       }
+
     journeyConfig.businessEntity match {
       case LimitedCompany =>
         val auditJson = Json.obj(
           "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
           "businessType" -> "UK Company",
           "companyNumber" -> companyNumber,
-          "isMatch" -> optIdentifiersMatch,
+          "isMatch" -> identifiersMatchStatus,
+          "VerificationStatus" -> businessVerificationStatus,
           "RegisterApiStatus" -> registrationStatus
-        ) ++ ctutrBlock ++ businessVerificationStatusBlock
+        ) ++ ctutrBlock
 
         auditConnector.sendExplicitAudit(
           auditType = "IncorporatedEntityRegistration",
@@ -83,9 +91,10 @@ class AuditService @Inject()(auditConnector: AuditConnector,
           "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
           "businessType" -> "Registered Society",
           "companyNumber" -> companyNumber,
-          "isMatch" -> optIdentifiersMatch,
+          "isMatch" -> identifiersMatchStatus,
+          "VerificationStatus" -> businessVerificationStatus,
           "RegisterApiStatus" -> registrationStatus
-        ) ++ ctutrBlock ++ businessVerificationStatusBlock
+        ) ++ ctutrBlock
 
         auditConnector.sendExplicitAudit(
           auditType = "RegisteredSocietyRegistration",
@@ -96,9 +105,10 @@ class AuditService @Inject()(auditConnector: AuditConnector,
           "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
           "businessType" -> "CIO",
           "companyNumber" -> companyNumber,
-          "isMatch" -> "unmatchable",
+          "isMatch" -> identifiersMatchStatus,
+          "VerificationStatus" -> businessVerificationStatus,
           "RegisterApiStatus" -> registrationStatus
-        ) ++ businessVerificationStatusBlock
+        )
 
         auditConnector.sendExplicitAudit(
           auditType = "CIOEntityRegistration",

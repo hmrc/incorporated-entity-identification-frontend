@@ -22,7 +22,7 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, CompanyProfile, RegistrationStatus, StorageResult}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, CompanyProfile, IncorporatedEntityDetailsMatching, RegistrationStatus, StorageResult}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.StorageService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -78,7 +78,7 @@ trait MockStorageService extends MockitoSugar with BeforeAndAfterEach {
   }
 
   def mockRetrieveIdentifiersMatch(journeyId: String)
-                                  (response: Future[Option[Boolean]]): OngoingStubbing[_] =
+                                  (response: Future[Option[IncorporatedEntityDetailsMatching]]): OngoingStubbing[_] =
     when(mockStorageService.retrieveIdentifiersMatch(
       ArgumentMatchers.eq(journeyId)
     )(ArgumentMatchers.any[HeaderCarrier])
@@ -100,7 +100,7 @@ trait MockStorageService extends MockitoSugar with BeforeAndAfterEach {
     )(ArgumentMatchers.any[HeaderCarrier])
   }
 
-  def mockStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean)
+  def mockStoreIdentifiersMatch(journeyId: String, identifiersMatch: IncorporatedEntityDetailsMatching)
                                (response: Future[StorageResult]): OngoingStubbing[_] = {
     when(mockStorageService.storeIdentifiersMatch(
       ArgumentMatchers.eq(journeyId),
@@ -109,7 +109,7 @@ trait MockStorageService extends MockitoSugar with BeforeAndAfterEach {
     ).thenReturn(response)
   }
 
-  def verifyStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean): Unit = {
+  def verifyStoreIdentifiersMatch(journeyId: String, identifiersMatch: IncorporatedEntityDetailsMatching): Unit = {
     verify(mockStorageService).storeIdentifiersMatch(
       ArgumentMatchers.eq(journeyId),
       ArgumentMatchers.eq(identifiersMatch)

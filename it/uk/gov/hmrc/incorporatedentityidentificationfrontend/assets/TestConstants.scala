@@ -97,7 +97,7 @@ object TestConstants {
   }
 
   def testRegisterAuditEventJson(companyNumber: String,
-                                 isMatch: Boolean,
+                                 isMatch: String,
                                  ctUtr: String,
                                  verificationStatus: String,
                                  registrationStatus: String): JsObject = {
@@ -145,7 +145,7 @@ object TestConstants {
       companyProfile = testCompanyProfile,
       optCtutr = Some(testCtutr),
       optChrn = Some(testCHRN),
-      identifiersMatch = true,
+      identifiersMatch = DetailsMatched,
       businessVerification = Some(businessVerificationStatus),
       registration = testSuccessfulRegistration
     )

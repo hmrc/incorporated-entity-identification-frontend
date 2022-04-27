@@ -18,12 +18,14 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
 import play.api.libs.json._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityDetailsMatching.DetailsMatchedKey
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.StorageService.IdentifiersMatchKey
 
 
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
                                          optCtutr: Option[String],
                                          optChrn: Option[String],
-                                         identifiersMatch: Boolean,
+                                         identifiersMatch: IncorporatedEntityDetailsMatching,
                                          businessVerification: Option[BusinessVerificationStatus],
                                          registration: RegistrationStatus
                                         )
@@ -45,7 +47,7 @@ object IncorporatedEntityInformation {
         companyProfile <- (json \ companyProfileKey).validate[CompanyProfile]
         optCtutr <- (json \ ctutrKey).validateOpt[String]
         optChrn <- (json \ chrnKey).validateOpt[String]
-        identifiersMatch <- (json \ identifiersMatchKey).validate[Boolean]
+        identifiersMatch <- (json \ identifiersMatchKey).validate[IncorporatedEntityDetailsMatching]
         businessVerification <- (json \ businessVerificationKey).validateOpt[BusinessVerificationStatus]
         registrationStatus <- (json \ registrationKey).validate[RegistrationStatus]
       } yield {
@@ -55,7 +57,7 @@ object IncorporatedEntityInformation {
     override def writes(incorporatedEntityInformation: IncorporatedEntityInformation): JsObject =
       Json.obj(
         companyProfileKey -> incorporatedEntityInformation.companyProfile,
-        identifiersMatchKey -> incorporatedEntityInformation.identifiersMatch,
+        identifiersMatchKey -> incorporatedEntityInformation.identifiersMatch.toString,
         registrationKey -> incorporatedEntityInformation.registration
       ) ++ {
         incorporatedEntityInformation.optCtutr match {
@@ -73,7 +75,6 @@ object IncorporatedEntityInformation {
           case None => Json.obj()
         }
       }
-
   }
 
   val jsonWriterForCallingServices: Writes[IncorporatedEntityInformation] = (incorporatedEntityInformation: IncorporatedEntityInformation) =>
@@ -90,5 +91,8 @@ object IncorporatedEntityInformation {
           Json.obj(businessVerificationKey -> Json.obj(businessVerificationStatusKey -> businessVerificationStatusForCallingServices))
         })
         .getOrElse(Json.obj())
+    } ++ {
+      Json.obj(IdentifiersMatchKey -> incorporatedEntityInformation.identifiersMatch.toString.equals(DetailsMatchedKey))
     }
+
 }

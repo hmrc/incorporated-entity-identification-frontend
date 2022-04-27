@@ -21,6 +21,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.DetailsMatched
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, RegisterStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WiremockHelper.{stubAudit, verifyAuditDetail}
@@ -55,7 +56,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
           stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/register")
@@ -64,7 +65,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
           verifyAuditDetail(
-            testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, verificationStatus = "success", registrationStatus = "success")
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus = "success")
           )
         }
 
@@ -83,7 +84,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
           stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testFailedRegistration)(status = OK)
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
 
           val result = get(s"$baseUrl/$testJourneyId/register")
@@ -92,7 +93,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testFailedRegistration)
           verifyAuditDetail(
-            testRegisterAuditEventJson(testCompanyNumber, isMatch = true, testCtutr, verificationStatus = "success", registrationStatus ="fail")
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus ="fail")
           )
         }
       }
@@ -199,7 +200,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
           stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
 
           val result = get(s"$baseUrl/$testJourneyId/register")
@@ -224,7 +225,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
           stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testFailedRegistration)(status = OK)
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = true)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
 
 
