@@ -41,6 +41,7 @@ trait CheckYourAnswersViewTests {
                               (result: => WSResponse,
                                companyNumberStub: => StubMapping,
                                ctutrStub: => StubMapping,
+                               chrnStub: => StubMapping,
                                authStub: => StubMapping,
                                insertJourneyConfig: => Future[WriteResult],
                                auditStub: => StubMapping): Unit = {
@@ -51,6 +52,7 @@ trait CheckYourAnswersViewTests {
       auditStub
       companyNumberStub
       Some(ctutrStub)
+      chrnStub
       Jsoup.parse(result.body)
     }
 
@@ -138,6 +140,7 @@ trait CheckYourAnswersViewTests {
                                       companyNumberStub: => StubMapping,
                                       authStub: => StubMapping,
                                       insertJourneyConfig: => Future[WriteResult],
+                                      chrnStub: => StubMapping,
                                       auditStub: => StubMapping,
                                       retrieveCtutrStub: => StubMapping): Unit = {
 
@@ -147,6 +150,7 @@ trait CheckYourAnswersViewTests {
       auditStub
       retrieveCtutrStub
       companyNumberStub
+      chrnStub
       Jsoup.parse(result.body)
     }
 
@@ -227,7 +231,8 @@ trait CheckYourAnswersViewTests {
                                   authStub: => StubMapping,
                                   insertJourneyConfig: => Future[WriteResult],
                                   auditStub: => StubMapping,
-                                  retrieveChrnStub: => StubMapping): Unit = {
+                                  retrieveChrnStub: => StubMapping,
+                                  retrieveCtUtrStub: => StubMapping): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
@@ -235,6 +240,7 @@ trait CheckYourAnswersViewTests {
       auditStub
       retrieveChrnStub
       companyNumberStub
+      retrieveCtUtrStub
       Jsoup.parse(result.body)
     }
 
@@ -315,7 +321,8 @@ trait CheckYourAnswersViewTests {
                                   authStub: => StubMapping,
                                   insertJourneyConfig: => Future[WriteResult],
                                   auditStub: => StubMapping,
-                                  retrieveChrnStub: => StubMapping): Unit = {
+                                  retrieveChrnStub: => StubMapping,
+                                  retrieveCtutrStub: => StubMapping): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
@@ -323,6 +330,7 @@ trait CheckYourAnswersViewTests {
       auditStub
       retrieveChrnStub
       companyNumberStub
+      retrieveCtutrStub
       Jsoup.parse(result.body)
     }
 

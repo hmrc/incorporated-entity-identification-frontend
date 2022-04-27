@@ -17,8 +17,8 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.libs.json.{JsBoolean, JsObject, JsString, JsValue, Json}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, CompanyProfile, RegistrationStatus}
+import play.api.libs.json.{JsObject, JsString, JsValue, Json}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, CompanyProfile, IncorporatedEntityDetailsMatching, RegistrationStatus}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.{WireMockMethods, WiremockHelper}
 
 trait IncorporatedEntityIdentificationStub extends WireMockMethods {
@@ -65,19 +65,17 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       status = status
     )
 
-  def stubStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean)(status: Int): StubMapping = {
+  def stubStoreIdentifiersMatch(journeyId: String, identifiersMatch: IncorporatedEntityDetailsMatching)(status: Int): StubMapping =
     when(method = PUT,
-      uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch",
-      body = JsBoolean(identifiersMatch)
+      uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch", body = JsString(identifiersMatch.toString)
     ).thenReturn(
       status = status
     )
-  }
 
-  def verifyStoreIdentifiersMatch(journeyId: String, identifiersMatch: Boolean): Unit =
+  def verifyStoreIdentifiersMatch(journeyId: String, identifiersMatch: JsValue): Unit =
     WiremockHelper.verifyPut(
       uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch",
-      optBody = Some(Json.toJson(identifiersMatch).toString())
+      optBody = Some(Json.stringify(identifiersMatch))
     )
 
   def stubStoreRegistrationStatus(journeyId: String, registrationStatus: RegistrationStatus)(status: Int): StubMapping = {
@@ -176,12 +174,12 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       body = body
     )
 
-  def stubRetrieveIdentifiersMatch(journeyId: String)(status: Int, body: Boolean): StubMapping = {
+  def stubRetrieveIdentifiersMatch(journeyId: String)(status: Int, body: IncorporatedEntityDetailsMatching): StubMapping = {
     when(method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch"
     ).thenReturn(
       status = status,
-      body = JsBoolean(body)
+      body = JsString(body.toString)
     )
   }
 

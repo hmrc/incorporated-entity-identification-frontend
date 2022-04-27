@@ -50,9 +50,9 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
 
 
   def storeIdentifiersMatch(journeyId: String,
-                            identifiersMatch: Boolean
+                            identifiersMatch: IncorporatedEntityDetailsMatching
                            )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[Boolean](journeyId, IdentifiersMatchKey, identifiersMatch)
+    connector.storeData[IncorporatedEntityDetailsMatching](journeyId, IdentifiersMatchKey, identifiersMatch)
 
   def storeRegistrationStatus(journeyId: String,
                               registrationStatus: RegistrationStatus
@@ -85,8 +85,8 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
   def retrieveRegistrationStatus(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationStatus]] =
     connector.retrieveIncorporatedEntityInformation[RegistrationStatus](journeyId, RegistrationKey)
 
-  def retrieveIdentifiersMatch(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[Boolean]] =
-    connector.retrieveIncorporatedEntityInformation[Boolean](journeyId, IdentifiersMatchKey)
+  def retrieveIdentifiersMatch(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityDetailsMatching]] =
+    connector.retrieveIncorporatedEntityInformation[IncorporatedEntityDetailsMatching](journeyId, IdentifiersMatchKey)
 
   def retrieveIncorporatedEntityInformation(journeyId: String
                                            )(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityInformation]] =

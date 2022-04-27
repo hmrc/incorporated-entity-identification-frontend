@@ -22,7 +22,7 @@ import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.IncorporatedEntityDetailsValidationResult
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityDetailsMatching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.ValidateIncorporatedEntityDetailsService
 
 import scala.concurrent.Future
@@ -39,7 +39,7 @@ trait MockValidateIncorporatedEntityDetailsService extends MockitoSugar with Bef
 
   def mockValidateIncorporatedEntityDetails(companyNumber: String,
                                             ctutr: Option[String])
-                                           (response: Future[IncorporatedEntityDetailsValidationResult]): OngoingStubbing[_] = {
+                                           (response: Future[IncorporatedEntityDetailsMatching]): OngoingStubbing[_] = {
     when(mockValidateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(
       ArgumentMatchers.eq(companyNumber),
       ArgumentMatchers.eq(ctutr)

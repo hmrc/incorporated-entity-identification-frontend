@@ -18,13 +18,14 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
-import play.api.libs.json.Json
+import play.api.libs.json.{JsString, Json}
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityDetailsMatching.{DetailsMatchedKey, DetailsMismatchKey, DetailsNotFoundKey, DetailsNotProvidedKey}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -58,6 +59,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+        stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
 
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
@@ -81,9 +83,11 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           )
           lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
+          lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
+
           lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
-          testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig, auditStub)
+          testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, chrnStub, authStub, insertConfig, auditStub)
           testServiceName(testDefaultServiceName, result, authStub, insertConfig)
         }
 
@@ -110,9 +114,11 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           )
           lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
+          lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
+
           lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
-          testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, authStub, insertConfig, auditStub)
+          testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, chrnStub, authStub, insertConfig, auditStub)
           testServiceName(testCallingServiceName, result, authStub, insertConfig)
         }
 
@@ -127,6 +133,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             stubAudit()
             stubRetrieveCtutr(testJourneyId)(OK, body = testCtutr)
             stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+            stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
 
             lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
             result.status mustBe OK
@@ -143,9 +150,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             lazy val auditStub = stubAudit()
             lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
             lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+            lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
             lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
-            testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, retrieveCtutrStub, authStub, insertConfig, auditStub)
+            testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, retrieveCtutrStub, chrnStub, authStub, insertConfig, auditStub)
           }
         }
 
@@ -160,6 +168,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             stubAudit()
             stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
             stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+            stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
 
             lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
             result.status mustBe OK
@@ -176,9 +185,10 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             lazy val auditStub = stubAudit()
             lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
             lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+            lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
             lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
-            testCheckYourAnswersNoCtutrView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveCtutrStub)
+            testCheckYourAnswersNoCtutrView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, chrnStub, auditStub, retrieveCtutrStub)
           }
         }
 
@@ -193,6 +203,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             stubAudit()
             stubRetrieveChrn(testJourneyId)(status = OK, body = testCHRN)
             stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+            stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
 
             lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
             result.status mustBe OK
@@ -209,13 +220,14 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             lazy val auditStub = stubAudit()
             lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
             lazy val retrieveChrnStub = stubRetrieveChrn(testJourneyId)(status = OK, body = testCHRN)
+            lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
             lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
-            testCheckYourAnswersCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveChrnStub)
+            testCheckYourAnswersCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveChrnStub, retrieveCtutrStub)
           }
         }
 
-        "the applicant does have CRN but no CHRN" should {
+       "the applicant does have CRN but no CHRN" should {
           "return OK" in {
             await(journeyConfigRepository.insertJourneyConfig(
               journeyId = testJourneyId,
@@ -226,6 +238,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             stubAudit()
             stubRetrieveChrn(testJourneyId)(status = NOT_FOUND, body = "No data")
             stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+            stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
 
             lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
             result.status mustBe OK
@@ -242,24 +255,18 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             lazy val auditStub = stubAudit()
             lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
             lazy val retrieveChrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND, body = "No data")
+            lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
             lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
-            testCheckYourAnswersOnlyCRNCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveChrnStub)
+            testCheckYourAnswersOnlyCRNCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, retrieveChrnStub, retrieveCtutrStub)
           }
         }
       }
 
       "redirect to sign in page" when {
         "the user is UNAUTHORISED" in {
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
-          ))
           stubAuthFailure()
           stubAudit()
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
 
           lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
@@ -342,14 +349,14 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
-        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
         stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(status = CREATED)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.BusinessVerificationController.startBusinessVerificationJourney(testJourneyId).url)
-        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsMatchedKey))
         verifyAudit()
       }
 
@@ -366,13 +373,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
-          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
 
           lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
-          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsMatchedKey))
           verifyAudit()
         }
       }
@@ -392,21 +399,23 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> false))
-          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMismatch)(status = OK)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
           stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(OK)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(businessVerificationNotEnoughInfoToCallBVKey))
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMismatch)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
           lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
-          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsMismatchKey))
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)
           verifyAuditDetail(
-            testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, verificationStatus = "Not Enough Information to call BV", registrationStatus = "not called")
+            testRegisterAuditEventJson(
+              testCompanyNumber, isMatch = "false", testCtutr, verificationStatus = "Not Enough Information to call BV", registrationStatus = "not called"
+            )
           )
         }
 
@@ -422,9 +431,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> false))
-          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMismatch)(status = OK)
           stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMismatch)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = NOT_FOUND)
 
@@ -433,9 +442,11 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
 
-          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsMismatchKey))
           verifyAuditDetail(
-            testRegisterAuditEventJson(testCompanyNumber, isMatch = false, testCtutr, verificationStatus = "not requested", registrationStatus = "not called")
+            testRegisterAuditEventJson(
+              testCompanyNumber, isMatch = "false", testCtutr, verificationStatus = "not requested", registrationStatus = "not called"
+            )
           )
         }
       }
@@ -464,18 +475,19 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
               "reason" -> "The back end has indicated that CT UTR cannot be returned"
             )
           )
-          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsNotFound)(status = OK)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
           stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
 
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(value = businessVerificationNotEnoughInfoToCallBVKey))
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsNotFound)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
           lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrNotFoundController.show(testJourneyId).url)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsNotFoundKey))
           verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
           verifyAudit()
@@ -501,16 +513,17 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
               "reason" -> "The back end has indicated that CT UTR cannot be returned"
             )
           )
-          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsNotFound)(status = OK)
           stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(NOT_FOUND)
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsNotFound)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
           lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrNotFoundController.show(testJourneyId).url)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsNotFoundKey))
           verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
           verifyAudit()
         }
@@ -531,14 +544,14 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
-        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
         stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(status = CREATED)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.BusinessVerificationController.startBusinessVerificationJourney(testJourneyId).url)
-        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsMatchedKey))
         verifyAudit()
       }
     }
@@ -554,23 +567,23 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+        stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, None)(BAD_REQUEST, Json.obj(
           "code" -> "NOT_FOUND",
           "reason" -> "The back end has indicated that CT UTR cannot be returned")
         )
-        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsNotProvided)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(value = businessVerificationNotEnoughInfoToCallBVKey))
-        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
-        stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsNotProvided)
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsNotProvidedKey))
         verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)
         verifyAudit()
@@ -586,22 +599,22 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubAudit()
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+        stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, None)(BAD_REQUEST, Json.obj(
           "code" -> "NOT_FOUND",
           "reason" -> "The back end has indicated that CT UTR cannot be returned")
         )
-        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsNotProvided)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = NOT_FOUND, body = testBusinessVerificationJson(value = businessVerificationNotEnoughInfoToChallengeKey))
-        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
-        stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
+        stubRetrieveBusinessVerificationStatus(testJourneyId)(status = NOT_FOUND)
+        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsNotProvided)
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsNotProvidedKey))
         verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         verifyAudit()
       }
@@ -627,19 +640,19 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             "reason" -> "The back end has indicated that CT UTR cannot be returned"
           )
         )
-        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsNotFound)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
 
         stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(value = businessVerificationNotEnoughInfoToCallBVKey))
-        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsNotFound)
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(errorRoutes.CtutrNotFoundController.show(testJourneyId).url)
-        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsNotFoundKey))
         verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         verifyAudit()
       }
@@ -665,16 +678,17 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
             "reason" -> "The back end has indicated that CT UTR cannot be returned"
           )
         )
-        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsNotFound)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(NOT_FOUND)
-        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsNotFound)
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(errorRoutes.CtutrNotFoundController.show(testJourneyId).url)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsNotFoundKey))
         verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         verifyAudit()
       }
@@ -692,13 +706,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
-          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)(status = OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
 
           lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
-          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = true)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsMatchedKey))
           verifyAudit()
         }
       }
@@ -717,18 +731,18 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> false))
-          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMismatch)(status = OK)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(OK)
           stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationJson(businessVerificationNotEnoughInfoToCallBVKey))
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMismatch)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
           lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
-          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsMismatchKey))
           verifyAudit()
 
         }
@@ -744,9 +758,9 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> false))
-          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+          stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMismatch)(status = OK)
           stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
-          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMismatch)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = NOT_FOUND)
 
@@ -755,7 +769,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(errorRoutes.CtutrMismatchController.show(testJourneyId).url)
 
-          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+          verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsMismatchKey))
           verifyAudit()
         }
       }
@@ -773,13 +787,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
 
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCioProfile))
-        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsNotProvided)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(
           status = OK, body = testBusinessVerificationJson(value = businessVerificationNotEnoughInfoToCallBVKey)
         )
-        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsNotProvided)
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
@@ -787,7 +801,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsNotProvidedKey))
         verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         verifyAudit()
       }
@@ -802,14 +816,15 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         lazy val auditStub = stubAudit()
         lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
         lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = OK, body = testCHRN)
+        lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
 
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
-        testCheckYourAnswersCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, chrnStub)
+        testCheckYourAnswersCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, chrnStub, ctutrStub)
       }
     }
 
-    "the Charitable Incorporated Organisation has provided crn and No CHRN" should {
+      "the Charitable Incorporated Organisation has provided crn and No CHRN" should {
       "redirect to Business Verification" in {
         await(journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
@@ -821,13 +836,13 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubAudit()
 
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCioProfile))
-        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)(status = OK)
+        stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsNotProvided)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToCallBV)(status = OK)
         stubStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)(status = OK)
         stubRetrieveBusinessVerificationStatus(testJourneyId)(
           status = OK, body = testBusinessVerificationJson(value = businessVerificationNotEnoughInfoToCallBVKey)
         )
-        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = false)
+        stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsNotProvided)
         stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND, body = "No data")
         stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = testRegistrationNotCalledJson)
 
@@ -835,11 +850,11 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = false)
+        verifyStoreIdentifiersMatch(testJourneyId, identifiersMatch = JsString(DetailsNotProvidedKey))
         verifyStoreRegistrationStatus(testJourneyId, RegistrationNotCalled)
         verifyAudit()
       }
-      "return a view which" should {
+     "return a view which" should {
         lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
           journeyId = testJourneyId,
           authInternalId = testInternalId,
@@ -849,13 +864,15 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val auditStub = stubAudit()
         lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-        lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND, body = "No data")
+        lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
+       lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
 
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
 
-        testCheckYourAnswersOnlyCRNCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, chrnStub)
+        testCheckYourAnswersOnlyCRNCIOView(testJourneyId)(result, companyNumberStub, authStub, insertConfig, auditStub, chrnStub, ctutrStub)
       }
     }
 
   }
+
 }

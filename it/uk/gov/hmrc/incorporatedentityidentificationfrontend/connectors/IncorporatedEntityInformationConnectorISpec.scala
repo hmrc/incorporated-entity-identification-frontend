@@ -46,7 +46,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
               companyProfile = testCompanyProfile,
               optCtutr = Some(testCtutr),
               optChrn = Some(testCHRN),
-              identifiersMatch = true,
+              identifiersMatch = DetailsMatched,
               businessVerification = Some(BusinessVerificationPass),
               registration = testSuccessfulRegistration
             )
@@ -60,7 +60,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
             testCompanyProfile,
             Some(testCtutr),
             Some(testCHRN),
-            true,
+            DetailsMatched,
             Some(BusinessVerificationPass),
             testSuccessfulRegistration))
       }
@@ -146,9 +146,11 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
   }
   s"storeData($testJourneyId, $identifiersMatchKey)" should {
     "return SuccessfullyStored" in {
-      stubStoreIdentifiersMatch(testJourneyId,identifiersMatch = true)(status = OK)
+      stubStoreIdentifiersMatch(testJourneyId,identifiersMatch = DetailsMatched)(status = OK)
 
-      val result = await(incorporatedEntityInformationConnector.storeData[Boolean](testJourneyId, identifiersMatchKey, true))
+      val result = await(incorporatedEntityInformationConnector.storeData[IncorporatedEntityDetailsMatching]
+        (testJourneyId, identifiersMatchKey, DetailsMatched)
+      )
 
       result mustBe SuccessfullyStored
     }

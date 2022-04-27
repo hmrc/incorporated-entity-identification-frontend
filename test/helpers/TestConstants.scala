@@ -39,7 +39,7 @@ object TestConstants {
   val testCtutr: String = "1234567890"
   val testDateOfIncorporation: String = LocalDate.now().toString
   val testCompanyName: String = "ABC Limited"
-  val testIdentifiersMatch: Boolean = true
+  val testIdentifiersMatch: IncorporatedEntityDetailsMatching = DetailsMatched
   val testAddress: JsObject = Json.obj(
     "address_line_1" -> "testLine1",
     "address_line_2" -> "test town",
@@ -76,7 +76,7 @@ object TestConstants {
   val notEnoughInfoToCall: String = "Not Enough Information to call BV"
   val ctEnrolled: String = "Enrolled"
 
-  def testLimitedCompanyAuditEventJson(isMatch: Boolean, bvStatus: String, regStatus: String): JsObject =
+  def testLimitedCompanyAuditEventJson(isMatch: String, bvStatus: String, regStatus: String): JsObject =
     Json.obj(
       "callingService" -> defaultServiceName,
       "businessType" -> "UK Company",
@@ -91,12 +91,12 @@ object TestConstants {
     "callingService" -> defaultServiceName,
     "businessType" -> "UK Company",
     "companyNumber" -> testCompanyProfile.companyNumber,
-    "isMatch" -> false,
+    "isMatch" -> "false",
     "VerificationStatus" -> notRequested,
     "RegisterApiStatus" -> notCalled
   )
 
-  def testRegisteredSocietyAuditEventJson(isMatch: Boolean, bvStatus: String, regStatus: String): JsObject =
+  def testRegisteredSocietyAuditEventJson(isMatch: String, bvStatus: String, regStatus: String): JsObject =
     Json.obj(
       "callingService" -> defaultServiceName,
       "businessType" -> "Registered Society",
@@ -107,11 +107,21 @@ object TestConstants {
       "CTUTR" -> testCtutr
     )
 
+  def testRegisteredSocietyAuditEventWithoutCtUtrJson(isMatch: String, bvStatus: String, regStatus: String): JsObject =
+    Json.obj(
+      "callingService" -> defaultServiceName,
+      "businessType" -> "Registered Society",
+      "companyNumber" -> testCompanyProfile.companyNumber,
+      "isMatch" -> isMatch,
+      "VerificationStatus" -> bvStatus,
+      "RegisterApiStatus" -> regStatus
+    )
+
   val testDetailsUtrMismatchRegisteredSocietyAuditEventJson: JsObject = Json.obj(
     "callingService" -> defaultServiceName,
     "businessType" -> "Registered Society",
     "companyNumber" -> testCompanyProfile.companyNumber,
-    "isMatch" -> false,
+    "isMatch" -> "false",
     "VerificationStatus" -> notRequested,
     "RegisterApiStatus" -> notCalled
   )
@@ -120,16 +130,16 @@ object TestConstants {
     "callingService" -> defaultServiceName,
     "businessType" -> "CIO",
     "companyNumber" -> testCharityNumber,
-    "identifiersMatch" -> false,
+    "identifiersMatch" -> "false",
     "RegisterApiStatus" -> "not called"
   )
 
-  def testCIOAuditEventJson(bvStatus: String, regStatus: String): JsObject =
+  def testCIOAuditEventJson(isMatch: String, bvStatus: String, regStatus: String): JsObject =
     Json.obj(
       "callingService" -> defaultServiceName,
       "businessType" -> "CIO",
       "companyNumber" -> testCharityNumber,
-      "isMatch" -> "unmatchable",
+      "isMatch" -> isMatch,
       "VerificationStatus" -> bvStatus,
       "RegisterApiStatus" -> regStatus
     )

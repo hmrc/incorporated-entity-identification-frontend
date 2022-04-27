@@ -23,9 +23,8 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.{DetailsMatched, DetailsMismatch, DetailsNotFound, DetailsNotProvided}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationNotEnoughInformationToCallBV, RegistrationNotCalled}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, JourneyService, StorageService, ValidateIncorporatedEntityDetailsService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.CheckYourAnswersRowBuilder
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
@@ -81,14 +80,14 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             }
             result <- details match {
               case DetailsMatched if journeyConfig.businessVerificationCheck => for {
-                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)}
+                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsMatched)}
                 yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
               case DetailsMatched if journeyConfig.businessVerificationCheck.equals(false) => for {
-                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
+                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsMatched)
               } yield Redirect(routes.RegistrationController.register(journeyId))
-              case DetailsNotFound if optCtutr.isEmpty =>
+              case DetailsNotFound if optCtutr.isEmpty => // The absence of a Ct Utr means the entity must be a Registered Society
                 for {
-                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsNotProvided)
                   _ <-
                     if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
                     else Future.successful(())
@@ -97,7 +96,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                 } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
               case DetailsNotFound =>
                 for {
-                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsNotFound)
                   _ <-
                     if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
                     else Future.successful(())
@@ -105,7 +104,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                   _ <- auditService.auditJourney(journeyId, authInternalId)
                 } yield Redirect(errorRoutes.CtutrNotFoundController.show(journeyId))
               case DetailsNotProvided => for {
-                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsNotProvided)
                 _ <- if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
                 else Future.successful(())
                 _ <- storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled)
@@ -113,7 +112,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
               } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
               case DetailsMismatch if optCtutr.isEmpty =>
                 for {
-                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsMismatch)
                   _ <-
                     if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
                     else Future.successful(())
@@ -122,7 +121,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                 } yield Redirect(errorRoutes.CtutrNotFoundController.show(journeyId))
               case _ =>
                 for {
-                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = false)
+                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsMismatch)
                   _ <-
                     if (journeyConfig.businessVerificationCheck) storageService.storeBusinessVerificationStatus(journeyId, BusinessVerificationNotEnoughInformationToCallBV)
                     else Future.successful(())
