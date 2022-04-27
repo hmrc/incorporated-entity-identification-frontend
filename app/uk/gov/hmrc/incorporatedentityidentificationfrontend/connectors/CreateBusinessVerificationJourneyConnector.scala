@@ -20,7 +20,7 @@ import javax.inject.{Inject, Singleton}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json, Writes}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyCreated, JourneyCreationFailure, NotEnoughEvidence, UserLockedOut}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyCreated, JourneyConfig, JourneyCreationFailure, NotEnoughEvidence, UserLockedOut}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CreateBusinessVerificationJourneyConnector.BusinessVerificationHttpReads
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
@@ -33,7 +33,8 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
                                                           (implicit ec: ExecutionContext) {
 
   def createBusinessVerificationJourney(journeyId: String,
-                                        ctutr: String
+                                        ctutr: String,
+                                        journeyConfig: JourneyConfig
                                        )(implicit hc: HeaderCarrier): Future[Either[JourneyCreationFailure, JourneyCreated]] = {
 
     val jsonBody: JsObject =
@@ -44,7 +45,8 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
           Json.obj(
           "ctUtr" -> ctutr
         )),
-        "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url
+        "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
+        "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl
       )
 
     http.POST[JsObject, Either[JourneyCreationFailure, JourneyCreated]](appConfig.createBusinessVerificationJourneyUrl, jsonBody)(

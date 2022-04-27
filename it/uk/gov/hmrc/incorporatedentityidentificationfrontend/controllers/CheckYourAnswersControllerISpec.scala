@@ -350,7 +350,6 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
-        stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(status = CREATED)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 
@@ -545,7 +544,6 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
         stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
         stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
-        stubCreateBusinessVerificationJourney(testCtutr, testJourneyId)(status = CREATED)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/check-your-answers-business")()
 

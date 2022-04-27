@@ -19,12 +19,14 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WireMockMethods
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.{WireMockMethods, WiremockHelper}
 
 trait BusinessVerificationStub extends WireMockMethods {
 
   def stubCreateBusinessVerificationJourney(ctutr: String,
-                                            journeyId: String
+                                            journeyId: String,
+                                            journeyConfig: JourneyConfig
                                            )(status: Int,
                                              body: JsObject = Json.obj()): StubMapping = {
 
@@ -35,7 +37,8 @@ trait BusinessVerificationStub extends WireMockMethods {
           "ctUtr" -> ctutr
         )
       ),
-      "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url
+      "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
+      "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl
     )
 
     when(method = POST, uri = "/business-verification/journey", postBody)
@@ -44,6 +47,9 @@ trait BusinessVerificationStub extends WireMockMethods {
         body = body
       )
   }
+
+  def verifyCreateBusinessVerificationJourney(postData: JsObject): Unit =
+    WiremockHelper.verifyPost(uri = "/business-verification/journey", optBody = Some(postData.toString()))
 
   def stubRetrieveBusinessVerificationResult(journeyId: String)
                                             (status: Int,
@@ -55,7 +61,8 @@ trait BusinessVerificationStub extends WireMockMethods {
       )
 
   def stubCreateBusinessVerificationJourneyFromStub(ctutr: String,
-                                                    journeyId: String
+                                                    journeyId: String,
+                                                    journeyConfig: JourneyConfig
                                                    )(status: Int,
                                                      body: JsObject = Json.obj()): StubMapping = {
 
@@ -66,7 +73,8 @@ trait BusinessVerificationStub extends WireMockMethods {
           "ctUtr" -> ctutr
         )
       ),
-      "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url
+      "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
+      "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl
     )
 
     when(method = POST, uri = "/identify-your-incorporated-business/test-only/business-verification/journey", postBody)
@@ -75,6 +83,9 @@ trait BusinessVerificationStub extends WireMockMethods {
         body = body
       )
   }
+
+  def verifyCreateBusinessVerificationJourneyFromStub(postData: JsObject): Unit =
+    WiremockHelper.verifyPost(uri = "/identify-your-incorporated-business/test-only/business-verification/journey", optBody = Some(postData.toString()))
 
   def stubRetrieveBusinessVerificationResultFromStub(journeyId: String)
                                                     (status: Int,
