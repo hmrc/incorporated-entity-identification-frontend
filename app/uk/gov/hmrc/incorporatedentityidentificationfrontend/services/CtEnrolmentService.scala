@@ -19,8 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 import uk.gov.hmrc.auth.core.Enrolments
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.DetailsMatched
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CtEnrolled, JourneyConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CtEnrolled, DetailsMatched, JourneyConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtEnrolmentService._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.EnrolmentUtils.getCtEnrolment
 
@@ -37,16 +36,11 @@ class CtEnrolmentService @Inject()(storageService: StorageService,
         storageService.retrieveCompanyProfile(journeyId).flatMap {
           case Some(companyProfile) =>
             validateIncorporatedEntityDetailsService.validateIncorporatedEntityDetails(companyProfile.companyNumber, Some(ctutr)).flatMap {
-              case DetailsMatched if journeyConfig.businessVerificationCheck =>
+              case DetailsMatched =>
                 for {
-                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
+                  _ <- storageService.storeIdentifiersMatch(journeyId, DetailsMatched)
                   _ <- storageService.storeCtutr(journeyId, ctutr)
-                  _ <- storageService.storeBusinessVerificationStatus(journeyId, CtEnrolled)
-                } yield Enrolled
-              case DetailsMatched if !journeyConfig.businessVerificationCheck =>
-                for {
-                  _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = true)
-                  _ <- storageService.storeCtutr(journeyId, ctutr)
+                  _ <- onlyIf(journeyConfig.businessVerificationCheck)(storageService.storeBusinessVerificationStatus(journeyId, CtEnrolled))
                 } yield Enrolled
               case _ =>
                 Future.successful(EnrolmentMismatch)
@@ -57,6 +51,9 @@ class CtEnrolmentService @Inject()(storageService: StorageService,
       case None =>
         Future.successful(NoEnrolmentFound)
     }
+
+  def onlyIf[A](condition: Boolean)(f: => Future[A]): Future[Any] =
+    if(condition) f else Future.successful(())
 }
 
 object CtEnrolmentService {

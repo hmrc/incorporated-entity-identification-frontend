@@ -19,7 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.ValidateIncorporatedEntityDetailsConnector
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser.IncorporatedEntityDetailsValidationResult
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityDetailsMatching
 
 import scala.concurrent.Future
 
@@ -27,7 +27,7 @@ class ValidateIncorporatedEntityDetailsService @Inject()(validateIncorporatedEnt
 
   def validateIncorporatedEntityDetails(companyNumber: String,
                                         ctutr: Option[String]
-                                       )(implicit hc: HeaderCarrier): Future[IncorporatedEntityDetailsValidationResult] =
+                                       )(implicit hc: HeaderCarrier): Future[IncorporatedEntityDetailsMatching] =
     validateIncorporatedEntityDetailsConnector.validateIncorporatedEntityDetails(companyNumber, ctutr)
 
 }

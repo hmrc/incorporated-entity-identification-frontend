@@ -97,7 +97,7 @@ object TestConstants {
   }
 
   def testRegisterAuditEventJson(companyNumber: String,
-                                 isMatch: Boolean,
+                                 isMatch: String,
                                  ctUtr: String,
                                  verificationStatus: String,
                                  registrationStatus: String): JsObject = {
@@ -145,9 +145,21 @@ object TestConstants {
       companyProfile = testCompanyProfile,
       optCtutr = Some(testCtutr),
       optChrn = Some(testCHRN),
-      identifiersMatch = true,
+      identifiersMatch = DetailsMatched,
       businessVerification = Some(businessVerificationStatus),
       registration = testSuccessfulRegistration
     )
+
+  def testBVCreationPostData(ctUtr: String, journeyId: String): JsObject = Json.obj(
+    "journeyType" -> "BUSINESS_VERIFICATION",
+           "origin" -> "vat",
+           "identifiers" -> Json.arr(
+              Json.obj(
+        "ctUtr" -> ctUtr
+             )
+           ),
+           "continueUrl" -> s"/identify-your-incorporated-business/$journeyId/business-verification-result",
+           "accessibilityStatementUrl" -> "/accessibility"
+  )
 
 }

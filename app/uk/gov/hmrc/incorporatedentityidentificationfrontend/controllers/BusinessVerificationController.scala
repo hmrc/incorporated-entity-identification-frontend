@@ -17,9 +17,10 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.mvc._
+import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{BusinessVerificationService, StorageService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{BusinessVerificationService, JourneyService, StorageService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
@@ -29,23 +30,30 @@ import scala.concurrent.{ExecutionContext, Future}
 class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents,
                                                val authConnector: AuthConnector,
                                                businessVerificationService: BusinessVerificationService,
+                                               journeyService: JourneyService,
                                                storageService: StorageService
                                               )(implicit val executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def startBusinessVerificationJourney(journeyId: String): Action[AnyContent] = Action.async {
     implicit req =>
-      authorised() {
-        storageService.retrieveCtutr(journeyId).flatMap {
-          case Some(ctutr) =>
-            businessVerificationService.createBusinessVerificationJourney(journeyId, ctutr).flatMap {
-              case Some(redirectUri) =>
-                Future.successful(Redirect(redirectUri))
+      authorised().retrieve(internalId) {
+        case Some(authInternalId) =>
+          journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
+            journeyConfig =>
+            storageService.retrieveCtutr(journeyId).flatMap {
+              case Some(ctutr) =>
+                businessVerificationService
+                  .createBusinessVerificationJourney(journeyId, ctutr, journeyConfig).flatMap {
+                  case Some(redirectUri) =>
+                    Future.successful(Redirect(redirectUri))
+                  case None =>
+                    Future.successful(Redirect(routes.RegistrationController.register(journeyId)))
+                }
               case None =>
-                Future.successful(Redirect(routes.RegistrationController.register(journeyId)))
+                throw new InternalServerException(s"No CTUTR found in the database for $journeyId")
             }
-          case None =>
-            throw new InternalServerException(s"No CTUTR found in the database for $journeyId")
-        }
+          }
+        case None => throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
