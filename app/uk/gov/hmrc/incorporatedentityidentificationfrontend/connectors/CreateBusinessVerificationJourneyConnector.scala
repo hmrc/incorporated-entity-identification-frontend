@@ -40,7 +40,7 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
     val jsonBody: JsObject =
       Json.obj(
         "journeyType" -> "BUSINESS_VERIFICATION",
-        "origin" -> "vat",
+        "origin" -> journeyConfig.regime.toLowerCase,
         "identifiers" -> Json.arr(
           Json.obj(
           "ctUtr" -> ctutr

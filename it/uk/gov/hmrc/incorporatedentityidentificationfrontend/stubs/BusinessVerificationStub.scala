@@ -31,7 +31,7 @@ trait BusinessVerificationStub extends WireMockMethods {
                                              body: JsObject = Json.obj()): StubMapping = {
 
     val postBody = Json.obj("journeyType" -> "BUSINESS_VERIFICATION",
-      "origin" -> "vat",
+      "origin" -> journeyConfig.regime.toLowerCase,
       "identifiers" -> Json.arr(
         Json.obj(
           "ctUtr" -> ctutr
@@ -67,7 +67,7 @@ trait BusinessVerificationStub extends WireMockMethods {
                                                      body: JsObject = Json.obj()): StubMapping = {
 
     val postBody = Json.obj("journeyType" -> "BUSINESS_VERIFICATION",
-      "origin" -> "vat",
+      "origin" -> journeyConfig.regime.toLowerCase,
       "identifiers" -> Json.arr(
         Json.obj(
           "ctUtr" -> ctutr

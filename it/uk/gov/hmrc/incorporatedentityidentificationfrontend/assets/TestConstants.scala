@@ -152,7 +152,7 @@ object TestConstants {
 
   def testBVCreationPostData(ctUtr: String, journeyId: String): JsObject = Json.obj(
     "journeyType" -> "BUSINESS_VERIFICATION",
-           "origin" -> "vat",
+           "origin" -> "vatc",
            "identifiers" -> Json.arr(
               Json.obj(
         "ctUtr" -> ctUtr
