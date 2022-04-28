@@ -37,6 +37,7 @@ class BusinessVerificationStubController extends InjectedController {
         _ <-  ((request.body \ "identifiers").head \ "ctUtr").validate[String]
         continueUrl <- (request.body \ "continueUrl").validate[String]
         _ <- (request.body \ "accessibilityStatementUrl").validate[String]
+        _ <- (request.body \ "deskproServiceName").validate[String]
       } yield (origin, continueUrl)
       jsonBody match {
         case JsSuccess((origin, _), _) if !origin.equals(origin.toLowerCase) =>

@@ -16,7 +16,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 
 import play.api.libs.json.{JsObject, Json}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
@@ -160,7 +160,8 @@ object TestConstants {
              )
            ),
            "continueUrl" -> s"/identify-your-incorporated-business/$journeyId/business-verification-result",
-           "accessibilityStatementUrl" -> "/accessibility"
+           "accessibilityStatementUrl" -> "/accessibility",
+           "deskproServiceName" -> "vrs"
   )
 
 }
