@@ -37,16 +37,52 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
   )
 
   "POST /api/journey" should {
-    "return CREATED and supply a journey start url" in {
-      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+    "return a created journey" when {
+      "all the URLs provided are relative" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-      lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
 
-      result.status mustBe CREATED
-      (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+        (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+        result.status mustBe CREATED
 
-      await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testLimitedCompanyJourneyConfig)
+        await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testLimitedCompanyJourneyConfig)
+      }
+      "a URL provided in non-relative but in allowed hosts list" in {
+        val testJourneyConfigJson: JsObject = Json.obj(
+          "continueUrl" -> testContinueUrl,
+          "deskProServiceId" -> testDeskProServiceId,
+          "signOutUrl" -> testSignOutUrl,
+          "accessibilityUrl" -> testLocalAccessibilityUrl,
+          "regime" -> testRegime
+        )
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+
+        (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+
+        result.status mustBe CREATED
+      }
+    }
+    "return Bad Request" when {
+      "one URL provided for the journey config is not relative" in {
+        val testJourneyConfigJson: JsObject = Json.obj(
+          "continueUrl" -> testContinueUrl,
+          "deskProServiceId" -> testDeskProServiceId,
+          "signOutUrl" -> testSignOutUrl,
+          "accessibilityUrl" -> testStagingAccessibilityUrl,
+          "regime" -> testRegime
+        )
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+
+        result.status mustBe BAD_REQUEST
+      }
     }
 
     "redirect to sign in page" when {
@@ -74,17 +110,54 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
   }
 
   "POST /api/limited-company-journey" should {
-    "return CREATED and supply a journey start url" in {
-      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+    "return a created journey" when {
+      "all the URLs provided are relative" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-      lazy val result = post("/incorporated-entity-identification/api/limited-company-journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/limited-company-journey", testJourneyConfigJson)
 
-      result.status mustBe CREATED
-      (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+        (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+        result.status mustBe CREATED
 
-      await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testLimitedCompanyJourneyConfig)
+        await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testLimitedCompanyJourneyConfig)
+      }
+      "a URL provided in non-relative but in allowed hosts list" in {
+        val testJourneyConfigJson: JsObject = Json.obj(
+          "continueUrl" -> testContinueUrl,
+          "deskProServiceId" -> testDeskProServiceId,
+          "signOutUrl" -> testSignOutUrl,
+          "accessibilityUrl" -> testLocalAccessibilityUrl,
+          "regime" -> testRegime
+        )
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+
+        (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+
+        result.status mustBe CREATED
+      }
     }
+    "return  Bad Request" when {
+      "one URL provided for the journey config is not relative" in {
+        val testJourneyConfigJson: JsObject = Json.obj(
+          "continueUrl" -> testContinueUrl,
+          "deskProServiceId" -> testDeskProServiceId,
+          "signOutUrl" -> testSignOutUrl,
+          "accessibilityUrl" -> testStagingAccessibilityUrl,
+          "regime" -> testRegime
+        )
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+
+        result.status mustBe BAD_REQUEST
+      }
+    }
+
 
     "redirect to sign in page" when {
       "the user is not logged in" in {
@@ -111,16 +184,52 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
   }
 
   "POST /api/registered-society-journey" should {
-    "return CREATED and supply a journey start url" in {
-      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+    "return a created journey" when {
+      "all the URLs provided are relative" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-      lazy val result = post("/incorporated-entity-identification/api/registered-society-journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/registered-society-journey", testJourneyConfigJson)
 
-      result.status mustBe CREATED
-      (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+        result.status mustBe CREATED
+        (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
 
-      await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testRegisteredSocietyJourneyConfig)
+        await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testRegisteredSocietyJourneyConfig)
+      }
+      "a URL provided in non-relative but in allowed hosts list" in {
+        val testJourneyConfigJson: JsObject = Json.obj(
+          "continueUrl" -> testContinueUrl,
+          "deskProServiceId" -> testDeskProServiceId,
+          "signOutUrl" -> testSignOutUrl,
+          "accessibilityUrl" -> testLocalAccessibilityUrl,
+          "regime" -> testRegime
+        )
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+
+        (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+
+        result.status mustBe CREATED
+      }
+    }
+    "return  Bad Request" when {
+      "one URL provided for the journey config is not relative" in {
+        val testJourneyConfigJson: JsObject = Json.obj(
+          "continueUrl" -> testContinueUrl,
+          "deskProServiceId" -> testDeskProServiceId,
+          "signOutUrl" -> testSignOutUrl,
+          "accessibilityUrl" -> testStagingAccessibilityUrl,
+          "regime" -> testRegime
+        )
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+
+        result.status mustBe BAD_REQUEST
+      }
     }
 
     "redirect to sign in page" when {
@@ -148,16 +257,52 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
   }
 
   "POST /api/charitable-incorporated-organisation-journey" should {
-    "return CREATED and supply a journey start url" in {
-      stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+    "return a created journey" when {
+      "all the URLs provided are relative" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-      lazy val result = post("/incorporated-entity-identification/api/charitable-incorporated-organisation-journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/charitable-incorporated-organisation-journey", testJourneyConfigJson)
 
-      result.status mustBe CREATED
-      (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+        (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+        result.status mustBe CREATED
 
-      await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testCharitableIncorporatedOrganisationJourneyConfig)
+        await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(testCharitableIncorporatedOrganisationJourneyConfig)
+      }
+      "a URL provided in non -relative but in allowed hosts list" in {
+        val testJourneyConfigJson: JsObject = Json.obj(
+          "continueUrl" -> testContinueUrl,
+          "deskProServiceId" -> testDeskProServiceId,
+          "signOutUrl" -> testSignOutUrl,
+          "accessibilityUrl" -> testLocalAccessibilityUrl,
+          "regime" -> testRegime
+        )
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+
+        (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
+
+        result.status mustBe CREATED
+      }
+    }
+    "return Bad Request" when {
+      "one URL provided for the journey config is not relative" in {
+        val testJourneyConfigJson: JsObject = Json.obj(
+          "continueUrl" -> testContinueUrl,
+          "deskProServiceId" -> testDeskProServiceId,
+          "signOutUrl" -> testSignOutUrl,
+          "accessibilityUrl" -> testStagingAccessibilityUrl,
+          "regime" -> testRegime
+        )
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+
+        result.status mustBe BAD_REQUEST
+      }
     }
 
     "redirect to sign in page" when {

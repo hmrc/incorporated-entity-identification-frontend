@@ -36,6 +36,7 @@ The field businessVerificationCheck enables calling services to bypass business 
 false" and there is a successful match the entity will be registered. If not provided the default value used for this
 field is "true".
 
+All URLs provided must be relative, apart from locally, where localhost is allowed. All absolute urls will fail.
 ```
 {
   "continueUrl" : "/testUrl",
@@ -74,6 +75,8 @@ name, ```Entity Validation Service``` will be used.
 The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "
 false" and there is a successful match the entity will be registered. If not provided the default value used for this
 field is "true".
+
+All URLs provided must be relative, apart from locally, where localhost is allowed. All absolute urls will fail.
 
 ```
 {
@@ -114,6 +117,8 @@ The field businessVerificationCheck enables calling services to bypass business 
 false" and there is a successful match the entity will be registered. If not provided the default value used for this
 field is "true".
 
+All URLs provided must be relative, apart from locally, where localhost is allowed. All absolute urls will fail.
+
 ```
 {
   "continueUrl" : "/testUrl",
@@ -152,6 +157,8 @@ name, ```Entity Validation Service``` will be used.
 The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "
 false" and there is a successful match the entity will be registered. If not provided the default value used for this
 field is "true".
+
+All URLs provided must be relative, apart from locally, where localhost is allowed. All absolute urls will fail.
 
 ```
 {

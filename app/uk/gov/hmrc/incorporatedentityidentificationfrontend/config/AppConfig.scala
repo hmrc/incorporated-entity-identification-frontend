@@ -16,13 +16,15 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.config
 
+import play.api.Configuration
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, CompaniesHouseStub, FeatureSwitching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
+import scala.collection.JavaConverters.asScalaBufferConverter
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitching {
+class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration) extends FeatureSwitching {
 
   lazy val selfBaseUrl: String = servicesConfig.baseUrl("self")
   lazy val selfUrl: String = servicesConfig.getString("microservice.services.self.url")
@@ -83,6 +85,8 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig) extends FeatureSwitchi
   lazy val defaultServiceName: String = servicesConfig.getString("defaultServiceName")
 
   lazy val timeToLiveSeconds: Long = servicesConfig.getString("mongodb.timeToLiveSeconds").toLong
+
+  lazy val allowedHosts: Set[String] = config.underlying.getStringList("microservice.hosts.allowList").asScala.toSet
 
   private lazy val feedbackUrl: String = servicesConfig.getString("feedback.host")
 
