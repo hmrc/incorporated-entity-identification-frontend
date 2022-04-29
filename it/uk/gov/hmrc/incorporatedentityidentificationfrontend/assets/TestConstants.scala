@@ -34,7 +34,7 @@ object TestConstants {
   val testCHRN: String = "AB12345"
   val testCtutr: String = "1234567890"
   val testJourneyId: String = UUID.randomUUID().toString
-  val testSignOutUrl: String = "signOutUrl"
+  val testSignOutUrl: String = "/signOutUrl"
   val testBusinessVerificationJourneyId = "TestBusinessVerificationJourneyId"
   val testDateOfIncorporation: String = LocalDate.now().toString
   val testCredentialId: String = UUID.randomUUID().toString
@@ -45,7 +45,8 @@ object TestConstants {
   val testCallingServiceName: String = "Test Service"
   val testContinueUrl: String = "/test"
   val testAccessibilityUrl: String = "/accessibility"
-  val testDefaultAccessibilityUrl: String = "/accessibility-statement/vat-registration"
+  val testLocalAccessibilityUrl: String = "http://localhost:12346/accessibility-statement/vat-registration"
+  val testStagingAccessibilityUrl: String = "https://www.staging.tax.service.gov.uk/accessibility-statement/vat-registration"
   val testSafeId: String = UUID.randomUUID().toString
   val testRegime: String = "VATC"
   val testBusinessVerificationPassJson: JsObject = testBusinessVerificationJson(value = businessVerificationPassKey)
@@ -131,7 +132,7 @@ object TestConstants {
         None,
         testDeskProServiceId,
         testSignOutUrl,
-        testDefaultAccessibilityUrl
+        testAccessibilityUrl
       ),
       businessEntity = LimitedCompany,
       businessVerificationCheck = true,

@@ -19,6 +19,8 @@ Shows all feature switches:
 ---
 Test entry point for initial call to set up a create limited company journey.
 
+All URLs provided must be relative, apart from locally, where localhost is allowed. 
+
 1. ContinueURL (Required)
 
     - Where to redirect the user after the journey has been completed
@@ -58,6 +60,8 @@ Test entry point for initial call to set up a create limited company journey.
 
 ---
 Test entry point for initial call to set up a create registered society journey.
+
+All URLs provided must be relative, apart from locally, where localhost is allowed.
 
 1. ContinueURL (Required)
 
@@ -99,6 +103,8 @@ Test entry point for initial call to set up a create registered society journey.
 ---
 Test entry point for initial call to set up a create charitable incorporated organisation journey.
 
+All URLs provided must be relative, apart from locally, where localhost is allowed.
+
 1. ContinueURL (Required)
     - Where to redirect the user after the journey has been completed
 
@@ -139,6 +145,8 @@ Test entry point for initial call to set up a create charitable incorporated org
 
 ---
 Test entry point for initial call to set up a create limited company journey.
+
+All URLs provided must be relative, apart from locally, where localhost is allowed.
 
 1. ContinueURL (Required)
 

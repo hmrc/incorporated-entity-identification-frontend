@@ -40,7 +40,7 @@ class TestCreateRegisteredSocietyJourneyController @Inject()(messagesControllerC
     optServiceName = None,
     deskProServiceId = "vrs",
     signOutUrl = appConfig.vatRegFeedbackUrl,
-    accessibilityUrl = "/"
+    accessibilityUrl = "/accessibility"
   )
 
   private val defaultJourneyConfig = JourneyConfig(

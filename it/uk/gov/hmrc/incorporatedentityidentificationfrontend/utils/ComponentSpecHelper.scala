@@ -76,8 +76,8 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   }
 
   override def beforeEach(): Unit = {
-    resetWiremock()
     await(journeyConfigRepository.drop)
+    resetWiremock()
     super.beforeEach()
   }
 
