@@ -37,6 +37,7 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
                                         journeyConfig: JourneyConfig
                                        )(implicit hc: HeaderCarrier): Future[Either[JourneyCreationFailure, JourneyCreated]] = {
 
+    val pageTitle: String = journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)
     val jsonBody: JsObject =
       Json.obj(
         "journeyType" -> "BUSINESS_VERIFICATION",
@@ -47,7 +48,8 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
         )),
         "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
         "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl,
-        "deskproServiceName" -> journeyConfig.pageConfig.deskProServiceId
+        "deskproServiceName" -> journeyConfig.pageConfig.deskProServiceId,
+        "pageTitle" -> pageTitle
       )
 
     http.POST[JsObject, Either[JourneyCreationFailure, JourneyCreated]](appConfig.createBusinessVerificationJourneyUrl, jsonBody)(
