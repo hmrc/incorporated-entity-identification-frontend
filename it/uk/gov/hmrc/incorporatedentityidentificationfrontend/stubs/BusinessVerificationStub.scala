@@ -38,7 +38,8 @@ trait BusinessVerificationStub extends WireMockMethods {
         )
       ),
       "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
-      "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl
+      "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl,
+      "deskproServiceName" -> journeyConfig.pageConfig.deskProServiceId
     )
 
     when(method = POST, uri = "/business-verification/journey", postBody)
@@ -74,7 +75,8 @@ trait BusinessVerificationStub extends WireMockMethods {
         )
       ),
       "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
-      "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl
+      "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl,
+      "deskproServiceName" -> journeyConfig.pageConfig.deskProServiceId
     )
 
     when(method = POST, uri = "/identify-your-incorporated-business/test-only/business-verification/journey", postBody)
