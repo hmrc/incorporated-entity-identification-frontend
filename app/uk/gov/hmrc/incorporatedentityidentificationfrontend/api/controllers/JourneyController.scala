@@ -28,15 +28,17 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntit
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, StorageService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.UrlHelper
 
 import javax.inject.Inject
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyController @Inject()(controllerComponents: ControllerComponents,
                                   journeyService: JourneyService,
                                   incorporatedEntityInformationRetrievalService: StorageService,
                                   val authConnector: AuthConnector,
-                                  appConfig: AppConfig
+                                  appConfig: AppConfig,
+                                  urlHelper: UrlHelper
                                  )(implicit ec: ExecutionContext) extends BackendController(controllerComponents) with AuthorisedFunctions {
 
   def createLtdCompanyJourney: Action[JourneyConfig] = createJourney(LimitedCompany)
@@ -65,12 +67,13 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
       implicit req =>
         authorised().retrieve(internalId) {
           case Some(authInternalId) =>
-            journeyService.createJourney(authInternalId, req.body).map {
-              journeyId =>
-                Created(Json.obj(
-                  "journeyStartUrl" -> s"${appConfig.selfUrl}${controllerRoutes.CaptureCompanyNumberController.show(journeyId).url}"
-                ))
-            }
+            if (urlHelper.areRelativeOrAcceptedUrls(List(req.body.continueUrl, req.body.pageConfig.signOutUrl, req.body.pageConfig.accessibilityUrl))) {
+              journeyService.createJourney(authInternalId, req.body).map(
+                journeyId =>
+                  Created(Json.obj(
+                    "journeyStartUrl" -> s"${appConfig.selfUrl}${controllerRoutes.CaptureCompanyNumberController.show(journeyId).url}"
+                  )))
+            } else Future.successful(BadRequest(Json.toJson("JourneyConfig contained non-relative urls")))
           case _ =>
             throw new InternalServerException("Internal ID could not be retrieved from Auth")
         }

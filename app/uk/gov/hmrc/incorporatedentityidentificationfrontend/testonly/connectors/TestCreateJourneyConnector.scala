@@ -16,16 +16,16 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors
 
-import javax.inject.{Inject, Singleton}
 import play.api.http.Status._
 import play.api.libs.json.{Json, Writes}
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors.TestCreateJourneyConnector.journeyConfigWriter
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -39,6 +39,8 @@ class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
     httpClient.POST(url, journeyConfig).map {
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
+      case response =>
+        throw new InternalServerException(s"Invalid response from Limited Company: Status: ${response.status} Body: ${response.body}")
     }
   }
 
@@ -48,6 +50,8 @@ class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
     httpClient.POST(url, journeyConfig).map {
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
+      case response =>
+        throw new InternalServerException(s"Invalid response from Registered Society: Status: ${response.status} Body: ${response.body}")
     }
   }
 
@@ -57,6 +61,8 @@ class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
     httpClient.POST(url, journeyConfig).map {
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
+      case response =>
+        throw new InternalServerException(s"Invalid response from Charitable Incorporated Organisation: Status: ${response.status} Body: ${response.body}")
     }
   }
 }
