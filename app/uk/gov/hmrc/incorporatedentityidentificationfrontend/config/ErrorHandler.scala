@@ -18,7 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.config
 
 import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
-import play.api.mvc.Results.NotFound
+import play.api.mvc.Results.{BadRequest, NotFound}
 import play.api.mvc.{Request, RequestHeader, Result}
 import play.api.{Configuration, Environment, Logging}
 import play.twirl.api.Html
@@ -36,6 +36,12 @@ class ErrorHandler @Inject()(view: error_template,
                              val config: Configuration,
                              val env: Environment
                             )(implicit appConfig: AppConfig) extends FrontendErrorHandler with AuthRedirects with Logging {
+
+  override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] =
+    if (play.mvc.Http.Status.BAD_REQUEST == statusCode)
+      Future.successful(BadRequest(message))
+    else
+      super.onClientError(request, statusCode, message)
 
   override def standardErrorTemplate(pageTitle: String,
                                      heading: String,
