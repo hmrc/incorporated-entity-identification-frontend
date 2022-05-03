@@ -16,8 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 
-import play.api.libs.json.{Format, JsError, JsResult, JsString, JsSuccess, JsValue}
-import uk.gov.hmrc.http.InternalServerException
+import play.api.libs.json._
 
 sealed trait IncorporatedEntityDetailsMatching
 
@@ -45,13 +44,9 @@ object IncorporatedEntityDetailsMatching {
           case DetailsMatchedKey => JsSuccess(DetailsMatched)
           case DetailsMismatchKey => JsSuccess(DetailsMismatch)
           case DetailsNotProvidedKey => JsSuccess(DetailsNotProvided)
+          case _ => notSupportedJsError(jsValue)
         }
-        case JsError(_) => {
-          jsValue.validate[Boolean] match {
-            case JsSuccess(identifiersMatch, _) => if (identifiersMatch) JsSuccess(DetailsMatched) else JsSuccess(DetailsMismatch)
-            case JsError(_) => throw new InternalServerException(("Invalid Incorporated Details Matching result"))
-          }
-        }
+        case JsError(_) => notSupportedJsError(jsValue)
       }
 
     override def writes(validationResponse: IncorporatedEntityDetailsMatching): JsValue = {
@@ -66,5 +61,7 @@ object IncorporatedEntityDetailsMatching {
     }
 
   }
+
+  private def notSupportedJsError(jsValue: JsValue): JsError = JsError(s"$jsValue not supported as Incorporated Entity Details Matching result")
 
 }
