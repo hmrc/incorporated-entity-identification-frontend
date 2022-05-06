@@ -22,11 +22,13 @@ import play.api.data.validation.Constraint
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ConstraintUtil._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
 
+import scala.util.matching.Regex
+
 
 object CaptureCHRNForm {
 
-  val chrnKey = "chrn"
-  val chrnRegex = "^([A-Z]{1,2}[0-9]{1,5})*$"
+  val chrnKey: String = "chrn"
+  val chrnRegex: Regex = "[A-Za-z]{1,2}[0-9]{1,5}".r
 
   def chrnNumberEmpty: Constraint[String] = Constraint("chrn.not_entered")(
     chrn => validate(
@@ -44,7 +46,7 @@ object CaptureCHRNForm {
 
   def chrnInvalidCharacters: Constraint[String] = Constraint("chrn.wrong_format")(
     chrn => validateNot(
-      constraint = chrn.toUpperCase matches chrnRegex,
+      constraint = chrn matches chrnRegex.regex,
       errMsg = "chrn.error.invalid-format"
     )
   )

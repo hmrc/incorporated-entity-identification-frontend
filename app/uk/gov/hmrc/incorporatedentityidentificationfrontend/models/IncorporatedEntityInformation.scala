@@ -66,7 +66,7 @@ object IncorporatedEntityInformation {
         }
       } ++ {
         incorporatedEntityInformation.optChrn match {
-          case Some(chrn) => Json.obj(chrnKey -> chrn)
+          case Some(chrn) => Json.obj(chrnKey -> chrn.toUpperCase)
           case None => Json.obj()
         }
       } ++ {

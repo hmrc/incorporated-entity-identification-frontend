@@ -31,7 +31,7 @@ object TestConstants {
   val companyNameKey: String = "companyName"
   val companyNumberKey: String = "companyNumber"
   val testCompanyName: String = "Test Company Ltd"
-  val testCHRN: String = "AB12345"
+  val testCHRN: String = "aB12345"
   val testCtutr: String = "1234567890"
   val testJourneyId: String = UUID.randomUUID().toString
   val testSignOutUrl: String = "/signOutUrl"
