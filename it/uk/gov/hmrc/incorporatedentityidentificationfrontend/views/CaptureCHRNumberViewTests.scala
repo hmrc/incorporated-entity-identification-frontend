@@ -97,6 +97,10 @@ trait CaptureCHRNumberViewTests {
       insetElements.first.text mustBe messages.insetText
     }
 
+    "have correct label in the form" in {
+      doc.getLabelElement.first.text() mustBe messages.labelText
+    }
+
     "have the correct hint text" in {
       doc.getParagraphs.get(1).text mustBe messages.hintText
     }

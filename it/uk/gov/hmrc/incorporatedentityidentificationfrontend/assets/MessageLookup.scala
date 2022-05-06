@@ -65,6 +65,7 @@ object MessageLookup {
     val heading = "What is the charity’s HMRC reference number?"
     val insetText = "If the charity has registered for Gift Aid then their HMRC reference number will be the same as their Gift Aid number. This is not the same as the charity number available on the charity register."
     val hintText = "This could be up to 7 characters and must begin with either one or two letters at the beginning followed by 1-5 numbers. For example, A999 or AB99999."
+    val labelText = "HMRC reference number"
     val noChrnLink = "The charity does not have a HMRC reference number"
 
     object Error {
