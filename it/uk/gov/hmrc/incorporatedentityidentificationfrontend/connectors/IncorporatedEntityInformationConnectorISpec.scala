@@ -59,7 +59,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
           IncorporatedEntityInformation(
             testCompanyProfile,
             Some(testCtutr),
-            Some(testCHRN),
+            Some(testCHRN.toUpperCase),
             DetailsMatched,
             Some(BusinessVerificationPass),
             testSuccessfulRegistration))
