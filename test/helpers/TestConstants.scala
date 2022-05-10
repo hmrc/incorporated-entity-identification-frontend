@@ -141,7 +141,8 @@ object TestConstants {
       "companyNumber" -> testCharityNumber,
       "isMatch" -> isMatch,
       "VerificationStatus" -> bvStatus,
-      "RegisterApiStatus" -> regStatus
+      "RegisterApiStatus" -> regStatus,
+      "CHRN" -> testCHRN.toUpperCase
     )
 
   val testIrCtEnrolment: Enrolment = Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", testCtutr)), "Activated", None)
