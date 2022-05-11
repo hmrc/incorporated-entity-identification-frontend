@@ -38,6 +38,7 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
     companyNumber <- storageService.retrieveCompanyNumber(journeyId)
     optCtutr <- storageService.retrieveCtutr(journeyId)
+    optCHRN <- storageService.retrieveCHRN(journeyId)
     optIdentifiersMatch <- storageService.retrieveIdentifiersMatch(journeyId)
     optBusinessVerificationStatus <- storageService.retrieveBusinessVerificationStatus(journeyId)
     optRegistrationStatus <- storageService.retrieveRegistrationStatus(journeyId)
@@ -45,6 +46,13 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     val ctutrBlock = {
       optCtutr match {
         case Some(ctutr) => Json.obj("CTUTR" -> ctutr)
+        case _ => Json.obj()
+      }
+    }
+
+    val chrnBlock = {
+      optCHRN match {
+        case Some(charityHMRCReferenceNumber) => Json.obj("CHRN" -> charityHMRCReferenceNumber.toUpperCase)
         case _ => Json.obj()
       }
     }
@@ -108,7 +116,7 @@ class AuditService @Inject()(auditConnector: AuditConnector,
           "isMatch" -> identifiersMatchStatus,
           "VerificationStatus" -> businessVerificationStatus,
           "RegisterApiStatus" -> registrationStatus
-        )
+        ) ++ chrnBlock
 
         auditConnector.sendExplicitAudit(
           auditType = "CIOEntityRegistration",
