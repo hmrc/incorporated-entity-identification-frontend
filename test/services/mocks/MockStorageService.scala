@@ -45,6 +45,14 @@ trait MockStorageService extends MockitoSugar with BeforeAndAfterEach {
     ).thenReturn(response)
   }
 
+  def mockRetrieveCHRN(journeyId: String)
+                       (response: Future[Option[String]]): OngoingStubbing[_] = {
+    when(mockStorageService.retrieveCHRN(
+      ArgumentMatchers.eq(journeyId)
+    )(ArgumentMatchers.any[HeaderCarrier])
+    ).thenReturn(response)
+  }
+
   def mockRetrieveCompanyProfile(journeyId: String)
                                 (response: Future[Option[CompanyProfile]]): OngoingStubbing[_] = {
     when(mockStorageService.retrieveCompanyProfile(

@@ -93,12 +93,12 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
+            journeyConfig = testLimitedCompanyJourneyConfigWithServiceName
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
           stubCreateBusinessVerificationJourneyFromStub(
-            testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
+            testCtutr, testJourneyId, testLimitedCompanyJourneyConfigWithServiceName)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
 
@@ -115,11 +115,11 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            journeyConfig = testRegisteredSocietyJourneyConfig
+            journeyConfig = testRegisteredSocietyJourneyConfigWithServiceName
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId, testRegisteredSocietyJourneyConfig)(NOT_FOUND)
+          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId, testRegisteredSocietyJourneyConfigWithServiceName)(NOT_FOUND)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
@@ -136,11 +136,11 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
+            journeyConfig = testLimitedCompanyJourneyConfigWithServiceName
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(FORBIDDEN)
+          stubCreateBusinessVerificationJourneyFromStub(testCtutr, testJourneyId, testLimitedCompanyJourneyConfigWithServiceName)(FORBIDDEN)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
@@ -160,10 +160,10 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
+            journeyConfig = testLimitedCompanyJourneyConfigWithServiceName
           ))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
+          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId, testLimitedCompanyJourneyConfigWithServiceName)(CREATED, Json.obj("redirectUri" -> testContinueUrl))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
 
@@ -179,11 +179,11 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
+            journeyConfig = testLimitedCompanyJourneyConfigWithServiceName
           ))
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(NOT_FOUND)
+          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId, testLimitedCompanyJourneyConfigWithServiceName)(NOT_FOUND)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationNotEnoughInformationToChallenge)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")
@@ -200,10 +200,10 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
           await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
             authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
+            journeyConfig = testLimitedCompanyJourneyConfigWithServiceName
           ))
           stubRetrieveCtutr(testJourneyId)(OK, testCtutr)
-          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId, testLimitedCompanyJourneyConfig)(FORBIDDEN)
+          stubCreateBusinessVerificationJourney(testCtutr, testJourneyId, testLimitedCompanyJourneyConfigWithServiceName)(FORBIDDEN)
           stubStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)(OK)
 
           lazy val result = get(s"$baseUrl/$testJourneyId/start-business-verification")

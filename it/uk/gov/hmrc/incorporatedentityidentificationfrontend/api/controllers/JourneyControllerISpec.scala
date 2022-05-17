@@ -354,7 +354,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         result.json mustBe Json.obj(
           "ctutr" -> testCtutr,
-          "chrn" -> testCHRN,
+          "chrn" -> testCHRN.toUpperCase,
           "companyProfile" -> Json.obj(
             "companyName" -> testCompanyName,
             "companyNumber" -> testCompanyNumber,

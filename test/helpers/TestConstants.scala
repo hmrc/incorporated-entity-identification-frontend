@@ -29,7 +29,7 @@ object TestConstants {
 
   val companyNameKey: String = "companyName"
   val companyNumberKey: String = "companyNumber"
-  val testCHRN: String = "AB12345"
+  val testCHRN: String = "aB12345"
   val testJourneyId: String = UUID.randomUUID().toString
   val testAuthInternalId: String = UUID.randomUUID().toString
   val testServiceName: String = "Test Service"
@@ -141,7 +141,8 @@ object TestConstants {
       "companyNumber" -> testCharityNumber,
       "isMatch" -> isMatch,
       "VerificationStatus" -> bvStatus,
-      "RegisterApiStatus" -> regStatus
+      "RegisterApiStatus" -> regStatus,
+      "CHRN" -> testCHRN.toUpperCase
     )
 
   val testIrCtEnrolment: Enrolment = Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", testCtutr)), "Activated", None)

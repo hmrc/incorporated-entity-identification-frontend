@@ -31,7 +31,7 @@ object TestConstants {
   val companyNameKey: String = "companyName"
   val companyNumberKey: String = "companyNumber"
   val testCompanyName: String = "Test Company Ltd"
-  val testCHRN: String = "AB12345"
+  val testCHRN: String = "aB12345"
   val testCtutr: String = "1234567890"
   val testJourneyId: String = UUID.randomUUID().toString
   val testSignOutUrl: String = "/signOutUrl"
@@ -74,14 +74,19 @@ object TestConstants {
   )
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testCioProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, "", Json.obj())
+  private val defaultConfig: PageConfig = PageConfig(None, testDeskProServiceId, testSignOutUrl, testAccessibilityUrl)
   val testLimitedCompanyJourneyConfig: JourneyConfig = createTestJourneyConfig(LimitedCompany)
+  val testLimitedCompanyJourneyConfigWithServiceName: JourneyConfig = createTestJourneyConfig(LimitedCompany)
+    .copy(pageConfig = defaultConfig.copy(optServiceName = Some("Entity Validation Service")))
   val testRegisteredSocietyJourneyConfig: JourneyConfig = createTestJourneyConfig(RegisteredSociety)
+  val testRegisteredSocietyJourneyConfigWithServiceName: JourneyConfig = createTestJourneyConfig(RegisteredSociety)
+    .copy(pageConfig = defaultConfig.copy(optServiceName = Some("Entity Validation Service")))
   val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
 
   private def createTestJourneyConfig(entityType: BusinessEntity): JourneyConfig =
     JourneyConfig(
       testContinueUrl,
-      PageConfig(None, testDeskProServiceId, testSignOutUrl, testAccessibilityUrl),
+      defaultConfig,
       entityType,
       businessVerificationCheck = true,
       testRegime)
@@ -160,7 +165,9 @@ object TestConstants {
            ),
            "continueUrl" -> s"/identify-your-incorporated-business/$journeyId/business-verification-result",
            "accessibilityStatementUrl" -> "/accessibility",
-           "deskproServiceName" -> "vrs"
+           "deskproServiceName" -> "vrs",
+           "pageTitle" -> "Entity Validation Service"
+
   )
 
 }
