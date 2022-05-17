@@ -45,6 +45,17 @@ class CompaniesHouseStubController extends InjectedController {
     "region" -> "test region"
   )
 
+  private val stubRegisteredOfficeAddressOverseas = Json.obj(
+    "address_line_1" -> "Overseas Line 1",
+    "address_line_2" -> "Overseas Line 2",
+    "care_of" -> "test name",
+    "country" -> "Ireland",
+    "locality" -> "Overseas City",
+    "po_box" -> "123",
+    "premises" -> "1",
+    "region" -> "Overseas Region"
+  )
+
   val CharitableIncorporatedOrganisation: Regex = "CE(.*)".r
 
   def getCompanyInformation(companyNumber: String): Action[AnyContent] = {
@@ -61,6 +72,13 @@ class CompaniesHouseStubController extends InjectedController {
       registeredOfficeAddressKey -> stubRegisteredOfficeAddress
     )
 
+    val stubLtdCompanyProfileOverseas = Json.obj(
+      companyNameKey -> "Overseas LTD",
+      companyNumberKey -> companyNumber,
+      dateOfIncorporationKey -> stubOldDateOfIncorporation,
+      registeredOfficeAddressKey -> stubRegisteredOfficeAddressOverseas
+    )
+
     val stubCioProfile = Json.obj(
       companyNameKey -> stubCharityName,
       companyNumberKey -> companyNumber,
@@ -72,6 +90,7 @@ class CompaniesHouseStubController extends InjectedController {
       companyNumber match {
         case "00000001" => NotFound
         case "00000002" => Ok(stubLtdCompanyProfileWithOldIncorporationDate)
+        case "00000003" => Ok(stubLtdCompanyProfileOverseas)
         case CharitableIncorporatedOrganisation(_) => Ok(stubCioProfile)
         case _ => Ok(stubLtdCompanyProfile)
       }
