@@ -221,7 +221,7 @@ class CaptureCHRNControllerISpec extends ComponentSpecHelper
         testCaptureCHRNErrorMessagesInvalidLength(result, authStub, insertConfig)
       }
 
-      "a CHRN exceeds the specified maximum length is submitted" should {
+      "a CHRN in an invalid format is submitted" should {
         "return a bad request" in {
           await(journeyConfigRepository.insertJourneyConfig(
             journeyId = testJourneyId,
