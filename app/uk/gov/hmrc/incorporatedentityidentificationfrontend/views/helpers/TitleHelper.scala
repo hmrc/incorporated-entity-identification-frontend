@@ -26,7 +26,7 @@ object TitleHelper {
     title(titleKey, pageConfig, form.hasErrors)
 
   def title(titleKey: String, pageConfig: PageConfig, isAnErrorPage: Boolean = false)(implicit messages: Messages, appConfig: AppConfig): String = {
-    val titleMessage: String = s"${messages(titleKey)} - ${pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)} - ${messages("service.govuk")}"
+    val titleMessage: String = s"${messages(titleKey)} - ${pageConfig.optServiceName.getOrElse(messages("service.name.default"))} - ${messages("service.govuk")}"
 
     if (isAnErrorPage) messages("error.title-prefix") + titleMessage
     else titleMessage

@@ -75,13 +75,13 @@ class CheckYourAnswersRowBuilder @Inject()() {
 
   }
 
-  private def buildSummaryRow(key: String, value: String, changeLink: Call) = SummaryListRow(
+  private def buildSummaryRow(key: String, value: String, changeLink: Call)(implicit messages: Messages) = SummaryListRow(
     key = Key(content = Text(key)),
     value = Value(HtmlContent(value)),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = changeLink.url,
-        content = Text("Change"),
+        content = Text(messages("base.change")),
         visuallyHiddenText = Some(key)
       )
     )))

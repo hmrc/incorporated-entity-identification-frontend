@@ -8,7 +8,7 @@ footer.links.accessibility.text                             = Accessibility Stat
 ## Header Links
 header.links.sign_out                                       = Sign Out
 
-service.name                                                = Register for VAT
+service.name.default                                        = Entity Validation Service
 service.govuk                                               = GOV.UK
 
 getpagehelp.linkText                                        = Get help with this page (opens in new tab)

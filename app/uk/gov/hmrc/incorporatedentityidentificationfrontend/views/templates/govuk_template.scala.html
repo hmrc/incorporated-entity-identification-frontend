@@ -59,13 +59,13 @@
 
 @hmrcLayout(
     pageTitle = Some(title),
-    isWelshTranslationAvailable = false,
+    isWelshTranslationAvailable = true,
     signOutUrl = Some(pageConfig.signOutUrl),
     additionalHeadBlock = Some(head),
     accessibilityStatementUrl = Some(pageConfig.accessibilityUrl),
     nonce = CSPNonce.get,
     phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl(pageConfig.deskProServiceId))),
-    serviceName = Some(pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
+    serviceName = Some(pageConfig.optServiceName.getOrElse(messages("service.name.default"))),
     backLinkUrl = Some("#"),
     additionalScriptsBlock = Some(scripts)
 )(content)
