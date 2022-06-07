@@ -24,9 +24,13 @@ sealed trait RegistrationStatus
 
 case class Registered(registeredBusinessPartnerId: String) extends RegistrationStatus
 
+case class RegistrationFailed(registrationFailures: Option[Array[Failure]]) extends RegistrationStatus
+
 case object RegistrationFailed extends RegistrationStatus
 
 case object RegistrationNotCalled extends RegistrationStatus
+
+case class Failure(code: String, reason: String)
 
 object RegistrationStatus {
   val registrationStatusKey = "registrationStatus"
@@ -34,6 +38,9 @@ object RegistrationStatus {
   val RegisteredKey = "REGISTERED"
   val RegistrationFailedKey = "REGISTRATION_FAILED"
   val RegistrationNotCalledKey = "REGISTRATION_NOT_CALLED"
+  val registrationFailuresKey = "failures"
+
+  implicit val RegistrationFailuresFormat: OFormat[Failure] = Json.format[Failure]
 
   implicit val format: OFormat[RegistrationStatus] = new OFormat[RegistrationStatus] {
     override def writes(registrationStatus: RegistrationStatus): JsObject =
@@ -42,8 +49,12 @@ object RegistrationStatus {
           registrationStatusKey -> RegisteredKey,
           registeredBusinessPartnerIdKey -> businessPartnerId
         )
-        case RegistrationFailed =>
-          Json.obj(registrationStatusKey -> RegistrationFailedKey)
+        case RegistrationFailed(failures) =>
+          val failuresJson = failures match {
+            case Some(errors: Array[Failure]) => Json.obj(registrationFailuresKey -> errors)
+            case _ => Json.obj()
+          }
+          Json.obj(registrationStatusKey -> RegistrationFailedKey) ++ failuresJson
         case RegistrationNotCalled =>
           Json.obj(registrationStatusKey -> RegistrationNotCalledKey)
         case _ =>
@@ -57,7 +68,10 @@ object RegistrationStatus {
             businessPartnerId => Registered(businessPartnerId)
           }
         case JsSuccess(RegistrationFailedKey, path) =>
-          JsSuccess(RegistrationFailed, path)
+          (json \ registrationFailuresKey).validate[Array[Failure]] match {
+            case JsSuccess(failures, _) => JsSuccess(RegistrationFailed(Some(failures)), path)
+            case _ => JsSuccess(RegistrationFailed(None), path)
+          }
         case JsSuccess(RegistrationNotCalledKey, path) =>
           JsSuccess(RegistrationNotCalled, path)
         case _ =>

@@ -19,7 +19,7 @@ Shows all feature switches:
 ---
 Test entry point for initial call to set up a create limited company journey.
 
-All URLs provided must be relative, apart from locally, where localhost is allowed. 
+All URLs provided must be relative, apart from locally, where localhost is allowed.
 
 1. ContinueURL (Required)
 
@@ -95,8 +95,8 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
 7. Accessibility statement URL (Required)
 
-     - Shown in the footer - a link to the accessibility statement for the calling service
-     - This is currently autofilled but can be changed
+    - Shown in the footer - a link to the accessibility statement for the calling service
+    - This is currently autofilled but can be changed
 
 ### GET test-only/create-cio-journey
 
@@ -136,8 +136,8 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
 7. Accessibility statement URL (Required)
 
-     - Shown in the footer - a link to the accessibility statement for the calling service
-     - This is currently autofilled but can be changed
+    - Shown in the footer - a link to the accessibility statement for the calling service
+    - This is currently autofilled but can be changed
 
 ### GET test-only/create-journey
 
@@ -150,38 +150,38 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
 1. ContinueURL (Required)
 
-     - Where to redirect the user after the journey has been completed
+    - Where to redirect the user after the journey has been completed
 
 2. Service Name (Optional)
 
-     - Service Name to use throughout the service
-     - If nothing is entered, ```Entity Validation Service``` will be used
+    - Service Name to use throughout the service
+    - If nothing is entered, ```Entity Validation Service``` will be used
 
 3. DeskPro Service ID (Required)
 
-     - Used for the `Get help with this page` link
-     - This is currently autofilled but can be changed
+    - Used for the `Get help with this page` link
+    - This is currently autofilled but can be changed
 
 4. Sign Out Link (Required)
 
-     - Shown in the HMRC header - a link to the sign out page for the calling service
-     - This is currently autofilled but can be changed
+    - Shown in the HMRC header - a link to the sign out page for the calling service
+    - This is currently autofilled but can be changed
 
 5. Business verification checkbox
 
-     - Used for skipping further verification checks carried out currently by Business Verification (SI)
-     - This is currently autofilled but can be changed
+    - Used for skipping further verification checks carried out currently by Business Verification (SI)
+    - This is currently autofilled but can be changed
 
 6. Regime (Required)
 
-     - This is the Tax Regime Identifier
-     - It is passed down to the Registration API
-     - Accepted values are PPT or VATC
+    - This is the Tax Regime Identifier
+    - It is passed down to the Registration API
+    - Accepted values are PPT or VATC
 
 7. Accessibility statement URL (Required)
 
-     - Shown in the footer - a link to the accessibility statement for the calling service
-     - This is currently autofilled but can be changed
+    - Shown in the footer - a link to the accessibility statement for the calling service
+    - This is currently autofilled but can be changed
 
 ### GET test-only/:companyNumber/incorporated-company-profile
 
@@ -245,6 +245,8 @@ Status:
 
 Example response body:
 
+When the registration is successful:
+
 ```
 {
   "companyProfile": {
@@ -271,6 +273,43 @@ Example response body:
   "registration": {
     "registrationStatus":"REGISTERED",
     "registeredBusinessPartnerId":"X00000123456789"
+  }
+}
+```
+
+When the registration is failed:
+
+```
+{
+  "companyProfile": {
+    "companyName":"TestCompanyLtd”,
+    “companyNumber":"01234567",
+    "dateOfIncorporation":"2020-01-01",
+    "unsanitisedCHROAddress": {
+      "address_line_1":"testLine1",
+      "address_line_2":"test town",
+      "care_of":"test name",
+      "country":"United Kingdom",
+      "locality":"test city",
+      "po_box":"123",
+      "postal_code":"AA11AA",
+      "premises":"1",
+      "region":"test region"
+    }
+  },
+  "ctutr":"1234567890",
+  "identifiersMatch":true,
+  "businessVerification": {
+    "verificationStatus":"PASS"
+  },
+  "registration": {
+        "registrationStatus":"REGISTRATION_FAILED",
+        "failures": [
+            {
+                "code": "PARTY_TYPE_MISMATCH",
+                "reason": "The remote endpoint has indicated there is Party Type mismatch"
+            }
+        ]
   }
 }
 ```

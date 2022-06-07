@@ -32,7 +32,7 @@ trait RegisterStub extends WireMockMethods {
     when(method = POST, uri = "/incorporated-entity-identification/register-limited-company", jsonBody(crn, ctutr, regime))
       .thenReturn(
         status = status,
-        body = Json.obj("registration" -> body)
+        body = body
       )
   }
 
@@ -44,7 +44,7 @@ trait RegisterStub extends WireMockMethods {
     when(method = POST, uri = "/incorporated-entity-identification/register-registered-society", jsonBody(crn, ctutr, regime))
       .thenReturn(
         status = status,
-        body = Json.obj("registration" -> body)
+        body = body
       )
   }
 

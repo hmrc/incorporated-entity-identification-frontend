@@ -75,6 +75,7 @@ object TestConstants {
   val notEnoughInfoToChallenge: String = "Not Enough Information to challenge"
   val notEnoughInfoToCall: String = "Not Enough Information to call BV"
   val ctEnrolled: String = "Enrolled"
+  val testRegistrationFailure: Array[Failure] = Array(Failure("PARTY_TYPE_MISMATCH", "The remote endpoint has indicated there is Party Type mismatch"))
 
   def testLimitedCompanyAuditEventJson(isMatch: String, bvStatus: String, regStatus: String): JsObject =
     Json.obj(

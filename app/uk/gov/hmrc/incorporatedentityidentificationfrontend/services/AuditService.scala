@@ -75,7 +75,7 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     val registrationStatus =
       optRegistrationStatus match {
         case Some(Registered(_)) => "success"
-        case Some(RegistrationFailed) => "fail"
+        case Some(RegistrationFailed(_)) => "fail"
         case _ => "not called"
       }
 

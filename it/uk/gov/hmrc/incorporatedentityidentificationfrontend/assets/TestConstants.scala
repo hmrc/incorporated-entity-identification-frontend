@@ -15,7 +15,7 @@
  */
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.assets
 
-import play.api.libs.json.{JsObject, Json}
+import play.api.libs.json.{JsArray, JsObject, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus._
@@ -52,11 +52,17 @@ object TestConstants {
   val testBusinessVerificationPassJson: JsObject = testBusinessVerificationJson(value = businessVerificationPassKey)
   val testBusinessVerificationFailJson: JsObject = testBusinessVerificationJson(value = businessVerificationFailKey)
   val testSuccessfulRegistration: RegistrationStatus = Registered(testSafeId)
-  val testFailedRegistration: RegistrationStatus = RegistrationFailed
-  val testSuccessfulRegistrationJson: JsObject = Json.obj(
+  val testFailedRegistration: RegistrationStatus = RegistrationFailed(Some(testRegistrationFailure))
+  val testSuccessfulRegJson: JsObject = Json.obj(
     registrationStatusKey -> RegisteredKey,
     registeredBusinessPartnerIdKey -> testSafeId)
-  val testFailedRegistrationJson: JsObject = Json.obj(registrationStatusKey -> RegistrationFailedKey)
+
+  val testSuccessfulRegistrationJson: JsObject = Json.obj("registration" -> testSuccessfulRegJson)
+
+  def testFailedRegJson(failures: JsArray): JsObject = Json.obj(
+    registrationStatusKey -> RegistrationFailedKey,
+    registrationFailuresKey -> failures)
+  def testFailedRegistrationJson(failures: JsArray): JsObject = Json.obj("registration" -> testFailedRegJson(failures))
   val testRegistrationNotCalledJson: JsObject = Json.obj(registrationStatusKey -> RegistrationNotCalledKey)
   val testDeskProServiceId: String = "vrs"
   val IRCTEnrolmentKey = "IR-CT"
@@ -82,6 +88,10 @@ object TestConstants {
   val testRegisteredSocietyJourneyConfigWithServiceName: JourneyConfig = createTestJourneyConfig(RegisteredSociety)
     .copy(pageConfig = defaultConfig.copy(optServiceName = Some("Entity Validation Service")))
   val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
+  val testRegistrationFailure: Array[Failure] = Array(Failure("PARTY_TYPE_MISMATCH", "The remote endpoint has indicated there is Party Type mismatch"))
+  val testMultipleRegistrationFailure: Array[Failure] = Array(Failure("INVALID_REGIME", "Request has not passed validation.  Invalid regime"),
+    Failure("INVALID_PAYLOAD", "Request has not passed validation. Invalid payload."))
+
 
   private def createTestJourneyConfig(entityType: BusinessEntity): JourneyConfig =
     JourneyConfig(

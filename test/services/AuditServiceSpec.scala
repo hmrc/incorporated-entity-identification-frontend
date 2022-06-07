@@ -160,7 +160,7 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         mockRetrieveCHRN(testJourneyId)(Future.successful(Some(testCHRN)))
         mockRetrieveIdentifiersMatch(testJourneyId)(Future.successful(Some(DetailsMatched)))
         mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
-        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationFailed)))
+        mockRetrieveRegistrationStatus(testJourneyId)(Future.successful(Some(RegistrationFailed(Some(testRegistrationFailure)))))
 
         await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditUkCompany()
