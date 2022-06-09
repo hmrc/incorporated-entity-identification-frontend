@@ -37,6 +37,7 @@ false" and there is a successful match the entity will be registered. If not pro
 field is "true".
 
 All URLs provided must be relative, apart from locally, where localhost is allowed. All absolute urls will fail.
+
 ```
 {
   "continueUrl" : "/testUrl",
@@ -206,7 +207,7 @@ Status:
 Example response bodies:
 
 ---
-Limited Company/Registered Society
+Limited Company/Registered Society when the Registration is successful:
 
 ```
 {
@@ -239,6 +240,44 @@ Limited Company/Registered Society
 
 ```
 
+Limited Company/Registered Society when the Registration is failed:
+
+```
+{
+  "companyProfile": {
+    "companyName":"TestCompanyLtd”,
+    “companyNumber":"01234567",
+    "dateOfIncorporation":"2020-01-01",
+    "unsanitisedCHROAddress": {
+      "address_line_1":"testLine1",
+      "address_line_2":"test town",
+      "care_of":"test name",
+      "country":"United Kingdom",
+      "locality":"test city",
+      "po_box":"123",
+      "postal_code":"AA11AA",
+      "premises":"1",
+      "region":"test region"
+    }
+  },
+  "ctutr":"1234567890",
+  "identifiersMatch":true,
+  "businessVerification": {
+    "verificationStatus":"PASS"
+  },
+  "registration": {
+        "registrationStatus":"REGISTRATION_FAILED",
+        "failures": [
+            {
+                "code": "PARTY_TYPE_MISMATCH",
+                "reason": "The remote endpoint has indicated there is Party Type mismatch"
+            }
+        ]
+  }
+}
+
+```
+---
 Charitable Incorporated Organisation:
 
 ```

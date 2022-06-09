@@ -59,14 +59,14 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
-          mockRegisterLimitedCompany(testCompanyNumber, testCtutr, testRegime)(Future.successful(RegistrationFailed))
-          mockStoreRegistrationStatus(testJourneyId, RegistrationFailed)(Future.successful(SuccessfullyStored))
+          mockRegisterLimitedCompany(testCompanyNumber, testCtutr, testRegime)(Future.successful(RegistrationFailed(Some(testRegistrationFailure))))
+          mockStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testJourneyConfig(LimitedCompany))) mustBe {
-            RegistrationFailed
+            RegistrationFailed(Some(testRegistrationFailure))
           }
           verifyRegistrationLimitedCompany(testCompanyNumber, testCtutr, testRegime)
-          verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed)
+          verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
         }
 
         "the business has an IR-CT enrolment and then registers" in {
@@ -202,14 +202,14 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
           mockRetrieveCompanyProfile(testJourneyId)(Future.successful(Some(testCompanyProfile)))
           mockRetrieveCtutr(testJourneyId)(Future.successful(Some(testCtutr)))
           mockRetrieveBusinessVerificationResponse(testJourneyId)(Future.successful(Some(BusinessVerificationPass)))
-          mockRegisterRegisteredSociety(testCompanyNumber, testCtutr, testRegime)(Future.successful(RegistrationFailed))
-          mockStoreRegistrationStatus(testJourneyId, RegistrationFailed)(Future.successful(SuccessfullyStored))
+          mockRegisterRegisteredSociety(testCompanyNumber, testCtutr, testRegime)(Future.successful(RegistrationFailed(Some(testRegistrationFailure))))
+          mockStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testJourneyConfig(RegisteredSociety))) mustBe {
-            RegistrationFailed
+            RegistrationFailed(Some(testRegistrationFailure))
           }
           verifyRegistrationRegisteredSociety(testCompanyNumber, testCtutr, testRegime)
-          verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed)
+          verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
         }
 
         "the business has an IR-CT enrolment and then registers" in {

@@ -21,7 +21,7 @@ import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.Json
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.DetailsMatched
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{DetailsMatched, RegistrationFailed}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, RegisterStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.WiremockHelper.{stubAudit, verifyAuditDetail}
@@ -33,6 +33,11 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
     "auditing.consumer.baseUri.host" -> mockHost,
     "auditing.consumer.baseUri.port" -> mockPort
   )
+
+  private val registrationFailure = Json.arr(Json.obj(
+    "code" -> "PARTY_TYPE_MISMATCH",
+    "reason" -> "The remote endpoint has indicated there is Party Type mismatch"
+  ))
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config ++ extraConfig)
@@ -82,8 +87,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson)
-          stubStoreRegistrationStatus(testJourneyId, testFailedRegistration)(status = OK)
+          stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson(registrationFailure))
+          stubStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
 
@@ -91,7 +96,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
           verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
-          verifyStoreRegistrationStatus(testJourneyId, testFailedRegistration)
+          verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
           verifyAuditDetail(
             testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus ="fail")
           )
@@ -223,8 +228,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson)
-          stubStoreRegistrationStatus(testJourneyId, testFailedRegistration)(status = OK)
+          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson(registrationFailure))
+          stubStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
 
@@ -233,7 +238,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
           verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)
-          verifyStoreRegistrationStatus(testJourneyId, testFailedRegistration)
+          verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
         }
       }
 
