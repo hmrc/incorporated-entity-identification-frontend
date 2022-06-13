@@ -79,6 +79,16 @@ trait CaptureCompanyNumberTests {
       doc.getHintText mustBe messages.hint
     }
 
+    "have an input text field marked as numeric" in {
+      val textInputs: Elements = doc.getTextFieldInput("companyNumber")
+
+      textInputs.size() mustBe 1
+
+      textInputs.first.attr("type") mustBe "text"
+      textInputs.first.attr("inputmode") mustBe "numeric"
+      textInputs.first.attr("pattern") mustBe "[0-9]*"
+    }
+
     "have a save and confirm button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }

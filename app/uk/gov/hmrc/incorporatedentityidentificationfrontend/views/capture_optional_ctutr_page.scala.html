@@ -45,7 +45,9 @@
             label = messages("capture-ctutr.registered_society_heading"),
             isPageHeading = true,
             hint = Some(Html(s"""<p class="govuk-body">${messages("capture-ctutr.line")}</p>""")),
-            classes = "govuk-input--width-20"
+            classes = "govuk-input--width-20",
+            inputMode = Some("numeric"),
+            pattern = Some("[0-9]*")
         )
 
         @govukDetails(Details(
