@@ -30,7 +30,9 @@
         classes: String = "",
         stripWhitespace: Boolean = false,
         autocomplete: Option[String] = None,
-        inputType: String = "text"
+        inputType: String = "text",
+        inputMode: Option[String] = None,
+        pattern: Option[String] = None
 )(implicit messages: Messages)
 
 @govukInput(
@@ -50,6 +52,8 @@
         value = form(name).value,
         autocomplete = autocomplete.map(value => value),
         inputType = inputType,
-        classes = classes
+        classes = classes,
+        inputmode = inputMode,
+        pattern = pattern
     ).withFormField(form(name))
 )

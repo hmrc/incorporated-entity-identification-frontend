@@ -58,7 +58,9 @@
             isPageHeading = false,
             label = messages("capture-company-number.heading"),
             hint = Some(Html(s"""<p class="govuk-body iei_hint">${messages("capture-company-number.hint")}</p>""")),
-            classes = "govuk-input--width-10"
+            classes = "govuk-input--width-10",
+            inputMode = Some("numeric"),
+            pattern = Some("[0-9]*")
         )
 
         @govukButton(Button(
