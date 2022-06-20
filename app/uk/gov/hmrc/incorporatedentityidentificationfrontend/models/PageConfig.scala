@@ -21,8 +21,21 @@ import play.api.libs.json.{Json, OFormat}
 case class PageConfig(optServiceName: Option[String],
                       deskProServiceId: String,
                       signOutUrl: String,
-                      accessibilityUrl: String)
+                      accessibilityUrl: String,
+                      optLabels: Option[JourneyLabels] = None)
 
 object PageConfig {
+
+  def apply(optServiceName: Option[String],
+            optWelshServiceName: Option[String],
+            deskProServiceId: String,
+            signOutUrl: String,
+            accessibilityUrl: String) : PageConfig = {
+
+    val labels: Option[JourneyLabels] = optWelshServiceName.map(JourneyLabels(_))
+
+    new PageConfig(optServiceName, deskProServiceId, signOutUrl, accessibilityUrl, labels)
+  }
+
   implicit val format: OFormat[PageConfig] = Json.format[PageConfig]
 }
