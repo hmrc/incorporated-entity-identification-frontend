@@ -135,6 +135,16 @@
             hint = Some(Html("Must be relative for staging, qa and production"))
         )
 
+        @inputText(
+            form = form,
+            id = "welshServiceName",
+            name = "welshServiceName",
+            label = "Welsh translation for Service Name",
+            isPageHeading = false,
+            hasFieldTitle = true,
+            classes = "govuk-input--width-20"
+        )
+
         @govukButton(Button(
             attributes = Map("id" -> "save-and-continue"),
             classes = "govuk-!-margin-right-1",

@@ -25,6 +25,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
+import scala.concurrent.ExecutionContext.Implicits.global
 
 class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with IncorporatedEntityIdentificationStub with AuthStub {
 
@@ -65,6 +66,22 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
 
         result.status mustBe CREATED
+      }
+      "the Journey configuration data provides an optional welsh service name" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/journey",
+          testJourneyConfigJson ++ optLabelsAsJson
+        )
+
+        result.status mustBe CREATED
+
+        val expectedPageConfig: PageConfig = testLimitedCompanyJourneyConfig.pageConfig.copy(optLabels = Some(optLabels))
+
+        val expectedJourneyConfig: JourneyConfig = testLimitedCompanyJourneyConfig.copy(pageConfig =  expectedPageConfig)
+
+        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedJourneyConfig)
       }
     }
     "return Bad Request" when {
@@ -133,11 +150,27 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/limited-company-journey", testJourneyConfigJson)
 
         (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
 
         result.status mustBe CREATED
+      }
+      "the Journey configuration data provides an optional welsh service name" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/limited-company-journey",
+          testJourneyConfigJson ++ optLabelsAsJson
+        )
+
+        result.status mustBe CREATED
+
+        val expectedPageConfig: PageConfig = testLimitedCompanyJourneyConfig.pageConfig.copy(optLabels = Some(optLabels))
+
+        val expectedJourneyConfig: JourneyConfig = testLimitedCompanyJourneyConfig.copy(pageConfig =  expectedPageConfig)
+
+        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedJourneyConfig)
       }
     }
     "return  Bad Request" when {
@@ -152,7 +185,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/limited-company-journey", testJourneyConfigJson)
 
         result.status mustBe BAD_REQUEST
       }
@@ -207,11 +240,27 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/registered-society-journey", testJourneyConfigJson)
 
         (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
 
         result.status mustBe CREATED
+      }
+      "the Journey configuration data provides an optional welsh service name" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/registered-society-journey",
+          testJourneyConfigJson ++ optLabelsAsJson
+        )
+
+        result.status mustBe CREATED
+
+        val expectedPageConfig: PageConfig = testRegisteredSocietyJourneyConfig.pageConfig.copy(optLabels = Some(optLabels))
+
+        val expectedJourneyConfig: JourneyConfig = testRegisteredSocietyJourneyConfig.copy(pageConfig =  expectedPageConfig)
+
+        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedJourneyConfig)
       }
     }
     "return  Bad Request" when {
@@ -226,7 +275,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/registered-society-journey", testJourneyConfigJson)
 
         result.status mustBe BAD_REQUEST
       }
@@ -280,11 +329,27 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/charitable-incorporated-organisation-journey", testJourneyConfigJson)
 
         (result.json \ "journeyStartUrl").as[String] must include(appRoutes.CaptureCompanyNumberController.show(testJourneyId).url)
 
         result.status mustBe CREATED
+      }
+      "the Journey configuration data provides an optional welsh service name" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
+
+        lazy val result = post("/incorporated-entity-identification/api/charitable-incorporated-organisation-journey",
+          testJourneyConfigJson ++ optLabelsAsJson
+        )
+
+        result.status mustBe CREATED
+
+        val expectedPageConfig: PageConfig = testCharitableIncorporatedOrganisationJourneyConfig.pageConfig.copy(optLabels = Some(optLabels))
+
+        val expectedJourneyConfig: JourneyConfig = testCharitableIncorporatedOrganisationJourneyConfig.copy(pageConfig =  expectedPageConfig)
+
+        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedJourneyConfig)
       }
     }
     "return Bad Request" when {
@@ -299,7 +364,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubCreateJourney(CREATED, Json.obj("journeyId" -> testJourneyId))
 
-        lazy val result = post("/incorporated-entity-identification/api/journey", testJourneyConfigJson)
+        lazy val result = post("/incorporated-entity-identification/api/charitable-incorporated-organisation-journey", testJourneyConfigJson)
 
         result.status mustBe BAD_REQUEST
       }

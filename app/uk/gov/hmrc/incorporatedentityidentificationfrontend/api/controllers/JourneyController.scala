@@ -25,7 +25,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.Jour
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => controllerRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig, PageConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig, JourneyLabels, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, StorageService}
 import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.UrlHelper
@@ -57,9 +57,10 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         businessVerificationCheck <- (json \ businessVerificationCheckKey).validateOpt[Boolean]
         regime <- (json \ regimeKey).validate[String]
         accessibilityUrl <- (json \ accessibilityUrlKey).validate[String]
+        labels <- (json \ labelsKey).validateOpt[JourneyLabels]
       } yield JourneyConfig(
         continueUrl,
-        PageConfig(optServiceName, deskProServiceId, signOutUrl, accessibilityUrl),
+        PageConfig(optServiceName, deskProServiceId, signOutUrl, accessibilityUrl, labels),
         businessEntity,
         businessVerificationCheck.getOrElse(true),
         regime)
@@ -101,4 +102,5 @@ object JourneyController {
   val businessVerificationCheckKey = "businessVerificationCheck"
   val regimeKey = "regime"
   val accessibilityUrlKey = "accessibilityUrl"
+  val labelsKey = "labels"
 }

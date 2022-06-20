@@ -52,7 +52,6 @@ object TestConstants {
   val testBusinessVerificationPassJson: JsObject = testBusinessVerificationJson(value = businessVerificationPassKey)
   val testBusinessVerificationFailJson: JsObject = testBusinessVerificationJson(value = businessVerificationFailKey)
   val testSuccessfulRegistration: RegistrationStatus = Registered(testSafeId)
-  val testFailedRegistration: RegistrationStatus = RegistrationFailed(Some(testRegistrationFailure))
   val testSuccessfulRegJson: JsObject = Json.obj(
     registrationStatusKey -> RegisteredKey,
     registeredBusinessPartnerIdKey -> testSafeId)
@@ -80,7 +79,7 @@ object TestConstants {
   )
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testCioProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, "", Json.obj())
-  private val defaultConfig: PageConfig = PageConfig(None, testDeskProServiceId, testSignOutUrl, testAccessibilityUrl)
+  private val defaultConfig: PageConfig = PageConfig(None, testDeskProServiceId, testSignOutUrl, testAccessibilityUrl, None)
   val testLimitedCompanyJourneyConfig: JourneyConfig = createTestJourneyConfig(LimitedCompany)
   val testLimitedCompanyJourneyConfigWithServiceName: JourneyConfig = createTestJourneyConfig(LimitedCompany)
     .copy(pageConfig = defaultConfig.copy(optServiceName = Some("Entity Validation Service")))
@@ -89,8 +88,10 @@ object TestConstants {
     .copy(pageConfig = defaultConfig.copy(optServiceName = Some("Entity Validation Service")))
   val testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = createTestJourneyConfig(CharitableIncorporatedOrganisation)
   val testRegistrationFailure: Array[Failure] = Array(Failure("PARTY_TYPE_MISMATCH", "The remote endpoint has indicated there is Party Type mismatch"))
+  val testFailedRegistration: RegistrationStatus = RegistrationFailed(Some(testRegistrationFailure))
   val testMultipleRegistrationFailure: Array[Failure] = Array(Failure("INVALID_REGIME", "Request has not passed validation.  Invalid regime"),
     Failure("INVALID_PAYLOAD", "Request has not passed validation. Invalid payload."))
+  val testWelshServiceName: String = "Welsh service name"
 
 
   private def createTestJourneyConfig(entityType: BusinessEntity): JourneyConfig =
@@ -180,4 +181,16 @@ object TestConstants {
 
   )
 
+  val optLabelsAsString: String =
+    s"""{
+        |  "labels" : {
+        |                "cy" : {
+        |                         "optServiceName" : "$testWelshServiceName"
+        |                       }
+        |             }
+        |}""".stripMargin
+
+  val optLabelsAsJson: JsObject = Json.parse(optLabelsAsString).as[JsObject]
+
+  val optLabels: JourneyLabels = JourneyLabels(testWelshServiceName)
 }
