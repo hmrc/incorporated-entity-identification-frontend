@@ -29,6 +29,7 @@ class CompaniesHouseStubController extends InjectedController {
   private val companyNumberKey = "company_number"
   private val dateOfIncorporationKey = "date_of_creation"
   private val stubCompanyName = "Test Company Ltd"
+  private val stubLongCompanyName = "Test Long Company name Test Long Company name Test Long Company name Test Long Company name Test Long Company name"
   private val stubCharityName = "Test Charity"
   private val stubDateOfIncorporation = "2020-01-01"
   private val stubOldDateOfIncorporation = "2017-01-01"
@@ -56,6 +57,7 @@ class CompaniesHouseStubController extends InjectedController {
   )
 
   def getCompanyInformation(companyNumber: String): Action[AnyContent] = {
+
     val stubLtdCompanyProfile = Json.obj(
       companyNameKey -> stubCompanyName,
       companyNumberKey -> companyNumber,
@@ -74,6 +76,13 @@ class CompaniesHouseStubController extends InjectedController {
       companyNumberKey -> companyNumber,
       dateOfIncorporationKey -> stubOldDateOfIncorporation,
       registeredOfficeAddressKey -> stubRegisteredOfficeAddressOverseas
+    )
+
+    val stubLtdCompanyProfileWithLongCompanyName = Json.obj(
+      companyNameKey -> stubLongCompanyName,
+      companyNumberKey -> companyNumber,
+      dateOfIncorporationKey -> stubDateOfIncorporation,
+      registeredOfficeAddressKey -> stubRegisteredOfficeAddress
     )
 
     val stubCioProfile = Json.obj(
@@ -96,6 +105,7 @@ class CompaniesHouseStubController extends InjectedController {
         case "00000001" => NotFound
         case "00000002" => Ok(stubLtdCompanyProfileWithOldIncorporationDate)
         case "00000003" => Ok(stubLtdCompanyProfileOverseas)
+        case "00000004" => Ok(stubLtdCompanyProfileWithLongCompanyName)
         case CharitableIncorporatedOrganisation(_) => Ok(stubCioProfile)
         case _ => Ok(stubLtdCompanyProfile)
       }
