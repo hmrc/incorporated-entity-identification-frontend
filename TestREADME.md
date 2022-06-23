@@ -56,10 +56,6 @@ All URLs provided must be relative, apart from locally, where localhost is allow
     - Shown in the footer - a link to the accessibility statement for the calling service
     - This is currently autofilled but can be changed
 
-8. Welsh translation for Service Name (Optional)
-
-    - Welsh language translation for service name (item 2)
-    
 ### GET test-only/create-registered-society-journey
 
 ---
@@ -101,11 +97,7 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
     - Shown in the footer - a link to the accessibility statement for the calling service
     - This is currently autofilled but can be changed
-    
-8. Welsh translation for Service Name (Optional)
 
-    - Welsh language translation for service name (item 2)
-    
 ### GET test-only/create-cio-journey
 
 ---
@@ -146,10 +138,6 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
     - Shown in the footer - a link to the accessibility statement for the calling service
     - This is currently autofilled but can be changed
-    
-8. Welsh translation for Service Name (Optional)
-
-    - Welsh language translation for service name (item 2)
 
 ### GET test-only/create-journey
 
@@ -194,10 +182,6 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
     - Shown in the footer - a link to the accessibility statement for the calling service
     - This is currently autofilled but can be changed
-
-8. Welsh translation for Service Name (Optional)
-
-    - Welsh language translation for service name (item 2)
 
 ### GET test-only/:companyNumber/incorporated-company-profile
 
