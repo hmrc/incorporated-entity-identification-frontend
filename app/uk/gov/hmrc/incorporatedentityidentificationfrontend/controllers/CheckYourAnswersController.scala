@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -26,6 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.c
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, JourneyService, StorageService, ValidateIncorporatedEntityDetailsService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.MessagesHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.CheckYourAnswersRowBuilder
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.check_your_answers_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
@@ -41,6 +43,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                                            mcc: MessagesControllerComponents,
                                            view: check_your_answers_page,
                                            rowBuilder: CheckYourAnswersRowBuilder,
+                                           messagesHelper: MessagesHelper,
                                            val authConnector: AuthConnector)
                                           (implicit val config: AppConfig,
                                            ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
@@ -55,12 +58,14 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             optCtutr <- storageService.retrieveCtutr(journeyId)
             optChrn <- storageService.retrieveCHRN(journeyId)
             summaryRows = rowBuilder.buildSummaryListRows(journeyId, optCompanyProfile, optCtutr, optChrn, journeyConfig)
-          } yield
+          } yield {
+            implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
             Ok(view(
               pageConfig = journeyConfig.pageConfig,
               formAction = routes.CheckYourAnswersController.submit(journeyId),
               summaryRows = summaryRows
             ))
+          }
         case None => throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }

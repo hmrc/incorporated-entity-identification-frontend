@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
+import play.api.i18n.Messages
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -23,7 +24,8 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCtutrForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{StorageService, JourneyService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, StorageService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.MessagesHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.{capture_ctutr_page, capture_optional_ctutr_page}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -36,6 +38,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                                        optional_ctutr_view: capture_optional_ctutr_page,
                                        storageService: StorageService,
                                        journeyService: JourneyService,
+                                       messagesHelper: MessagesHelper,
                                        val authConnector: AuthConnector
                                       )(implicit val config: AppConfig,
                                         ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
@@ -46,6 +49,8 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
             journeyConfig =>
+              val remoteMessagesApi = messagesHelper.getRemoteMessagesApi(journeyConfig)
+              implicit val messages: Messages = remoteMessagesApi.preferred(request)
               journeyConfig.businessEntity match {
                 case LimitedCompany =>
                   Ok(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
@@ -68,6 +73,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
             formWithErrors => {
               journeyService.getJourneyConfig(journeyId, authInternalId).map {
                 journeyConfig =>
+                  implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
                   journeyConfig.businessEntity match {
                     case LimitedCompany =>
                       BadRequest(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors))

@@ -61,7 +61,9 @@ object TestConstants {
   def testFailedRegJson(failures: JsArray): JsObject = Json.obj(
     registrationStatusKey -> RegistrationFailedKey,
     registrationFailuresKey -> failures)
+
   def testFailedRegistrationJson(failures: JsArray): JsObject = Json.obj("registration" -> testFailedRegJson(failures))
+
   val testRegistrationNotCalledJson: JsObject = Json.obj(registrationStatusKey -> RegistrationNotCalledKey)
   val testDeskProServiceId: String = "vrs"
   val IRCTEnrolmentKey = "IR-CT"
@@ -93,6 +95,22 @@ object TestConstants {
     Failure("INVALID_PAYLOAD", "Request has not passed validation. Invalid payload."))
   val testWelshServiceName: String = "Welsh service name"
 
+  val testDefaultWelshJourneyConfig: JourneyConfig =
+    JourneyConfig(
+      continueUrl = testContinueUrl,
+      pageConfig = PageConfig(
+        optServiceName = None,
+        deskProServiceId= testDeskProServiceId,
+        signOutUrl= testSignOutUrl,
+        accessibilityUrl=testAccessibilityUrl,
+        optLabels = Some(JourneyLabels(optWelshServiceName = testWelshServiceName))
+      ),
+      businessEntity = RegisteredSociety,
+      businessVerificationCheck = true,
+      regime = testRegime
+    )
+
+  val testDefaultWelshServiceName: String = "Gwasanaeth Dilysu Endid"
 
   private def createTestJourneyConfig(entityType: BusinessEntity): JourneyConfig =
     JourneyConfig(
@@ -147,7 +165,8 @@ object TestConstants {
         None,
         testDeskProServiceId,
         testSignOutUrl,
-        testAccessibilityUrl
+        testAccessibilityUrl,
+        None
       ),
       businessEntity = LimitedCompany,
       businessVerificationCheck = true,
@@ -168,27 +187,27 @@ object TestConstants {
 
   def testBVCreationPostData(ctUtr: String, journeyId: String): JsObject = Json.obj(
     "journeyType" -> "BUSINESS_VERIFICATION",
-           "origin" -> "vatc",
-           "identifiers" -> Json.arr(
-              Json.obj(
+    "origin" -> "vatc",
+    "identifiers" -> Json.arr(
+      Json.obj(
         "ctUtr" -> ctUtr
-             )
-           ),
-           "continueUrl" -> s"/identify-your-incorporated-business/$journeyId/business-verification-result",
-           "accessibilityStatementUrl" -> "/accessibility",
-           "deskproServiceName" -> "vrs",
-           "pageTitle" -> "Entity Validation Service"
+      )
+    ),
+    "continueUrl" -> s"/identify-your-incorporated-business/$journeyId/business-verification-result",
+    "accessibilityStatementUrl" -> "/accessibility",
+    "deskproServiceName" -> "vrs",
+    "pageTitle" -> "Entity Validation Service"
 
   )
 
   val optLabelsAsString: String =
     s"""{
-        |  "labels" : {
-        |                "cy" : {
-        |                         "optServiceName" : "$testWelshServiceName"
-        |                       }
-        |             }
-        |}""".stripMargin
+       |  "labels" : {
+       |                "cy" : {
+       |                         "optServiceName" : "$testWelshServiceName"
+       |                       }
+       |             }
+       |}""".stripMargin
 
   val optLabelsAsJson: JsObject = Json.parse(optLabelsAsString).as[JsObject]
 

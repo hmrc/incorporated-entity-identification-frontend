@@ -30,7 +30,8 @@ object PageConfig {
             optWelshServiceName: Option[String],
             deskProServiceId: String,
             signOutUrl: String,
-            accessibilityUrl: String) : PageConfig = {
+            accessibilityUrl: String,
+           ) : PageConfig = {
 
     val labels: Option[JourneyLabels] = optWelshServiceName.map(JourneyLabels(_))
 

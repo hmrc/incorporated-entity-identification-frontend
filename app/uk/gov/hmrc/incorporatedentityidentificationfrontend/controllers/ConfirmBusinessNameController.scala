@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
+import play.api.i18n.Messages
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.{allEnrolments, internalId}
 import uk.gov.hmrc.auth.core.retrieve.~
@@ -26,6 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.c
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtEnrolmentService._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{CtEnrolmentService, JourneyService, StorageService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.MessagesHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.confirm_business_name_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -38,6 +40,7 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
                                               ctEnrolmentService: CtEnrolmentService,
                                               mcc: MessagesControllerComponents,
                                               view: confirm_business_name_page,
+                                              messagesHelper: MessagesHelper,
                                               val authConnector: AuthConnector
                                              )(implicit val config: AppConfig,
                                                ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
@@ -48,6 +51,7 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
             journeyConfig =>
+              implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
               incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).map {
                 case Some(companiesHouseInformation) =>
                   Ok(view(journeyConfig.pageConfig, routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))

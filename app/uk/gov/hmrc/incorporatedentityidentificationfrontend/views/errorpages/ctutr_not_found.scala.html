@@ -27,7 +27,7 @@
 
 @(pageConfig: PageConfig, redirectLocation: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@govukLayout(pageConfig, title = title("ctutr-not-found.title", pageConfig)) {
+@govukLayout(pageConfig, title = title("ctutr-not-found.title")) {
     @h1(messages("ctutr-not-found.heading"))
 
     <p class="govuk-body">@messages("ctutr-not-found.line_1")</p>
