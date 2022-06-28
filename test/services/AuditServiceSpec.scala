@@ -137,7 +137,7 @@ class AuditServiceSpec extends UnitSpec with Matchers with MockStorageService wi
         await(TestService.auditJourney(testJourneyId, testAuthInternalId))
         verifySendExplicitAuditUkCompany()
 
-        auditEventCaptor.getValue mustBe  testLimitedCompanyAuditEventJson(isMatch = "true", bvStatus = failure, regStatus = notCalled)
+        auditEventCaptor.getValue mustBe testLimitedCompanyAuditEventJson(isMatch = "true", bvStatus = failure, regStatus = notCalled)
       }
       "the business entity has a UTR mismatch" in {
         mockGetJourneyConfig(testJourneyId, testAuthInternalId)(Future.successful(testJourneyConfigLimitedCompany))

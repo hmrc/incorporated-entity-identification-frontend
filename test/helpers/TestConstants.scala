@@ -156,7 +156,8 @@ object TestConstants {
       optServiceName = None,
       deskProServiceId = "vrs",
       signOutUrl = testSignOutUrl,
-      accessibilityUrl = testAccessibilityUrl),
+      accessibilityUrl = testAccessibilityUrl
+    ),
     businessEntity = businessEntity,
     businessVerificationCheck = true,
     regime = testRegime

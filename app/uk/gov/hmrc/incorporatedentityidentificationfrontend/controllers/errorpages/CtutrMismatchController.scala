@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages
 
+import play.api.i18n.Messages
 import play.api.mvc._
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -23,6 +24,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.MessagesHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.errorpages.ctutr_mismatch_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -33,7 +35,8 @@ import scala.concurrent.{ExecutionContext, Future}
 class CtutrMismatchController @Inject()(journeyService: JourneyService,
                                         mcc: MessagesControllerComponents,
                                         view: ctutr_mismatch_page,
-                                        val authConnector: AuthConnector
+                                        val authConnector: AuthConnector,
+                                        messagesHelper: MessagesHelper
                                        )(implicit val config: AppConfig,
                                          executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
@@ -43,6 +46,7 @@ class CtutrMismatchController @Inject()(journeyService: JourneyService,
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
             journeyConfig =>
+              implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
               Ok(view(journeyConfig.pageConfig, routes.CtutrMismatchController.submit(journeyId), journeyId))
           }
         case None =>

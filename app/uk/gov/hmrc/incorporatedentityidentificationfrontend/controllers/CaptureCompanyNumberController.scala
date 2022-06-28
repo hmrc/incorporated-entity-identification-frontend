@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -24,6 +25,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCompanyNumberForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.MessagesHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_company_number_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -35,6 +37,7 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
                                                journeyService: JourneyService,
                                                mcc: MessagesControllerComponents,
                                                view: capture_company_number_page,
+                                               messagesHelper: MessagesHelper,
                                                val authConnector: AuthConnector)
                                               (implicit val config: AppConfig,
                                                ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
@@ -45,6 +48,7 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
             journeyConfig =>
+              implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
               Ok(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), CaptureCompanyNumberForm.form))
           }
         case None =>
@@ -60,6 +64,7 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
             formWithErrors => {
               journeyService.getJourneyConfig(journeyId, authInternalId).map {
                 journeyConfig =>
+                  implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
                   BadRequest(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), formWithErrors))
               }
             },

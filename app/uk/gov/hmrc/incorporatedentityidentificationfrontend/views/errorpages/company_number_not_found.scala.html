@@ -28,7 +28,7 @@
 
 @(pageConfig: PageConfig, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@govukLayout(pageConfig, title = title("company-number-not-found.title", pageConfig)) {
+@govukLayout(pageConfig, title = title("company-number-not-found.title")) {
 
     @h1(messages("company-number-not-found.heading"))
     <p class="govuk-body">@messages("company-number-not-found.paragraph")</p>

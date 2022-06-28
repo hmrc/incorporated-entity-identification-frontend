@@ -101,7 +101,8 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
                 optServiceName = Some(testCallingServiceName),
                 deskProServiceId = testDeskProServiceId,
                 signOutUrl = testSignOutUrl,
-                accessibilityUrl = testAccessibilityUrl),
+                accessibilityUrl = testAccessibilityUrl
+              ),
               businessEntity = LimitedCompany,
               businessVerificationCheck = true,
               regime = testRegime

@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -23,6 +24,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.CaptureCHRNForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.MessagesHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_chrn_page
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -34,6 +36,7 @@ class CaptureCHRNController @Inject()(storageService: StorageService,
                                       journeyService: JourneyService,
                                       mcc: MessagesControllerComponents,
                                       view: capture_chrn_page,
+                                      messagesHelper: MessagesHelper,
                                       val authConnector: AuthConnector)
                                      (implicit val config: AppConfig,
                                       ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
@@ -44,6 +47,8 @@ class CaptureCHRNController @Inject()(storageService: StorageService,
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
             journeyConfig =>
+              val remoteMessagesApi = messagesHelper.getRemoteMessagesApi(journeyConfig)
+              implicit val messages: Messages = remoteMessagesApi.preferred(request)
               Ok(view(
                 journeyId = journeyId,
                 pageConfig = journeyConfig.pageConfig,
@@ -64,6 +69,7 @@ class CaptureCHRNController @Inject()(storageService: StorageService,
             formWithErrors =>
               journeyService.getJourneyConfig(journeyId, authInternalId).map {
                 journeyConfig =>
+                  implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
                   BadRequest(view(
                     journeyId = journeyId,
                     pageConfig = journeyConfig.pageConfig,

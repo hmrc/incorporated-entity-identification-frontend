@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages
 
+import play.api.i18n.Messages
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
@@ -23,6 +24,7 @@ import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, StorageService}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.MessagesHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.errorpages.ctutr_not_found
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
@@ -34,7 +36,8 @@ class CtutrNotFoundController @Inject()(journeyService: JourneyService,
                                         mcc: MessagesControllerComponents,
                                         view: ctutr_not_found,
                                         storageService: StorageService,
-                                        val authConnector: AuthConnector
+                                        val authConnector: AuthConnector,
+                                        messagesHelper: MessagesHelper
                                        )(implicit val config: AppConfig,
                                          executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
@@ -44,6 +47,7 @@ class CtutrNotFoundController @Inject()(journeyService: JourneyService,
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
             journeyConfig =>
+              implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
               Ok(view(journeyConfig.pageConfig, routes.CtutrNotFoundController.tryAgain(journeyId), journeyId))
           }
         case None =>
