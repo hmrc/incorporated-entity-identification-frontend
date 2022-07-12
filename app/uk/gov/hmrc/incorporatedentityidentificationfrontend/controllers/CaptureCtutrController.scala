@@ -30,7 +30,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.{capture_
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
@@ -53,9 +53,9 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
               implicit val messages: Messages = remoteMessagesApi.preferred(request)
               journeyConfig.businessEntity match {
                 case LimitedCompany =>
-                  Ok(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+                  Ok(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form(LimitedCompany)))
                 case RegisteredSociety =>
-                  Ok(optional_ctutr_view(journeyId, journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form))
+                  Ok(optional_ctutr_view(journeyId, journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form(RegisteredSociety)))
                 case invalidEntity =>
                   throw new InternalServerException(s"Invalid entity: $invalidEntity on CTUTR page")
               }
@@ -69,26 +69,32 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
     implicit request =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
-          CaptureCtutrForm.form.bindFromRequest().fold(
-            formWithErrors => {
-              journeyService.getJourneyConfig(journeyId, authInternalId).map {
-                journeyConfig =>
-                  implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
-                  journeyConfig.businessEntity match {
-                    case LimitedCompany =>
-                      BadRequest(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
-                    case RegisteredSociety =>
-                      BadRequest(optional_ctutr_view(journeyId, journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors))
-                    case invalidEntity =>
-                      throw new InternalServerException(s"Invalid entity: $invalidEntity on CTUTR page")
-                  }
+          journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
+            journeyConfig =>
+              implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
+              journeyConfig.businessEntity match {
+                case LimitedCompany =>
+                  CaptureCtutrForm.form(LimitedCompany).bindFromRequest().fold(
+                    formWithErrors => {
+                      Future.successful(BadRequest(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors)))
+                    },
+                    ctutr =>
+                      storageService.storeCtutr(journeyId, ctutr).map {
+                        _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+                      })
+                case RegisteredSociety =>
+                  CaptureCtutrForm.form(RegisteredSociety).bindFromRequest().fold(
+                    formWithErrors => {
+                      Future.successful(BadRequest(optional_ctutr_view(journeyId, journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), formWithErrors)))
+                    },
+                    ctutr =>
+                      storageService.storeCtutr(journeyId, ctutr).map {
+                        _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
+                      })
+                case invalidEntity =>
+                  throw new InternalServerException(s"Invalid entity: $invalidEntity on CTUTR page")
               }
-            },
-            ctutr =>
-              storageService.storeCtutr(journeyId, ctutr).map {
-                _ => Redirect(routes.CheckYourAnswersController.show(journeyId))
-              }
-          )
+          }
         case None =>
           throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
