@@ -19,8 +19,9 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.forms
 import play.api.data.Form
 import play.api.data.Forms._
 import play.api.data.validation.Constraint
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ConstraintUtil._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, LimitedCompany, RegisteredSociety}
 
 import scala.util.matching.Regex
 
@@ -29,23 +30,29 @@ object CaptureCtutrForm {
   val ctutrRegex: Regex = "[0-9]{10}".r
   val ctutr = "ctutr"
 
-  private val noCtutrEntered: Constraint[String] = Constraint("ctutr_not_entered")(
+  def noCtutrEntered(businessEntity: BusinessEntity): Constraint[String] = Constraint("ctutr_not_entered")(
     ctutr => validate(
       constraint = ctutr.isEmpty,
-      errMsg = "capture-ctutr.error.no-entry"
+      errMsg = businessEntity match {
+        case LimitedCompany => "capture-ctutr.error.limited_company_no-entry"
+        case RegisteredSociety => "capture-ctutr.error.registered_society_no-entry"
+      }
     )
   )
 
-  private val ctutrInvalid: Constraint[String] = Constraint("ctutr_invalid")(
+  def ctutrInvalid(businessEntity: BusinessEntity): Constraint[String] = Constraint("ctutr_invalid")(
     ctutr => validateNot(
       constraint = ctutr.matches(ctutrRegex.regex),
-      errMsg = "capture-ctutr.error.incorrect-format"
+      errMsg = businessEntity match {
+        case LimitedCompany => "capture-ctutr.error.limited_company_incorrect-format"
+        case RegisteredSociety => "capture-ctutr.error.registered_society_incorrect-format"
+      }
     )
   )
 
-  val form: Form[String] =
+  def form(businessEntity: BusinessEntity): Form[String] =
     Form(
-      "ctutr" -> text.verifying(noCtutrEntered andThen ctutrInvalid)
+      "ctutr" -> text.verifying(noCtutrEntered(businessEntity) andThen ctutrInvalid(businessEntity))
     )
 
 }

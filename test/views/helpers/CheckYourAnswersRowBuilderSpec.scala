@@ -35,37 +35,37 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Guic
   val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
 
   val testCompanyNumberRow: SummaryListRow = SummaryListRow(
-    key = Key(content = Text("Company number")),
+    key = Key(content = Text("Company registration number")),
     value = Value(HtmlContent(testCompanyNumber)),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureCompanyNumberController.show(testJourneyId).url,
         content = Text("Change"),
-        visuallyHiddenText = Some("Company number")
+        visuallyHiddenText = Some("Company registration number")
       )
     )))
   )
 
   val testCtutrRow: SummaryListRow = SummaryListRow(
-    key = Key(content = Text("Unique Taxpayers Reference number")),
+    key = Key(content = Text("Unique Taxpayer Reference (UTR)")),
     value = Value(HtmlContent(testCtutr)),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureCtutrController.show(testJourneyId).url,
         content = Text("Change"),
-        visuallyHiddenText = Some("Unique Taxpayers Reference number")
+        visuallyHiddenText = Some("Unique Taxpayer Reference (UTR)")
       )
     )))
   )
 
   val testNoCtutrRow: SummaryListRow = SummaryListRow(
-    key = Key(content = Text("Unique Taxpayers Reference number")),
+    key = Key(content = Text("Unique Taxpayer Reference (UTR)")),
     value = Value(HtmlContent("The business does not have a UTR")),
     actions = Some(Actions(items = Seq(
       ActionItem(
         href = routes.CaptureCtutrController.show(testJourneyId).url,
         content = Text("Change"),
-        visuallyHiddenText = Some("Unique Taxpayers Reference number")
+        visuallyHiddenText = Some("Unique Taxpayer Reference (UTR)")
       )
     )))
   )

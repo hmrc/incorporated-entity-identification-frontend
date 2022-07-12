@@ -23,7 +23,7 @@ base.save_and_continue                                      = Save and continue
 base.confirm_and_continue                                   = Confirm and continue
 base.save_and_come_back                                     = Save and come back later
 base.change                                                 = Change
-base.try_again                                              = Try Again
+base.try_again                                              = Try again
 
 ## Error
 error.summary.title                                         = There is a problem
@@ -40,10 +40,10 @@ capture-company-number.title                                = What is the compan
 capture-company-number.heading                              = What is the company registration number?
 capture-company-number.line_1.part1                         = You can
 capture-company-number.line_1.part2                         = search Companies House for the company registration number
-capture-company-number.hint                                 = For example, 01234567
-capture-company-number.error.no-entry                       = Enter a Company Registration number
-capture-company-number.error.invalid-length                 = Enter a Company Registration number using 8 characters or fewer
-capture-company-number.error.invalid-format                 = Enter a Company Number in the correct format
+capture-company-number.hint                                 = It is 8 characters. For example, 01234567 or AC012345.
+capture-company-number.error.no-entry                       = Enter the company registration number
+capture-company-number.error.invalid-length                 = The company registration number must be 8 characters or fewer
+capture-company-number.error.invalid-format                 = Enter the company registration number in the correct format
 
 ## Confirm Business Page
 confirm-business.title                                      = Confirm the company name
@@ -54,32 +54,34 @@ confirm-business.change_company                             = Change company
 chrn.title                                                  = What is the charity’s HMRC reference number?
 chrn.heading                                                = What is the charity’s HMRC reference number?
 chrn.inset_text                                             = If the charity has registered for Gift Aid then their HMRC reference number will be the same as their Gift Aid number. This is not the same as the charity number available on the charity register.
-chrn.hint_text                                              = This could be up to 7 characters and must begin with either one or two letters at the beginning followed by 1-5 numbers. For example, A999 or AB99999.
+chrn.hint_text                                              = This could be up to 7 characters and must begin with either one or two letters, followed by 1-5 numbers. For example, A999 or AB99999
 chrn.label_text                                             = HMRC reference number
 chrn.no_chrn_link                                           = The charity does not have a HMRC reference number
 chrn.error.no-entry                                         = Enter the HMRC reference number
 chrn.error.invalid-format                                   = Enter the HMRC reference number in the correct format
-chrn.error.invalid-length                                   = Enter a HMRC reference number that is 7 characters or less
+chrn.error.invalid-length                                   = The HMRC reference number must be 7 characters or fewer
 
 ## CT-UTR Page
 capture-ctutr.title                                         = What is the company’s Unique Taxpayer Reference?
 capture-ctutr.heading                                       = What is the company’s Unique Taxpayer Reference?
-capture-ctutr.registered_society_title                      = What is your registered society’s Unique Taxpayer Reference?
-capture-ctutr.registered_society_heading                    = What is your registered society’s Unique Taxpayer Reference?
+capture-ctutr.registered_society_title                      = What is the registered society’s Unique Taxpayer Reference?
+capture-ctutr.registered_society_heading                    = What is the registered society’s Unique Taxpayer Reference?
 capture-ctutr.line                                          = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.
 capture-ctutr.lost_utr                                      = Lost the company’s UTR number
 capture-ctutr.no_utr                                        = The business does not have a Unique Taxpayer Reference
 capture-ctutr.dropdown.line_1                               = The UTR helps us identify your business
 capture-ctutr.dropdown.link_1                               = I have lost the businesses UTR number
 capture-ctutr.dropdown.link_2                               = My business does not have a UTR
-capture-ctutr.error.no-entry                                = Enter your company’s Unique Taxpayer Reference
-capture-ctutr.error.incorrect-format                        = Unique Taxpayer Reference number must be 10 numbers
+capture-ctutr.error.limited_company_no-entry                = Enter the company’s Unique Taxpayer Reference
+capture-ctutr.error.registered_society_no-entry             = Enter the registered society’s Unique Taxpayer Reference
+capture-ctutr.error.limited_company_incorrect-format        = The company’s Unique Taxpayer Reference must be 10 numbers
+capture-ctutr.error.registered_society_incorrect-format     = The registered society’s Unique Taxpayer Reference must be 10 numbers
 
 ## Check Your Answers Page
 check-your-answers.title                                    = Check your answers
 check-your-answers.heading                                  = Check your answers
-check-your-answers.company_number                           = Company number
-check-your-answers.ctutr                                    = Unique Taxpayers Reference number
+check-your-answers.company_number                           = Company registration number
+check-your-answers.ctutr                                    = Unique Taxpayer Reference (UTR)
 check-your-answers.no-ctutr                                 = The business does not have a UTR
 check-your-answers.chrn                                     = HMRC reference number
 check-your-answers.no-chrn                                  = The charity does not have a HMRC reference number
