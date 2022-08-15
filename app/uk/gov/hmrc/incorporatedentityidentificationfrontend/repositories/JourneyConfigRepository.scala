@@ -17,73 +17,67 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories
 
 import play.api.libs.json._
-import play.modules.reactivemongo.ReactiveMongoComponent
-import reactivemongo.api.commands.WriteResult
-import reactivemongo.api.indexes.{Index, IndexType}
-import reactivemongo.bson.BSONDocument
-import reactivemongo.play.json._
+import org.mongodb.scala.model.Indexes.ascending
+import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions}
+import org.mongodb.scala.result.{DeleteResult, InsertOneResult}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository._
-import uk.gov.hmrc.mongo.ReactiveRepository
+import uk.gov.hmrc.mongo.MongoComponent
+import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class JourneyConfigRepository @Inject()(reactiveMongoComponent: ReactiveMongoComponent,
-                                        appConfig: AppConfig)
-                                       (implicit ec: ExecutionContext) extends ReactiveRepository[JourneyConfig, String](
+class JourneyConfigRepository @Inject()(mongoComponent: MongoComponent,
+                                        appConfig: AppConfig)(implicit ec: ExecutionContext) extends PlayMongoRepository[JsObject](
   collectionName = "incorporated-entity-identification-frontend",
-  mongo = reactiveMongoComponent.mongoConnector.db,
-  domainFormat = journeyConfigMongoFormat,
-  idFormat = implicitly[Format[String]]
-) {
+  mongoComponent = mongoComponent,
+  domainFormat = implicitly[Format[JsObject]],
+  indexes = Seq(timeToLiveIndex(appConfig.timeToLiveSeconds)),
+  extraCodecs = Seq(Codecs.playFormatCodec(journeyConfigMongoFormat))
+){
 
-  def insertJourneyConfig(journeyId: String, authInternalId: String, journeyConfig: JourneyConfig): Future[WriteResult] = {
-    val document = Json.obj(
+  def insertJourneyConfig(journeyId: String, authInternalId: String, journeyConfig: JourneyConfig): Future[InsertOneResult] = {
+
+    val document: JsObject = Json.obj(
       JourneyIdKey -> journeyId,
       AuthInternalIdKey -> authInternalId,
-      CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
+      CreationTimestampKey -> Json.obj( "$date" -> Instant.now.toEpochMilli)
     ) ++ Json.toJsObject(journeyConfig)
 
-    collection.insert(true).one(document)
+    collection.insertOne(document).toFuture()
   }
 
-  def findJourneyConfig(journeyId: String, authInternalId: String): Future[Option[JourneyConfig]] =
-    collection.find(
-      Json.obj(
-        JourneyIdKey -> journeyId,
-        AuthInternalIdKey -> authInternalId
-      ),
-      Some(Json.obj(
-        JourneyIdKey -> 0,
-        AuthInternalIdKey -> 0
-      ))
-    ).one[JourneyConfig]
+  def findJourneyConfig(journeyId: String, authInternalId: String): Future[Option[JourneyConfig]] = {
 
-  private lazy val ttlIndex = Index(
-    Seq(("creationTimestamp", IndexType.Ascending)),
-    name = Some("IncorporatedEntityInformationExpires"),
-    options = BSONDocument("expireAfterSeconds" -> appConfig.timeToLiveSeconds)
-  )
+    collection.find[JourneyConfig](
+      Filters.and(
+        Filters.equal(JourneyIdKey, journeyId),
+        Filters.equal(AuthInternalIdKey, authInternalId)
+      )
+    ).headOption
 
-  private def setIndex(): Unit = {
-    collection.indexesManager.drop(ttlIndex.name.get) onComplete {
-      _ => collection.indexesManager.ensure(ttlIndex)
-    }
   }
 
-  setIndex()
+  def count: Future[Long] = collection.countDocuments().toFuture()
 
-  override def drop(implicit ec: ExecutionContext): Future[Boolean] =
-    collection.drop(failIfNotFound = false).map { r =>
-      setIndex()
-      r
-    }
+  def removeJourneyConfig(journeyId: String, authInternalId: String): Future[DeleteResult] = {
 
+    collection.deleteOne(
+      Filters.and(
+        Filters.equal(JourneyIdKey, journeyId),
+        Filters.equal(AuthInternalIdKey, authInternalId)
+      )
+    ).toFuture()
+
+  }
+
+  def drop: Future[Unit] = collection.drop().toFuture.map(_ => Unit)
 }
 
 object JourneyConfigRepository {
@@ -98,6 +92,15 @@ object JourneyConfigRepository {
   val PageConfigKey = "pageConfig"
   val BusinessVerificationCheckKey = "businessVerificationCheck"
   val RegimeKey = "regime"
+
+  def timeToLiveIndex(timeToLiveDuration: Long): IndexModel = {
+    IndexModel(
+      keys = ascending(CreationTimestampKey),
+      indexOptions = IndexOptions()
+        .name("IncorporatedEntityInformationExpires")
+        .expireAfter(timeToLiveDuration, TimeUnit.SECONDS)
+    )
+  }
 
   implicit val partnershipTypeMongoFormat: Format[BusinessEntity] = new Format[BusinessEntity] {
     override def reads(json: JsValue): JsResult[BusinessEntity] = json.validate[String].collect(JsonValidationError("Invalid entity type")) {

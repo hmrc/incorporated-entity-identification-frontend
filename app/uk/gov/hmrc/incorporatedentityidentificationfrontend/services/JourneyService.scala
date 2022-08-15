@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
 import javax.inject.Inject
-import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.JourneyConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
@@ -31,8 +31,12 @@ class JourneyService @Inject()(journeyConnector: JourneyConnector,
   def createJourney(authInternalId: String, journeyConfig: JourneyConfig)(implicit headerCarrier: HeaderCarrier): Future[String] =
     for {
       journeyId <- journeyConnector.createJourney()
-      _ <- journeyConfigRepository.insertJourneyConfig(journeyId, authInternalId, journeyConfig)
-    } yield journeyId
+      insertJourneyConfigResult <- journeyConfigRepository.insertJourneyConfig(journeyId, authInternalId, journeyConfig)
+    } yield if(insertJourneyConfigResult.wasAcknowledged())
+      journeyId
+    else
+      throw new InternalServerException(s"Unable to create journey $journeyId")
+
 
   def getJourneyConfig(journeyId: String, authInternalId: String): Future[JourneyConfig] =
     journeyConfigRepository.findJourneyConfig(journeyId, authInternalId).map {

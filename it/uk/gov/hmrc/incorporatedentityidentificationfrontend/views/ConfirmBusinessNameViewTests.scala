@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import reactivemongo.api.commands.WriteResult
+import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, ConfirmBusinessName => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -37,7 +37,7 @@ trait ConfirmBusinessNameViewTests {
   def testConfirmBusinessNameView(result: => WSResponse,
                                   stub: => StubMapping,
                                   authStub: => StubMapping,
-                                  insertJourneyConfig: => Future[WriteResult],
+                                  insertJourneyConfig: => Future[InsertOneResult],
                                   testCompanyName: String): Unit = {
 
     lazy val doc: Document = {
@@ -110,7 +110,7 @@ trait ConfirmBusinessNameViewTests {
   def testServiceName(serviceName: String,
                       result: => WSResponse,
                       authStub: => StubMapping,
-                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+                      insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)

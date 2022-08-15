@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import reactivemongo.api.commands.WriteResult
+import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CheckYourAnswers => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
@@ -43,7 +43,7 @@ trait CheckYourAnswersViewTests {
                                ctutrStub: => StubMapping,
                                chrnStub: => StubMapping,
                                authStub: => StubMapping,
-                               insertJourneyConfig: => Future[WriteResult],
+                               insertJourneyConfig: => Future[InsertOneResult],
                                auditStub: => StubMapping): Unit = {
 
     lazy val doc: Document = {
@@ -139,7 +139,7 @@ trait CheckYourAnswersViewTests {
                                      (result: => WSResponse,
                                       companyNumberStub: => StubMapping,
                                       authStub: => StubMapping,
-                                      insertJourneyConfig: => Future[WriteResult],
+                                      insertJourneyConfig: => Future[InsertOneResult],
                                       chrnStub: => StubMapping,
                                       auditStub: => StubMapping,
                                       retrieveCtutrStub: => StubMapping): Unit = {
@@ -229,7 +229,7 @@ trait CheckYourAnswersViewTests {
                                  (result: => WSResponse,
                                   companyNumberStub: => StubMapping,
                                   authStub: => StubMapping,
-                                  insertJourneyConfig: => Future[WriteResult],
+                                  insertJourneyConfig: => Future[InsertOneResult],
                                   auditStub: => StubMapping,
                                   retrieveChrnStub: => StubMapping,
                                   retrieveCtUtrStub: => StubMapping): Unit = {
@@ -319,7 +319,7 @@ trait CheckYourAnswersViewTests {
                                  (result: => WSResponse,
                                   companyNumberStub: => StubMapping,
                                   authStub: => StubMapping,
-                                  insertJourneyConfig: => Future[WriteResult],
+                                  insertJourneyConfig: => Future[InsertOneResult],
                                   auditStub: => StubMapping,
                                   retrieveChrnStub: => StubMapping,
                                   retrieveCtutrStub: => StubMapping): Unit = {
@@ -408,7 +408,7 @@ trait CheckYourAnswersViewTests {
   def testServiceName(serviceName: String,
                       result: => WSResponse,
                       authStub: => StubMapping,
-                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+                      insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)

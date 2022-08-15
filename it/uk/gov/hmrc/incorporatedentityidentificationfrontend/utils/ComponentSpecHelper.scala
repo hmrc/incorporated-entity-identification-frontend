@@ -30,8 +30,6 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with CustomMatchers
   with WiremockHelper

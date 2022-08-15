@@ -25,8 +25,6 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub, JourneyStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with IncorporatedEntityIdentificationStub with AuthStub {
 
   val testJourneyConfigJson: JsObject = Json.obj(
@@ -81,7 +79,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         val expectedJourneyConfig: JourneyConfig = testLimitedCompanyJourneyConfig.copy(pageConfig =  expectedPageConfig)
 
-        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedJourneyConfig)
+        await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(expectedJourneyConfig)
       }
     }
     "return Bad Request" when {
@@ -170,7 +168,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         val expectedJourneyConfig: JourneyConfig = testLimitedCompanyJourneyConfig.copy(pageConfig =  expectedPageConfig)
 
-        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedJourneyConfig)
+        await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(expectedJourneyConfig)
       }
     }
     "return  Bad Request" when {
@@ -260,7 +258,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         val expectedJourneyConfig: JourneyConfig = testRegisteredSocietyJourneyConfig.copy(pageConfig =  expectedPageConfig)
 
-        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedJourneyConfig)
+        await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(expectedJourneyConfig)
       }
     }
     "return  Bad Request" when {
@@ -349,7 +347,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         val expectedJourneyConfig: JourneyConfig = testCharitableIncorporatedOrganisationJourneyConfig.copy(pageConfig =  expectedPageConfig)
 
-        await(journeyConfigRepository.findById(testJourneyId)) mustBe Some(expectedJourneyConfig)
+        await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(expectedJourneyConfig)
       }
     }
     "return Bad Request" when {
