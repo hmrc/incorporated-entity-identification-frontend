@@ -23,8 +23,6 @@ import play.api.{Application, Environment, Mode}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 
-import scala.concurrent.ExecutionContext.Implicits.global
-
 class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPatienceConfiguration with Eventually {
 
   override lazy val app: Application = new GuiceApplicationBuilder()
@@ -61,7 +59,7 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
     "successfully delete one document" in {
       await(repo.insertJourneyConfig(testJourneyId, testInternalId, testLimitedCompanyJourneyConfig))
       await(repo.insertJourneyConfig(testJourneyId + 1, testInternalId, testLimitedCompanyJourneyConfig))
-      await(repo.remove("_id" -> (testJourneyId + 1), "authInternalId" -> testInternalId))
+      await(repo.removeJourneyConfig(testJourneyId + 1, testInternalId))
       await(repo.count) mustBe 1
     }
 

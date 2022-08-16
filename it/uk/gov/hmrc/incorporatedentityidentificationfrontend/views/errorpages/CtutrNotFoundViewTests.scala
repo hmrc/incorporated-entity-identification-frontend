@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import reactivemongo.api.commands.WriteResult
+import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{BetaBanner, Header, CtutrNotFound => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
@@ -37,7 +37,7 @@ trait CtutrNotFoundViewTests {
 
   def testCtutrNotFoundView(result: => WSResponse,
                             authStub: => StubMapping,
-                            insertJourneyConfig: => Future[WriteResult]): Unit = {
+                            insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
@@ -97,7 +97,7 @@ trait CtutrNotFoundViewTests {
   def testServiceName(serviceName: String,
                       result: => WSResponse,
                       authStub: => StubMapping,
-                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+                      insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)

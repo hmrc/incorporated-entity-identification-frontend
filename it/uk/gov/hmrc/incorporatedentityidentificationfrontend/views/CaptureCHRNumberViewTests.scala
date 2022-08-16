@@ -18,7 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.views
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.test.Helpers._
-import reactivemongo.api.commands.WriteResult
+import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CaptureCHRN => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
@@ -37,7 +37,7 @@ trait CaptureCHRNumberViewTests {
 
   def testCaptureCHRNView(result: => WSResponse,
                           authStub: => StubMapping,
-                          insertJourneyConfig: => Future[WriteResult]): Unit = {
+                          insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
@@ -132,7 +132,7 @@ trait CaptureCHRNumberViewTests {
 
   def testCaptureCHRNErrorMessagesNotEntered(result: => WSResponse,
                                              authStub: => StubMapping,
-                                             insertJourneyConfig: => Future[WriteResult]): Unit = {
+                                             insertJourneyConfig: => Future[InsertOneResult]): Unit = {
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
@@ -155,7 +155,7 @@ trait CaptureCHRNumberViewTests {
 
   def testCaptureCHRNErrorMessagesInvalidLength(result: => WSResponse,
                                                 authStub: => StubMapping,
-                                                insertJourneyConfig: => Future[WriteResult]): Unit = {
+                                                insertJourneyConfig: => Future[InsertOneResult]): Unit = {
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
@@ -178,7 +178,7 @@ trait CaptureCHRNumberViewTests {
 
   def testCaptureCHRNErrorMessagesInvalidFormat(result: => WSResponse,
                                                 authStub: => StubMapping,
-                                                insertJourneyConfig: => Future[WriteResult]): Unit = {
+                                                insertJourneyConfig: => Future[InsertOneResult]): Unit = {
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
@@ -202,7 +202,7 @@ trait CaptureCHRNumberViewTests {
   def testServiceName(serviceName: String,
                       result: => WSResponse,
                       authStub: => StubMapping,
-                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+                      insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)

@@ -22,7 +22,7 @@ import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import reactivemongo.api.commands.WriteResult
+import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CaptureCtutr => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -37,7 +37,7 @@ trait CaptureCtutrViewTests {
 
   def testCaptureCtutrView(result: => WSResponse,
                            authStub: => StubMapping,
-                           insertJourneyConfig: => Future[WriteResult]): Unit = {
+                           insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
@@ -116,7 +116,7 @@ trait CaptureCtutrViewTests {
 
   def testCaptureOptionalCtutrView(result: => WSResponse,
                                    authStub: => StubMapping,
-                                   insertJourneyConfig: => Future[WriteResult]): Unit = {
+                                   insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
@@ -193,7 +193,7 @@ trait CaptureCtutrViewTests {
 
   def testCaptureCtutrErrorMessagesNoCtutr(result: => WSResponse,
                                            authStub: => StubMapping,
-                                           insertJourneyConfig: => Future[WriteResult]): Unit = {
+                                           insertJourneyConfig: => Future[InsertOneResult]): Unit = {
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
@@ -216,7 +216,7 @@ trait CaptureCtutrViewTests {
 
   def testCaptureCtutrErrorMessagesInvalidCtutr(result: => WSResponse,
                                                 authStub: => StubMapping,
-                                                insertJourneyConfig: => Future[WriteResult]): Unit = {
+                                                insertJourneyConfig: => Future[InsertOneResult]): Unit = {
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
@@ -240,7 +240,7 @@ trait CaptureCtutrViewTests {
   def testServiceName(serviceName: String,
                       result: => WSResponse,
                       authStub: => StubMapping,
-                      insertJourneyConfig: => Future[WriteResult]): Unit = {
+                      insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)

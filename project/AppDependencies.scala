@@ -6,7 +6,7 @@ object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc" %% "bootstrap-frontend-play-28" % "5.18.0",
     "uk.gov.hmrc" %% "bootstrap-backend-play-28" % "5.18.0",
-    "uk.gov.hmrc" %% "simple-reactivemongo" % "8.0.0-play-28",
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-play-28"  % "0.70.0",
     "uk.gov.hmrc" %% "play-frontend-hmrc" % "1.22.0-play-28",
     "com.fasterxml.jackson.module" %% "jackson-module-scala" % "2.12.3"
   )
@@ -28,7 +28,8 @@ object AppDependencies {
   )
 
   val it: Seq[ModuleID] = Seq(
-    "com.github.tomakehurst" % "wiremock-jre8" % "2.27.2" % IntegrationTest
+    "com.github.tomakehurst" % "wiremock-jre8" % "2.27.2" % IntegrationTest,
+    "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-28" % "0.70.0" % Test
   )
 
   def apply(): Seq[ModuleID] = compile ++ sharedTestDependencies ++ test ++ it

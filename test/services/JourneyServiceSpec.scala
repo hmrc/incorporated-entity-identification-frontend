@@ -19,18 +19,19 @@ package services
 import connectors.mocks.MockJourneyConnector
 import helpers.TestConstants._
 import play.api.test.Helpers._
-import reactivemongo.api.commands.WriteResult
-import reactivemongo.core.errors.GenericDriverException
-import repositories.mocks.MockJourneyConfigRepository
+import repositories.mocks.{MockInsertOneResult, MockJourneyConfigRepository}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import utils.UnitSpec
 
+import com.mongodb.MongoSocketReadException
+import com.mongodb.ServerAddress
+
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
 
-class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJourneyConfigRepository {
+class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJourneyConfigRepository with MockInsertOneResult {
 
   implicit val hc: HeaderCarrier = HeaderCarrier()
 
@@ -39,19 +40,20 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
   "createJourney" should {
     "return a journeyID and store the provided journey config" in {
       mockCreateJourney(response = Future.successful(testJourneyId))
-      mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig(LimitedCompany))(response = Future.successful(mock[WriteResult]))
+      mockWasAcknowledged()(response = true)
+      mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig(LimitedCompany))(response = Future.successful(mockInsertOneResult))
 
       val result = await(TestService.createJourney(testAuthInternalId, testJourneyConfig(LimitedCompany)))
 
       result mustBe testJourneyId
       verifyCreateJourney()
       verifyInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig(LimitedCompany))
+      verifyWasAcknowledged()
     }
 
     "throw an exception" when {
       "create journey API returns an invalid response" in {
         mockCreateJourney(response = Future.failed(new InternalServerException("Invalid response returned from create journey API")))
-        mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig(LimitedCompany))(response = Future.successful(mock[WriteResult]))
 
         intercept[InternalServerException](
           await(TestService.createJourney(testAuthInternalId, testJourneyConfig(LimitedCompany)))
@@ -59,17 +61,33 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
         verifyCreateJourney()
       }
 
-      "the journey config is not stored" in {
+      "the storing of the journey configuration is not acknowledged" in {
         mockCreateJourney(response = Future.successful(testJourneyId))
+        mockWasAcknowledged()(response = false)
         mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig(LimitedCompany)
-        )(response = Future.failed(GenericDriverException("failed to insert")))
+        )(response = Future.successful(mockInsertOneResult))
 
-        intercept[GenericDriverException](
+        intercept[InternalServerException](
+          await(TestService.createJourney(testAuthInternalId, testJourneyConfig(LimitedCompany)))
+        )
+
+        verifyCreateJourney()
+        verifyInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig(LimitedCompany))
+        verifyWasAcknowledged()
+      }
+
+      "an exception is raised on storing the data" in {
+        mockCreateJourney(response = Future.successful(testJourneyId))
+        mockInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig(LimitedCompany))(response =
+          Future.failed(new MongoSocketReadException("Exception receiving message", new ServerAddress())))
+
+        intercept[MongoSocketReadException](
           await(TestService.createJourney(testAuthInternalId, testJourneyConfig(LimitedCompany)))
         )
         verifyCreateJourney()
         verifyInsertJourneyConfig(testJourneyId, testAuthInternalId, testJourneyConfig(LimitedCompany))
       }
+
     }
   }
 
