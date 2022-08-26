@@ -14,7 +14,7 @@ object AppDependencies {
   val sharedTestDependencies: Seq[ModuleID] = {
     val scope = "test,it"
     Seq(
-      "org.scalatest" %% "scalatest" % "3.2.8" % scope,
+      "org.scalatest" %% "scalatest" % "3.1.1" % scope,
       "org.jsoup" % "jsoup" % "1.11.1" % scope,
       "com.typesafe.play" %% "play-test" % current % scope,
       "com.vladsch.flexmark" % "flexmark-all" % "0.36.8" % scope,
@@ -24,11 +24,11 @@ object AppDependencies {
 
   val test: Seq[ModuleID] = Seq(
     "org.mockito" % "mockito-core" % "3.9.0" % Test,
-    "org.scalatestplus" %% "mockito-3-4" % "3.2.7.0" % Test
+    "org.scalatestplus" %% "mockito-3-4" % "3.2.10.0" % Test
   )
 
   val it: Seq[ModuleID] = Seq(
-    "com.github.tomakehurst" % "wiremock-jre8" % "2.27.2" % IntegrationTest,
+    "com.github.tomakehurst" % "wiremock-jre8" % "2.31.0" % IntegrationTest,
     "uk.gov.hmrc.mongo" %% "hmrc-mongo-test-play-28" % "0.71.0" % IntegrationTest
   )
 
