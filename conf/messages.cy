@@ -74,8 +74,8 @@ capture-ctutr.dropdown.link_1                               = Rydw i wedi colli 
 capture-ctutr.dropdown.link_2                               = Nid oes gan fy musnes UTR
 capture-ctutr.error.limited_company_no-entry                = Nodwch Gyfeirnod Unigryw y Trethdalwr ar gyfer y cwmni
 capture-ctutr.error.registered_society_no-entry             = Nodwch Gyfeirnod Unigryw y Trethdalwr ar gyfer y gymdeithas gofrestredig
-capture-ctutr.error.limited_company_incorrect-format        = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr ar gyfer y cwmni fod yn 10 rhif
-capture-ctutr.error.registered_society_incorrect-format     = Mae’n rhaid i Gyfeirnod Unigryw y Trethdalwr ar gyfer y gymdeithas gofrestredig fod yn 10 rhif
+capture-ctutr.error.limited_company_incorrect-format        = Nodwch Gyfeirnod Unigryw y Trethdalwr ar gyfer y cwmni yn y fformat cywir
+capture-ctutr.error.registered_society_incorrect-format     = Nodwch Gyfeirnod Unigryw y Trethdalwr ar gyfer y gymdeithas gofrestredig yn y fformat cywir
 
 ## Check Your Answers Page
 check-your-answers.title                                    = Gwirio’ch atebion

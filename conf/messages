@@ -74,8 +74,8 @@ capture-ctutr.dropdown.link_1                               = I have lost the bu
 capture-ctutr.dropdown.link_2                               = My business does not have a UTR
 capture-ctutr.error.limited_company_no-entry                = Enter the company’s Unique Taxpayer Reference
 capture-ctutr.error.registered_society_no-entry             = Enter the registered society’s Unique Taxpayer Reference
-capture-ctutr.error.limited_company_incorrect-format        = The company’s Unique Taxpayer Reference must be 10 numbers
-capture-ctutr.error.registered_society_incorrect-format     = The registered society’s Unique Taxpayer Reference must be 10 numbers
+capture-ctutr.error.limited_company_incorrect-format        = Enter the company’s Unique Taxpayer Reference in the correct format
+capture-ctutr.error.registered_society_incorrect-format     = Enter the registered society’s Unique Taxpayer Reference in the correct format
 
 ## Check Your Answers Page
 check-your-answers.title                                    = Check your answers

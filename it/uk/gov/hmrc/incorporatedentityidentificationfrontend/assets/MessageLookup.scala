@@ -91,8 +91,8 @@ object MessageLookup {
     object Error {
       val noCtutrEntered = "Enter the company’s Unique Taxpayer Reference"
       val noCtutrEntered_registeredSociety = "Enter the registered society’s Unique Taxpayer Reference"
-      val invalidCtutrEntered = "The company’s Unique Taxpayer Reference must be 10 numbers"
-      val invalidCtutrEntered_registeredSociety = "The registered society’s Unique Taxpayer Reference must be 10 numbers"
+      val invalidCtutrEntered = "Enter the company’s Unique Taxpayer Reference in the correct format"
+      val invalidCtutrEntered_registeredSociety = "Enter the registered society’s Unique Taxpayer Reference in the correct format"
     }
 
   }
