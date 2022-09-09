@@ -50,9 +50,19 @@ object CaptureCtutrForm {
     )
   )
 
+  def ctutrInvalidLength(businessEntity: BusinessEntity): Constraint[String] = Constraint("ctutr.invalid_length")(
+    ctutr => validate(
+      constraint = ctutr.length != 10,
+      errMsg = businessEntity match {
+        case LimitedCompany => "capture-ctutr.error.limited_company_incorrect-format"
+        case RegisteredSociety => "capture-ctutr.error.registered_society_incorrect-format"
+      }
+    )
+  )
+
   def form(businessEntity: BusinessEntity): Form[String] =
     Form(
-      "ctutr" -> text.verifying(noCtutrEntered(businessEntity) andThen ctutrInvalid(businessEntity))
+      "ctutr" -> text.verifying(noCtutrEntered(businessEntity) andThen ctutrInvalid(businessEntity) andThen ctutrInvalidLength(businessEntity))
     )
 
 }
