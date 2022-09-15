@@ -22,7 +22,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, JourneyLabels, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCompanyNumberTests
@@ -85,6 +85,31 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
 
         testCaptureCompanyNumberView(result, authStub, insertConfig)
         testServiceName(testCallingServiceName, result, authStub, insertConfig)
+      }
+
+      "there is a serviceName passed in the journeyConfig labels object" should {
+        lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          journeyConfig = JourneyConfig(
+            continueUrl = testContinueUrl,
+            pageConfig = PageConfig(
+              optServiceName = Some(testCallingServiceName),
+              deskProServiceId = testDeskProServiceId,
+              signOutUrl = testSignOutUrl,
+              accessibilityUrl = testAccessibilityUrl,
+              optLabels = Some(JourneyLabels(None, Some(testCallingServiceNameFromLabels)))
+            ),
+            businessEntity = LimitedCompany,
+            businessVerificationCheck = true,
+            regime = testRegime
+          )
+        )
+        lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/company-number")
+
+        testCaptureCompanyNumberView(result, authStub, insertConfig)
+        testServiceName(testCallingServiceNameFromLabels, result, authStub, insertConfig)
       }
     }
 

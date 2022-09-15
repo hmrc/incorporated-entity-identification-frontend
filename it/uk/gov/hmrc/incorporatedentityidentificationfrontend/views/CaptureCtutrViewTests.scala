@@ -20,14 +20,14 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import org.mongodb.scala.result.InsertOneResult
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CaptureCtutr => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 
 import scala.concurrent.Future
 
@@ -64,12 +64,7 @@ trait CaptureCtutrViewTests {
     }
 
     "have the correct title" in {
-      if (doc.getServiceName.text.equals("Entity Validation Service")){
-        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
-      } else {
-        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
-      }
-
+      doc.title mustBe expectedTitle(doc, messages.title)
     }
 
     "have the correct heading" in {
@@ -143,12 +138,7 @@ trait CaptureCtutrViewTests {
     }
 
     "have the correct title" in {
-      if (doc.getServiceName.text.equals("Entity Validation Service")){
-        doc.title mustBe s"${messages.registered_society_title} - $testDefaultServiceName - GOV.UK"
-      } else {
-        doc.title mustBe s"${messages.registered_society_title} - $testCallingServiceName - GOV.UK"
-      }
-
+      doc.title mustBe expectedTitle(doc, messages.title, Some(messages.registered_society_title))
     }
 
     "have the correct heading" in {

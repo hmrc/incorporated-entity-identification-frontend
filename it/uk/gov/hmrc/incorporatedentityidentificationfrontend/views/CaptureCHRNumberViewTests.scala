@@ -17,17 +17,17 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.views
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
-import play.api.test.Helpers._
+import org.jsoup.Jsoup
+import org.jsoup.nodes.{Document, Element}
+import org.jsoup.select.Elements
 import org.mongodb.scala.result.InsertOneResult
+import play.api.libs.ws.WSResponse
+import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CaptureCHRN => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
-import org.jsoup.Jsoup
-import org.jsoup.nodes.{Document, Element}
-import org.jsoup.select.Elements
-import play.api.libs.ws.WSResponse
 
 import scala.concurrent.Future
 
@@ -72,12 +72,7 @@ trait CaptureCHRNumberViewTests {
     }
 
     "have the correct title" in {
-      if (doc.getServiceName.text.equals("Entity Validation Service")){
-        doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
-      } else {
-        doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
-      }
-
+      doc.title mustBe expectedTitle(doc, messages.title)
     }
 
     "have the correct page header" in {

@@ -43,6 +43,7 @@ object TestConstants {
   val testInternalId: String = UUID.randomUUID().toString
   val testDefaultServiceName: String = "Entity Validation Service"
   val testCallingServiceName: String = "Test Service"
+  val testCallingServiceNameFromLabels: String = "Test Service Name from Labels"
   val testContinueUrl: String = "/test"
   val testAccessibilityUrl: String = "/accessibility"
   val testLocalAccessibilityUrl: String = "http://localhost:12346/accessibility-statement/vat-registration"
@@ -94,6 +95,7 @@ object TestConstants {
   val testMultipleRegistrationFailure: Array[Failure] = Array(Failure("INVALID_REGIME", "Request has not passed validation.  Invalid regime"),
     Failure("INVALID_PAYLOAD", "Request has not passed validation. Invalid payload."))
   val testWelshServiceName: String = "Welsh service name"
+  val testEnglishServiceName: String = "English service name"
 
   val testDefaultWelshJourneyConfig: JourneyConfig =
     JourneyConfig(
@@ -103,7 +105,7 @@ object TestConstants {
         deskProServiceId= testDeskProServiceId,
         signOutUrl= testSignOutUrl,
         accessibilityUrl=testAccessibilityUrl,
-        optLabels = Some(JourneyLabels(optWelshServiceName = testWelshServiceName))
+        optLabels = Some(JourneyLabels(optWelshServiceName = Some(testWelshServiceName), None))
       ),
       businessEntity = RegisteredSociety,
       businessVerificationCheck = true,
@@ -205,11 +207,14 @@ object TestConstants {
        |  "labels" : {
        |                "cy" : {
        |                         "optServiceName" : "$testWelshServiceName"
+       |                       },
+       |                "en" : {
+       |                         "optServiceName" : "$testEnglishServiceName"
        |                       }
        |             }
        |}""".stripMargin
 
   val optLabelsAsJson: JsObject = Json.parse(optLabelsAsString).as[JsObject]
 
-  val optLabels: JourneyLabels = JourneyLabels(testWelshServiceName)
+  val optLabels: JourneyLabels = JourneyLabels(Some(testWelshServiceName), Some(testEnglishServiceName))
 }

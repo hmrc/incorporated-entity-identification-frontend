@@ -19,7 +19,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, JourneyLabels, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.CaptureCtutrViewTests
@@ -84,6 +84,31 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
           testCaptureCtutrView(result, authStub, insertConfig)
           testServiceName(testCallingServiceName, result, authStub, insertConfig)
+        }
+
+        "there is a serviceName passed in the journeyConfig labels object" should {
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = JourneyConfig(
+              continueUrl = testContinueUrl,
+              pageConfig = PageConfig(
+                optServiceName = Some(testCallingServiceName),
+                deskProServiceId = testDeskProServiceId,
+                signOutUrl = testSignOutUrl,
+                accessibilityUrl = testAccessibilityUrl,
+                optLabels = Some(JourneyLabels(None, Some(testCallingServiceNameFromLabels)))
+              ),
+              businessEntity = LimitedCompany,
+              businessVerificationCheck = true,
+              regime = testRegime
+            )
+          )
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          testCaptureCtutrView(result, authStub, insertConfig)
+          testServiceName(testCallingServiceNameFromLabels, result, authStub, insertConfig)
         }
       }
 
@@ -207,6 +232,31 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
 
           testCaptureOptionalCtutrView(result, authStub, insertConfig)
           testServiceName(testCallingServiceName, result, authStub, insertConfig)
+        }
+
+        "there is a serviceName passed in the journeyConfig labels object" should {
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = JourneyConfig(
+              continueUrl = testContinueUrl,
+              pageConfig = PageConfig(
+                optServiceName = Some(testCallingServiceName),
+                deskProServiceId = testDeskProServiceId,
+                signOutUrl = testSignOutUrl,
+                accessibilityUrl = testAccessibilityUrl,
+                optLabels = Some(JourneyLabels(None, Some(testCallingServiceNameFromLabels)))
+              ),
+              businessEntity = RegisteredSociety,
+              businessVerificationCheck = true,
+              regime = testRegime
+            )
+          )
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
+
+          testCaptureOptionalCtutrView(result, authStub, insertConfig)
+          testServiceName(testCallingServiceNameFromLabels, result, authStub, insertConfig)
         }
       }
 
