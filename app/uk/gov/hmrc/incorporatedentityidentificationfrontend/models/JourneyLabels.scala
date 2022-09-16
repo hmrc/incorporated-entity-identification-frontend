@@ -19,7 +19,11 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 import play.api.libs.functional.syntax._
 import play.api.libs.json.{JsPath, OFormat, OWrites, Reads}
 
-case class JourneyLabels (optWelshServiceName: Option[String], optEnglishServiceName: Option[String])
+case class JourneyLabels (optWelshServiceName: Option[String], optEnglishServiceName: Option[String]) {
+
+  def nonEmpty: Boolean =
+    this.optWelshServiceName.exists(_.nonEmpty) || this.optEnglishServiceName.exists(_.nonEmpty)
+}
 
 object JourneyLabels {
 

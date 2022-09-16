@@ -16,15 +16,15 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import javax.inject.{Inject, Singleton}
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json, Writes}
 import uk.gov.hmrc.http._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyCreated, JourneyConfig, JourneyCreationFailure, NotEnoughEvidence, UserLockedOut}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CreateBusinessVerificationJourneyConnector.BusinessVerificationHttpReads
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
@@ -37,7 +37,12 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
                                         journeyConfig: JourneyConfig
                                        )(implicit hc: HeaderCarrier): Future[Either[JourneyCreationFailure, JourneyCreated]] = {
 
-    val pageTitle: String = journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)
+    val pageTitle: String = journeyConfig.pageConfig.optLabels
+      .flatMap(_.optEnglishServiceName)
+      .getOrElse(journeyConfig.pageConfig.optServiceName
+        .getOrElse(appConfig.defaultServiceName)
+      )
+
     val jsonBody: JsObject =
       Json.obj(
         "journeyType" -> "BUSINESS_VERIFICATION",

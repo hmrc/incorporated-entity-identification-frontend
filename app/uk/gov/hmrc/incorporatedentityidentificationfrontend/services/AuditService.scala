@@ -43,6 +43,12 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     optBusinessVerificationStatus <- storageService.retrieveBusinessVerificationStatus(journeyId)
     optRegistrationStatus <- storageService.retrieveRegistrationStatus(journeyId)
   } yield {
+    val serviceName = journeyConfig.pageConfig.optLabels
+      .flatMap(_.optEnglishServiceName)
+      .getOrElse(journeyConfig.pageConfig.optServiceName
+        .getOrElse(appConfig.defaultServiceName)
+      )
+
     val ctutrBlock = {
       optCtutr match {
         case Some(ctutr) => Json.obj("CTUTR" -> ctutr)
@@ -82,7 +88,7 @@ class AuditService @Inject()(auditConnector: AuditConnector,
     journeyConfig.businessEntity match {
       case LimitedCompany =>
         val auditJson = Json.obj(
-          "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
+          "callingService" -> JsString(serviceName),
           "businessType" -> "UK Company",
           "companyNumber" -> companyNumber,
           "isMatch" -> identifiersMatchStatus,
@@ -96,7 +102,7 @@ class AuditService @Inject()(auditConnector: AuditConnector,
 
       case RegisteredSociety =>
         val auditJson = Json.obj(
-          "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
+          "callingService" -> JsString(serviceName),
           "businessType" -> "Registered Society",
           "companyNumber" -> companyNumber,
           "isMatch" -> identifiersMatchStatus,
@@ -110,7 +116,7 @@ class AuditService @Inject()(auditConnector: AuditConnector,
 
       case CharitableIncorporatedOrganisation =>
         val auditJson = Json.obj(
-          "callingService" -> JsString(journeyConfig.pageConfig.optServiceName.getOrElse(appConfig.defaultServiceName)),
+          "callingService" -> JsString(serviceName),
           "businessType" -> "CIO",
           "companyNumber" -> companyNumber,
           "isMatch" -> identifiersMatchStatus,

@@ -23,7 +23,7 @@ import play.api.data.{Form, FormError}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.MappingUtil.optText
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.utils.ValidationHelper._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{BusinessEntity, CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, JourneyLabels, PageConfig}
 
 
 object TestCreateJourneyForm {
@@ -107,14 +107,14 @@ object TestCreateJourneyForm {
     )((continueUrl, serviceName, deskProServiceId, signOutUrl, accessibilityUrl, businessVerificationCheck, regime, welshServiceName) =>
       JourneyConfig.apply(
         continueUrl,
-        PageConfig(serviceName, welshServiceName, deskProServiceId, signOutUrl, accessibilityUrl),
+        PageConfig(deskProServiceId, signOutUrl, accessibilityUrl, JourneyLabels(welshServiceName, serviceName)),
         businessEntity,
         businessVerificationCheck,
         regime)
     )(journeyConfig =>
       Some(
         journeyConfig.continueUrl,
-        journeyConfig.pageConfig.optServiceName,
+        journeyConfig.pageConfig.optLabels.flatMap(_.optEnglishServiceName),
         journeyConfig.pageConfig.deskProServiceId,
         journeyConfig.pageConfig.signOutUrl,
         journeyConfig.pageConfig.accessibilityUrl,
