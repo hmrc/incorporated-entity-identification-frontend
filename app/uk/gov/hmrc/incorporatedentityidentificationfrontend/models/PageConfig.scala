@@ -29,12 +29,12 @@ object PageConfig {
   def apply(deskProServiceId: String,
             signOutUrl: String,
             accessibilityUrl: String,
-            optLabels: JourneyLabels
+            labels: JourneyLabels
            ): PageConfig = {
 
-    val labels = if (optLabels.nonEmpty) Some(optLabels) else None
+    val optLabels = if (labels.nonEmpty) Some(labels) else None
 
-    new PageConfig(optLabels.optEnglishServiceName, deskProServiceId, signOutUrl, accessibilityUrl, labels)
+    new PageConfig(labels.optEnglishServiceName, deskProServiceId, signOutUrl, accessibilityUrl, optLabels)
   }
 
   implicit val format: OFormat[PageConfig] = Json.format[PageConfig]
