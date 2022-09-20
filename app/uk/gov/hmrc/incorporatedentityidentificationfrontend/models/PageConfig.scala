@@ -34,7 +34,7 @@ object PageConfig {
 
     val optLabels = if (labels.nonEmpty) Some(labels) else None
 
-    new PageConfig(labels.optEnglishServiceName, deskProServiceId, signOutUrl, accessibilityUrl, optLabels)
+    new PageConfig(None, deskProServiceId, signOutUrl, accessibilityUrl, optLabels)
   }
 
   implicit val format: OFormat[PageConfig] = Json.format[PageConfig]
