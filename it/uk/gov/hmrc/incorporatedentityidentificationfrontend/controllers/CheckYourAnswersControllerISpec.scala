@@ -122,6 +122,39 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
           testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, chrnStub, authStub, insertConfig, auditStub)
           testServiceName(testCallingServiceName, result, authStub, insertConfig)
         }
+
+        "there is a serviceName passed in the journeyConfig labels object" should {
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = JourneyConfig(
+              continueUrl = testContinueUrl,
+              pageConfig = PageConfig(
+                optServiceName = Some(testCallingServiceName),
+                deskProServiceId = testDeskProServiceId,
+                signOutUrl = testSignOutUrl,
+                accessibilityUrl = testAccessibilityUrl,
+                optLabels = Some(JourneyLabels(None, Some(testCallingServiceNameFromLabels)))
+              ),
+              businessEntity = LimitedCompany,
+              businessVerificationCheck = true,
+              regime = testRegime
+            ))
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val auditStub = stubAudit()
+          lazy val companyNumberStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+            status = OK,
+            body = Json.toJsObject(testCompanyProfile)
+          )
+          lazy val ctutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+
+          lazy val chrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/check-your-answers-business")
+
+          testCheckYourAnswersView(testJourneyId)(result, companyNumberStub, ctutrStub, chrnStub, authStub, insertConfig, auditStub)
+          testServiceName(testCallingServiceNameFromLabels, result, authStub, insertConfig)
+        }
       }
     }
     "the entity is a Registered Society" when {

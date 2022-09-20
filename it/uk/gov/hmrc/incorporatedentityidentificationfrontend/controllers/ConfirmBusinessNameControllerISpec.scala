@@ -22,7 +22,7 @@ import play.api.test.Helpers._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, CtEnrolled, DetailsMatched, JourneyConfig, PageConfig}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.ConfirmBusinessNameViewTests
@@ -101,6 +101,36 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
           testConfirmBusinessNameView(result, stub, authStub, insertConfig, testCompanyName)
           testServiceName(testCallingServiceName, result, authStub, insertConfig)
+        }
+
+        "there is a serviceName passed in the journeyConfig labels object" should {
+          lazy val insertConfig = journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = JourneyConfig(
+              continueUrl = testContinueUrl,
+              pageConfig = PageConfig(
+                optServiceName = Some(testCallingServiceName),
+                deskProServiceId = testDeskProServiceId,
+                signOutUrl = testSignOutUrl,
+                accessibilityUrl = testAccessibilityUrl,
+                optLabels = Some(JourneyLabels(None, Some(testCallingServiceNameFromLabels)))
+              ),
+              businessEntity = LimitedCompany,
+              businessVerificationCheck = true,
+              regime = testRegime
+            )
+          )
+
+          lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+            status = OK,
+            body = Json.toJsObject(testCompanyProfile)
+          )
+          lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
+
+          testConfirmBusinessNameView(result, stub, authStub, insertConfig, testCompanyName)
+          testServiceName(testCallingServiceNameFromLabels, result, authStub, insertConfig)
         }
       }
     }

@@ -26,15 +26,15 @@ import play.api.Application
 import play.api.inject.guice.GuiceApplicationBuilder
 import play.api.libs.json.{JsValue, Writes}
 import play.api.libs.ws.{DefaultWSCookie, WSClient, WSCookie, WSRequest, WSResponse}
-import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
-
-import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 import play.api.mvc.{Cookie, Session, SessionCookieBaker}
+import play.api.test.Helpers._
 import play.api.test.Injecting
 import uk.gov.hmrc.crypto.PlainText
 import uk.gov.hmrc.http.SessionKeys
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testCallingServiceName, testCallingServiceNameFromLabels, testDefaultServiceName}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper.ElementExtensions
+import uk.gov.hmrc.play.bootstrap.frontend.filters.crypto.SessionCookieCrypto
 
 trait ComponentSpecHelper extends AnyWordSpec with Matchers
   with CustomMatchers
@@ -135,6 +135,18 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
       doc.getServiceName.text mustBe expectedWelshServiceName
     }
 
+  }
+
+  def expectedTitle(doc: Document, titlePart: String, titlePartSpecificForEntity: Option[String] = None): String = {
+    val title = titlePartSpecificForEntity.getOrElse(titlePart)
+      doc.getServiceName.text() match {
+        case serviceName if serviceName.equals(testDefaultServiceName) =>
+          s"$title - $testDefaultServiceName - GOV.UK"
+        case serviceName if serviceName.equals(testCallingServiceNameFromLabels) =>
+          s"$title - $testCallingServiceNameFromLabels - GOV.UK"
+        case _ =>
+          s"$title - $testCallingServiceName - GOV.UK"
+      }
   }
 
   val baseUrl: String = "/identify-your-incorporated-business"
