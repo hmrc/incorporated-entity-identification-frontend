@@ -36,7 +36,7 @@ The field businessVerificationCheck enables calling services to bypass business 
 false" and there is a successful match the entity will be registered. If not provided the default value used for this
 field is "true".
 
-Labels enables custom welsh translations for the service name to be provided by the calling service.
+Labels "cy" and "en" enable welsh and english translations for the service name to be provided by the calling service respectively.
 If the labels property is omitted or present, but the "cy" property is not fully defined, the service's default values will be
 used for the undefined properties.
 
@@ -54,6 +54,9 @@ All URLs provided must be relative, apart from locally, where localhost is allow
   "labels": {
     "cy": {
       "optServiceName": "Service name translated into welsh"
+    },
+    "en": {
+      "optServiceName": "Service name in english"
     }
   }
 }
@@ -86,7 +89,7 @@ The field businessVerificationCheck enables calling services to bypass business 
 false" and there is a successful match the entity will be registered. If not provided the default value used for this
 field is "true".
 
-Labels enables custom welsh translations for the service name to be provided by the calling service.
+Labels "cy" and "en" enable welsh and english translations for the service name to be provided by the calling service respectively.
 If the labels property is omitted or present, but the "cy" property is not fully defined, the service's default values will be
 used for the undefined properties.
 
@@ -104,6 +107,9 @@ All URLs provided must be relative, apart from locally, where localhost is allow
   "labels": {
     "cy": {
       "optServiceName": "Service name translated into welsh"
+    },
+    "en": {
+      "optServiceName": "Service name in english"
     }
   }
 }
@@ -136,7 +142,7 @@ The field businessVerificationCheck enables calling services to bypass business 
 false" and there is a successful match the entity will be registered. If not provided the default value used for this
 field is "true".
 
-Labels enables custom welsh translations for the service name to be provided by the calling service.
+Labels "cy" and "en" enable welsh and english translations for the service name to be provided by the calling service respectively.
 If the labels property is omitted or present, but the "cy" property is not fully defined, the service's default values will be
 used for the undefined properties.
 
@@ -154,6 +160,9 @@ All URLs provided must be relative, apart from locally, where localhost is allow
   "labels": {
     "cy": {
       "optServiceName": "Service name translated into welsh"
+    },
+    "en": {
+      "optServiceName": "Service name in english"
     }
   }
 }
@@ -186,7 +195,7 @@ The field businessVerificationCheck enables calling services to bypass business 
 false" and there is a successful match the entity will be registered. If not provided the default value used for this
 field is "true".
 
-Labels enables custom welsh translations for the service name to be provided by the calling service.
+Labels "cy" and "en" enable welsh and english translations for the service name to be provided by the calling service respectively.
 If the labels property is omitted or present, but the "cy" property is not fully defined, the service's default values will be
 used for the undefined properties.
 
@@ -204,6 +213,9 @@ All URLs provided must be relative, apart from locally, where localhost is allow
   "labels": {
     "cy": {
       "optServiceName": "Service name translated into welsh"
+    },
+    "en": {
+      "optServiceName": "Service name in english"
     }
   }
 }
