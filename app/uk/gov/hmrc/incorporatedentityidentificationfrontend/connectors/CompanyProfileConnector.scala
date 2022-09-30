@@ -33,7 +33,7 @@ class CompanyProfileConnector @Inject()(http: HttpClient,
                                        )(implicit ec: ExecutionContext) {
 
   def getCompanyProfile(companyNumber: String)(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
-    http.GET[Option[CompanyProfile]](appConfig.getCompanyProfileUrl(companyNumber))(
+    http.GET[Option[CompanyProfile]](appConfig.getCompanyProfileUrl(companyNumber.toUpperCase))(
       CompanyProfileHttpReads,
       hc,
       ec

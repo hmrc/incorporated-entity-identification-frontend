@@ -28,6 +28,7 @@ import java.util.UUID
 object TestConstants {
 
   val testCompanyNumber: String = "12345678"
+  val testCompanyNumberInUppercase: String = "CE012345"
   val companyNameKey: String = "companyName"
   val companyNumberKey: String = "companyNumber"
   val testCompanyName: String = "Test Company Ltd"
