@@ -43,6 +43,18 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
 
         result mustBe Some(testCompanyProfile)
       }
+      "the company Number in lower case is provided and the feature switch is enabled" in {
+        enable(CompaniesHouseStub)
+        stubRetrieveCompanyProfileFromStub(testCompanyNumberInUppercase)(
+          status = OK,
+          body = companyProfileJson(testCompanyNumberInUppercase, testCompanyName, testDateOfIncorporation, testAddress)
+        )
+        stubStoreCompanyProfile(testJourneyId, testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))(status = OK)
+
+        val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumberInUppercase.toLowerCase))
+
+        result mustBe Some(testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))
+      }
     }
     "return None" when {
       "the companyNumber cannot be found and the feature switch is enabled" in {
@@ -66,6 +78,18 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
         val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
 
         result mustBe Some(testCompanyProfile)
+      }
+      "the company Number in lower case is provided and the feature switch is disabled" in {
+        disable(CompaniesHouseStub)
+        stubRetrieveCompanyProfileFromCoHo(testCompanyNumberInUppercase)(
+          status = OK,
+          body = companyProfileJson(testCompanyNumberInUppercase, testCompanyName, testDateOfIncorporation, testAddress)
+        )
+        stubStoreCompanyProfile(testJourneyId, testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))(status = OK)
+
+        val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumberInUppercase.toLowerCase))
+
+        result mustBe Some(testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))
       }
     }
     "return None" when {
