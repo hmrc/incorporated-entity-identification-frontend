@@ -51,7 +51,7 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
           Json.obj(
           "ctUtr" -> ctutr
         )),
-        "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
+        "continueUrl" -> s"${appConfig.bvContinueResultBaseUrl}/$journeyId/business-verification-result",
         "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl,
         "deskproServiceName" -> journeyConfig.pageConfig.deskProServiceId,
         "pageTitle" -> pageTitle
