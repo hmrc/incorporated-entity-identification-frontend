@@ -196,7 +196,7 @@ object TestConstants {
         "ctUtr" -> ctUtr
       )
     ),
-    "continueUrl" -> s"/identify-your-incorporated-business/$journeyId/business-verification-result",
+    "continueUrl" -> s"http://localhost:9718/identify-your-incorporated-business/$journeyId/business-verification-result",
     "accessibilityStatementUrl" -> "/accessibility",
     "deskproServiceName" -> "vrs",
     "pageTitle" -> "Entity Validation Service"

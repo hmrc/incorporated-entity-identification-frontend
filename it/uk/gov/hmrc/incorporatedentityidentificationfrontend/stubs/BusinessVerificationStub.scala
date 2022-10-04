@@ -37,7 +37,7 @@ trait BusinessVerificationStub extends WireMockMethods {
           "ctUtr" -> ctutr
         )
       ),
-      "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
+      "continueUrl" -> s"http://localhost:9718${routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url}",
       "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl,
       "deskproServiceName" -> journeyConfig.pageConfig.deskProServiceId,
       "pageTitle" -> journeyConfig.pageConfig.optLabels.flatMap(_.optEnglishServiceName)
@@ -77,7 +77,7 @@ trait BusinessVerificationStub extends WireMockMethods {
           "ctUtr" -> ctutr
         )
       ),
-      "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
+      "continueUrl" -> s"http://localhost:9718${routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url}",
       "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl,
       "deskproServiceName" -> journeyConfig.pageConfig.deskProServiceId,
       "pageTitle" -> journeyConfig.pageConfig.optLabels.flatMap(_.optEnglishServiceName)
