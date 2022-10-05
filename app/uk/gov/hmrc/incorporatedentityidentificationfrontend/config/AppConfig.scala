@@ -100,6 +100,6 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
   lazy val timeout: Int = servicesConfig.getInt("timeout.timeout")
   lazy val countdown: Int = servicesConfig.getInt("timeout.countdown")
 
-  lazy val bvContinueResultBaseUrl: String = config.get[String]("urls.bvContinueResultBaseUrl")
+  lazy val bvResultBaseUrl: String = config.get[String]("urls.bvResultBaseUrl")
 
 }
