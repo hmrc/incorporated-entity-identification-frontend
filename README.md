@@ -46,7 +46,7 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 {
   "continueUrl" : "/testUrl",
   "businessVerificationCheck": false,
-  "optServiceName" : "Service Name",
+  "optServiceName" : "Service Name", // deprecated, use labels.en.optServiceName
   "deskProServiceId" : "DeskProServiceId",
   "signOutUrl" : "/testSignOutUrl",
   "regime" : "VATC",
@@ -99,7 +99,7 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 {
   "continueUrl" : "/testUrl",
   "businessVerificationCheck": false,
-  "optServiceName" : "Service Name",
+  "optServiceName" : "Service Name", // deprecated, use labels.en.optServiceName
   "deskProServiceId" : "DeskProServiceId",
   "signOutUrl" : "/testSignOutUrl",
   "regime" : "VATC",
@@ -152,7 +152,7 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 {
   "continueUrl" : "/testUrl",
   "businessVerificationCheck": false,
-  "optServiceName" : "Service Name",
+  "optServiceName" : "Service Name", // deprecated, use labels.en.optServiceName
   "deskProServiceId" : "DeskProServiceId",
   "signOutUrl" : "/testSignOutUrl",
   "regime" : "VATC",
@@ -205,7 +205,7 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 {
   "continueUrl" : "/testUrl",
   "businessVerificationCheck": false,
-  "optServiceName" : "Service Name",
+  "optServiceName" : "Service Name", // deprecated, use labels.en.optServiceName
   "deskProServiceId" : "DeskProServiceId",
   "signOutUrl" : "/testSignOutUrl",
   "regime" : "VATC",
