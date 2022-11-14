@@ -75,13 +75,11 @@ trait CaptureCtutrViewTests {
       doc.getParagraphs.eq(1).text mustBe messages.line
     }
 
-    "have an input text field marked as numeric" in {
+    "have an input text field" in {
       val textInputs: Elements = doc.getTextFieldInput("ctutr")
       textInputs.size() mustBe 1
 
       textInputs.first.attr("type") mustBe "text"
-      textInputs.first.attr("inputmode") mustBe "numeric"
-      textInputs.first.attr("pattern") mustBe "[0-9]*"
     }
 
     "have a correct link" in {
@@ -149,13 +147,11 @@ trait CaptureCtutrViewTests {
       doc.getParagraphs.eq(1).text mustBe messages.line
     }
 
-    "have an input text field marked as numeric" in {
+    "have an input text field" in {
       val textInputs: Elements = doc.getTextFieldInput("ctutr")
       textInputs.size() mustBe 1
 
       textInputs.first.attr("type") mustBe "text"
-      textInputs.first.attr("inputmode") mustBe "numeric"
-      textInputs.first.attr("pattern") mustBe "[0-9]*"
     }
 
     "have the correct details summary" in {
