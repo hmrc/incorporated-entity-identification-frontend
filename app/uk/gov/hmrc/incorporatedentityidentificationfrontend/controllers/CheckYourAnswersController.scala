@@ -86,7 +86,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             result <- details match {
               case DetailsMatched if journeyConfig.businessVerificationCheck => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsMatched)}
-                yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
+              yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
               case DetailsMatched if journeyConfig.businessVerificationCheck.equals(false) => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsMatched)
               } yield Redirect(routes.RegistrationController.register(journeyId))

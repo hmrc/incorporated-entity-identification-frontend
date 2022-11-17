@@ -77,7 +77,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         val expectedPageConfig: PageConfig = testLimitedCompanyJourneyConfig.pageConfig.copy(optLabels = Some(optLabels))
 
-        val expectedJourneyConfig: JourneyConfig = testLimitedCompanyJourneyConfig.copy(pageConfig =  expectedPageConfig)
+        val expectedJourneyConfig: JourneyConfig = testLimitedCompanyJourneyConfig.copy(pageConfig = expectedPageConfig)
 
         await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(expectedJourneyConfig)
       }
@@ -166,7 +166,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         val expectedPageConfig: PageConfig = testLimitedCompanyJourneyConfig.pageConfig.copy(optLabels = Some(optLabels))
 
-        val expectedJourneyConfig: JourneyConfig = testLimitedCompanyJourneyConfig.copy(pageConfig =  expectedPageConfig)
+        val expectedJourneyConfig: JourneyConfig = testLimitedCompanyJourneyConfig.copy(pageConfig = expectedPageConfig)
 
         await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(expectedJourneyConfig)
       }
@@ -256,7 +256,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         val expectedPageConfig: PageConfig = testRegisteredSocietyJourneyConfig.pageConfig.copy(optLabels = Some(optLabels))
 
-        val expectedJourneyConfig: JourneyConfig = testRegisteredSocietyJourneyConfig.copy(pageConfig =  expectedPageConfig)
+        val expectedJourneyConfig: JourneyConfig = testRegisteredSocietyJourneyConfig.copy(pageConfig = expectedPageConfig)
 
         await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(expectedJourneyConfig)
       }
@@ -345,7 +345,7 @@ class JourneyControllerISpec extends ComponentSpecHelper with JourneyStub with I
 
         val expectedPageConfig: PageConfig = testCharitableIncorporatedOrganisationJourneyConfig.pageConfig.copy(optLabels = Some(optLabels))
 
-        val expectedJourneyConfig: JourneyConfig = testCharitableIncorporatedOrganisationJourneyConfig.copy(pageConfig =  expectedPageConfig)
+        val expectedJourneyConfig: JourneyConfig = testCharitableIncorporatedOrganisationJourneyConfig.copy(pageConfig = expectedPageConfig)
 
         await(journeyConfigRepository.findJourneyConfig(testJourneyId, testInternalId)) mustBe Some(expectedJourneyConfig)
       }

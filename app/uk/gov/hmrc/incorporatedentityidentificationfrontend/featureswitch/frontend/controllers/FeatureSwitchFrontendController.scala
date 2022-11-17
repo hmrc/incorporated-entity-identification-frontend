@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.controllers
 
-import javax.inject.{Inject, Singleton}
 import play.api.i18n.I18nSupport
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
@@ -26,6 +25,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.fronte
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -35,7 +35,7 @@ class FeatureSwitchFrontendController @Inject()(featureSwitchService: FeatureSwi
                                                )(implicit ec: ExecutionContext,
                                                  appConfig: AppConfig) extends FrontendController(mcc) with FeatureSwitching with I18nSupport {
 
-  private val defaultPageConfig = PageConfig(None, "vrs", appConfig.vatRegFeedbackUrl, "/",None)
+  private val defaultPageConfig = PageConfig(None, "vrs", appConfig.vatRegFeedbackUrl, "/", None)
 
   def show: Action[AnyContent] = Action.async {
     implicit req =>

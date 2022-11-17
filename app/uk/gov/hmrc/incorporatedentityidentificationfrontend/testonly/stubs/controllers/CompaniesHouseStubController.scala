@@ -130,17 +130,17 @@ class CompaniesHouseStubController extends InjectedController {
     )
   }
 
-  final case class RegisteredOfficeAddress(address_line_1: String,
-                                           address_line_2: String,
-                                           country: String,
-                                           locality: String,
-                                           postal_code: String,
-                                           premises: String)
+  case class RegisteredOfficeAddress(address_line_1: String,
+                                     address_line_2: String,
+                                     country: String,
+                                     locality: String,
+                                     postal_code: String,
+                                     premises: String)
 
-  final case class CompanyProfile(company_name: String,
-                                  company_number: String,
-                                  date_of_creation: String,
-                                  registered_office_address: RegisteredOfficeAddress)
+  case class CompanyProfile(company_name: String,
+                            company_number: String,
+                            date_of_creation: String,
+                            registered_office_address: RegisteredOfficeAddress)
 
   implicit val registeredOfficeAddressWriter: OWrites[RegisteredOfficeAddress] = Json.writes[RegisteredOfficeAddress]
 

@@ -17,13 +17,14 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.controllers
 
 
-import javax.inject.{Inject, Singleton}
 import play.api.libs.json.Json
 import play.api.mvc.{Action, AnyContent, InjectedController}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.services.FeatureSwitchService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.models.FeatureSwitchSetting
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.models.FeatureSwitchSetting._
+
+import javax.inject.{Inject, Singleton}
 
 @Singleton
 class FeatureSwitchApiController @Inject()(featureSwitchService: FeatureSwitchService) extends InjectedController with FeatureSwitching {

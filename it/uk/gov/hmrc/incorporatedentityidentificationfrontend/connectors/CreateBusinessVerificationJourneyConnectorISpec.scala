@@ -20,10 +20,10 @@ import play.api.http.Status.FORBIDDEN
 import play.api.libs.json.Json
 import play.api.test.Helpers.{CREATED, NOT_FOUND, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.{testContinueUrl, testCtutr, testJourneyId, testLimitedCompanyJourneyConfig, testLimitedCompanyJourneyConfigWithServiceName}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyCreated, NotEnoughEvidence, UserLockedOut}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyCreated, NotEnoughEvidence, UserLockedOut}
 
 class CreateBusinessVerificationJourneyConnectorISpec extends ComponentSpecHelper with BusinessVerificationStub with IncorporatedEntityIdentificationStub {
 

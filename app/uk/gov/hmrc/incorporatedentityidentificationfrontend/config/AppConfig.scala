@@ -20,8 +20,8 @@ import play.api.Configuration
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{BusinessVerificationStub, CompaniesHouseStub, FeatureSwitching}
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
-import scala.collection.JavaConverters.asScalaBufferConverter
 import javax.inject.{Inject, Singleton}
+import scala.collection.JavaConverters.asScalaBufferConverter
 
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration) extends FeatureSwitching {

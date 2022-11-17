@@ -112,7 +112,7 @@ object TestCreateJourneyForm {
         businessVerificationCheck,
         regime)
     )(journeyConfig =>
-      Some(
+      Some((
         journeyConfig.continueUrl,
         journeyConfig.pageConfig.optLabels.flatMap(_.optEnglishServiceName),
         journeyConfig.pageConfig.deskProServiceId,
@@ -121,7 +121,7 @@ object TestCreateJourneyForm {
         journeyConfig.businessVerificationCheck,
         journeyConfig.regime,
         journeyConfig.pageConfig.optLabels.flatMap(_.optWelshServiceName)
-      )))
+      ))))
   }
 
 }

@@ -42,6 +42,7 @@ class CheckYourAnswersRowBuilder @Inject()() {
       messages("check-your-answers.company_number"),
       optCompanyProfile match {
         case Some(companyProfile) => companyProfile.companyNumber
+        case _ => "Invalid company profile"
       },
       routes.CaptureCompanyNumberController.show(journeyId)
     )

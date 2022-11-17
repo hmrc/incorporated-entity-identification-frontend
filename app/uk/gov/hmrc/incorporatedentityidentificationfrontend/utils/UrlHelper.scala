@@ -35,6 +35,7 @@ class UrlHelper @Inject()(appConfig: AppConfig) {
           case Right(_) => true
           case Left(_) => false
         }
+      case _ => throw new IllegalArgumentException("Invalid URL")
     })
     !areValidUrls.contains(false)
   }

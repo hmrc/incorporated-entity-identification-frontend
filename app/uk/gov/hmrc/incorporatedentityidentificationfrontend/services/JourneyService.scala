@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
-import javax.inject.Inject
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.JourneyConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyService @Inject()(journeyConnector: JourneyConnector,
@@ -32,7 +32,7 @@ class JourneyService @Inject()(journeyConnector: JourneyConnector,
     for {
       journeyId <- journeyConnector.createJourney()
       insertJourneyConfigResult <- journeyConfigRepository.insertJourneyConfig(journeyId, authInternalId, journeyConfig)
-    } yield if(insertJourneyConfigResult.wasAcknowledged())
+    } yield if (insertJourneyConfigResult.wasAcknowledged())
       journeyId
     else
       throw new InternalServerException(s"Unable to create journey $journeyId")

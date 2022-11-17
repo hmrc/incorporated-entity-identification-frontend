@@ -336,10 +336,10 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
     "a valid ctutr is submitted" should {
       "store ctutr and redirect to Check Your Answers page" in {
         await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
-          )
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          journeyConfig = testLimitedCompanyJourneyConfig
+        )
         )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
@@ -357,10 +357,10 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
     "no ctutr is submitted" should {
       "return a bad request" in {
         await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
-          )
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          journeyConfig = testLimitedCompanyJourneyConfig
+        )
         )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
         lazy val result = post(s"$baseUrl/$testJourneyId/ct-utr")("ctutr" -> "")

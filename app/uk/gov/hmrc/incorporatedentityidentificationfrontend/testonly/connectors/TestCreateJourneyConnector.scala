@@ -17,7 +17,8 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors
 
 import play.api.http.Status._
-import play.api.libs.json.{Json, JsObject, Writes}
+import play.api.libs.json.{JsObject, Json, Writes}
+import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
 import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.routes

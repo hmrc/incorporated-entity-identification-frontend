@@ -16,13 +16,13 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.services
 
-import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.models.FeatureSwitchSetting
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.config.FeatureSwitchProviderConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.connectors.FeatureSwitchApiConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.models.FeatureSwitchProvider
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.Regex
 

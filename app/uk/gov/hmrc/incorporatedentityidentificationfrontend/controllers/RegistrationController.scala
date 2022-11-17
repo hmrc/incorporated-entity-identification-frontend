@@ -22,8 +22,8 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{AuditService, JourneyService, RegistrationOrchestrationService}
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
-import javax.inject.{Inject, Singleton}
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.ExecutionContext
 
 @Singleton
@@ -39,11 +39,12 @@ class RegistrationController @Inject()(registrationOrchestrationService: Registr
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
-            journeyConfig => for {
-              _ <- registrationOrchestrationService.register(journeyId, journeyConfig)
-              _ <-  auditService.auditJourney(journeyId,authInternalId)}
-                yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-              }
+            journeyConfig =>
+              for {
+                _ <- registrationOrchestrationService.register(journeyId, journeyConfig)
+                _ <- auditService.auditJourney(journeyId, authInternalId)}
+              yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
+          }
         case None =>
           throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }

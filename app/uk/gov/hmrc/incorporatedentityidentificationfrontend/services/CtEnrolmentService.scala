@@ -53,7 +53,7 @@ class CtEnrolmentService @Inject()(storageService: StorageService,
     }
 
   def onlyIf[A](condition: Boolean)(f: => Future[A]): Future[Any] =
-    if(condition) f else Future.successful(())
+    if (condition) f else Future.successful(())
 }
 
 object CtEnrolmentService {

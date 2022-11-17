@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers
 
-import java.util.UUID
-import javax.inject.Singleton
 import play.api.libs.json.{JsSuccess, JsValue, Json}
 import play.api.mvc.{Action, AnyContent, InjectedController}
 
+import java.util.UUID
+import javax.inject.Singleton
 import scala.concurrent.Future
 
 @Singleton
@@ -34,7 +34,7 @@ class BusinessVerificationStubController extends InjectedController {
       val jsonBody = for {
         _ <- (request.body \ "journeyType").validate[String]
         origin <- (request.body \ "origin").validate[String]
-        _ <-  ((request.body \ "identifiers").head \ "ctUtr").validate[String]
+        _ <- ((request.body \ "identifiers").head \ "ctUtr").validate[String]
         continueUrl <- (request.body \ "continueUrl").validate[String]
         _ <- (request.body \ "accessibilityStatementUrl").validate[String]
         _ <- (request.body \ "deskproServiceName").validate[String]
@@ -57,12 +57,12 @@ class BusinessVerificationStubController extends InjectedController {
   def retrieveVerificationResult(businessVerificationJourneyId: String): Action[AnyContent] = Action.async {
     Future.successful {
       Ok(Json.obj(
-          "journeyType" -> "BUSINESS_VERIFICATION",
-          "origin" -> origin,
-          "identifier" -> {
-            "ctUtr" -> "1234567890"
-          },
-          "verificationStatus" -> "PASS"
+        "journeyType" -> "BUSINESS_VERIFICATION",
+        "origin" -> origin,
+        "identifier" -> {
+          "ctUtr" -> "1234567890"
+        },
+        "verificationStatus" -> "PASS"
       ))
     }
   }

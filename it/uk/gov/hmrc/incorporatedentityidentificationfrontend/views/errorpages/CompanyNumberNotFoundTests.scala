@@ -84,7 +84,7 @@ trait CompanyNumberNotFoundTests {
       footerLinks.size() must be >= 2
 
       footerLinks.eq(1).attr("href") mustBe testAccessibilityUrl
-  }
+    }
   }
 
   def testServiceName(serviceName: String,
