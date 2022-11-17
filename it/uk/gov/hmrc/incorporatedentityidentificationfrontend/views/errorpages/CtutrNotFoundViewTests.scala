@@ -20,9 +20,9 @@ import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.jsoup.Jsoup
 import org.jsoup.nodes.Document
 import org.jsoup.select.Elements
+import org.mongodb.scala.result.InsertOneResult
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import org.mongodb.scala.result.InsertOneResult
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{BetaBanner, Header, CtutrNotFound => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
@@ -64,7 +64,7 @@ trait CtutrNotFoundViewTests {
     }
 
     "have the correct title" in {
-      if (doc.getServiceName.text.equals("Entity Validation Service")){
+      if (doc.getServiceName.text.equals("Entity Validation Service")) {
         doc.title mustBe s"${messages.title} - $testDefaultServiceName - GOV.UK"
       } else {
         doc.title mustBe s"${messages.title} - $testCallingServiceName - GOV.UK"
@@ -83,7 +83,7 @@ trait CtutrNotFoundViewTests {
       doc.getElementById("contact-corporation-tax-team").attr("href") mustBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries"
       doc.getParagraphs.eq(4).text mustBe messages.line4 + messages.line4Link
       doc.getElementById("try-again").attr("href") mustBe routes.CtutrNotFoundController.tryAgain(testJourneyId).url
-        }
+    }
 
     "have a link to the service's accessibility statement" in {
       val footerLinks: Elements = doc.getFooterLinks

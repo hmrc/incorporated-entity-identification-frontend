@@ -25,7 +25,7 @@ trait RegisterStub extends WireMockMethods {
     Json.obj(
       "crn" -> crn,
       "ctutr" -> ctutr,
-    "regime" -> regime)
+      "regime" -> regime)
   }
 
   def stubLimitedCompanyRegister(crn: String, ctutr: String, regime: String)(status: Int, body: JsObject): StubMapping = {
@@ -54,7 +54,7 @@ trait RegisterStub extends WireMockMethods {
 
   def verifyRegisterAudit(): Unit = {
     WiremockHelper.verifyPost(uri = "/write/audit", optBody = Some("Audit"))
-//    WiremockHelper.verifyPost(uri = "/write/audit/merged")
-//    WiremockHelper.verifyPost(uri = "/write/audit")
+    //    WiremockHelper.verifyPost(uri = "/write/audit/merged")
+    //    WiremockHelper.verifyPost(uri = "/write/audit")
   }
 }

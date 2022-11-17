@@ -20,7 +20,9 @@ object BusinessEntity {
   sealed trait BusinessEntity
 
   case object LimitedCompany extends BusinessEntity
+
   case object RegisteredSociety extends BusinessEntity
+
   case object CharitableIncorporatedOrganisation extends BusinessEntity
 
 }

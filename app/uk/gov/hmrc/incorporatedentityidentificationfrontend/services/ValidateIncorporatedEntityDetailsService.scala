@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
-import javax.inject.Inject
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.ValidateIncorporatedEntityDetailsConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityDetailsMatching
 
+import javax.inject.Inject
 import scala.concurrent.Future
 
 class ValidateIncorporatedEntityDetailsService @Inject()(validateIncorporatedEntityDetailsConnector: ValidateIncorporatedEntityDetailsConnector) {

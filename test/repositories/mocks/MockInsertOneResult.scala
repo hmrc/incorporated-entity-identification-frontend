@@ -18,9 +18,9 @@ package repositories.mocks
 
 import org.mockito.Mockito.{reset, verify, when}
 import org.mockito.stubbing.OngoingStubbing
+import org.mongodb.scala.result.InsertOneResult
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
-import org.mongodb.scala.result.InsertOneResult
 
 trait MockInsertOneResult extends MockitoSugar with BeforeAndAfterEach {
   self: Suite =>

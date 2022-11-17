@@ -17,12 +17,12 @@
 package services.mocks
 
 import org.mockito.ArgumentMatchers
-import org.mockito.Mockito.{reset, _}
+import org.mockito.Mockito._
 import org.mockito.stubbing.OngoingStubbing
 import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, CompanyProfile, IncorporatedEntityDetailsMatching, RegistrationStatus, StorageResult}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.StorageService
 
 import scala.concurrent.{ExecutionContext, Future}
@@ -46,7 +46,7 @@ trait MockStorageService extends MockitoSugar with BeforeAndAfterEach {
   }
 
   def mockRetrieveCHRN(journeyId: String)
-                       (response: Future[Option[String]]): OngoingStubbing[_] = {
+                      (response: Future[Option[String]]): OngoingStubbing[_] = {
     when(mockStorageService.retrieveCHRN(
       ArgumentMatchers.eq(journeyId)
     )(ArgumentMatchers.any[HeaderCarrier])

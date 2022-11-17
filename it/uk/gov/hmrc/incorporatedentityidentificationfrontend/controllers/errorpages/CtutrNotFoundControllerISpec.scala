@@ -19,12 +19,12 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpa
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers.{NO_CONTENT, OK, SEE_OTHER, await, defaultAwaitTimeout}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.errorpages.CtutrNotFoundViewTests
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes => appRoutes}
 
 class CtutrNotFoundControllerISpec extends ComponentSpecHelper
   with AuthStub

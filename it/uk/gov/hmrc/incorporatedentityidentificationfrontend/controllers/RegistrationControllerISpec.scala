@@ -98,7 +98,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
           verifyAuditDetail(
-            testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus ="fail")
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus = "fail")
           )
         }
       }

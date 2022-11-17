@@ -14,7 +14,7 @@ lazy val microservice = Project(appName, file("."))
     // ***************
     // Use the silencer plugin to suppress warnings
     // You may turn it on for `views` too to suppress warnings from unused imports in compiled twirl templates, but this will hide other warnings.
-    scalacOptions += "-P:silencer:pathFilters=routes",
+    scalacOptions += "-P:silencer:pathFilters=views;routes",
     libraryDependencies ++= Seq(
       compilerPlugin("com.github.ghik" % "silencer-plugin" % silencerVersion cross CrossVersion.full),
       "com.github.ghik" % "silencer-lib" % silencerVersion % Provided cross CrossVersion.full
@@ -31,13 +31,13 @@ TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.govukfrontend.views.html.components._"
 )
 
-Keys.fork in Test := true
-javaOptions in Test += "-Dlogger.resource=logback-test.xml"
-parallelExecution in Test := true
+Test / Keys.fork := true
+Test / javaOptions += "-Dlogger.resource=logback-test.xml"
+Test / parallelExecution := true
 addTestReportOption(Test, "test-reports")
 
-Keys.fork in IntegrationTest := true
-unmanagedSourceDirectories in IntegrationTest := (baseDirectory in IntegrationTest) (base => Seq(base / "it")).value
-javaOptions in IntegrationTest += "-Dlogger.resource=logback-test.xml"
+IntegrationTest / Keys.fork := true
+IntegrationTest / unmanagedSourceDirectories := (IntegrationTest / baseDirectory) (base => Seq(base / "it")).value
+IntegrationTest / javaOptions += "-Dlogger.resource=logback-test.xml"
 addTestReportOption(IntegrationTest, "int-test-reports")
-parallelExecution in IntegrationTest := false
+IntegrationTest / parallelExecution := false

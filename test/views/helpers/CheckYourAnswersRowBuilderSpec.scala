@@ -16,20 +16,20 @@
 
 package views.helpers
 
-import org.scalatest.matchers.must.Matchers
 import helpers.TestConstants._
+import org.scalatest.matchers.must.Matchers
 import org.scalatest.wordspec.AnyWordSpec
 import org.scalatestplus.play.guice.GuiceOneAppPerSuite
 import play.api.i18n.{Messages, MessagesApi}
+import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Actions, Key, SummaryListRow, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.ActionItem
-import play.api.test.FakeRequest
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.CheckYourAnswersRowBuilder
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.CheckYourAnswersRowBuilder
 
-class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite{
+class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with GuiceOneAppPerSuite {
 
   val rowBuilder: CheckYourAnswersRowBuilder = new CheckYourAnswersRowBuilder()
   val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())

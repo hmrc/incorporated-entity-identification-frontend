@@ -49,8 +49,8 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
         "origin" -> journeyConfig.regime.toLowerCase,
         "identifiers" -> Json.arr(
           Json.obj(
-          "ctUtr" -> ctutr
-        )),
+            "ctUtr" -> ctutr
+          )),
         "continueUrl" -> routes.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId).url,
         "accessibilityStatementUrl" -> journeyConfig.pageConfig.accessibilityUrl,
         "deskproServiceName" -> journeyConfig.pageConfig.deskProServiceId,

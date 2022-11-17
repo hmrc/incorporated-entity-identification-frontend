@@ -20,9 +20,7 @@ import play.api.libs.json.{JsString, Json}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{DetailsMatched, DetailsNotProvided}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationFail, BusinessVerificationNotEnoughInformationToCallBV, BusinessVerificationNotEnoughInformationToChallenge, BusinessVerificationPass, CtEnrolled}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Registered, RegistrationFailed}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import uk.gov.hmrc.play.audit.http.connector.AuditConnector
 
 import javax.inject.{Inject, Singleton}
@@ -63,20 +61,20 @@ class AuditService @Inject()(auditConnector: AuditConnector,
       }
     }
 
-    val identifiersMatchStatus: String = optIdentifiersMatch  match {
+    val identifiersMatchStatus: String = optIdentifiersMatch match {
       case Some(DetailsMatched) => "true"
       case Some(DetailsNotProvided) => "unmatchable"
       case _ => "false"
     }
 
     val businessVerificationStatus: String = optBusinessVerificationStatus match {
-        case Some (BusinessVerificationPass) => "success"
-        case Some (BusinessVerificationFail) => "fail"
-        case Some (BusinessVerificationNotEnoughInformationToChallenge) => "Not Enough Information to challenge"
-        case Some (BusinessVerificationNotEnoughInformationToCallBV) => "Not Enough Information to call BV"
-        case Some (CtEnrolled) => "Enrolled"
-        case None => "not requested"
-      }
+      case Some(BusinessVerificationPass) => "success"
+      case Some(BusinessVerificationFail) => "fail"
+      case Some(BusinessVerificationNotEnoughInformationToChallenge) => "Not Enough Information to challenge"
+      case Some(BusinessVerificationNotEnoughInformationToCallBV) => "Not Enough Information to call BV"
+      case Some(CtEnrolled) => "Enrolled"
+      case None => "not requested"
+    }
 
     val registrationStatus =
       optRegistrationStatus match {

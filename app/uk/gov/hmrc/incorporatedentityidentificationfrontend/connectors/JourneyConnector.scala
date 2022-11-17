@@ -16,12 +16,12 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import javax.inject.Inject
 import play.api.http.Status.CREATED
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CreateJourneyHttpParser.CreateJourneyHttpReads
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class JourneyConnector @Inject()(httpClient: HttpClient,

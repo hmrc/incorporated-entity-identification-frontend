@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.config
 
-import javax.inject.{Inject, Singleton}
 import play.api.i18n.MessagesApi
 import play.api.mvc.Results.{BadRequest, NotFound}
 import play.api.mvc.{Request, RequestHeader, Result}
@@ -28,6 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates
 import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton

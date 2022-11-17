@@ -16,6 +16,7 @@
 
 package services
 
+import com.mongodb.{MongoSocketReadException, ServerAddress}
 import connectors.mocks.MockJourneyConnector
 import helpers.TestConstants._
 import play.api.test.Helpers._
@@ -24,9 +25,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException, NotFoundExcepti
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.JourneyService
 import utils.UnitSpec
-
-import com.mongodb.MongoSocketReadException
-import com.mongodb.ServerAddress
 
 import scala.concurrent.ExecutionContext.Implicits.global
 import scala.concurrent.Future
