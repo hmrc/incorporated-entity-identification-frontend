@@ -42,7 +42,7 @@ class CheckYourAnswersRowBuilder @Inject()() {
       messages("check-your-answers.company_number"),
       optCompanyProfile match {
         case Some(companyProfile) => companyProfile.companyNumber
-        case _ => "Invalid company profile"
+        case _ => throw new IllegalStateException(exceptionMessage("Company profile"))
       },
       routes.CaptureCompanyNumberController.show(journeyId)
     )
@@ -71,10 +71,13 @@ class CheckYourAnswersRowBuilder @Inject()() {
       case LimitedCompany => Seq(companyNumberRow, ctutrRow())
       case RegisteredSociety => Seq(companyNumberRow, ctutrRow())
       case CharitableIncorporatedOrganisation => Seq(companyNumberRow, chrnRow())
-      case _ => throw new IllegalStateException("Data could not be retrieved from database or does not exist in database")
+      case _ => throw new IllegalStateException(exceptionMessage("Business entity"))
     }
 
   }
+
+  private def exceptionMessage(objectName: String): String =
+    s"$objectName could not be retrieved from the database or does not exist in it."
 
   private def buildSummaryRow(key: String, value: String, changeLink: Call)(implicit messages: Messages) = SummaryListRow(
     key = Key(content = Text(key)),
@@ -88,5 +91,3 @@ class CheckYourAnswersRowBuilder @Inject()() {
     )))
   )
 }
-
-
