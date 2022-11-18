@@ -40,18 +40,18 @@ class BusinessVerificationController @Inject()(mcc: MessagesControllerComponents
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
             journeyConfig =>
-            storageService.retrieveCtutr(journeyId).flatMap {
-              case Some(ctutr) =>
-                businessVerificationService
-                  .createBusinessVerificationJourney(journeyId, ctutr, journeyConfig).flatMap {
-                  case Some(redirectUri) =>
-                    Future.successful(Redirect(redirectUri))
-                  case None =>
-                    Future.successful(Redirect(routes.RegistrationController.register(journeyId)))
-                }
-              case None =>
-                throw new InternalServerException(s"No CTUTR found in the database for $journeyId")
-            }
+              storageService.retrieveCtutr(journeyId).flatMap {
+                case Some(ctutr) =>
+                  businessVerificationService
+                    .createBusinessVerificationJourney(journeyId, ctutr, journeyConfig).flatMap {
+                    case Some(redirectUri) =>
+                      Future.successful(Redirect(redirectUri))
+                    case None =>
+                      Future.successful(Redirect(routes.RegistrationController.register(journeyId)))
+                  }
+                case None =>
+                  throw new InternalServerException(s"No CTUTR found in the database for $journeyId")
+              }
           }
         case None => throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }

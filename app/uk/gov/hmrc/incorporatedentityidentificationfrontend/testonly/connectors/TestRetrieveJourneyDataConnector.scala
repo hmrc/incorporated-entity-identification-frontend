@@ -27,7 +27,7 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class TestRetrieveJourneyDataConnector @Inject()(httpClient: HttpClient,
                                                  appConfig: AppConfig
-                                            )(implicit ec: ExecutionContext) {
+                                                )(implicit ec: ExecutionContext) {
 
   def retrieveJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[String] =
     httpClient

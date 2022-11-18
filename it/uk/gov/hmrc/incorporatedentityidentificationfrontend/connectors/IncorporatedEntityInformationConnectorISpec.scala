@@ -146,7 +146,7 @@ class IncorporatedEntityInformationConnectorISpec extends ComponentSpecHelper wi
   }
   s"storeData($testJourneyId, $identifiersMatchKey)" should {
     "return SuccessfullyStored" in {
-      stubStoreIdentifiersMatch(testJourneyId,identifiersMatch = DetailsMatched)(status = OK)
+      stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
 
       val result = await(incorporatedEntityInformationConnector.storeData[IncorporatedEntityDetailsMatching]
         (testJourneyId, identifiersMatchKey, DetailsMatched)

@@ -43,9 +43,9 @@ object MessagesHelper {
     val extraWelshTranslations: Map[String, String] = journeyConfig
       .pageConfig
       .optLabels match {
-        case Some(JourneyLabels(Some(optWelshServiceName), _)) => Map(optServiceNameTranslationKey -> optWelshServiceName)
-        case _ => Map.empty
-      }
+      case Some(JourneyLabels(Some(optWelshServiceName), _)) => Map(optServiceNameTranslationKey -> optWelshServiceName)
+      case _ => Map.empty
+    }
 
     initialMessages.map {
       case (lang@"en", oldMessages) => lang -> (oldMessages ++ extraEnglishTranslations)

@@ -103,9 +103,9 @@ object TestConstants {
       continueUrl = testContinueUrl,
       pageConfig = PageConfig(
         optServiceName = None,
-        deskProServiceId= testDeskProServiceId,
-        signOutUrl= testSignOutUrl,
-        accessibilityUrl=testAccessibilityUrl,
+        deskProServiceId = testDeskProServiceId,
+        signOutUrl = testSignOutUrl,
+        accessibilityUrl = testAccessibilityUrl,
         optLabels = Some(JourneyLabels(optWelshServiceName = Some(testWelshServiceName), None))
       ),
       businessEntity = RegisteredSociety,

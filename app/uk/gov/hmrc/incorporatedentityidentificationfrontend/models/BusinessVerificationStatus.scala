@@ -65,6 +65,9 @@ object BusinessVerificationStatus {
 }
 
 case class JourneyCreated(redirectUri: String)
+
 sealed trait JourneyCreationFailure
+
 case object NotEnoughEvidence extends JourneyCreationFailure
+
 case object UserLockedOut extends JourneyCreationFailure

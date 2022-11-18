@@ -36,6 +36,7 @@ object CaptureCtutrForm {
       errMsg = businessEntity match {
         case LimitedCompany => "capture-ctutr.error.limited_company_no-entry"
         case RegisteredSociety => "capture-ctutr.error.registered_society_no-entry"
+        case _ => "Invalid business entity"
       }
     )
   )
@@ -46,6 +47,7 @@ object CaptureCtutrForm {
       errMsg = businessEntity match {
         case LimitedCompany => "capture-ctutr.error.limited_company_incorrect-format"
         case RegisteredSociety => "capture-ctutr.error.registered_society_incorrect-format"
+        case _ => "Invalid business entity"
       }
     )
   )
@@ -56,6 +58,7 @@ object CaptureCtutrForm {
       errMsg = businessEntity match {
         case LimitedCompany => "capture-ctutr.error.limited_company_incorrect-format"
         case RegisteredSociety => "capture-ctutr.error.registered_society_incorrect-format"
+        case _ => "Invalid business entity"
       }
     )
   )

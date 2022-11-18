@@ -99,7 +99,8 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
   def extractDocumentFrom(aWSResponse: WSResponse): Document = Jsoup.parse(aWSResponse.body)
 
-  def post(uri: String, cookie: WSCookie = enLangCookie)(form: (String, String)*): WSResponse = {    val formBody = (form map { case (k, v) => (k, Seq(v)) }).toMap
+  def post(uri: String, cookie: WSCookie = enLangCookie)(form: (String, String)*): WSResponse = {
+    val formBody = (form map { case (k, v) => (k, Seq(v)) }).toMap
     await(
       buildClient(uri)
         .withHttpHeaders("Authorization" -> "Bearer123", "Csrf-Token" -> "nocheck")
@@ -139,14 +140,14 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
   def expectedTitle(doc: Document, titlePart: String, titlePartSpecificForEntity: Option[String] = None): String = {
     val title = titlePartSpecificForEntity.getOrElse(titlePart)
-      doc.getServiceName.text() match {
-        case serviceName if serviceName.equals(testDefaultServiceName) =>
-          s"$title - $testDefaultServiceName - GOV.UK"
-        case serviceName if serviceName.equals(testCallingServiceNameFromLabels) =>
-          s"$title - $testCallingServiceNameFromLabels - GOV.UK"
-        case _ =>
-          s"$title - $testCallingServiceName - GOV.UK"
-      }
+    doc.getServiceName.text() match {
+      case serviceName if serviceName.equals(testDefaultServiceName) =>
+        s"$title - $testDefaultServiceName - GOV.UK"
+      case serviceName if serviceName.equals(testCallingServiceNameFromLabels) =>
+        s"$title - $testCallingServiceNameFromLabels - GOV.UK"
+      case _ =>
+        s"$title - $testCallingServiceName - GOV.UK"
+    }
   }
 
   val baseUrl: String = "/identify-your-incorporated-business"
@@ -155,7 +156,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
   def mockSessionCookie: WSCookie = {
 
-    def makeSessionCookie(session:Session): Cookie = {
+    def makeSessionCookie(session: Session): Cookie = {
       val cookieCrypto = inject[SessionCookieCrypto]
       val cookieBaker = inject[SessionCookieBaker]
       val sessionCookie = cookieBaker.encodeAsCookie(session)
@@ -173,11 +174,17 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
     new WSCookie() {
       override def name: String = cookie.name
+
       override def value: String = cookie.value
+
       override def domain: Option[String] = cookie.domain
+
       override def path: Option[String] = Some(cookie.path)
+
       override def maxAge: Option[Long] = cookie.maxAge.map(_.toLong)
+
       override def secure: Boolean = cookie.secure
+
       override def httpOnly: Boolean = cookie.httpOnly
     }
   }

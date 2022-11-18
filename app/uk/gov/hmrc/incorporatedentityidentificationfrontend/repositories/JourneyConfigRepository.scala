@@ -16,10 +16,10 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories
 
-import play.api.libs.json._
 import org.mongodb.scala.model.Indexes.ascending
 import org.mongodb.scala.model.{Filters, IndexModel, IndexOptions}
 import org.mongodb.scala.result.{DeleteResult, InsertOneResult}
+import play.api.libs.json._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
@@ -40,14 +40,14 @@ class JourneyConfigRepository @Inject()(mongoComponent: MongoComponent,
   domainFormat = implicitly[Format[JsObject]],
   indexes = Seq(timeToLiveIndex(appConfig.timeToLiveSeconds)),
   extraCodecs = Seq(Codecs.playFormatCodec(journeyConfigMongoFormat))
-){
+) {
 
   def insertJourneyConfig(journeyId: String, authInternalId: String, journeyConfig: JourneyConfig): Future[InsertOneResult] = {
 
     val document: JsObject = Json.obj(
       JourneyIdKey -> journeyId,
       AuthInternalIdKey -> authInternalId,
-      CreationTimestampKey -> Json.obj( "$date" -> Instant.now.toEpochMilli)
+      CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
     ) ++ Json.toJsObject(journeyConfig)
 
     collection.insertOne(document).toFuture()

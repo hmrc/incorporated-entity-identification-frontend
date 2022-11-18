@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
-import javax.inject.{Inject, Singleton}
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 
+import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.matching.Regex
 
@@ -51,7 +51,8 @@ class CompanyProfileService @Inject()(storageConnector: IncorporatedEntityInform
       case CrnRegex(prefix, remainder) =>
         prefix + padding + remainder
       case _ =>
-        throw new IllegalArgumentException(s"[CompanyProfileService] Company number: '$companyNumber' is invalid") }
+        throw new IllegalArgumentException(s"[CompanyProfileService] Company number: '$companyNumber' is invalid")
+    }
   }
 
 }

@@ -18,10 +18,10 @@ package services
 
 import connectors.mocks.{MockCompanyProfileConnector, MockIncorporatedEntityInformationConnector}
 import helpers.TestConstants._
+import play.api.test.Helpers._
 import uk.gov.hmrc.http.{GatewayTimeoutException, HeaderCarrier}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{CompanyProfile, SuccessfullyStored}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CompanyProfileService
-import play.api.test.Helpers._
 import utils.UnitSpec
 
 import scala.concurrent.ExecutionContext.Implicits.global

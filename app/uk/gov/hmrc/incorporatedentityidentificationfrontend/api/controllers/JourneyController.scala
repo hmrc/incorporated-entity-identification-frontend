@@ -27,8 +27,8 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.{routes 
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig, JourneyLabels, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, StorageService}
-import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.UrlHelper
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}

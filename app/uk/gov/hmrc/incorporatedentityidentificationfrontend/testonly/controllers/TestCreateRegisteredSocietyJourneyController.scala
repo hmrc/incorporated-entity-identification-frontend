@@ -16,7 +16,6 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers
 
-import javax.inject.Inject
 import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
@@ -27,14 +26,15 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.forms.TestC
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.views.html.test_create_journey
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
+import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
 class TestCreateRegisteredSocietyJourneyController @Inject()(messagesControllerComponents: MessagesControllerComponents,
                                                              testCreateJourneyConnector: TestCreateJourneyConnector,
                                                              view: test_create_journey,
                                                              val authConnector: AuthConnector
-                                                         )(implicit ec: ExecutionContext,
-                                                           appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
+                                                            )(implicit ec: ExecutionContext,
+                                                              appConfig: AppConfig) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
   private val defaultPageConfig: PageConfig = PageConfig(
     optServiceName = None,

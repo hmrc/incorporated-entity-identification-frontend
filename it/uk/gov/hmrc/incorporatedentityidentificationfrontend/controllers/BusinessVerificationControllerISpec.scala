@@ -47,7 +47,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
-        verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationPass)
+        verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
       }
 
       "throw an exception when the query string is missing" in {
@@ -71,7 +71,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
 
         result.status mustBe SEE_OTHER
         result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
-        verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationPass)
+        verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationPass)
       }
 
       "throw an exception when the query string is missing" in {
@@ -210,7 +210,7 @@ class BusinessVerificationControllerISpec extends ComponentSpecHelper with AuthS
 
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.RegistrationController.register(testJourneyId).url)
-          verifyStoreBusinessVerificationStatus(testJourneyId,BusinessVerificationFail)
+          verifyStoreBusinessVerificationStatus(testJourneyId, BusinessVerificationFail)
           verifyCreateBusinessVerificationJourney(testBVCreationPostData(testCtutr, testJourneyId))
         }
       }
