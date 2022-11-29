@@ -20,62 +20,7 @@ See [TestREADME](TestREADME.md) for more information about test data and endpoin
 
 # End-Points
 
-## POST /journey
-
-### Deprecated - use POST /ltd-company/journey instead
-
----
-Creates a new journey, storing the journeyConfig against the journeyId.
-
-#### Request:
-
-Request body must contain the continueUrl and deskProServiceId fields. If nothing is provided for the optional service
-name, ```Entity Validation Service``` will be used.
-
-The field businessVerificationCheck enables calling services to bypass business verification. If the field is set to "
-false" and there is a successful match the entity will be registered. If not provided the default value used for this
-field is "true".
-
-Labels "cy" and "en" enable welsh and english translations for the service name to be provided by the calling service respectively.
-If the labels property is omitted or present, but the "cy" property is not fully defined, the service's default values will be
-used for the undefined properties.
-
-All URLs provided must be relative, apart from locally, where localhost is allowed. All absolute urls will fail.
-
-```
-{
-  "continueUrl" : "/testUrl",
-  "businessVerificationCheck": false,
-  "optServiceName" : "Service Name", // deprecated, use labels.en.optServiceName
-  "deskProServiceId" : "DeskProServiceId",
-  "signOutUrl" : "/testSignOutUrl",
-  "regime" : "VATC",
-  "accessibilityUrl" : "/accessibility-statement/my-service",
-  "labels": {
-    "cy": {
-      "optServiceName": "Service name translated into welsh"
-    },
-    "en": {
-      "optServiceName": "Service name in english"
-    }
-  }
-}
-```
-
-#### Response:
-
-Status: **Created(201)**
-
-Example Response body:
-
-```
-{“journeyStartUrl” : "<protocol>://<host>:<port number>/identify-your-incorporated-business/<journey id>/company-number"}
-```
-
-where protocol, host and port number are set to the values for the appropriate environment and journey id is used to
-identify the specific user journey.
-
-## POST /limited-company-journey
+## POST /api/limited-company-journey
 
 ---
 Creates a new journey for Ltd Company, storing the journeyConfig against the journeyId.
@@ -128,7 +73,7 @@ Example Response body:
 where protocol, host and port number are set to the values for the appropriate environment and journey id is used to
 identify the specific user journey
 
-## POST /registered-society-journey
+## POST /api/registered-society-journey
 
 ---
 Creates a new journey for Registered Society, storing the journeyConfig against the journeyId.
@@ -181,7 +126,7 @@ Example Response body:
 where protocol, host and port number are set to the values for the appropriate environment and journey id is used to
 identify the specific user journey
 
-## POST /charitable-incorporated-organisation-journey
+## POST /api/charitable-incorporated-organisation-journey
 
 ---
 Creates a new journey for Charitable Incorporated Organisation, storing the journeyConfig against the journeyId.
@@ -234,7 +179,7 @@ Example Response body:
 where protocol, host and port number are set to the values for the appropriate environment and journey id is used to
 identify the specific user journey
 
-## GET /journey/:journeyId
+## GET /api/journey/:journeyId
 
 ---
 Retrieves all the journey data that is stored against a specific journeyID.

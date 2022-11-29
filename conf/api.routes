@@ -1,8 +1,5 @@
 # microservice specific routes
 + nocsrf
-POST        /journey                                           uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createLtdCompanyJourney()
-
-+ nocsrf
 POST        /limited-company-journey                           uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController.createLtdCompanyJourney()
 
 + nocsrf
