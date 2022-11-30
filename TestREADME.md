@@ -1,5 +1,12 @@
 ## Test End-Points
 
+### Testing
+
+---
+1. [Setting up a Limited Company Journey](TestREADME.md#get-test-onlycreate-limited-company-journey)
+2. [Setting up a Registered Society Journey](TestREADME.md#get-test-onlycreate-registered-society-journey)
+3. [Setting up a Charitable Incorporated Organisation Journey](TestREADME.md#get-test-onlycreate-cio-journey)
+
 ### GET test-only/feature-switches
 
 ---
@@ -7,12 +14,13 @@ Shows all feature switches:
 
 1. Incorporated Entity Identification Frontend
 
-    - Companies House API stub
+    - [Companies House API stub](TestREADME.md#get-test-onlycompanynumberincorporated-company-profile)
     - Business Verification Stub
+      - [Creating a Journey](TestREADME.md#post-test-onlyverification-questionjourney)
+      - [Retrieving Journey Data](TestREADME.md#get--test-onlyverification-questionjourneyjourneyidstatus)
 2. Incorporated Entity Identification
 
-    - Get CT reference stub
-    - DES stub
+    - See backend ReadMe for up-to-date feature switch list
 
 ### GET test-only/create-limited-company-journey
 
@@ -334,6 +342,8 @@ When the registration is failed:
 
 ---
 Stubs creating a Business Verification journey. The Business Verification Stub Feature Switch will need to be enabled.
+
+The stub bypasses the whole Business Verification flow. Always returns BusinessVerification Status as PASS.
 
 ##### Request:
 
