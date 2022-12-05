@@ -1,9 +1,35 @@
+import scoverage.ScoverageKeys
 import uk.gov.hmrc.DefaultBuildSettings.addTestReportOption
 import uk.gov.hmrc.sbtdistributables.SbtDistributablesPlugin.publishingSettings
 
 val appName = "incorporated-entity-identification-frontend"
 
 val silencerVersion = "1.7.0"
+
+lazy val scoverageSettings = {
+
+  val exclusionList: List[String] = List(
+    "<empty>",
+    ".*Routes.*",
+    ".*Reverse.*",
+    "app.*",
+    "prod.*",
+    "config.*",
+    "com.kenshoo.play.metrics.*",
+    "testOnlyDoNotUseInAppConf.*",
+    "uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.*",
+    "uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.frontend.*",
+    "uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.*",
+    "uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.*"
+  )
+
+  Seq(
+    ScoverageKeys.coverageExcludedPackages := exclusionList.mkString(";"),
+    ScoverageKeys.coverageMinimum := 90,
+    ScoverageKeys.coverageFailOnMinimum := false,
+    ScoverageKeys.coverageHighlighting := true
+  )
+}
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
@@ -21,6 +47,7 @@ lazy val microservice = Project(appName, file("."))
     )
     // ***************
   )
+  .settings(scoverageSettings)
   .settings(publishingSettings: _*)
   .configs(IntegrationTest)
   .settings(inConfig(IntegrationTest)(Defaults.itSettings): _*)
