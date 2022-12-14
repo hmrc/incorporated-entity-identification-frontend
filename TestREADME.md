@@ -40,7 +40,7 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
 3. DeskPro Service ID (Required)
 
-    - Used for the `Get help with this page` link
+    - Used for the Beta feedback link
     - This is currently autofilled but can be changed
 
 4. Sign Out Link (Required)
@@ -86,7 +86,7 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
 3. DeskPro Service ID (Required)
 
-    - Used for the `Get help with this page` link
+    - Used for the Beta feedback link
     - This is currently autofilled but can be changed
 
 4. Sign Out Link (Required)
@@ -131,7 +131,7 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
 3. DeskPro Service ID (Required)
 
-    - Used for the `Get help with this page` link
+    - Used for the Beta feedback link
     - This is currently autofilled but can be changed
 
 4. Sign Out Link (Required)
@@ -179,7 +179,7 @@ All URLs provided must be relative, apart from locally, where localhost is allow
 
 3. DeskPro Service ID (Required)
 
-    - Used for the `Get help with this page` link
+    - Used for the Beta feedback link
     - This is currently autofilled but can be changed
 
 4. Sign Out Link (Required)

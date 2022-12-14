@@ -105,6 +105,12 @@ trait CaptureCtutrViewTests {
 
       footerLinks.eq(1).attr("href") mustBe testAccessibilityUrl
     }
+
+    "have the correct technical help link and text" in {
+      doc.getTechnicalHelpLinkText mustBe Base.getHelp
+
+      doc.getTechnicalHelpLink mustBe testTechnicalHelpUrl
+    }
   }
 
   def testCaptureOptionalCtutrView(result: => WSResponse,

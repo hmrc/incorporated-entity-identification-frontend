@@ -25,6 +25,7 @@ object MessageLookup {
     val saveAndComeBack = "Save and come back later"
     val tryAgain = "Try again"
     val back = "Back"
+    val getHelp = "Is this page not working properly? (opens in new tab)"
 
     object Error {
       val title = "There is a problem"

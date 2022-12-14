@@ -40,6 +40,8 @@ used for the undefined properties.
 
 All URLs provided must be relative, apart from locally, where localhost is allowed. All absolute urls will fail.
 
+The deskProServiceId is used to set the service name in the beta feedback url.
+
 ```
 {
   "continueUrl" : "/testUrl",
@@ -93,6 +95,8 @@ used for the undefined properties.
 
 All URLs provided must be relative, apart from locally, where localhost is allowed. All absolute urls will fail.
 
+The deskProServiceId is used to set the service name in the beta feedback url.
+
 ```
 {
   "continueUrl" : "/testUrl",
@@ -145,6 +149,8 @@ If the labels property is omitted or present, but the "cy" property is not fully
 used for the undefined properties.
 
 All URLs provided must be relative, apart from locally, where localhost is allowed. All absolute urls will fail.
+
+The deskProServiceId is used to set the service name in the beta feedback url.
 
 ```
 {

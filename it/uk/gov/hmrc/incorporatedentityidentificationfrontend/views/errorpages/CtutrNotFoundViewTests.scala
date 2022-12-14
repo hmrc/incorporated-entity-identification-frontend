@@ -23,7 +23,7 @@ import org.jsoup.select.Elements
 import org.mongodb.scala.result.InsertOneResult
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{BetaBanner, Header, CtutrNotFound => messages}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CtutrNotFound => messages}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.routes
@@ -91,6 +91,12 @@ trait CtutrNotFoundViewTests {
       footerLinks.size() mustBe 9
 
       footerLinks.eq(1).attr("href") mustBe testAccessibilityUrl
+    }
+
+    "have the correct technical help link and text" in {
+      doc.getTechnicalHelpLinkText mustBe Base.getHelp
+
+      doc.getTechnicalHelpLink mustBe testTechnicalHelpUrl
     }
   }
 

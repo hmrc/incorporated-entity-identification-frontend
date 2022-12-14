@@ -128,6 +128,11 @@ trait CheckYourAnswersViewTests {
       }
     }
 
+    "have the correct technical help link and text" in {
+      doc.getTechnicalHelpLinkText mustBe Base.getHelp
+
+      doc.getTechnicalHelpLink mustBe testTechnicalHelpUrl
+    }
   }
 
   def testCheckYourAnswersNoCtutrView(journeyId: String)
