@@ -11,8 +11,6 @@ header.links.sign_out                                       = Allgofnodi
 service.name.default                                        = Gwasanaeth Dilysu Endid
 service.govuk                                               = GOV.UK
 
-getpagehelp.linkText                                        = Help gyda’r dudalen hon (yn agor tab newydd)
-
 feedback.before                                             = Gwasanaeth newydd yw hwn – bydd eich
 feedback.link                                               = adborth
 feedback.after                                              = (yn agor tab newydd) yn ein helpu i’w wella.

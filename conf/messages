@@ -11,8 +11,6 @@ header.links.sign_out                                       = Sign Out
 service.name.default                                        = Entity Validation Service
 service.govuk                                               = GOV.UK
 
-getpagehelp.linkText                                        = Get help with this page (opens in new tab)
-
 feedback.before                                             = This is a new service - your
 feedback.link                                               = feedback
 feedback.after                                              = (opens in new tab) will help us to improve it.
