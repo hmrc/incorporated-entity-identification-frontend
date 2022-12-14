@@ -58,6 +58,10 @@ object ViewSpecHelper {
 
     lazy val getServiceName: Elements = element.getElementsByClass("hmrc-header__service-name")
 
+    lazy val getTechnicalHelpLink: String = element.getElementsByClass("hmrc-report-technical-issue").attr("href")
+
+    lazy val getTechnicalHelpLinkText: String = element.getElementsByClass("hmrc-report-technical-issue").text
+
     def getSpan(id: String): Elements = element.select(s"""span[id=$id]""")
 
     def getLink(id: String): Elements = element.select(s"""a[id=$id]""")

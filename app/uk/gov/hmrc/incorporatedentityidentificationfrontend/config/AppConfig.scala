@@ -31,7 +31,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   lazy val contactHost: String = servicesConfig.getString("contact-frontend.host")
 
-  lazy val deskProServiceId: String = "grs"
+  lazy val grsDeskProServiceId: String = "grs"
 
   lazy val companiesHouse: String = servicesConfig.getString("companies-house.url")
 

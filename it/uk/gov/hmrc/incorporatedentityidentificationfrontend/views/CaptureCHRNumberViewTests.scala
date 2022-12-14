@@ -123,6 +123,12 @@ trait CaptureCHRNumberViewTests {
     "have a save and continue button" in {
       doc.getSubmitButton.first.text mustBe Base.saveAndContinue
     }
+
+    "have the correct technical help link and text" in {
+      doc.getTechnicalHelpLinkText mustBe Base.getHelp
+
+      doc.getTechnicalHelpLink mustBe testTechnicalHelpUrl
+    }
   }
 
   def testCaptureCHRNErrorMessagesNotEntered(result: => WSResponse,
