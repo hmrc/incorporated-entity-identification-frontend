@@ -29,19 +29,9 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
   lazy val selfBaseUrl: String = servicesConfig.baseUrl("self")
   lazy val selfUrl: String = servicesConfig.getString("microservice.services.self.url")
 
-  private lazy val contactHost: String = servicesConfig.getString("contact-frontend.host")
+  lazy val contactHost: String = servicesConfig.getString("contact-frontend.host")
 
-  private lazy val assetsUrl: String = servicesConfig.getString("assets.url")
-
-  lazy val assetsPrefix: String = assetsUrl + servicesConfig.getString("assets.version")
-  lazy val analyticsToken: String = servicesConfig.getString(s"google-analytics.token")
-  lazy val analyticsHost: String = servicesConfig.getString(s"google-analytics.host")
-
-  def reportAProblemPartialUrl(serviceIdentifier: String): String =
-    s"$contactHost/contact/problem_reports_ajax?service=$serviceIdentifier"
-
-  def reportAProblemNonJSUrl(serviceIdentifier: String): String =
-    s"$contactHost/contact/problem_reports_nonjs?service=$serviceIdentifier"
+  lazy val deskProServiceId: String = "grs"
 
   lazy val companiesHouse: String = servicesConfig.getString("companies-house.url")
 
@@ -99,5 +89,4 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   lazy val timeout: Int = servicesConfig.getInt("timeout.timeout")
   lazy val countdown: Int = servicesConfig.getInt("timeout.countdown")
-
 }

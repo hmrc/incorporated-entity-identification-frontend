@@ -14,21 +14,23 @@
  * limitations under the License.
  *@
 
-@import uk.gov.hmrc.hmrcfrontend.views.html.components.HmrcHeader
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcTrackingConsentSnippet, HmrcLayout, HmrcTimeoutDialogHelper}
+@import uk.gov.hmrc.hmrcfrontend.views.Aliases.{Cy, En}
+@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
+@import uk.gov.hmrc.hmrcfrontend.views.html.components.{HmrcHeader, HmrcReportTechnicalIssue}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcTimeoutDialogHelper, HmrcTrackingConsentSnippet}
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.reporttechnicalissue.ReportTechnicalIssue
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
-@import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
-@import views.html.helper.CSPNonce
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper
+@import views.html.helper.CSPNonce
 
 @this(hmrcLayout: HmrcLayout,
         hmrcHeader: HmrcHeader,
         appConfig: AppConfig,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
         standardBetaBanner: StandardBetaBanner,
-        hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper
-)
+        hmrcTimeoutDialogHelper: HmrcTimeoutDialogHelper,
+        hmrcReportTechnicalIssue: HmrcReportTechnicalIssue)
 
 @(pageConfig: PageConfig, title: String, timeout: Boolean = true, showBackLink: Boolean = true)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
@@ -45,11 +47,11 @@
         @contentBlock
     </div>
 
-    <div class="govuk-body">
-        <a lang="en" hreflang="en" class="govuk-link " target="_blank" href="@{appConfig.reportAProblemNonJSUrl(pageConfig.deskProServiceId)}">
-            @messages("getpagehelp.linkText")
-        </a>
-    </div>
+    @hmrcReportTechnicalIssue(ReportTechnicalIssue(
+        serviceId = appConfig.deskProServiceId,
+        baseUrl = Some(appConfig.contactHost),
+        language = if(messages.lang.code == "cy") Cy else En
+    ))
 }
 
 @scripts = {
