@@ -41,7 +41,7 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config ++ extraConfig)
-    .build
+    .build()
 
   "GET /:journeyId/register" when {
     "the business entity is Limited Company" should {

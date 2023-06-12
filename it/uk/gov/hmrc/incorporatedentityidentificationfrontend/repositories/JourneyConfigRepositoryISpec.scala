@@ -30,7 +30,7 @@ class JourneyConfigRepositoryISpec extends ComponentSpecHelper with AbstractPati
     .configure(config)
     .configure("application.router" -> "testOnlyDoNotUseInAppConf.Routes")
     .configure("mongodb.timeToLiveSeconds" -> "10")
-    .build
+    .build()
 
   val repo: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
 

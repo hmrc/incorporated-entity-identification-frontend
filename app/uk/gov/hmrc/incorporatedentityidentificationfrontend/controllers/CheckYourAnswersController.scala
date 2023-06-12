@@ -87,7 +87,7 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
               case DetailsMatched if journeyConfig.businessVerificationCheck => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsMatched)}
               yield Redirect(routes.BusinessVerificationController.startBusinessVerificationJourney(journeyId))
-              case DetailsMatched if journeyConfig.businessVerificationCheck.equals(false) => for {
+              case DetailsMatched if !journeyConfig.businessVerificationCheck => for {
                 _ <- storageService.storeIdentifiersMatch(journeyId, identifiersMatch = DetailsMatched)
               } yield Redirect(routes.RegistrationController.register(journeyId))
               case DetailsNotFound if optCtutr.isEmpty => // The absence of a Ct Utr means the entity must be a Registered Society

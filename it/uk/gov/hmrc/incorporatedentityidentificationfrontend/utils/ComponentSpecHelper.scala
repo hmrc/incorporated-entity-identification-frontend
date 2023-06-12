@@ -67,7 +67,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config)
-    .build
+    .build()
 
   lazy val journeyConfigRepository: JourneyConfigRepository = app.injector.instanceOf[JourneyConfigRepository]
 
@@ -94,7 +94,7 @@ trait ComponentSpecHelper extends AnyWordSpec with Matchers
   val enLangCookie: WSCookie = DefaultWSCookie("PLAY_LANG", "en")
 
   def get[T](uri: String, cookie: WSCookie = enLangCookie): WSResponse = {
-    await(buildClient(uri).withHttpHeaders("Authorization" -> "Bearer123").withCookies(cookie, mockSessionCookie).get)
+    await(buildClient(uri).withHttpHeaders("Authorization" -> "Bearer123").withCookies(cookie, mockSessionCookie).get())
   }
 
   def extractDocumentFrom(aWSResponse: WSResponse): Document = Jsoup.parse(aWSResponse.body)

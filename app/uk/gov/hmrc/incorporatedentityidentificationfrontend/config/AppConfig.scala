@@ -21,7 +21,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.c
 import uk.gov.hmrc.play.bootstrap.config.ServicesConfig
 
 import javax.inject.{Inject, Singleton}
-import scala.collection.JavaConverters.asScalaBufferConverter
+import scala.jdk.CollectionConverters._
 
 @Singleton
 class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration) extends FeatureSwitching {

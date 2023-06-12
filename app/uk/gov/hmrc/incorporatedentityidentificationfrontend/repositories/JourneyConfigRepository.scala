@@ -60,7 +60,7 @@ class JourneyConfigRepository @Inject()(mongoComponent: MongoComponent,
         Filters.equal(JourneyIdKey, journeyId),
         Filters.equal(AuthInternalIdKey, authInternalId)
       )
-    ).headOption
+    ).headOption()
 
   }
 
@@ -77,7 +77,7 @@ class JourneyConfigRepository @Inject()(mongoComponent: MongoComponent,
 
   }
 
-  def drop: Future[Unit] = collection.drop().toFuture.map(_ => Unit)
+  def drop: Future[Unit] = collection.drop().toFuture().map(_ => ())
 }
 
 object JourneyConfigRepository {
