@@ -20,7 +20,7 @@ import play.api.libs.json._
 
 case class CompanyProfile(companyName: String,
                           companyNumber: String,
-                          dateOfIncorporation: String,
+                          dateOfIncorporation: Option[String],
                           unsanitisedCHROAddress: JsObject)
 
 object CompanyProfile {

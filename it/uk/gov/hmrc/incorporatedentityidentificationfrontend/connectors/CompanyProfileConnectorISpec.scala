@@ -43,6 +43,7 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
 
         result mustBe Some(testCompanyProfile)
       }
+
       "the company Number in lower case is provided and the feature switch is enabled" in {
         enable(CompaniesHouseStub)
         stubRetrieveCompanyProfileFromStub(testCompanyNumberInUppercase)(
@@ -55,7 +56,21 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
 
         result mustBe Some(testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))
       }
+
+      "the companyNumber exists but the creation of date is missing" in {
+        enable(CompaniesHouseStub)
+        stubRetrieveCompanyProfileFromStub(testCompanyNumber)(
+          status = OK,
+          body = companyProfileJson(testCompanyNumber, testCompanyName, None, testAddress)
+        )
+        stubStoreCompanyProfile(testJourneyId, testCompanyProfile)(status = OK)
+
+        val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
+
+        result mustBe Some(testCompanyProfile.copy(dateOfIncorporation = None))
+      }
     }
+
     "return None" when {
       "the companyNumber cannot be found and the feature switch is enabled" in {
         enable(CompaniesHouseStub)
@@ -66,6 +81,7 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
         result mustBe None
       }
     }
+
     "return Company Profile" when {
       "the companyNumber exists and the feature switch is disabled" in {
         disable(CompaniesHouseStub)
@@ -79,6 +95,7 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
 
         result mustBe Some(testCompanyProfile)
       }
+
       "the company Number in lower case is provided and the feature switch is disabled" in {
         disable(CompaniesHouseStub)
         stubRetrieveCompanyProfileFromCoHo(testCompanyNumberInUppercase)(
@@ -92,6 +109,7 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
         result mustBe Some(testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))
       }
     }
+
     "return None" when {
       "the companyNumber cannot be found and the feature switch is disabled" in {
         disable(CompaniesHouseStub)
@@ -103,5 +121,4 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
       }
     }
   }
-
 }

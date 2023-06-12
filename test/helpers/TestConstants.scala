@@ -37,7 +37,7 @@ object TestConstants {
   val testRegime: String = "VATC"
   val testCompanyNumber: String = "12345678"
   val testCtutr: String = "1234567890"
-  val testDateOfIncorporation: String = LocalDate.now().toString
+  val testDateOfIncorporation: Option[String] = Option(LocalDate.now().toString)
   val testCompanyName: String = "ABC Limited"
   val testIdentifiersMatch: IncorporatedEntityDetailsMatching = DetailsMatched
   val testAddress: JsObject = Json.obj(
