@@ -16,8 +16,8 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import play.api.test.Helpers.{NOT_FOUND, OK, await, defaultAwaitTimeout}
-import uk.gov.hmrc.http.HeaderCarrier
+import play.api.test.Helpers.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK, await, defaultAwaitTimeout}
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
@@ -44,9 +44,35 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
         result mustBe Some(testCompanyProfile)
       }
 
+      "the companyNumber exists and the feature switch is disabled" in {
+        disable(CompaniesHouseStub)
+        stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(
+          status = OK,
+          body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation, testAddress)
+        )
+        stubStoreCompanyProfile(testJourneyId, testCompanyProfile)(status = OK)
+
+        val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
+
+        result mustBe Some(testCompanyProfile)
+      }
+
       "the company Number in lower case is provided and the feature switch is enabled" in {
         enable(CompaniesHouseStub)
         stubRetrieveCompanyProfileFromStub(testCompanyNumberInUppercase)(
+          status = OK,
+          body = companyProfileJson(testCompanyNumberInUppercase, testCompanyName, testDateOfIncorporation, testAddress)
+        )
+        stubStoreCompanyProfile(testJourneyId, testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))(status = OK)
+
+        val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumberInUppercase.toLowerCase))
+
+        result mustBe Some(testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))
+      }
+
+      "the company Number in lower case is provided and the feature switch is disabled" in {
+        disable(CompaniesHouseStub)
+        stubRetrieveCompanyProfileFromCoHo(testCompanyNumberInUppercase)(
           status = OK,
           body = companyProfileJson(testCompanyNumberInUppercase, testCompanyName, testDateOfIncorporation, testAddress)
         )
@@ -80,37 +106,7 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
 
         result mustBe None
       }
-    }
 
-    "return Company Profile" when {
-      "the companyNumber exists and the feature switch is disabled" in {
-        disable(CompaniesHouseStub)
-        stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(
-          status = OK,
-          body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation, testAddress)
-        )
-        stubStoreCompanyProfile(testJourneyId, testCompanyProfile)(status = OK)
-
-        val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
-
-        result mustBe Some(testCompanyProfile)
-      }
-
-      "the company Number in lower case is provided and the feature switch is disabled" in {
-        disable(CompaniesHouseStub)
-        stubRetrieveCompanyProfileFromCoHo(testCompanyNumberInUppercase)(
-          status = OK,
-          body = companyProfileJson(testCompanyNumberInUppercase, testCompanyName, testDateOfIncorporation, testAddress)
-        )
-        stubStoreCompanyProfile(testJourneyId, testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))(status = OK)
-
-        val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumberInUppercase.toLowerCase))
-
-        result mustBe Some(testCompanyProfile.copy(companyNumber = testCompanyNumberInUppercase))
-      }
-    }
-
-    "return None" when {
       "the companyNumber cannot be found and the feature switch is disabled" in {
         disable(CompaniesHouseStub)
         stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(status = NOT_FOUND)
@@ -118,6 +114,17 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
         val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
 
         result mustBe None
+      }
+    }
+
+    "return Internal Server Exception" when {
+      "the Company House return other than 200, OK" in {
+        enable(CompaniesHouseStub)
+        stubRetrieveCompanyProfileFromStub(testCompanyNumber)(status = INTERNAL_SERVER_ERROR)
+
+        val thrown = the [InternalServerException] thrownBy await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
+
+        thrown.getMessage mustBe "Companies House API failed with status: 500"
       }
     }
   }
