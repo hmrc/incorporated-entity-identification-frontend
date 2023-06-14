@@ -37,7 +37,7 @@ object TestConstants {
   val testJourneyId: String = UUID.randomUUID().toString
   val testSignOutUrl: String = "/signOutUrl"
   val testBusinessVerificationJourneyId = "TestBusinessVerificationJourneyId"
-  val testDateOfIncorporation: String = LocalDate.now().toString
+  val testDateOfIncorporation: Option[String] = Option(LocalDate.now().toString)
   val testCredentialId: String = UUID.randomUUID().toString
   val GGProviderId: String = UUID.randomUUID().toString
   val testGroupId: String = UUID.randomUUID().toString
@@ -83,7 +83,7 @@ object TestConstants {
     "region" -> "test region"
   )
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
-  val testCioProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, "", Json.obj())
+  val testCioProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, None, Json.obj())
   private val defaultConfig: PageConfig = PageConfig(None, testDeskProServiceId, testSignOutUrl, testAccessibilityUrl, None)
   val testLimitedCompanyJourneyConfig: JourneyConfig = createTestJourneyConfig(LimitedCompany)
   val testLimitedCompanyJourneyConfigWithServiceName: JourneyConfig = createTestJourneyConfig(LimitedCompany)

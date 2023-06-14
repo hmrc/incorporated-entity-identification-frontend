@@ -46,7 +46,7 @@ class CheckYourAnswersControllerISpec extends ComponentSpecHelper
 
   override lazy val app: Application = new GuiceApplicationBuilder()
     .configure(config ++ extraConfig)
-    .build
+    .build()
 
   "GET /check-your-answers-business" when {
     "the entity is a Limited Company" should {
