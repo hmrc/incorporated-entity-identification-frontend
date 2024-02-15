@@ -2,5 +2,3 @@
 ->         /identify-your-incorporated-business                         app.Routes
 ->         /incorporated-entity-identification/api                      api.Routes
 ->         /                                                            health.Routes
-
-GET        /admin/metrics                                               com.kenshoo.play.metrics.MetricsController.metrics
