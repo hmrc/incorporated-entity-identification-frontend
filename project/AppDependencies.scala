@@ -16,11 +16,11 @@ object AppDependencies {
   val sharedTestDependencies: Seq[ModuleID] = {
     val scope = "test,it"
     Seq(
-      "org.scalatest"          %% "scalatest"          % "3.2.15" % scope,
-      "org.jsoup"               % "jsoup"              % "1.15.4" % scope,
-      "com.typesafe.play"      %% "play-test"          % current % scope,
-      "com.vladsch.flexmark"    % "flexmark-all"       % "0.64.6" % scope,
-      "org.scalatestplus.play" %% "scalatestplus-play" % "5.1.0" % scope
+      "org.scalatest"          %% "scalatest"              % "3.2.15"         % scope,
+      "org.jsoup"               % "jsoup"                  % "1.15.4"         % scope,
+      "com.typesafe.play"      %% "play-test"              % current          % scope,
+      "com.vladsch.flexmark"    % "flexmark-all"           % "0.64.6"         % scope,
+      "uk.gov.hmrc"            %% "bootstrap-test-play-28" % bootstrapVersion % scope
     )
   }
 
