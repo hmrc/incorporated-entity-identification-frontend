@@ -9,7 +9,7 @@ object AppDependencies {
     "uk.gov.hmrc"                  %% "bootstrap-frontend-play-28" % bootstrapVersion,
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-28"  % bootstrapVersion,
     "uk.gov.hmrc.mongo"            %% "hmrc-mongo-play-28"         % "0.71.0",
-    "uk.gov.hmrc"                  %% "play-frontend-hmrc-play-28" % "8.4.0",
+    "uk.gov.hmrc"                  %% "play-frontend-hmrc-play-28" % "8.5.0",
     "com.fasterxml.jackson.module" %% "jackson-module-scala"       % "2.14.2"
   )
 
