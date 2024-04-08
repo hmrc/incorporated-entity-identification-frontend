@@ -54,6 +54,10 @@ object TestConstants {
   val testRegime: String = "VATC"
   val testBusinessVerificationPassJson: JsObject = testBusinessVerificationJson(value = businessVerificationPassKey)
   val testBusinessVerificationFailJson: JsObject = testBusinessVerificationJson(value = businessVerificationFailKey)
+  val testNoRegistration: JsObject = Json.obj(
+    "code" -> "NOT_FOUND",
+    "reason" -> "some reason"
+  )
   val testSuccessfulRegistration: RegistrationStatus = Registered(testSafeId)
   val testSuccessfulRegJson: JsObject = Json.obj(
     registrationStatusKey -> RegisteredKey,

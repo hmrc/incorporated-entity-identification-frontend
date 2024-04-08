@@ -62,11 +62,17 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
-          stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
+          stubRetrieveRegistrationStatusTwice(testJourneyId)(
+            status1 = NOT_FOUND,
+            status2 = OK,
+            body1 = testNoRegistration,
+            body2 = Json.toJson(testSuccessfulRegistration))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+
+          stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
           verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
           verifyAuditDetail(
@@ -99,6 +105,49 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
           verifyAuditDetail(
             testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus = "fail")
+          )
+        }
+
+        "registration is successful and is submitted a second time" in {
+
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testLimitedCompanyJourneyConfig
+          ))
+
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          stubAudit()
+          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
+          stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
+          stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
+
+          stubRetrieveRegistrationStatusTwice(testJourneyId)(
+            status1 = NOT_FOUND,
+            status2 = OK,
+            body1 = testNoRegistration,
+            body2 = Json.toJson(testSuccessfulRegistration))
+
+          lazy val result = get(s"$baseUrl/$testJourneyId/register")
+          result.status mustBe SEE_OTHER
+          result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+          verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime, Some(1))
+          verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
+          verifyAuditDetail(
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus = "success")
+          )
+
+          // Register again
+          lazy val result2 = get(s"$baseUrl/$testJourneyId/register")
+          result2.status mustBe SEE_OTHER
+          result2.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+          verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime, Some(1))
+          verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
+          verifyAuditDetail(
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus = "success")
           )
         }
       }
@@ -206,7 +255,11 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
           stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
-          stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
+          stubRetrieveRegistrationStatusTwice(testJourneyId)(
+            status1 = NOT_FOUND,
+            status2 = OK,
+            body1 = testNoRegistration,
+            body2 = Json.toJson(testSuccessfulRegistration))
 
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe SEE_OTHER
@@ -239,6 +292,42 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
           verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)
           verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
+        }
+
+        "registration is successful and is submitted a second time" in {
+
+          await(journeyConfigRepository.insertJourneyConfig(
+            journeyId = testJourneyId,
+            authInternalId = testInternalId,
+            journeyConfig = testRegisteredSocietyJourneyConfig
+          ))
+
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          stubAudit()
+          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
+          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
+          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
+          stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
+          stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
+          stubRetrieveRegistrationStatusTwice(testJourneyId)(
+            status1 = NOT_FOUND,
+            status2 = OK,
+            body1 = testNoRegistration,
+            body2 = Json.toJson(testSuccessfulRegistration))
+
+          val result = get(s"$baseUrl/$testJourneyId/register")
+          result.status mustBe SEE_OTHER
+          result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+          verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime, Some(1))
+          verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
+
+          // Register again
+          val result2 = get(s"$baseUrl/$testJourneyId/register")
+          result2.status mustBe SEE_OTHER
+          result2.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
+          verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime, Some(1))
+          verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
         }
       }
 

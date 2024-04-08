@@ -25,31 +25,50 @@ trait RegisterStub extends WireMockMethods {
     Json.obj(
       "crn" -> crn,
       "ctutr" -> ctutr,
-      "regime" -> regime)
+      "regime" -> regime
+    )
   }
 
-  def stubLimitedCompanyRegister(crn: String, ctutr: String, regime: String)(status: Int, body: JsObject): StubMapping = {
-    when(method = POST, uri = "/incorporated-entity-identification/register-limited-company", jsonBody(crn, ctutr, regime))
+  def stubLimitedCompanyRegister(crn: String, ctutr: String, regime: String)
+                                (status: Int, body: JsObject): StubMapping = {
+    when(
+      method = POST,
+      uri = "/incorporated-entity-identification/register-limited-company",
+      jsonBody(crn, ctutr, regime)
+    )
       .thenReturn(
         status = status,
         body = body
       )
   }
 
-  def verifyLimitedCompanyRegister(crn: String, ctutr: String, regime: String): Unit = {
-    WiremockHelper.verifyPost(uri = "/incorporated-entity-identification/register-limited-company", optBody = Some(jsonBody(crn, ctutr, regime).toString()))
+  def verifyLimitedCompanyRegister(crn: String, ctutr: String, regime: String, optCount: Option[Int] = None): Unit = {
+    WiremockHelper.verifyPost(
+      uri = "/incorporated-entity-identification/register-limited-company",
+      optBody = Some(jsonBody(crn, ctutr, regime).toString()),
+      optCount
+    )
   }
 
-  def stubRegisteredSocietyRegister(crn: String, ctutr: String, regime: String)(status: Int, body: JsObject): StubMapping = {
-    when(method = POST, uri = "/incorporated-entity-identification/register-registered-society", jsonBody(crn, ctutr, regime))
+  def stubRegisteredSocietyRegister(crn: String, ctutr: String, regime: String)
+                                   (status: Int, body: JsObject): StubMapping = {
+    when(
+      method = POST,
+      uri = "/incorporated-entity-identification/register-registered-society",
+      jsonBody(crn, ctutr, regime)
+    )
       .thenReturn(
         status = status,
         body = body
       )
   }
 
-  def verifyRegisteredSocietyRegister(crn: String, ctutr: String, regime: String): Unit = {
-    WiremockHelper.verifyPost(uri = "/incorporated-entity-identification/register-registered-society", optBody = Some(jsonBody(crn, ctutr, regime).toString()))
+  def verifyRegisteredSocietyRegister(crn: String, ctutr: String, regime: String, optCount: Option[Int] = None): Unit = {
+    WiremockHelper.verifyPost(
+      uri = "/incorporated-entity-identification/register-registered-society",
+      optBody = Some(jsonBody(crn, ctutr, regime).toString()),
+      optCount
+    )
   }
 
   def verifyRegisterAudit(): Unit = {

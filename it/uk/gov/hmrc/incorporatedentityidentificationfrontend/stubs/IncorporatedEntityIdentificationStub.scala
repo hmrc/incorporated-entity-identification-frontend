@@ -16,7 +16,9 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs
 
-import com.github.tomakehurst.wiremock.stubbing.StubMapping
+import com.github.tomakehurst.wiremock.client.WireMock
+import com.github.tomakehurst.wiremock.client.WireMock.{stubFor, urlEqualTo}
+import com.github.tomakehurst.wiremock.stubbing.{Scenario, StubMapping}
 import play.api.libs.json.{JsObject, JsString, JsValue, Json}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{BusinessVerificationStatus, CompanyProfile, IncorporatedEntityDetailsMatching, RegistrationStatus}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.{WireMockMethods, WiremockHelper}
@@ -24,7 +26,8 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.{WireMockMetho
 trait IncorporatedEntityIdentificationStub extends WireMockMethods {
 
   def stubStoreCompanyProfile(journeyId: String, companyProfile: CompanyProfile)(status: Int): StubMapping =
-    when(method = PUT,
+    when(
+      method = PUT,
       uri = s"/incorporated-entity-identification/journey/$journeyId/companyProfile",
       body = Json.obj(
         "companyName" -> companyProfile.companyName,
@@ -39,35 +42,45 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
   def stubStoreBusinessVerificationStatus(journeyId: String,
                                           businessVerificationStatus: BusinessVerificationStatus
                                          )(status: Int): StubMapping =
-    when(method = PUT,
+    when(
+      method = PUT,
       uri = s"/incorporated-entity-identification/journey/$journeyId/businessVerification",
       body = Json.toJson(businessVerificationStatus)
     ).thenReturn(
       status = status
     )
 
-  def verifyStoreBusinessVerificationStatus(journeyId: String, businessVerificationStatus: BusinessVerificationStatus): Unit = {
+  def verifyStoreBusinessVerificationStatus(journeyId: String,
+                                            businessVerificationStatus: BusinessVerificationStatus): Unit = {
     val jsonBody = Json.toJson(businessVerificationStatus)
-    WiremockHelper.verifyPut(uri = s"/incorporated-entity-identification/journey/$journeyId/businessVerification", optBody = Some(jsonBody.toString()))
+    WiremockHelper.verifyPut(
+      uri = s"/incorporated-entity-identification/journey/$journeyId/businessVerification",
+      optBody = Some(jsonBody.toString())
+    )
   }
 
   def stubStoreCtutr(journeyId: String, ctutr: String)(status: Int): StubMapping =
-    when(method = PUT,
+    when(
+      method = PUT,
       uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr", body = JsString(ctutr)
     ).thenReturn(
       status = status
     )
 
   def stubStoreCHRN(journeyId: String, chrn: String)(status: Int): StubMapping =
-    when(method = PUT,
+    when(
+      method = PUT,
       uri = s"/incorporated-entity-identification/journey/$journeyId/chrn", body = JsString(chrn)
     ).thenReturn(
       status = status
     )
 
-  def stubStoreIdentifiersMatch(journeyId: String, identifiersMatch: IncorporatedEntityDetailsMatching)(status: Int): StubMapping =
-    when(method = PUT,
-      uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch", body = JsString(identifiersMatch.toString)
+  def stubStoreIdentifiersMatch(journeyId: String, identifiersMatch: IncorporatedEntityDetailsMatching)
+                               (status: Int): StubMapping =
+    when(
+      method = PUT,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch",
+      body = JsString(identifiersMatch.toString)
     ).thenReturn(
       status = status
     )
@@ -78,8 +91,10 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       optBody = Some(Json.stringify(identifiersMatch))
     )
 
-  def stubStoreRegistrationStatus(journeyId: String, registrationStatus: RegistrationStatus)(status: Int): StubMapping = {
-    when(method = PUT,
+  def stubStoreRegistrationStatus(journeyId: String, registrationStatus: RegistrationStatus)
+                                 (status: Int): StubMapping = {
+    when(
+      method = PUT,
       uri = s"/incorporated-entity-identification/journey/$journeyId/registration",
       body = Json.toJsObject(registrationStatus)
     ).thenReturn(
@@ -89,14 +104,18 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
 
   def verifyStoreRegistrationStatus(journeyId: String, registrationStatus: RegistrationStatus): Unit = {
     val jsonBody = Json.toJsObject(registrationStatus)
-    WiremockHelper.verifyPut(uri = s"/incorporated-entity-identification/journey/$journeyId/registration", optBody = Some(jsonBody.toString()))
+    WiremockHelper.verifyPut(
+      uri = s"/incorporated-entity-identification/journey/$journeyId/registration",
+      optBody = Some(jsonBody.toString())
+    )
   }
 
   def stubValidateIncorporatedEntityDetails(companyNumber: String,
                                             ctutr: Option[String]
                                            )(status: Int,
                                              body: JsObject = Json.obj()): StubMapping = {
-    when(method = POST,
+    when(
+      method = POST,
       uri = s"/incorporated-entity-identification/validate-details",
       body = Json.obj(
         "companyNumber" -> companyNumber,
@@ -109,7 +128,8 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
   }
 
   def stubRetrieveCompanyProfileFromBE(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = GET,
+    when(
+      method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId/companyProfile"
     ).thenReturn(
       status = status,
@@ -117,7 +137,8 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
     )
 
   def stubRetrieveBusinessVerificationStatus(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
-    when(method = GET,
+    when(
+      method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId/businessVerification"
     ).thenReturn(
       status = status,
@@ -125,15 +146,40 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
     )
 
   def stubRetrieveRegistrationStatus(journeyId: String)(status: Int, body: JsValue = Json.obj()): StubMapping =
-    when(method = GET,
+    when(
+      method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId/registration"
     ).thenReturn(
       status = status,
       body = body
     )
 
-  def stubRetrieveIncorporatedEntityInformation(journeyId: String)(status: Int, body: JsObject = Json.obj()): StubMapping =
-    when(method = GET,
+  def stubRetrieveRegistrationStatusTwice(journeyId: String)
+                                         (status1: Int,
+                                          status2: Int,
+                                          body1: JsValue = Json.obj(),
+                                          body2: JsValue = Json.obj()): StubMapping = {
+
+    val url = s"/incorporated-entity-identification/journey/$journeyId/registration"
+    val scenario = "TEST"
+    val state2 = "SECOND_RESPONSE"
+
+    stubFor(WireMock.get(urlEqualTo(url))
+      .inScenario(scenario)
+      .whenScenarioStateIs(Scenario.STARTED)
+      .willReturn(WireMock.status(status1).withBody(body1.toString()))
+      .willSetStateTo(state2))
+
+    stubFor(WireMock.get(urlEqualTo(url))
+      .inScenario(scenario)
+      .whenScenarioStateIs(state2)
+      .willReturn(WireMock.status(status2).withBody(body2.toString())))
+  }
+
+  def stubRetrieveIncorporatedEntityInformation(journeyId: String)
+                                               (status: Int, body: JsObject = Json.obj()): StubMapping =
+    when(
+      method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId"
     ).thenReturn(
       status = status,
@@ -141,7 +187,8 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
     )
 
   def stubRetrieveCtutr(journeyId: String)(status: Int, body: String = ""): StubMapping = {
-    when(method = GET,
+    when(
+      method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr"
     ).thenReturn(
       status = status,
@@ -150,7 +197,8 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
   }
 
   def stubRetrieveChrn(journeyId: String)(status: Int, body: String = ""): StubMapping = {
-    when(method = GET,
+    when(
+      method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId/chrn"
     ).thenReturn(
       status = status,
@@ -159,7 +207,8 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
   }
 
   def stubRemoveCtutr(journeyId: String)(status: Int, body: String = ""): StubMapping =
-    when(method = DELETE,
+    when(
+      method = DELETE,
       uri = s"/incorporated-entity-identification/journey/$journeyId/ctutr"
     ).thenReturn(
       status = status,
@@ -167,15 +216,18 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
     )
 
   def stubRemoveCHRN(journeyId: String)(status: Int, body: String = ""): StubMapping =
-    when(method = DELETE,
+    when(
+      method = DELETE,
       uri = s"/incorporated-entity-identification/journey/$journeyId/chrn"
     ).thenReturn(
       status = status,
       body = body
     )
 
-  def stubRetrieveIdentifiersMatch(journeyId: String)(status: Int, body: IncorporatedEntityDetailsMatching): StubMapping = {
-    when(method = GET,
+  def stubRetrieveIdentifiersMatch(journeyId: String)
+                                  (status: Int, body: IncorporatedEntityDetailsMatching): StubMapping = {
+    when(
+      method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId/identifiersMatch"
     ).thenReturn(
       status = status,
@@ -184,7 +236,8 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
   }
 
   def stubRemoveAllData(journeyId: String)(status: Int, body: String = ""): StubMapping =
-    when(method = DELETE,
+    when(
+      method = DELETE,
       uri = s"/incorporated-entity-identification/journey/$journeyId"
     ).thenReturn(
       status = status,

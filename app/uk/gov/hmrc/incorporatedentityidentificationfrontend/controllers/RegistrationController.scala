@@ -38,13 +38,11 @@ class RegistrationController @Inject()(registrationOrchestrationService: Registr
     implicit request =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
-          journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
-            journeyConfig =>
-              for {
-                _ <- registrationOrchestrationService.register(journeyId, journeyConfig)
-                _ <- auditService.auditJourney(journeyId, authInternalId)}
-              yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
-          }
+          for {
+            journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
+            _ <- registrationOrchestrationService.register(journeyId, journeyConfig)
+            _ <- auditService.auditJourney(journeyId, authInternalId)
+          } yield Redirect(routes.JourneyRedirectController.redirectToContinueUrl(journeyId))
         case None =>
           throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }

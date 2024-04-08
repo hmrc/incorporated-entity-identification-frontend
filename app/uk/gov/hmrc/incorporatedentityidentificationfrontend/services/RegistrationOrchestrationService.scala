@@ -16,6 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
+import play.api.Logging
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RegistrationConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
@@ -27,34 +28,54 @@ import scala.concurrent.{ExecutionContext, Future}
 @Singleton
 class RegistrationOrchestrationService @Inject()(storageService: StorageService,
                                                  registrationConnector: RegistrationConnector
-                                                )(implicit ec: ExecutionContext) {
+                                                )(implicit ec: ExecutionContext) extends Logging {
 
-  def register(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
-    shouldRegister <- storageService.retrieveBusinessVerificationStatus(journeyId).map {
-      case Some(BusinessVerificationPass | CtEnrolled) => true
-      case Some(BusinessVerificationNotEnoughInformationToChallenge |
-                BusinessVerificationNotEnoughInformationToCallBV |
-                BusinessVerificationFail) => false
-      case None if !journeyConfig.businessVerificationCheck => true
-      case None =>
-        throw new InternalServerException(s"Missing business verification state in database for $journeyId")
+  def register(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = {
+
+    def shouldRegister(): Future[Boolean] = {
+      storageService.retrieveBusinessVerificationStatus(journeyId).map {
+        case Some(BusinessVerificationPass | CtEnrolled) => true
+        case Some(BusinessVerificationNotEnoughInformationToChallenge |
+                  BusinessVerificationNotEnoughInformationToCallBV |
+                  BusinessVerificationFail) => false
+        case None if !journeyConfig.businessVerificationCheck => true
+        case None =>
+          throw new InternalServerException(s"Missing business verification state in database for $journeyId")
+      }
     }
-    registrationStatus <- if (shouldRegister) for {
-      optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
-      optCtutr <- storageService.retrieveCtutr(journeyId)
-      registrationStatus <-
-        (optCompanyProfile, optCtutr) match {
-          case (Some(companyProfile), Some(ctutr)) =>
-            journeyConfig.businessEntity match {
-              case LimitedCompany => registrationConnector.registerLimitedCompany(companyProfile.companyNumber, ctutr, journeyConfig.regime)
-              case RegisteredSociety => registrationConnector.registerRegisteredSociety(companyProfile.companyNumber, ctutr, journeyConfig.regime)
-              case CharitableIncorporatedOrganisation => Future.successful(RegistrationNotCalled) //Not currently registered
-            }
+
+    def register(): Future[RegistrationStatus] = {
+      for {
+        optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
+        optCtutr <- storageService.retrieveCtutr(journeyId)
+        registrationStatus <-
+          (optCompanyProfile, optCtutr) match {
+            case (Some(companyProfile), Some(ctutr)) =>
+              journeyConfig.businessEntity match {
+                case LimitedCompany => registrationConnector.registerLimitedCompany(companyProfile.companyNumber, ctutr, journeyConfig.regime)
+                case RegisteredSociety => registrationConnector.registerRegisteredSociety(companyProfile.companyNumber, ctutr, journeyConfig.regime)
+                case CharitableIncorporatedOrganisation => Future.successful(RegistrationNotCalled) //Not currently registered
+              }
+            case _ =>
+              throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
+          }
+      } yield registrationStatus
+    }
+
+    for {
+      sr <- shouldRegister()
+      existingRegistrationStatus <- storageService.retrieveRegistrationStatus(journeyId)
+      registrationStatus <- {
+        existingRegistrationStatus match {
+          case Some(status@Registered(_)) =>
+            logger.warn("[VER-4429] Registration submitted more than once")
+            Future.successful(status)
           case _ =>
-            throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
+            if (sr) register()
+            else Future.successful(RegistrationNotCalled)
         }
+      }
+      _ <- storageService.storeRegistrationStatus(journeyId, registrationStatus)
     } yield registrationStatus
-    else Future.successful(RegistrationNotCalled)
-    _ <- storageService.storeRegistrationStatus(journeyId, registrationStatus)
-  } yield registrationStatus
+  }
 }
