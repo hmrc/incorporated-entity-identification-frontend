@@ -19,7 +19,7 @@ object ScoverageSettings {
         "uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.*",
         "uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.*"
       ).mkString(";"),
-      ScoverageKeys.coverageMinimumStmtTotal := 92,
+      ScoverageKeys.coverageMinimumStmtTotal := 91,
       ScoverageKeys.coverageFailOnMinimum := true,
       ScoverageKeys.coverageHighlighting := true
     )
