@@ -30,7 +30,7 @@ object AppDependencies {
   )
 
   val it: Seq[ModuleID] = Seq(
-    "com.github.tomakehurst"  % "wiremock-jre8"           % "3.0.1" % Test,
+    "org.wiremock"           % "wiremock"                 % "3.5.4" % Test,
     "uk.gov.hmrc.mongo"      %% "hmrc-mongo-test-play-28" % "1.8.0" % Test
   )
 
