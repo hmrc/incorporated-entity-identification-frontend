@@ -3,7 +3,7 @@ import uk.gov.hmrc.DefaultBuildSettings
 val appName = "incorporated-entity-identification-frontend"
 
 ThisBuild / majorVersion := 1
-ThisBuild / scalaVersion := "2.13.8"
+ThisBuild / scalaVersion := "2.13.12"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtAutoBuildPlugin, SbtDistributablesPlugin)
