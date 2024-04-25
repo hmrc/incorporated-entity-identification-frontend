@@ -49,15 +49,15 @@ confirm-business.heading                                    = Cadarnhewch enw’
 confirm-business.change_company                             = Newidiwch y cwmni
 
 ## Capture Charity HMRC Reference number
-chrn.title                                                  = Beth yw cyfeirnod CThEM yr elusen?
-chrn.heading                                                = Beth yw cyfeirnod CThEM yr elusen?
-chrn.inset_text                                             = Os yw’r elusen wedi’i chofrestru ar gyfer Rhodd Cymorth, yna bydd ei chyfeirnod CThEM yr un peth â’i rhif Rhodd Cymorth. Nid yw hwn yr un peth â’r rhif elusen sydd ar gael ar y gofrestr elusennau.
+chrn.title                                                  = Beth yw cyfeirnod CThEF yr elusen?
+chrn.heading                                                = Beth yw cyfeirnod CThEF yr elusen?
+chrn.inset_text                                             = Os yw’r elusen wedi’i chofrestru ar gyfer Rhodd Cymorth, yna bydd ei chyfeirnod CThEF yr un peth â’i rhif Rhodd Cymorth. Nid yw hwn yr un peth â’r rhif elusen sydd ar gael ar y gofrestr elusennau.
 chrn.hint_text                                              = Gallai hyn fod hyd at 7 o gymeriadau, a rhaid iddo ddechrau gyda naill ai un neu ddwy lythyren ar y dechrau ac yna 1-5 rhif. Er enghraifft, A999 neu AB99999
-chrn.label_text                                             = Cyfeirnod CThEM
-chrn.no_chrn_link                                           = Nid oes gan yr elusen Gyfeirnod CThEM
-chrn.error.no-entry                                         = Nodwch gyfeirnod CThEM
-chrn.error.invalid-format                                   = Nodwch gyfeirnod CThEM yn y fformat cywir
-chrn.error.invalid-length                                   = Mae’n rhaid i gyfeirnod CThEM fod yn 7 o gymeriadau neu lai
+chrn.label_text                                             = Cyfeirnod CThEF
+chrn.no_chrn_link                                           = Nid oes gan yr elusen Gyfeirnod CThEF
+chrn.error.no-entry                                         = Nodwch gyfeirnod CThEF
+chrn.error.invalid-format                                   = Nodwch gyfeirnod CThEF yn y fformat cywir
+chrn.error.invalid-length                                   = Mae’n rhaid i gyfeirnod CThEF fod yn 7 o gymeriadau neu lai
 
 ## CT-UTR Page
 capture-ctutr.title                                         = Beth yw Cyfeirnod Unigryw y Trethdalwr ar gyfer y cwmni?
@@ -81,8 +81,8 @@ check-your-answers.heading                                  = Gwirio’ch atebio
 check-your-answers.company_number                           = Rhif cofrestru’r cwmni
 check-your-answers.ctutr                                    = Cyfeirnod Unigryw y Trethdalwr (UTR)
 check-your-answers.no-ctutr                                 = Nid oes gan y busnes UTR
-check-your-answers.chrn                                     = Cyfeirnod CThEM
-check-your-answers.no-chrn                                  = Nid oes gan yr elusen Gyfeirnod CThEM
+check-your-answers.chrn                                     = Cyfeirnod CThEF
+check-your-answers.no-chrn                                  = Nid oes gan yr elusen Gyfeirnod CThEF
 
 ## CTUTR Mismatch Error Page
 ctutr-mismatch.title                                        = Doedd dim modd cadarnhau’ch busnes
@@ -97,10 +97,10 @@ company-number-not-found.paragraph                          = Dydy’r rhif cwmn
 # CTUTR Not Found Page
 ctutr-not-found.title                                       = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
 ctutr-not-found.heading                                     = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
-ctutr-not-found.line_1                                      = Nid oeddem yn gallu paru’r manylion a nodwyd gennych â’r cofnodion sydd gan CThEM.
+ctutr-not-found.line_1                                      = Nid oeddem yn gallu paru’r manylion a nodwyd gennych â’r cofnodion sydd gan CThEF.
 ctutr-not-found.line_2                                      = Os gwnaethoch ddefnyddio’r manylion cywir, ni allwch barhau i gofrestru gan ddefnyddio’r gwasanaeth ar-lein hwn.
 ctutr-not-found.line_3a                                     = Mae angen
-ctutr-not-found.line_3_link                                 = cysylltu â Gwasanaeth Cwsmeriaid Cymraeg CThEM (yn agor tab newydd)
+ctutr-not-found.line_3_link                                 = cysylltu â Gwasanaeth Cwsmeriaid Cymraeg CThEF (yn agor tab newydd)
 ctutr-not-found.line_3b                                     = a
 ctutr-not-found.line_3c                                     = rhoi gwybod iddynt fod problem gyda’ch Cyfeirnod Unigryw y Trethdalwr ar gyfer Treth Gorfforaeth.
 ctutr-not-found.line_4                                      = Os gwnaethoch ddefnyddio’r manylion anghywir, gallwch
