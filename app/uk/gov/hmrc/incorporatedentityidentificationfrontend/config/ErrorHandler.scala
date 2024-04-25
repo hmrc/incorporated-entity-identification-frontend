@@ -24,7 +24,6 @@ import play.twirl.api.Html
 import uk.gov.hmrc.auth.core.AuthorisationException
 import uk.gov.hmrc.http.NotFoundException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.error_template
-import uk.gov.hmrc.play.bootstrap.config.AuthRedirects
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 import javax.inject.{Inject, Singleton}
