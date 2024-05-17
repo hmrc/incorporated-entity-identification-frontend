@@ -31,7 +31,7 @@ object AppDependencies {
 
   val it: Seq[ModuleID] = Seq(
     "org.wiremock"           % "wiremock"                 % "3.5.4" % Test,
-    "uk.gov.hmrc.mongo"      %% "hmrc-mongo-test-play-28" % "1.8.0" % Test
+    "uk.gov.hmrc.mongo"      %% "hmrc-mongo-test-play-30" % "1.8.0" % Test
   )
 
   def apply(): Seq[ModuleID] = compile ++ sharedTestDependencies ++ test ++ it
