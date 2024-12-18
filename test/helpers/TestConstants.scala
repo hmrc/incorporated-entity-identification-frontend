@@ -148,8 +148,6 @@ object TestConstants {
 
   val testIrCtEnrolment: Enrolment = Enrolment("IR-CT", Seq(EnrolmentIdentifier("UTR", testCtutr)), "Activated", None)
 
-  def testJourneyConfigLimitedCompanyWithoutBV(): JourneyConfig = testJourneyConfig(LimitedCompany).copy(businessVerificationCheck = false)
-
   def testJourneyConfig(businessEntity: BusinessEntity): JourneyConfig = JourneyConfig(
     continueUrl = testContinueUrl,
     pageConfig = PageConfig(
@@ -163,6 +161,8 @@ object TestConstants {
     regime = testRegime
   )
 
-  def testJourneyConfigRegisteredSocietyWithoutBV(): JourneyConfig = testJourneyConfig(RegisteredSociety).copy(businessVerificationCheck = false)
+  def testLimitedCompanyJourneyConfig: JourneyConfig = testJourneyConfig(LimitedCompany)
+  def testRegisteredSocietyJourneyConfig: JourneyConfig = testJourneyConfig(RegisteredSociety)
+  def testCharitableIncorporatedOrganisationJourneyConfig: JourneyConfig = testJourneyConfig(CharitableIncorporatedOrganisation)
 
 }

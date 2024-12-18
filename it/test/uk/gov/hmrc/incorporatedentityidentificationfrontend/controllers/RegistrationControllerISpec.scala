@@ -57,19 +57,25 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
+          stubLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)(status = OK, body = testSuccessfulRegistrationJson)
+          stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
+
+          // Stub requests for audit data
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
-          stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
+          stubRetrieveChrn(testJourneyId)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
 
           lazy val result = get(s"$baseUrl/$testJourneyId/register")
+
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-          verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
+
+          verifyLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)
           verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
+
           verifyAuditDetail(
             testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus = "success")
           )
@@ -85,19 +91,24 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
+          stubLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)(status = OK, body = testFailedRegistrationJson(registrationFailure))
+          stubStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(status = OK)
+
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson(registrationFailure))
-          stubStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(status = OK)
+          stubRetrieveChrn(testJourneyId)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
 
           val result = get(s"$baseUrl/$testJourneyId/register")
+
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-          verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
+
+          verifyLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)
           verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
+
           verifyAuditDetail(
             testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus = "fail")
           )
@@ -115,80 +126,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
         }
       }
 
-      "throw an exception" when {
-        "business verification is in an invalid state" in {
-
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
-          ))
-
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          stubAudit()
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
-
-          val result = get(s"$baseUrl/$testJourneyId/register")
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-
-        "company profile is missing" in {
-
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
-          ))
-
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          stubAudit()
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
-          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
-
-          val result = get(s"$baseUrl/$testJourneyId/register")
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-
-        "ctutr is missing" in {
-
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
-          ))
-
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          stubAudit()
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-          stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
-
-          val result = get(s"$baseUrl/$testJourneyId/register")
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-
-        "business verification status is missing" in {
-
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testLimitedCompanyJourneyConfig
-          ))
-
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          stubAudit()
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = NOT_FOUND)
-
-          val result = get(s"$baseUrl/$testJourneyId/register")
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-      }
     }
+
     "the business entity is Registered Society" should {
       "redirect to continueUrl" when {
         "registration is successful and registration status is successfully stored" in {
@@ -201,19 +140,28 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
+          stubRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)(status = OK, body = testSuccessfulRegistrationJson)
+          stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
+
+          // Stub requests for audit data
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testSuccessfulRegistrationJson)
-          stubStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)(status = OK)
+          stubRetrieveChrn(testJourneyId)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testSuccessfulRegistration))
 
           val result = get(s"$baseUrl/$testJourneyId/register")
+
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-          verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)
+
+          verifyRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)
           verifyStoreRegistrationStatus(testJourneyId, testSuccessfulRegistration)
+
+          verifyAuditDetail(
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus = "success")
+          )
         }
 
         "registration failed and registration status is successfully stored" in {
@@ -226,24 +174,30 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
 
           stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
           stubAudit()
+          stubRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)(status = OK, body = testFailedRegistrationJson(registrationFailure))
+          stubStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(status = OK)
+
           stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
           stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
-          stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(status = OK, body = testFailedRegistrationJson(registrationFailure))
-          stubStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(status = OK)
+          stubRetrieveChrn(testJourneyId)(status = OK)
           stubRetrieveIdentifiersMatch(testJourneyId)(status = OK, body = DetailsMatched)
+          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationPassJson)
           stubRetrieveRegistrationStatus(testJourneyId)(status = OK, body = Json.toJson(testFailedRegistration))
-
 
           val result = get(s"$baseUrl/$testJourneyId/register")
           result.status mustBe SEE_OTHER
           result.header(LOCATION) mustBe Some(routes.JourneyRedirectController.redirectToContinueUrl(testJourneyId).url)
-          verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)
+
+          verifyRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)
           verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
+
+          verifyAuditDetail(
+            testRegisterAuditEventJson(testCompanyNumber, isMatch = "true", testCtutr, verificationStatus = "success", registrationStatus = "fail")
+          )
         }
       }
 
-      "redirect to SignInPage" when {
+        "redirect to SignInPage" when {
         "the user is unauthorised" in {
           stubAuthFailure()
           stubAudit()
@@ -253,80 +207,15 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
           result.header(LOCATION) mustBe Some(s"/bas-gateway/sign-in?continue_url=%2Fidentify-your-incorporated-business%2F$testJourneyId%2Fregister&origin=incorporated-entity-identification-frontend")
         }
       }
-
-      "throw an exception" when {
-        "business verification is in an invalid state" in {
-
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testRegisteredSocietyJourneyConfig
-          ))
-
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          stubAudit()
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, testBusinessVerificationFailJson)
-
-          val result = get(s"$baseUrl/$testJourneyId/register")
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-
-        "company profile is missing" in {
-
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testRegisteredSocietyJourneyConfig
-          ))
-
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          stubAudit()
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
-          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
-
-          val result = get(s"$baseUrl/$testJourneyId/register")
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-
-        "ctutr is missing" in {
-
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testRegisteredSocietyJourneyConfig
-          ))
-
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          stubAudit()
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-          stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = OK, body = testBusinessVerificationFailJson)
-
-          val result = get(s"$baseUrl/$testJourneyId/register")
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-
-        "business verification status is missing" in {
-
-          await(journeyConfigRepository.insertJourneyConfig(
-            journeyId = testJourneyId,
-            authInternalId = testInternalId,
-            journeyConfig = testRegisteredSocietyJourneyConfig
-          ))
-
-          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          stubAudit()
-          stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = Json.toJsObject(testCompanyProfile))
-          stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
-          stubRetrieveBusinessVerificationStatus(testJourneyId)(status = NOT_FOUND)
-
-          val result = get(s"$baseUrl/$testJourneyId/register")
-          result.status mustBe INTERNAL_SERVER_ERROR
-        }
-      }
     }
+
+    "the response from auth does not contain an internal identifier return an internal server error" in {
+        stubAuth(OK, emptyAuthResponse())
+
+        val result = get(s"$baseUrl/$testJourneyId/register")
+
+        result.status mustBe INTERNAL_SERVER_ERROR
+    }
+
   }
 }

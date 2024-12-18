@@ -18,39 +18,44 @@ package test.uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs
 
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import play.api.libs.json.{JsObject, Json}
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.JourneyConfig
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.{WireMockMethods, WiremockHelper}
 
 trait RegisterStub extends WireMockMethods {
 
-  private def jsonBody(crn: String, ctutr: String, regime: String): JsObject = {
+  private def jsonBody(journeyId: String, journeyConfig: JourneyConfig): JsObject = {
     Json.obj(
-      "crn" -> crn,
-      "ctutr" -> ctutr,
-      "regime" -> regime)
+      "journeyId" -> journeyId,
+      "businessVerificationCheck" -> journeyConfig.businessVerificationCheck,
+      "regime" -> journeyConfig.regime)
   }
 
-  def stubLimitedCompanyRegister(crn: String, ctutr: String, regime: String)(status: Int, body: JsObject): StubMapping = {
-    when(method = POST, uri = "/incorporated-entity-identification/register-limited-company", jsonBody(crn, ctutr, regime))
+  def stubLimitedCompanyRegister(journeyId: String, journeyConfig: JourneyConfig)(status: Int, body: JsObject): StubMapping = {
+    when(method = POST, uri = "/incorporated-entity-identification/register-limited-company", jsonBody(journeyId, journeyConfig))
       .thenReturn(
         status = status,
         body = body
       )
   }
 
-  def verifyLimitedCompanyRegister(crn: String, ctutr: String, regime: String): Unit = {
-    WiremockHelper.verifyPost(uri = "/incorporated-entity-identification/register-limited-company", optBody = Some(jsonBody(crn, ctutr, regime).toString()))
+  def verifyLimitedCompanyRegister(journeyId: String, journeyConfig: JourneyConfig): Unit = {
+    WiremockHelper.verifyPost(
+      uri = "/incorporated-entity-identification/register-limited-company", optBody = Some(jsonBody(journeyId, journeyConfig).toString())
+    )
   }
 
-  def stubRegisteredSocietyRegister(crn: String, ctutr: String, regime: String)(status: Int, body: JsObject): StubMapping = {
-    when(method = POST, uri = "/incorporated-entity-identification/register-registered-society", jsonBody(crn, ctutr, regime))
+  def stubRegisteredSocietyRegister(journeyId: String, journeyConfig: JourneyConfig)(status: Int, body: JsObject): StubMapping = {
+    when(method = POST, uri = "/incorporated-entity-identification/register-registered-society", jsonBody(journeyId, journeyConfig))
       .thenReturn(
         status = status,
         body = body
       )
   }
 
-  def verifyRegisteredSocietyRegister(crn: String, ctutr: String, regime: String): Unit = {
-    WiremockHelper.verifyPost(uri = "/incorporated-entity-identification/register-registered-society", optBody = Some(jsonBody(crn, ctutr, regime).toString()))
+  def verifyRegisteredSocietyRegister(journeyId: String, journeyConfig: JourneyConfig): Unit = {
+    WiremockHelper.verifyPost(
+      uri = "/incorporated-entity-identification/register-registered-society", optBody = Some(jsonBody(journeyId, journeyConfig).toString())
+    )
   }
 
   def verifyRegisterAudit(): Unit = {

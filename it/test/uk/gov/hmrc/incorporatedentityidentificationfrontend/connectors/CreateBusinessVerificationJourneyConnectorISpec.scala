@@ -16,15 +16,18 @@
 
 package test.uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import play.api.http.Status.FORBIDDEN
+import org.scalatest.Succeeded
+import play.api.http.Status.{FORBIDDEN, INTERNAL_SERVER_ERROR}
 import play.api.libs.json.Json
 import play.api.test.Helpers.{CREATED, NOT_FOUND, await, defaultAwaitTimeout}
-import uk.gov.hmrc.http.HeaderCarrier
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyCreated, NotEnoughEvidence, UserLockedOut}
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{BusinessVerificationStub, IncorporatedEntityIdentificationStub}
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CreateBusinessVerificationJourneyConnector
+
+import scala.concurrent.ExecutionContext.global
 
 class CreateBusinessVerificationJourneyConnectorISpec extends ComponentSpecHelper with BusinessVerificationStub with IncorporatedEntityIdentificationStub {
 
@@ -82,6 +85,22 @@ class CreateBusinessVerificationJourneyConnectorISpec extends ComponentSpecHelpe
           .createBusinessVerificationJourney(testJourneyId, testCtutr, testLimitedCompanyJourneyConfigWithServiceName))
 
         result mustBe Left(UserLockedOut)
+      }
+    }
+
+    "throw an internal server exception" when {
+      "the connector receives a response with an unexpected status" in {
+
+        stubCreateBusinessVerificationJourney(testCtutr, testJourneyId,
+          testLimitedCompanyJourneyConfigWithServiceName)(INTERNAL_SERVER_ERROR, redirectUri)
+
+        await(
+          createBusinessVerificationJourneyConnector
+          .createBusinessVerificationJourney(testJourneyId, testCtutr, testLimitedCompanyJourneyConfigWithServiceName).failed.map { ex =>
+            ex mustBe a[InternalServerException]
+          }(global)
+        ) mustBe Succeeded
+
       }
     }
   }
