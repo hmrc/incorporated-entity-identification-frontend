@@ -23,7 +23,7 @@ import org.scalatest.{BeforeAndAfterEach, Suite}
 import org.scalatestplus.mockito.MockitoSugar
 import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RegistrationConnector
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.RegistrationStatus
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, RegistrationStatus}
 
 import scala.concurrent.Future
 
@@ -37,37 +37,33 @@ trait MockRegistrationConnector extends MockitoSugar with BeforeAndAfterEach {
     reset(mockRegistrationConnector)
   }
 
-  def mockRegisterLimitedCompany(crn: String, ctutr: String, regime: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
+  def mockRegisterLimitedCompany(journeyId: String, journeyConfig: JourneyConfig)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
     when(mockRegistrationConnector.registerLimitedCompany(
-      ArgumentMatchers.eq(crn),
-      ArgumentMatchers.eq(ctutr),
-      ArgumentMatchers.eq(regime)
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(journeyConfig)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
   }
 
-  def verifyRegistrationLimitedCompany(crn: String, ctutr: String, regime: String): Unit = {
+  def verifyRegistrationLimitedCompany(journeyId: String, journeyConfig: JourneyConfig): Unit = {
     verify(mockRegistrationConnector).registerLimitedCompany(
-      ArgumentMatchers.eq(crn),
-      ArgumentMatchers.eq(ctutr),
-      ArgumentMatchers.eq(regime)
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(journeyConfig)
     )(ArgumentMatchers.any[HeaderCarrier])
   }
 
-  def mockRegisterRegisteredSociety(crn: String, ctutr: String, regime: String)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
+  def mockRegisterRegisteredSociety(journeyId: String, journeyConfig: JourneyConfig)(response: Future[RegistrationStatus]): OngoingStubbing[_] = {
     when(mockRegistrationConnector.registerRegisteredSociety(
-      ArgumentMatchers.eq(crn),
-      ArgumentMatchers.eq(ctutr),
-      ArgumentMatchers.eq(regime)
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(journeyConfig)
     )(ArgumentMatchers.any[HeaderCarrier])
     ).thenReturn(response)
   }
 
-  def verifyRegistrationRegisteredSociety(crn: String, ctutr: String, regime: String): Unit = {
+  def verifyRegistrationRegisteredSociety(journeyId: String, journeyConfig: JourneyConfig): Unit = {
     verify(mockRegistrationConnector).registerRegisteredSociety(
-      ArgumentMatchers.eq(crn),
-      ArgumentMatchers.eq(ctutr),
-      ArgumentMatchers.eq(regime)
+      ArgumentMatchers.eq(journeyId),
+      ArgumentMatchers.eq(journeyConfig)
     )(ArgumentMatchers.any[HeaderCarrier])
   }
 
