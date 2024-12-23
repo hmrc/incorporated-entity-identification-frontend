@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.services
 
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
+import uk.gov.hmrc.http.HeaderCarrier
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RegistrationConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
@@ -30,31 +30,11 @@ class RegistrationOrchestrationService @Inject()(storageService: StorageService,
                                                 )(implicit ec: ExecutionContext) {
 
   def register(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = for {
-    shouldRegister <- storageService.retrieveBusinessVerificationStatus(journeyId).map {
-      case Some(BusinessVerificationPass | CtEnrolled) => true
-      case Some(BusinessVerificationNotEnoughInformationToChallenge |
-                BusinessVerificationNotEnoughInformationToCallBV |
-                BusinessVerificationFail) => false
-      case None if !journeyConfig.businessVerificationCheck => true
-      case None =>
-        throw new InternalServerException(s"Missing business verification state in database for $journeyId")
-    }
-    registrationStatus <- if (shouldRegister) for {
-      optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
-      optCtutr <- storageService.retrieveCtutr(journeyId)
-      registrationStatus <-
-        (optCompanyProfile, optCtutr) match {
-          case (Some(companyProfile), Some(ctutr)) =>
-            journeyConfig.businessEntity match {
-              case LimitedCompany => registrationConnector.registerLimitedCompany(companyProfile.companyNumber, ctutr, journeyConfig.regime)
-              case RegisteredSociety => registrationConnector.registerRegisteredSociety(companyProfile.companyNumber, ctutr, journeyConfig.regime)
+    registrationStatus <- journeyConfig.businessEntity match {
+              case LimitedCompany => registrationConnector.registerLimitedCompany(journeyId, journeyConfig)
+              case RegisteredSociety => registrationConnector.registerRegisteredSociety(journeyId, journeyConfig)
               case CharitableIncorporatedOrganisation => Future.successful(RegistrationNotCalled) //Not currently registered
             }
-          case _ =>
-            throw new InternalServerException(s"Missing required data for registration in database for $journeyId")
-        }
-    } yield registrationStatus
-    else Future.successful(RegistrationNotCalled)
     _ <- storageService.storeRegistrationStatus(journeyId, registrationStatus)
   } yield registrationStatus
 }

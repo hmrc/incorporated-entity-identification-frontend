@@ -49,32 +49,32 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
   "registerLimitedCompany" should {
     "return Registered" when {
       "the registration has been successful" in {
-        stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(OK, testSuccessfulRegistrationJson)
+        stubLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)(OK, testSuccessfulRegistrationJson)
 
-        val result = await(registrationConnector.registerLimitedCompany(testCompanyNumber, testCtutr, testRegime))
+        val result = await(registrationConnector.registerLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig))
 
         result mustBe Registered(testSafeId)
-        verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
+        verifyLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)
       }
     }
     "return RegistrationFailed" when {
       "the registration has not been successful" in {
 
-        stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(OK, testFailedRegistrationJson(singleRegistrationFailure))
+        stubLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)(OK, testFailedRegistrationJson(singleRegistrationFailure))
 
-        val result = await(registrationConnector.registerLimitedCompany(testCompanyNumber, testCtutr, testRegime))
+        val result = await(registrationConnector.registerLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig))
 
         result match {
           case RegistrationFailed(Some(failures)) => failures mustBe testRegistrationFailure
           case _ => fail("Incorrect RegistrationStatus has been returned")
         }
-        verifyLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)
+        verifyLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)
       }
       "multiple failures have been returned" in {
 
-        stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(OK, testFailedRegistrationJson(multipleRegistrationFailure))
+        stubLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)(OK, testFailedRegistrationJson(multipleRegistrationFailure))
 
-        val result = await(registrationConnector.registerLimitedCompany(testCompanyNumber, testCtutr, testRegime))
+        val result = await(registrationConnector.registerLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig))
 
         result match {
           case RegistrationFailed(Some(failures)) => failures mustBe testMultipleRegistrationFailure
@@ -85,45 +85,47 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
 
     "throws InternalServerException" when {
       "the registration http status is different from Ok and INTERNAL_SERVER_ERROR" in {
-        stubLimitedCompanyRegister(testCompanyNumber, testCtutr, testRegime)(UNAUTHORIZED, Json.obj())
+        stubLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)(UNAUTHORIZED, Json.obj())
 
         val actualException: InternalServerException = intercept[InternalServerException] {
-          await(registrationConnector.registerLimitedCompany(testCompanyNumber, testCtutr, testRegime))
+          await(registrationConnector.registerLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig))
         }
         actualException.getMessage mustBe s"Unexpected response from Register API - status = 401, body = {}"
       }
     }
   }
+
   "registerRegisteredSociety" should {
     "return Registered" when {
       "the registration has been successful" in {
-        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(OK, testSuccessfulRegistrationJson)
+        stubRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)(OK, testSuccessfulRegistrationJson)
 
-        val result = await(registrationConnector.registerRegisteredSociety(testCompanyNumber, testCtutr, testRegime))
+        val result = await(registrationConnector.registerRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig))
 
         result mustBe Registered(testSafeId)
-        verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)
+
+        verifyRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)
       }
     }
     "return RegistrationFailed" when {
       "the registration has not been successful" in {
 
-        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(OK, testFailedRegistrationJson(singleRegistrationFailure))
+        stubRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)(OK, testFailedRegistrationJson(singleRegistrationFailure))
 
-        val result = await(registrationConnector.registerRegisteredSociety(testCompanyNumber, testCtutr, testRegime))
+        val result = await(registrationConnector.registerRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig))
 
         result match {
           case RegistrationFailed(Some(failures)) => failures mustBe testRegistrationFailure
           case _ => fail("Incorrect RegistrationStatus has been returned")
         }
-        verifyRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)
+        verifyRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)
       }
 
       "multiple failures have been returned" in {
 
-        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(OK, testFailedRegistrationJson(multipleRegistrationFailure))
+        stubRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)(OK, testFailedRegistrationJson(multipleRegistrationFailure))
 
-        val result = await(registrationConnector.registerRegisteredSociety(testCompanyNumber, testCtutr, testRegime))
+        val result = await(registrationConnector.registerRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig))
 
         result match {
           case RegistrationFailed(Some(failures)) => failures mustBe testMultipleRegistrationFailure
@@ -131,14 +133,14 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
         }
       }
 
-
     }
+
     "throws InternalServerException" when {
       "the registration http status is different from Ok and INTERNAL_SERVER_ERROR" in {
-        stubRegisteredSocietyRegister(testCompanyNumber, testCtutr, testRegime)(UNAUTHORIZED, Json.obj())
+        stubRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)(UNAUTHORIZED, Json.obj())
 
         val actualException: InternalServerException = intercept[InternalServerException] {
-          await(registrationConnector.registerRegisteredSociety(testCompanyNumber, testCtutr, testRegime))
+          await(registrationConnector.registerRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig))
         }
         actualException.getMessage mustBe s"Unexpected response from Register API - status = 401, body = {}"
       }

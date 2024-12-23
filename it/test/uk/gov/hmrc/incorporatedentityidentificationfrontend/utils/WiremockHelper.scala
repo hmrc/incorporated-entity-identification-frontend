@@ -25,7 +25,7 @@ import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.matching.MatchResult.{exactMatch, noMatch}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
-import play.api.libs.json.{JsDefined, JsObject, Json}
+import play.api.libs.json.{JsDefined, JsObject, JsString, Json}
 
 import scala.util.{Success, Try}
 
@@ -113,16 +113,22 @@ object WiremockHelper extends Eventually with IntegrationPatience {
 
   def verifyAuditDetail(expectedAudit: JsObject): Unit = {
     val uriMapping = postRequestedFor(urlEqualTo("/write/audit"))
+
     val postRequest = uriMapping.andMatching {
       (request: Request) =>
         Try(Json.parse(request.getBodyAsString)) match {
-          case Success(auditJson) => auditJson \ "detail" match {
-            case JsDefined(auditDetail) if auditDetail == expectedAudit => exactMatch()
-            case _ => noMatch()
+          case Success(auditJson) => auditJson \ "auditType" match {
+            case JsDefined(auditType) if auditType == JsString("IncorporatedEntityRegistration") =>
+              auditJson \ "detail" match {
+                case JsDefined(auditDetail) if auditDetail.as[JsObject].equals(expectedAudit)=> exactMatch()
+                case _ => noMatch()
+              }
+            case _ => exactMatch() // We only want to test audit events of type IncorporatedEntityRegistration
           }
           case _ => noMatch()
         }
     }
+
     verify(postRequest)
   }
 }

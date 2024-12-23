@@ -47,6 +47,8 @@ trait AuthStub extends WireMockMethods {
     "allEnrolments" -> enrolments
   )
 
+  def emptyAuthResponse(): JsObject = Json.obj()
+
   val irctEnrolment: JsObject = Json.obj(
     "key" -> IRCTEnrolmentKey,
     "identifiers" -> Json.arr(
