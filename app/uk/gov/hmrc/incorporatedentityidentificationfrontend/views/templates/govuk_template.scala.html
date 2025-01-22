@@ -35,10 +35,6 @@
 @(pageConfig: PageConfig, title: String, timeout: Boolean = true, showBackLink: Boolean = true)(contentBlock: Html)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 @head = {
-        <!--[if lte IE 8]><link href=' @controllers.routes.Assets.versioned("stylesheets/application-ie-8.css")' rel="stylesheet" @{CSPNonce.attr} type="text/css" /><![endif]-->
-        <!--[if gt IE 8]><!--> <link href='@controllers.routes.Assets.versioned("stylesheets/application.css")' media="screen" rel="stylesheet" @{CSPNonce.attr} type="text/css" />
-        <!--<![endif]-->
-
     @hmrcTimeoutDialogHelper(signOutUrl = pageConfig.signOutUrl)
 }
 
@@ -54,10 +50,6 @@
     ))
 }
 
-@scripts = {
-    <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("javascripts/backLink.js")'></script>
-}
-
 @hmrcLayout(
     pageTitle = Some(title),
     isWelshTranslationAvailable = true,
@@ -66,6 +58,5 @@
     accessibilityStatementUrl = Some(pageConfig.accessibilityUrl),
     phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl(pageConfig.deskProServiceId))),
     serviceName = Some(TitleHelper.getServiceName(messages)),
-    backLinkUrl = Some("#"),
-    additionalScriptsBlock = Some(scripts)
+    backLink = if(showBackLink){ Some(BackLink.mimicsBrowserBackButtonViaJavaScript) } else None
 )(content)
