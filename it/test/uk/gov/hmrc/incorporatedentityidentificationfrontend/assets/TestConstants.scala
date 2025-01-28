@@ -151,6 +151,21 @@ object TestConstants {
     )
   }
 
+  def testRegisterCIOAuditEventJson(companyNumber: String,
+                                    isMatch: String,
+                                    chrn : String,
+                                    verificationStatus: String,
+                                    registrationStatus: String): JsObject =
+    Json.obj(
+      "callingService" -> "Entity Validation Service",
+      "businessType" -> "CIO",
+      "companyNumber" -> companyNumber,
+      "isMatch" -> isMatch,
+      "VerificationStatus" -> verificationStatus,
+      "RegisterApiStatus" -> registrationStatus,
+      "CHRN" -> chrn
+    )
+
   val testJourneyConfigWithoutAccessibilityUrlAsJsObject: JsObject =
     Json.obj(
       "continueUrl" -> testContinueUrl,
