@@ -23,7 +23,7 @@
       h1: h1)
 
 
-@(pageTitle: String, heading: String, message: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
+@(pageTitle: String, heading: String, message: String)(implicit request: RequestHeader, messages: Messages, appConfig: AppConfig)
 
 <!--TODO - Update this to use the correct journey config-->
 @layout(PageConfig(Some(appConfig.defaultServiceName), "vrs", appConfig.vatRegFeedbackUrl, "", None), pageTitle) {

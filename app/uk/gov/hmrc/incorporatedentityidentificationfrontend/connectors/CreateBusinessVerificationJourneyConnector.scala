@@ -17,8 +17,9 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, Json, Writes}
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CreateBusinessVerificationJourneyConnector.BusinessVerificationHttpReads
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
@@ -28,7 +29,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
+class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClientV2,
                                                            appConfig: AppConfig)
                                                           (implicit ec: ExecutionContext) {
 
@@ -57,12 +58,8 @@ class CreateBusinessVerificationJourneyConnector @Inject()(http: HttpClient,
         "pageTitle" -> pageTitle
       )
 
-    http.POST[JsObject, Either[JourneyCreationFailure, JourneyCreated]](appConfig.createBusinessVerificationJourneyUrl, jsonBody)(
-      implicitly[Writes[JsObject]],
-      BusinessVerificationHttpReads,
-      hc,
-      ec
-    )
+    http.post(url"${appConfig.createBusinessVerificationJourneyUrl}")(hc).withBody(jsonBody)
+      .execute[Either[JourneyCreationFailure, JourneyCreated]](BusinessVerificationHttpReads, ec)
   }
 
 }

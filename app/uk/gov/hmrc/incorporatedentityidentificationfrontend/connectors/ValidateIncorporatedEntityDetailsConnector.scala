@@ -18,6 +18,7 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.ValidateIncorporatedEntityDetailsHttpParser._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityDetailsMatching
@@ -25,7 +26,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedE
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class ValidateIncorporatedEntityDetailsConnector @Inject()(http: HttpClient,
+class ValidateIncorporatedEntityDetailsConnector @Inject()(http: HttpClientV2,
                                                            appConfig: AppConfig
                                                           )(implicit ec: ExecutionContext) {
 
@@ -35,7 +36,8 @@ class ValidateIncorporatedEntityDetailsConnector @Inject()(http: HttpClient,
         "companyNumber" -> companyNumber,
         "ctutr" -> ctutr
       )
-    http.POST(appConfig.validateIncorporatedEntityDetailsUrl, jsonBody)
+    http.post(url"${appConfig.validateIncorporatedEntityDetailsUrl}").withBody(jsonBody)
+      .execute[IncorporatedEntityDetailsMatching](ValidateIncorporatedEntityDetailsHttpReads, ec)
   }
 }
 

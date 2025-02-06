@@ -18,16 +18,18 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import play.api.http.Status.CREATED
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CreateJourneyHttpParser.CreateJourneyHttpReads
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class JourneyConnector @Inject()(httpClient: HttpClient,
+class JourneyConnector @Inject()(httpClient: HttpClientV2,
                                  appConfig: AppConfig)(implicit ec: ExecutionContext) {
   def createJourney()(implicit hc: HeaderCarrier): Future[String] =
-    httpClient.POSTEmpty[String](appConfig.createJourneyUrl)(CreateJourneyHttpReads, hc, ec)
+    httpClient.post(url"${appConfig.createJourneyUrl}")(hc).execute[String](CreateJourneyHttpReads, ec)
+
 }
 
 object CreateJourneyHttpParser {

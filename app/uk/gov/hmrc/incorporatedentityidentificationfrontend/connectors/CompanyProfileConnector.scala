@@ -21,25 +21,20 @@ import play.api.libs.functional.syntax._
 import play.api.libs.json._
 import play.api.Logging
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CompanyProfileHttpParser.CompanyProfileHttpReads
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.CompanyProfile
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class CompanyProfileConnector @Inject()(http: HttpClient,
+class CompanyProfileConnector @Inject()(http: HttpClientV2,
                                         appConfig: AppConfig
                                        )(implicit ec: ExecutionContext) {
-
-  import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CompanyProfileHttpParser._
-
   def getCompanyProfile(companyNumber: String)(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
-    http.GET[Option[CompanyProfile]](appConfig.getCompanyProfileUrl(companyNumber.toUpperCase))(
-      CompanyProfileHttpReads,
-      hc,
-      ec
-    )
+    http.get(url"${appConfig.getCompanyProfileUrl(companyNumber.toUpperCase)}")(hc).execute[Option[CompanyProfile]](CompanyProfileHttpReads, ec)
 }
 
 object CompanyProfileHttpParser extends Logging {
