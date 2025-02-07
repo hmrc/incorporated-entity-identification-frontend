@@ -14,17 +14,19 @@
  * limitations under the License.
  *@
 
+@import uk.gov.hmrc.govukfrontend.views.Aliases.BackLink
 @import uk.gov.hmrc.hmrcfrontend.views.Aliases.{Cy, En}
 @import uk.gov.hmrc.hmrcfrontend.views.config.StandardBetaBanner
 @import uk.gov.hmrc.hmrcfrontend.views.html.components.{HmrcHeader, HmrcReportTechnicalIssue}
-@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcLayout, HmrcTimeoutDialogHelper, HmrcTrackingConsentSnippet}
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.{HmrcStandardPage, HmrcTimeoutDialogHelper, HmrcTrackingConsentSnippet}
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.hmrcstandardpage._
 @import uk.gov.hmrc.hmrcfrontend.views.viewmodels.reporttechnicalissue.ReportTechnicalIssue
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper
 @import views.html.helper.CSPNonce
 
-@this(hmrcLayout: HmrcLayout,
+@this(hmrcStandardPage: HmrcStandardPage,
         hmrcHeader: HmrcHeader,
         appConfig: AppConfig,
         hmrcTrackingConsentSnippet: HmrcTrackingConsentSnippet,
@@ -58,14 +60,22 @@
     <script @{CSPNonce.attr} src='@controllers.routes.Assets.versioned("javascripts/backLink.js")'></script>
 }
 
-@hmrcLayout(
+@hmrcStandardPage(
+  HmrcStandardPageParams(
+    serviceURLs = ServiceURLs(
+      signOutUrl = Some(pageConfig.signOutUrl),
+      accessibilityStatementUrl = Some(pageConfig.accessibilityUrl)
+    ),
+    banners = Banners(
+      phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl(pageConfig.deskProServiceId)))
+    ),
+    serviceName = Some(TitleHelper.getServiceName(messages)),
     pageTitle = Some(title),
     isWelshTranslationAvailable = true,
-    signOutUrl = Some(pageConfig.signOutUrl),
-    additionalHeadBlock = Some(head),
-    accessibilityStatementUrl = Some(pageConfig.accessibilityUrl),
-    phaseBanner = Some(standardBetaBanner(url = appConfig.betaFeedbackUrl(pageConfig.deskProServiceId))),
-    serviceName = Some(TitleHelper.getServiceName(messages)),
-    backLinkUrl = Some("#"),
-    additionalScriptsBlock = Some(scripts)
+    backLink = Some(BackLink(href = "#")),
+    templateOverrides = TemplateOverrides(
+      additionalHeadBlock = Some(head),
+      additionalScriptsBlock = Some(scripts)
+    )
+  )
 )(content)

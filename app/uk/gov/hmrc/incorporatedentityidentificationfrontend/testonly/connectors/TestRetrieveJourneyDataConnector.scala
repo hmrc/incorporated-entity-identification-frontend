@@ -17,7 +17,8 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors
 
 import uk.gov.hmrc.http.HttpReads.Implicits._
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, StringContextOps}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 
@@ -25,14 +26,12 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestRetrieveJourneyDataConnector @Inject()(httpClient: HttpClient,
+class TestRetrieveJourneyDataConnector @Inject()(httpClient: HttpClientV2,
                                                  appConfig: AppConfig
                                                 )(implicit ec: ExecutionContext) {
 
   def retrieveJourneyData(journeyId: String)(implicit hc: HeaderCarrier): Future[String] =
-    httpClient
-      .GET[HttpResponse](appConfig.selfBaseUrl + routes.JourneyController.retrieveJourneyData(journeyId).url)
-      .map(_.body)
+    httpClient.get(url"${appConfig.selfBaseUrl + routes.JourneyController.retrieveJourneyData(journeyId).url}").execute[HttpResponse].map(_.body)
 
 }
 

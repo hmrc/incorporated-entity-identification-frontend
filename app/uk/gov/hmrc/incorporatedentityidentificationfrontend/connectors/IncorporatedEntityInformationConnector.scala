@@ -16,8 +16,9 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import play.api.libs.json.{Reads, Writes}
+import play.api.libs.json.{Json, Reads, Writes}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.IncorporatedEntityIdentificationStorageHttpParser.IncorporatedEntityIdentificationStorageHttpReads
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.RemoveIncorporatedEntityDetailsHttpParser.{RemoveIncorporatedEntityDetailsHttpReads, SuccessfullyRemoved}
@@ -27,7 +28,7 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class IncorporatedEntityInformationConnector @Inject()(http: HttpClient,
+class IncorporatedEntityInformationConnector @Inject()(http: HttpClientV2,
                                                        appConfig: AppConfig
                                                       )(implicit ec: ExecutionContext) extends HttpReadsInstances {
 
@@ -36,23 +37,23 @@ class IncorporatedEntityInformationConnector @Inject()(http: HttpClient,
                                                      )(implicit dataTypeReads: Reads[DataType],
                                                        manifest: Manifest[DataType],
                                                        hc: HeaderCarrier): Future[Option[DataType]] =
-    http.GET[Option[DataType]](s"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey")
+    http.get(url"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey").execute[Option[DataType]]
 
   def retrieveIncorporatedEntityInformation(journeyId: String
                                            )(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityInformation]] =
-    http.GET[Option[IncorporatedEntityInformation]](appConfig.incorporatedEntityInformationUrl(journeyId))
+    http.get(url"${appConfig.incorporatedEntityInformationUrl(journeyId)}").execute[Option[IncorporatedEntityInformation]]
 
   def storeData[DataType](journeyId: String, dataKey: String, data: DataType
-                         )(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[StorageResult] = {
-    http.PUT[DataType, StorageResult](s"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey", data)
-  }
+                         )(implicit dataTypeWriter: Writes[DataType], hc: HeaderCarrier): Future[StorageResult] =
+    http.put(url"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey").withBody(Json.toJson(data)).execute[StorageResult]
 
   def removeIncorporatedEntityDetailsField(journeyId: String,
                                            dataKey: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
-    http.DELETE[SuccessfullyRemoved.type](s"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey"
-    )(RemoveIncorporatedEntityDetailsHttpReads, hc, ec)
+    http.delete(url"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey")(hc)
+      .execute[SuccessfullyRemoved.type](RemoveIncorporatedEntityDetailsHttpReads, ec)
 
   def removeAllData(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
-    http.DELETE[SuccessfullyRemoved.type](appConfig.incorporatedEntityInformationUrl(journeyId))(RemoveIncorporatedEntityDetailsHttpReads, hc, ec)
+    http.delete(url"${appConfig.incorporatedEntityInformationUrl(journeyId)}")(hc)
+      .execute[SuccessfullyRemoved.type](RemoveIncorporatedEntityDetailsHttpReads, ec)
 
 }

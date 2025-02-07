@@ -27,14 +27,14 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates
 import uk.gov.hmrc.play.bootstrap.frontend.http.FrontendErrorHandler
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.Future
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class ErrorHandler @Inject()(view: error_template,
                              val messagesApi: MessagesApi,
                              val config: Configuration,
                              val env: Environment
-                            )(implicit appConfig: AppConfig) extends FrontendErrorHandler with AuthRedirects with Logging {
+                            )(implicit appConfig: AppConfig, implicit val ec: ExecutionContext) extends FrontendErrorHandler with AuthRedirects with Logging {
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] =
     if (play.mvc.Http.Status.BAD_REQUEST == statusCode)
@@ -44,25 +44,23 @@ class ErrorHandler @Inject()(view: error_template,
 
   override def standardErrorTemplate(pageTitle: String,
                                      heading: String,
-                                     message: String
-                                    )(implicit request: Request[_]): Html = {
-    view(pageTitle, heading, message)
-  }
+                                     message: String)(implicit request: RequestHeader): Future[Html] =
+    Future.successful(view(pageTitle, heading, message))
 
   override def onServerError(request: RequestHeader, exception: Throwable): Future[Result] = {
     exception match {
-      case _: AuthorisationException => Future.successful(resolveError(request, exception))
+      case _: AuthorisationException => resolveError(request, exception)
       case _ => super.onServerError(request, exception)
     }
   }
 
-  override def resolveError(rh: RequestHeader, ex: Throwable): Result = {
+  override def resolveError(rh: RequestHeader, ex: Throwable): Future[Result] = {
     ex match {
       case _: AuthorisationException =>
         logger.debug("[AuthenticationPredicate][async] Unauthorised request. Redirect to Sign In.")
-        toGGLogin(rh.path)
+        Future.successful(toGGLogin(rh.path))
       case _: NotFoundException =>
-        NotFound(notFoundTemplate(Request(rh, "")))
+        notFoundTemplate(Request(rh, "")).map(html => NotFound(html))
       case _ =>
         super.resolveError(rh, ex)
     }

@@ -19,7 +19,8 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.connectors
 import play.api.http.Status._
 import play.api.libs.json.{JsObject, Json, Writes}
 import uk.gov.hmrc.http.HttpReads.Implicits.readRaw
-import uk.gov.hmrc.http.{HeaderCarrier, HttpClient, HttpResponse, InternalServerException}
+import uk.gov.hmrc.http.client.HttpClientV2
+import uk.gov.hmrc.http.{HeaderCarrier, HttpResponse, InternalServerException, StringContextOps}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.JourneyController._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
@@ -30,14 +31,14 @@ import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
-class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
+class TestCreateJourneyConnector @Inject()(httpClient: HttpClientV2,
                                            appConfig: AppConfig
                                           )(implicit ec: ExecutionContext) {
 
   def createLtdCompanyJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
     val url = appConfig.selfBaseUrl + routes.JourneyController.createLtdCompanyJourney().url
 
-    httpClient.POST(url, journeyConfig).map {
+    httpClient.post(url"$url")(hc).withBody(Json.toJson(journeyConfig)).execute[HttpResponse].map {
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
       case response =>
@@ -48,7 +49,7 @@ class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
   def createRegisteredSocietyJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
     val url = appConfig.selfBaseUrl + routes.JourneyController.createRegisteredSocietyJourney().url
 
-    httpClient.POST(url, journeyConfig).map {
+    httpClient.post(url"$url")(hc).withBody(Json.toJson(journeyConfig)).execute[HttpResponse].map{
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
       case response =>
@@ -59,7 +60,7 @@ class TestCreateJourneyConnector @Inject()(httpClient: HttpClient,
   def createCharitableIncorporatedOrganisationJourney(journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[String] = {
     val url = appConfig.selfBaseUrl + routes.JourneyController.createCharitableIncorporatedOrganisationJourney().url
 
-    httpClient.POST(url, journeyConfig).map {
+    httpClient.post(url"$url")(hc).withBody(Json.toJson(journeyConfig)).execute[HttpResponse].map{
       case response@HttpResponse(CREATED, _, _) =>
         (response.json \ "journeyStartUrl").as[String]
       case response =>

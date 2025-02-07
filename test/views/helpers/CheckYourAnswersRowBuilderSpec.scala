@@ -25,6 +25,7 @@ import play.api.test.FakeRequest
 import uk.gov.hmrc.govukfrontend.views.Aliases.{Actions, Key, SummaryListRow, Value}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.content.{HtmlContent, Text}
 import uk.gov.hmrc.govukfrontend.views.viewmodels.summarylist.ActionItem
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.CheckYourAnswersRowBuilder
@@ -33,6 +34,7 @@ class CheckYourAnswersRowBuilderSpec extends AnyWordSpec with Matchers with Guic
 
   val rowBuilder: CheckYourAnswersRowBuilder = new CheckYourAnswersRowBuilder()
   val messages: Messages = app.injector.instanceOf[MessagesApi].preferred(FakeRequest())
+  val httpClientV2: HttpClientV2 = app.injector.instanceOf[HttpClientV2]
 
   val testCompanyNumberRow: SummaryListRow = SummaryListRow(
     key = Key(content = Text("Company registration number")),

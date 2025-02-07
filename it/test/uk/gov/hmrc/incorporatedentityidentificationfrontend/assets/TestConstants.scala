@@ -50,7 +50,7 @@ object TestConstants {
   val testAccessibilityUrl: String = "/accessibility"
   val testLocalAccessibilityUrl: String = "http://localhost:12346/accessibility-statement/vat-registration"
   val testStagingAccessibilityUrl: String = "https://www.staging.tax.service.gov.uk/accessibility-statement/vat-registration"
-  val testTechnicalHelpUrl: String = "http://localhost:9250/contact/report-technical-problem?newTab=true&service=grs"
+  val testTechnicalHelpUrl: String = "http://localhost:9250/contact/report-technical-problem?service=grs"
   val testSafeId: String = UUID.randomUUID().toString
   val testRegime: String = "VATC"
   val testBusinessVerificationPassJson: JsObject = testBusinessVerificationJson(value = businessVerificationPassKey)

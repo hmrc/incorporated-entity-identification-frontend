@@ -17,8 +17,9 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import play.api.http.Status._
-import play.api.libs.json.{JsObject, Json, Writes}
+import play.api.libs.json.{JsObject, Json}
 import uk.gov.hmrc.http._
+import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.RegistrationHttpParser.RegistrationHttpReads
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, RegistrationStatus}
@@ -26,7 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfi
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class RegistrationConnector @Inject()(httpClient: HttpClient,
+class RegistrationConnector @Inject()(httpClient: HttpClientV2,
                                       appConfig: AppConfig
                                      )(implicit ec: ExecutionContext) {
 
@@ -38,23 +39,15 @@ class RegistrationConnector @Inject()(httpClient: HttpClient,
     )
   }
 
-  def registerLimitedCompany(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = {
-    httpClient.POST[JsObject, RegistrationStatus](appConfig.registerLimitedCompanyUrl, buildRegisterJson(journeyId, journeyConfig))(
-      implicitly[Writes[JsObject]],
-      RegistrationHttpReads,
-      hc,
-      ec
-    )
-  }
+  def registerLimitedCompany(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] =
+    httpClient.post(url"${appConfig.registerLimitedCompanyUrl}")(hc)
+      .withBody(buildRegisterJson(journeyId, journeyConfig))
+      .execute[RegistrationStatus](RegistrationHttpReads, ec)
 
-  def registerRegisteredSociety(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] = {
-    httpClient.POST[JsObject, RegistrationStatus](appConfig.registerRegisteredSocietyUrl, buildRegisterJson(journeyId, journeyConfig))(
-      implicitly[Writes[JsObject]],
-      RegistrationHttpReads,
-      hc,
-      ec
-    )
-  }
+  def registerRegisteredSociety(journeyId: String, journeyConfig: JourneyConfig)(implicit hc: HeaderCarrier): Future[RegistrationStatus] =
+    httpClient.post(url"${appConfig.registerRegisteredSocietyUrl}")(hc)
+      .withBody(buildRegisterJson(journeyId, journeyConfig))
+      .execute[RegistrationStatus](RegistrationHttpReads, ec)
 
 }
 
