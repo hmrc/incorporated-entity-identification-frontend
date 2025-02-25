@@ -44,27 +44,23 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "the business entity is successfully registered" in {
 
           mockRegisterLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig)(Future.successful(Registered(testSafeId)))
-          mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testLimitedCompanyJourneyConfig)) mustBe {
             Registered(testSafeId)
           }
 
           verifyRegistrationLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig)
-          verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
         }
 
         "when the business entity fails to register" in {
 
           mockRegisterLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig)(Future.successful(RegistrationFailed(Some(testRegistrationFailure))))
-          mockStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testLimitedCompanyJourneyConfig)) mustBe {
             RegistrationFailed(Some(testRegistrationFailure))
           }
 
           verifyRegistrationLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig)
-          verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
         }
 
       }
@@ -76,27 +72,23 @@ class RegistrationOrchestrationServiceSpec extends UnitSpec with MockStorageServ
         "the business entity is successfully registered" in {
 
           mockRegisterRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig)(Future.successful(Registered(testSafeId)))
-          mockStoreRegistrationStatus(testJourneyId, Registered(testSafeId))(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testRegisteredSocietyJourneyConfig)) mustBe {
             Registered(testSafeId)
           }
 
           verifyRegistrationRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig)
-          verifyStoreRegistrationStatus(testJourneyId, Registered(testSafeId))
         }
 
         "when the business entity fails to register" in {
 
           mockRegisterRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig)(Future.successful(RegistrationFailed(Some(testRegistrationFailure))))
-          mockStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))(Future.successful(SuccessfullyStored))
 
           await(TestService.register(testJourneyId, testRegisteredSocietyJourneyConfig)) mustBe {
             RegistrationFailed(Some(testRegistrationFailure))
           }
 
           verifyRegistrationRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig)
-          verifyStoreRegistrationStatus(testJourneyId, RegistrationFailed(Some(testRegistrationFailure)))
         }
 
       }

@@ -33,8 +33,9 @@ class RegistrationOrchestrationService @Inject()(storageService: StorageService,
     registrationStatus <- journeyConfig.businessEntity match {
               case LimitedCompany => registrationConnector.registerLimitedCompany(journeyId, journeyConfig)
               case RegisteredSociety => registrationConnector.registerRegisteredSociety(journeyId, journeyConfig)
-              case CharitableIncorporatedOrganisation => Future.successful(RegistrationNotCalled) //Not currently registered
+              case CharitableIncorporatedOrganisation =>
+                storageService.storeRegistrationStatus(journeyId, RegistrationNotCalled).map { _ => RegistrationNotCalled //Not currently registered
+                }
             }
-    _ <- storageService.storeRegistrationStatus(journeyId, registrationStatus)
   } yield registrationStatus
 }
