@@ -20,6 +20,7 @@ object MessageLookup {
 
   object Base {
     val confirmAndContinue = "Confirm and continue"
+    val continue = "Continue"
     val change = "Change"
     val saveAndContinue = "Save and continue"
     val saveAndComeBack = "Save and come back later"
@@ -43,9 +44,10 @@ object MessageLookup {
   }
 
   object CaptureCompanyNumber {
-    val title = "What is the company registration number?"
+    val title = "Company registration number"
     val line_1 = "You can search Companies House for the company registration number (opens in new tab)"
-    val hint = "It is 8 characters. For example, 01234567 or AC012345."
+    val label = "What is your company registration number?"
+    val hint = "This is 8 characters, like AB123456. It may also be called ‘company number’ or ‘Companies House number’"
 
     object Error {
       val emptyCompanyNumber = "Enter the company registration number"
