@@ -31,12 +31,10 @@
 @govukLayout(pageConfig, title = title("ctutr-not-found.title")) {
     @h1(messages("ctutr-not-found.heading"))
 
-    @p(Html(messages("ctutr-not-found.line_1")))
-
     @p(Html(
-        messages("ctutr-not-found.line_2") +
+        messages("ctutr-not-found.line_1") +
         a(
-            key = messages("ctutr-not-found.line_2_link"),
+            key = messages("ctutr-not-found.line_1_link"),
             href = redirectLocation.url,
             id = Some("try-again"),
             classes = Some("govuk-link")
@@ -45,16 +43,16 @@
     ))
 
     @p(Html(
-        messages("ctutr-not-found.line_3") +
+        messages("ctutr-not-found.line_2") +
         a(
-            key = messages("ctutr-not-found.line_3_link"),
+            key = messages("ctutr-not-found.line_2_link"),
             href = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries",
             id = Some("contact-corporation-tax-team"),
             classes = Some("govuk-link"),
             rel = Some("noreferrer noopener"),
             target = Some("_blank")
         ) + " " +
-        messages("ctutr-not-found.line_3b")
+        messages("ctutr-not-found.line_2b")
     ))
 
     @a(
