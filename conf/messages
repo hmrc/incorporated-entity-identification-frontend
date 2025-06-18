@@ -97,11 +97,9 @@ company-number-not-found.paragraph                          = The company number
 # CTUTR Not Found Page
 ctutr-not-found.title                                       = The details you entered did not match our records
 ctutr-not-found.heading                                     = The details you entered did not match our records
-ctutr-not-found.line_1                                      = We could not match the details you entered with records held by HMRC.
-ctutr-not-found.line_2                                      = If you used the correct details, you cannot continue to register using this online service.
-ctutr-not-found.line_3a                                     = You need to
-ctutr-not-found.line_3_link                                 = contact the Corporation Tax team (opens in a new tab)
-ctutr-not-found.line_3b                                     = and
-ctutr-not-found.line_3c                                     = tell them there is an issue with your Corporation Tax Unique Tax Reference.
-ctutr-not-found.line_4                                      = If you used the wrong details, you can
-ctutr-not-found.line_4_link                                 = try again using different details.
+ctutr-not-found.line_1                                      = We could not match the details you entered with records held by HMRC. You can
+ctutr-not-found.line_1_link                                 = try again using different details
+ctutr-not-found.line_2                                      = If you have used the correct details, you need to
+ctutr-not-found.line_2_link                                 = contact the Corporation Tax team (opens in a new tab)
+ctutr-not-found.line_2b                                     = and tell them there is an issue with your Corporation Tax Unique Tax Reference.
+ctutr-not-found.btn                                         = Try again

@@ -3,13 +3,13 @@ import sbt.*
 
 object AppDependencies {
 
-  val bootstrapVersion = "9.7.0"
-  val mongoVersion = "2.4.0"
+  val bootstrapVersion = "9.13.0"
+  val mongoVersion = "2.6.0"
 
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-frontend-play-30" % bootstrapVersion,
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-30"  % bootstrapVersion,
-    "uk.gov.hmrc"                  %% "play-frontend-hmrc-play-30" % "11.11.0",
+    "uk.gov.hmrc"                  %% "play-frontend-hmrc-play-30" % "11.13.0",
     "uk.gov.hmrc.mongo"            %% "hmrc-mongo-play-30"         % mongoVersion,
     "com.fasterxml.jackson.module" %% "jackson-module-scala"       % "2.18.0"
   )
@@ -31,7 +31,7 @@ object AppDependencies {
 
   val it: Seq[ModuleID] = Seq(
     "org.wiremock"           % "wiremock"                 % "3.9.1" % Test,
-    "uk.gov.hmrc.mongo"      %% "hmrc-mongo-test-play-30" % "2.4.0" % Test
+    "uk.gov.hmrc.mongo"      %% "hmrc-mongo-test-play-30" % mongoVersion % Test
   )
 
   def apply(): Seq[ModuleID] = compile ++ sharedTestDependencies ++ test ++ it

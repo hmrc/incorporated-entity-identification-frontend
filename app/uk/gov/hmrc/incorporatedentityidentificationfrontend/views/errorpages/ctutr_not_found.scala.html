@@ -17,37 +17,47 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.{h1, p, link}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
 
 @this(govukLayout: govuk_template,
         govukButton: GovukButton,
         h1: h1,
+        a: link,
+        p: p,
         formWithCSRF: FormWithCSRF)
-
 @(pageConfig: PageConfig, redirectLocation: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @govukLayout(pageConfig, title = title("ctutr-not-found.title")) {
     @h1(messages("ctutr-not-found.heading"))
 
-    <p class="govuk-body">@messages("ctutr-not-found.line_1")</p>
+    @p(Html(
+        messages("ctutr-not-found.line_1") +
+        a(
+            key = messages("ctutr-not-found.line_1_link"),
+            href = redirectLocation.url,
+            id = Some("try-again"),
+            classes = Some("govuk-link")
+        )
+        + "."
+    ))
 
-    <p class="govuk-body">@messages("ctutr-not-found.line_2")</p>
+    @p(Html(
+        messages("ctutr-not-found.line_2") +
+        a(
+            key = messages("ctutr-not-found.line_2_link"),
+            href = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries",
+            id = Some("contact-corporation-tax-team"),
+            classes = Some("govuk-link"),
+            rel = Some("noreferrer noopener"),
+            target = Some("_blank")
+        ) + " " +
+        messages("ctutr-not-found.line_2b")
+    ))
 
-    <p class="govuk-body">
-        @messages("ctutr-not-found.line_3a")
-        <a class="govuk-link" target="_blank" id="contact-corporation-tax-team" href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries">
-            @messages("ctutr-not-found.line_3_link")
-        </a>
-        @messages("ctutr-not-found.line_3b")
-        <strong>@messages("ctutr-not-found.line_3c")</strong>
-    </p>
-
-    <p class="govuk-body">
-        @messages("ctutr-not-found.line_4")
-        <a class="govuk-link" id="try-again" href=@redirectLocation.url>
-            @messages("ctutr-not-found.line_4_link")
-        </a>
-    </p>
-
+    @a(
+        key = messages("ctutr-not-found.btn"),
+        href = redirectLocation.url,
+        classes = Some("govuk-link govuk-button")
+    )
 }

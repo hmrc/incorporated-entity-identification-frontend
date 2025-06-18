@@ -124,13 +124,11 @@ object MessageLookup {
   object CtutrNotFound {
     val title = "The details you entered did not match our records"
     val heading = "The details you entered did not match our records"
-    val line1 = "We could not match the details you entered with records held by HMRC."
-    val line2 = "If you used the correct details, you cannot continue to register using this online service."
-    val line3a = "You need to"
-    val line3Link = " contact the Corporation Tax team (opens in a new tab)"
-    val line3b = " and tell them there is an issue with your Corporation Tax Unique Tax Reference."
-    val line4 = "If you used the wrong details, you can"
-    val line4Link = " try again using different details."
+    val line1 = "We could not match the details you entered with records held by HMRC. You can "
+    val line1link = "try again using different details"
+    val line2 = "If you have used the correct details, you need to"
+    val line2link = " contact the Corporation Tax team (opens in a new tab)"
+    val line2b = " and tell them there is an issue with your Corporation Tax Unique Tax Reference."
   }
 
 }
