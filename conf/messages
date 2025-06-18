@@ -22,6 +22,7 @@ base.confirm_and_continue                                   = Confirm and contin
 base.save_and_come_back                                     = Save and come back later
 base.change                                                 = Change
 base.try_again                                              = Try again
+base.continue                                               = Continue
 
 ## Error
 error.summary.title                                         = There is a problem
@@ -60,10 +61,14 @@ chrn.error.invalid-format                                   = Enter the HMRC ref
 chrn.error.invalid-length                                   = The HMRC reference number must be 7 characters or fewer
 
 ## CT-UTR Page
-capture-ctutr.title                                         = What is the company’s Unique Taxpayer Reference?
-capture-ctutr.heading                                       = What is the company’s Unique Taxpayer Reference?
+capture-ctutr.title                                         = Your Corporation Tax Unique Taxpayer Reference (UTR)
+capture-ctutr.heading                                       = Your Corporation Tax Unique Taxpayer Reference (UTR)
 capture-ctutr.registered_society_title                      = What is the registered society’s Unique Taxpayer Reference?
 capture-ctutr.registered_society_heading                    = What is the registered society’s Unique Taxpayer Reference?
+capture-ctutr.p1                                            = It will be on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’ or ‘official use’.
+capture-ctutr.p2                                            = Ask for a copy of your Corporation Tax UTR
+capture-ctutr.label                                         = What is your Corporation Tax UTR?
+capture-ctutr.hint                                          = Your UTR can be 10 to 13 digits long.
 capture-ctutr.line                                          = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.
 capture-ctutr.lost_utr                                      = Lost the company’s UTR number
 capture-ctutr.no_utr                                        = The business does not have a Unique Taxpayer Reference

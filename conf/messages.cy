@@ -22,6 +22,7 @@ base.confirm_and_continue                                   = Cadarnhau ac yn ei
 base.save_and_come_back                                     = Cadw a dod yn ôl yn nes ymlaen
 base.change                                                 = Newid
 base.try_again                                              = Rhowch gynnig arall arni
+base.continue                                               = Parhau
 
 ## Error
 error.summary.title                                         = Mae problem wedi codi
@@ -60,10 +61,14 @@ chrn.error.invalid-format                                   = Nodwch gyfeirnod C
 chrn.error.invalid-length                                   = Mae’n rhaid i gyfeirnod CThEF fod yn 7 o gymeriadau neu lai
 
 ## CT-UTR Page
-capture-ctutr.title                                         = Beth yw Cyfeirnod Unigryw y Trethdalwr ar gyfer y cwmni?
-capture-ctutr.heading                                       = Beth yw Cyfeirnod Unigryw y Trethdalwr ar gyfer y cwmni?
+capture-ctutr.title                                         = Eich Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth
+capture-ctutr.heading                                       = Eich Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth
 capture-ctutr.registered_society_title                      = Beth yw Cyfeirnod Unigryw y Trethdalwr ar gyfer y gymdeithas gofrestredig?
 capture-ctutr.registered_society_heading                    = Beth yw Cyfeirnod Unigryw y Trethdalwr ar gyfer y gymdeithas gofrestredig?
+capture-ctutr.p1                                            = Bydd i’w weld ar Ffurflenni Treth a llythyrau eraill ynghylch Treth Gorfforaeth. Efallai y cyfeirir ato gan ddefnyddio’r geiriau ‘cyfeirnod’, ‘UTR’ neu ‘defnydd swyddogol’.
+capture-ctutr.p2                                            = Gofynnwch am gopi o’ch UTR ar gyfer Treth Gorfforaeth
+capture-ctutr.label                                         = Beth yw eich UTR ar gyfer Treth Gorfforaeth?
+capture-ctutr.hint                                          = Gall eich Cyfeirnod Unigryw y Trethdalwr fod yn 10 hyd at 13 digid o hyd.
 capture-ctutr.line                                          = Rhif 10 digid yw hwn, er enghraifft 1234567890. Bydd i’w weld ar Ffurflenni Treth a llythyrau eraill am Dreth Gorfforaeth. Efallai y cyfeirir ato gan ddefnyddio’r geiriau ‘cyfeirnod’, ‘UTR’ neu ‘defnydd swyddogol’.
 capture-ctutr.lost_utr                                      = Wedi colli UTR y cwmni
 capture-ctutr.no_utr                                        = Nid oes gan y busnes Gyfeirnod Unigryw y Trethdalwr
