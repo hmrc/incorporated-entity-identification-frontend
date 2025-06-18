@@ -19,6 +19,7 @@ feedback.after                                              = (yn agor tab newyd
 base.back                                                   = Yn ôl
 base.save_and_continue                                      = Cadw ac yn eich blaen
 base.confirm_and_continue                                   = Cadarnhau ac yn eich blaen
+base.continue                                               = update**
 base.save_and_come_back                                     = Cadw a dod yn ôl yn nes ymlaen
 base.change                                                 = Newid
 base.try_again                                              = Rhowch gynnig arall arni
@@ -47,8 +48,12 @@ capture-company-number.error.invalid-format                 = Nodwch rif cofrest
 
 ## Confirm Business Page
 confirm-business.title                                      = Cadarnhewch enw’r cwmni
-confirm-business.heading                                    = Cadarnhewch enw’r cwmni
+confirm-business.heading                                    = Ai dyma’ch busnes?
 confirm-business.change_company                             = Newidiwch y cwmni
+confirm-business.yes                                        = Iawn
+confirm-business.no                                         = Na
+confirm-business.hidden                                     = update**
+confirm-business.error.required                             = update**
 
 ## Capture Charity HMRC Reference number
 chrn.title                                                  = Beth yw cyfeirnod CThEF yr elusen?

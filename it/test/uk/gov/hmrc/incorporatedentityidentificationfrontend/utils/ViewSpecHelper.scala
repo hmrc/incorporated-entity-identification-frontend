@@ -91,6 +91,10 @@ object ViewSpecHelper {
     lazy val getBackLinks: Elements = element.getElementsByClass("govuk-back-link")
 
     lazy val getFooterLinks: Elements = element.getElementsByClass("govuk-footer__link")
+
+    def getRadioButtons(name: String): Elements = element.select(s"input[type=radio][name=$name]")
+
+    def getVisuallyHiddenLegend: Elements = element.select("legend.govuk-visually-hidden")
   }
 
   def text(text: String): HavePropertyMatcher[Elements, String] =

@@ -18,6 +18,7 @@ feedback.after                                              = (opens in new tab)
 ## Base
 base.back                                                   = Back
 base.save_and_continue                                      = Save and continue
+base.continue                                               = Continue
 base.confirm_and_continue                                   = Confirm and continue
 base.save_and_come_back                                     = Save and come back later
 base.change                                                 = Change
@@ -47,8 +48,12 @@ capture-company-number.error.invalid-format                 = Enter the company 
 
 ## Confirm Business Page
 confirm-business.title                                      = Confirm the company name
-confirm-business.heading                                    = Confirm the company name
+confirm-business.heading                                    = Is this your business?
 confirm-business.change_company                             = Change company
+confirm-business.yes                                        = Yes
+confirm-business.no                                         = No
+confirm-business.hidden                                     = Select Yes if this is your business
+confirm-business.error.required                             = Error required
 
 ## Capture Charity HMRC Reference number
 chrn.title                                                  = What is the charity’s HMRC reference number?

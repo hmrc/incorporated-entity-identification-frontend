@@ -237,8 +237,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
 
-        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
-
+        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri(routes.CaptureCtutrController.show(testJourneyId).url)
@@ -259,7 +258,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
         stubValidateIncorporatedEntityDetails(testMismatchCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> false))
 
-        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
+        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -285,7 +284,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)(status = OK)
 
-        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
+        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -307,7 +306,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
 
-        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
+        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
 
         result must have(
           httpStatus(SEE_OTHER),
@@ -325,11 +324,29 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
         ))
 
-        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")()
+        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
 
         result must have(
           httpStatus(SEE_OTHER),
           redirectUri(routes.CaptureCHRNController.show(testJourneyId).url)
+        )
+      }
+    }
+    "redirect to the Capture Company Name page" when {
+      "the user selects no" in {
+        stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+
+        await(journeyConfigRepository.insertJourneyConfig(
+          journeyId = testJourneyId,
+          authInternalId = testInternalId,
+          journeyConfig = testLimitedCompanyJourneyConfig
+        ))
+
+        lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "no")
+
+        result must have(
+          httpStatus(SEE_OTHER),
+          redirectUri(routes.CaptureCompanyNumberController.show(testJourneyId).url)
         )
       }
     }
