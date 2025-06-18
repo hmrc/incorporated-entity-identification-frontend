@@ -21,11 +21,12 @@ import play.api.i18n.Messages
 
 object TitleHelper {
 
-  def title(titleKey: String, form: Form[_])(implicit messages: Messages): String =
+  def title(titleKey: String, form: Form[_])(implicit messages: Messages): String = {
     if (form.hasErrors)
       messages("error.title-prefix") + title(titleKey)
     else
       title(titleKey)
+  }
 
   def title(titleKey: String)(implicit messages: Messages): String =
     s"${messages(titleKey)} - ${getServiceName(messages)} - ${messages("service.govuk")}"

@@ -77,12 +77,8 @@ trait ConfirmBusinessNameViewTests {
       doc.getParagraphs.eq(1).text mustBe testCompanyName
     }
 
-    "Have the correct link" in {
-      doc.getLink("change-company").text mustBe messages.change_company
-    }
-
     "have a save and confirm button" in {
-      doc.getSubmitButton.first.text mustBe Base.saveAndContinue
+      doc.getSubmitButton.first.text mustBe Base.continue
     }
 
     "have a back link" in {
@@ -106,6 +102,39 @@ trait ConfirmBusinessNameViewTests {
 
       doc.getTechnicalHelpLink mustBe testTechnicalHelpUrl
     }
+
+    "have yes and no radio buttons" in {
+      val radioButtons = doc.getRadioButtons("confirmBusinessName")
+      radioButtons must have size 2
+      radioButtons.get(0).attr("value") mustBe "yes"
+      radioButtons.get(1).attr("value") mustBe "no"
+    }
+
+    "have the correct visually hidden legend text for the radio group" in {
+      val legend = doc.getVisuallyHiddenLegend
+      legend must have size 1
+      legend.first.text mustBe "Select Yes if this is your business"
+    }
+  }
+
+  def testConfirmBusinessNameViewErrorMessage(result: => WSResponse,
+                                              stub: => StubMapping,
+                                              authStub: => StubMapping,
+                                              insertJourneyConfig: => Future[InsertOneResult],
+                                              testCompanyName: String): Unit = {
+
+    lazy val doc: Document = {
+      await(insertJourneyConfig)
+      authStub
+      stub
+      Jsoup.parse(result.body)
+    }
+
+    doc.title mustBe s"${Base.Error.error}${messages.title} - $testDefaultServiceName - GOV.UK"
+    doc.getParagraphs.eq(1).text mustBe testCompanyName
+    doc.getErrorSummaryTitle.text mustBe Base.Error.title
+    doc.getErrorSummaryBody.text mustBe messages.Error.errorRequired
+    doc.getFieldErrorMessage.text mustBe s"Error: ${messages.Error.errorRequired}"
   }
 
   def testServiceName(serviceName: String,
