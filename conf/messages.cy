@@ -35,11 +35,12 @@ timeout.keepAlive                                           = Parhau i fod wedi�
 timeout.signOut                                             = Allgofnodi
 
 ## Company Number
-capture-company-number.title                                = Beth yw rhif cofrestru’r cwmni?
-capture-company-number.heading                              = Beth yw rhif cofrestru’r cwmni?
+capture-company-number.title                                = Rhif cofrestru’r cwmni
+capture-company-number.heading                              = Rhif cofrestru’r cwmni
 capture-company-number.line_1.part1                         = Gallwch
 capture-company-number.line_1.part2                         = chwilio yn Nhŷ’r Cwmnïau am rif cofrestru’r cwmni
-capture-company-number.hint                                 = Mae hwn yn 8 o gymeriadau. Er enghraifft, 01234567 neu AC012345.
+capture-company-number.hint                                 = Mae hwn yn 8 o gymeriadau, fel AB123456. Gall hefyd gael ei alw yn ‘rhif y cwmni’ neu ‘rhif Tŷ’r Cwmnïau’
+capture-company-number.label                                = Beth yw rhif cofrestru’ch cwmni?
 capture-company-number.error.no-entry                       = Nodwch rif cofrestru’r cwmni
 capture-company-number.error.invalid-length                 = Mae’n rhaid i rif cofrestru’r cwmni fod yn 8 o gymeriadau neu lai
 capture-company-number.error.invalid-format                 = Nodwch rif cofrestru’r cwmni yn y fformat cywir

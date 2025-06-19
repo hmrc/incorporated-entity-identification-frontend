@@ -35,11 +35,12 @@ timeout.keepAlive                                           = Stay signed in
 timeout.signOut                                             = Sign out
 
 ## Company Number
-capture-company-number.title                                = What is the company registration number?
-capture-company-number.heading                              = What is the company registration number?
+capture-company-number.title                                = Company registration number
+capture-company-number.heading                              = Company registration number
 capture-company-number.line_1.part1                         = You can
 capture-company-number.line_1.part2                         = search Companies House for the company registration number
-capture-company-number.hint                                 = It is 8 characters. For example, 01234567 or AC012345.
+capture-company-number.hint                                 = This is 8 characters, like AB123456. It may also be called ‘company number’ or ‘Companies House number’
+capture-company-number.label                                = What is your company registration number?
 capture-company-number.error.no-entry                       = Enter the company registration number
 capture-company-number.error.invalid-length                 = The company registration number must be 8 characters or fewer
 capture-company-number.error.invalid-format                 = Enter the company registration number in the correct format
