@@ -70,6 +70,10 @@ trait CaptureCompanyNumberTests {
       doc.getParagraphs.eq(1).text mustBe messages.line_1
     }
 
+    "have a correct label" in {
+      doc.getLabelElement.text() mustBe messages.label
+    }
+
     "have a correct details hint" in {
       doc.getHintText mustBe messages.hint
     }
@@ -83,7 +87,7 @@ trait CaptureCompanyNumberTests {
     }
 
     "have a save and confirm button" in {
-      doc.getSubmitButton.first.text mustBe Base.saveAndContinue
+      doc.getSubmitButton.first.text mustBe Base.continue
     }
 
     "have a back link" in {

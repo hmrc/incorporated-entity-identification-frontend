@@ -56,15 +56,16 @@
             id = "companyNumber",
             name = "companyNumber",
             isPageHeading = false,
-            label = messages("capture-company-number.heading"),
-            hint = Some(Html(s"""<p class="govuk-body govuk-hint">${messages("capture-company-number.hint")}</p>""")),
+            label = messages("capture-company-number.label"),
+            hint = Some(Html(messages("capture-company-number.hint"))),
+            hasFieldTitle = true,
             classes = "govuk-input--width-10"
         )
 
         @govukButton(Button(
-            attributes = Map("id" -> "save-and-continue"),
+            attributes = Map("id" -> "continue"),
             classes = "govuk-!-margin-right-1",
-            content = Text(messages("base.save_and_continue"))
+            content = Text(messages("base.continue"))
         ))
     }
 }
