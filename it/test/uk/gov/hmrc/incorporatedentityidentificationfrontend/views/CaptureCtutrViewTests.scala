@@ -72,7 +72,19 @@ trait CaptureCtutrViewTests {
     }
 
     "have the correct first line" in {
-      doc.getParagraphs.eq(1).text mustBe messages.line
+      doc.getParagraphs.eq(1).text mustBe messages.p1
+    }
+
+    "have the correct second line" in {
+      doc.getParagraphs.eq(2).text mustBe messages.p2
+    }
+
+    "have the correct label" in {
+      doc.getLabelElement.eq(0).text mustBe messages.label
+    }
+
+    "have the correct hint" in {
+      doc.getHintText mustBe messages.hint
     }
 
     "have an input text field" in {
@@ -82,12 +94,8 @@ trait CaptureCtutrViewTests {
       textInputs.first.attr("type") mustBe "text"
     }
 
-    "have a correct link" in {
-      doc.getLink("lost-utr").text mustBe messages.lostUtr
-    }
-
     "have a continue and confirm button" in {
-      doc.getSubmitButton.first.text mustBe Base.saveAndContinue
+      doc.getSubmitButton.first.text mustBe Base.continue
     }
 
     "have a back link" in {
