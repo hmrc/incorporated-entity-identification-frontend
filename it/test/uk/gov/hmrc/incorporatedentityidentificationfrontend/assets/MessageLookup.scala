@@ -121,8 +121,8 @@ object MessageLookup {
   }
 
   object CompanyNumberNotFound {
-    val title = "We could not confirm your company"
-    val heading = "We could not confirm your company"
+    val title = "The details you entered did not match our records"
+    val heading = "The details you entered did not match our records"
     val line = "The company number you entered is not on our system."
 
   }

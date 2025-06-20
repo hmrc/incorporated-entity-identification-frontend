@@ -97,8 +97,8 @@ ctutr-mismatch.heading                                      = We could not confi
 ctutr-mismatch.paragraph                                    = The information you provided does not match the details we have about your business.
 
 ## Company Number Not Found Page
-company-number-not-found.title                              = We could not confirm your company
-company-number-not-found.heading                            = We could not confirm your company
+company-number-not-found.title                              = The details you entered did not match our records
+company-number-not-found.heading                            = The details you entered did not match our records
 company-number-not-found.paragraph                          = The company number you entered is not on our system.
 
 # CTUTR Not Found Page

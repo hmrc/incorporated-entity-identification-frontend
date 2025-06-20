@@ -1,5 +1,5 @@
 @*
- * Copyright 2024 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,24 +16,36 @@
 
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.h1
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.{h1, p, link}
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates._
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
-
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
 
 @this(govukLayout: govuk_template,
         govukButton: GovukButton,
         h1: h1,
+        a: link,
+        p: p,
         formWithCSRF: FormWithCSRF)
 
 @(pageConfig: PageConfig, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
 @govukLayout(pageConfig, title = title("company-number-not-found.title")) {
 
-    @h1(messages("company-number-not-found.heading"))
-    <p class="govuk-body">@messages("company-number-not-found.paragraph")</p>
-
     @formWithCSRF(action = formAction) {
+
+        @h1(messages("company-number-not-found.heading"))
+        <p class="govuk-body">
+            @messages("ctutr-not-found.line_1")
+            <a href= "@routes.CaptureCompanyNumberController.show(journeyId).url" class="govuk-link">@messages("ctutr-not-found.line_1_link")</a>.
+        </p>
+
+        <p class="govuk-body">
+            @messages("ctutr-not-found.line_2")
+            <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries" class="govuk-link" rel="noreferrer noopener" target="_blank">@messages("ctutr-not-found.line_2_link")</a>
+            @messages("ctutr-not-found.line_2b")
+        </p>
+
         @govukButton(Button(
             attributes = Map("id" -> "try-again"),
             classes = "govuk-!-margin-right-1",
