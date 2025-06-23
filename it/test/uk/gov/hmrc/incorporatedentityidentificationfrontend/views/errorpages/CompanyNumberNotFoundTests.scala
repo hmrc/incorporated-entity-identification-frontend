@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -23,7 +23,7 @@ import org.jsoup.select.Elements
 import org.mongodb.scala.result.InsertOneResult
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, CtutrNotFound => messages}
+import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, NotFound => messages}
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper

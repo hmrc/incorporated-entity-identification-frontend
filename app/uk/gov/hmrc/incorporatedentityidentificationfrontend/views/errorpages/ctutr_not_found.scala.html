@@ -28,13 +28,13 @@
         formWithCSRF: FormWithCSRF)
 @(pageConfig: PageConfig, redirectLocation: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@govukLayout(pageConfig, title = title("ctutr-not-found.title")) {
-    @h1(messages("ctutr-not-found.heading"))
+@govukLayout(pageConfig, title = title("not-found.title")) {
+    @h1(messages("not-found.heading"))
 
     @p(Html(
-        messages("ctutr-not-found.line_1") +
+        messages("not-found.line_1") +
         a(
-            key = messages("ctutr-not-found.line_1_link"),
+            key = messages("not-found.line_1_link"),
             href = redirectLocation.url,
             id = Some("try-again"),
             classes = Some("govuk-link")
@@ -43,16 +43,16 @@
     ))
 
     @p(Html(
-        messages("ctutr-not-found.line_2") +
+        messages("not-found.line_2") +
         a(
-            key = messages("ctutr-not-found.line_2_link"),
+            key = messages("not-found.line_2_link"),
             href = "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries",
             id = Some("contact-corporation-tax-team"),
             classes = Some("govuk-link"),
             rel = Some("noreferrer noopener"),
             target = Some("_blank")
         ) + " " +
-        messages("ctutr-not-found.line_2b")
+        messages("not-found.line_2b")
     ))
 
     @a(

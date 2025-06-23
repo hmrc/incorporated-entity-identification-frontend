@@ -30,20 +30,20 @@
 
 @(pageConfig: PageConfig, formAction: Call, journeyId: String)(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
 
-@govukLayout(pageConfig, title = title("company-number-not-found.title")) {
+@govukLayout(pageConfig, title = title("not-found.title")) {
 
     @formWithCSRF(action = formAction) {
 
-        @h1(messages("company-number-not-found.heading"))
+        @h1(messages("not-found.heading"))
         <p class="govuk-body">
-            @messages("ctutr-not-found.line_1")
-            <a href= "@routes.CaptureCompanyNumberController.show(journeyId).url" class="govuk-link">@messages("ctutr-not-found.line_1_link")</a>.
+            @messages("not-found.line_1")
+            <a href= "@routes.CaptureCompanyNumberController.show(journeyId).url" class="govuk-link">@messages("not-found.line_1_link")</a>.
         </p>
 
         <p class="govuk-body">
-            @messages("ctutr-not-found.line_2")
-            <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries" class="govuk-link" rel="noreferrer noopener" target="_blank">@messages("ctutr-not-found.line_2_link")</a>
-            @messages("ctutr-not-found.line_2b")
+            @messages("not-found.line_2")
+            <a href="https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries" class="govuk-link" rel="noreferrer noopener" target="_blank">@messages("not-found.line_2_link")</a>
+            @messages("not-found.line_2b")
         </p>
 
         @govukButton(Button(
