@@ -17,18 +17,23 @@
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.PageConfig
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.helpers.TitleHelper.title
-@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers.{errorSummary, inputText}
+@import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.helpers._
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.templates.govuk_template
 @import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.routes
+@import uk.gov.hmrc.hmrcfrontend.views.html.helpers.HmrcNewTabLinkHelper
+@import uk.gov.hmrc.hmrcfrontend.views.viewmodels.newtablinkhelper.NewTabLinkHelper
 
 
 @this(layout: govuk_template,
         govukInput: GovukInput,
+        h1: h1,
+        p: p,
         govukDetails: GovukDetails,
         govukButton: GovukButton,
         formWithCSRF: FormWithCSRF,
         inputText: inputText,
-        errorSummary: errorSummary
+        errorSummary: errorSummary,
+        hmrcNewTabLinkHelper: HmrcNewTabLinkHelper
 )
 
 @(journeyId: String, pageConfig: PageConfig, formAction: Call, form: Form[String])(implicit request: Request[_], messages: Messages, appConfig: AppConfig)
@@ -37,35 +42,43 @@
 
     @errorSummary(form.errors)
 
+    @h1(messages("capture-ctutr.registered_society_heading"))
+
     @formWithCSRF(action = formAction) {
+
+    <p class="govuk-body">
+        @messages("capture-ctutr.registered_society.p1")
+    </p>
+    <p class="govuk-body">
+        @hmrcNewTabLinkHelper(NewTabLinkHelper(
+        text = messages("capture-ctutr.registered_society.p2"),
+        href = Some("https://www.tax.service.gov.uk/ask-for-copy-of-your-corporation-tax-utr")
+        ))
+    </p>
+    <p class="govuk-inset-text">
+        <a class="govuk-link" id="noCtutr" href="@routes.CaptureCtutrController.noCtutr(journeyId)">
+            @messages("capture-ctutr.registered_society.p3")
+        </a>
+
+    </p>
+
         @inputText(
             form = form,
             id = "ctutr",
             name = "ctutr",
-            label = messages("capture-ctutr.registered_society_heading"),
-            isPageHeading = true,
-            hint = Some(Html(s"""<p class="govuk-body">${messages("capture-ctutr.line")}</p>""")),
-            classes = "govuk-input--width-20",
+            label = messages("capture-ctutr.registered_society.label"),
+            isPageHeading = false,
+            hasFieldTitle = true,
+            hint = Some(Html(s"""<p class="govuk-body govuk-hint">${messages("capture-ctutr.registered_society.hint")}</p>""")),
+            classes = "govuk-input--width-10",
             inputMode = Some("numeric"),
             pattern = Some("[0-9]*")
         )
 
-        @govukDetails(Details(
-            summary = Text(messages("capture-ctutr.no_utr")),
-            content = HtmlContent(s"""
-                    <p>${messages("capture-ctutr.dropdown.line_1")}</p>
-                    <p>
-                        <a class="govuk-link" id="lostCtutr" href="https://www.tax.service.gov.uk/ask-for-copy-of-your-corporation-tax-utr">${messages("capture-ctutr.dropdown.link_1")}</a>
-                    </p>
-                    <p>
-                        <a class="govuk-link" id="noCtutr" href=${routes.CaptureCtutrController.noCtutr(journeyId)}>${messages("capture-ctutr.dropdown.link_2")}</a>
-                    </p>""")
-        ))
-
         @govukButton(Button(
-            attributes = Map("id" -> "save-and-continue"),
+            attributes = Map("id" -> "continue"),
             classes = "govuk-!-margin-right-1",
-            content = Text(messages("base.save_and_continue"))
+            content = Text(messages("base.continue"))
         ))
     }
 

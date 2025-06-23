@@ -65,21 +65,22 @@ chrn.error.invalid-length                                   = Mae’n rhaid i gy
 capture-ctutr.title                                         = Eich Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth
 capture-ctutr.heading                                       = Eich Cyfeirnod Unigryw y Trethdalwr (UTR) ar gyfer Treth Gorfforaeth
 capture-ctutr.registered_society_title                      = Beth yw Cyfeirnod Unigryw y Trethdalwr ar gyfer y gymdeithas gofrestredig?
-capture-ctutr.registered_society_heading                    = Beth yw Cyfeirnod Unigryw y Trethdalwr ar gyfer y gymdeithas gofrestredig?
+capture-ctutr.registered_society_heading                    = Eich Cyfeirnod Unigryw y Trethdalwr ar gyfer eich cymdeithas gofrestredig
 capture-ctutr.p1                                            = Bydd i’w weld ar Ffurflenni Treth a llythyrau eraill ynghylch Treth Gorfforaeth. Efallai y cyfeirir ato gan ddefnyddio’r geiriau ‘cyfeirnod’, ‘UTR’ neu ‘defnydd swyddogol’.
 capture-ctutr.p2                                            = Gofynnwch am gopi o’ch UTR ar gyfer Treth Gorfforaeth
 capture-ctutr.label                                         = Beth yw eich UTR ar gyfer Treth Gorfforaeth?
 capture-ctutr.hint                                          = Gall eich Cyfeirnod Unigryw y Trethdalwr fod yn 10 hyd at 13 digid o hyd.
 capture-ctutr.line                                          = Rhif 10 digid yw hwn, er enghraifft 1234567890. Bydd i’w weld ar Ffurflenni Treth a llythyrau eraill am Dreth Gorfforaeth. Efallai y cyfeirir ato gan ddefnyddio’r geiriau ‘cyfeirnod’, ‘UTR’ neu ‘defnydd swyddogol’.
 capture-ctutr.lost_utr                                      = Wedi colli UTR y cwmni
-capture-ctutr.no_utr                                        = Nid oes gan y busnes Gyfeirnod Unigryw y Trethdalwr
-capture-ctutr.dropdown.line_1                               = Mae’r UTR yn ein helpu i ddod o hyd i’ch busnes
-capture-ctutr.dropdown.link_1                               = Rydw i wedi colli rhif UTR y busnes
-capture-ctutr.dropdown.link_2                               = Nid oes gan fy musnes UTR
 capture-ctutr.error.limited_company_no-entry                = Nodwch Gyfeirnod Unigryw y Trethdalwr ar gyfer y cwmni
 capture-ctutr.error.registered_society_no-entry             = Nodwch Gyfeirnod Unigryw y Trethdalwr ar gyfer y gymdeithas gofrestredig
 capture-ctutr.error.limited_company_incorrect-format        = Nodwch Gyfeirnod Unigryw y Trethdalwr ar gyfer y cwmni yn y fformat cywir
 capture-ctutr.error.registered_society_incorrect-format     = Nodwch Gyfeirnod Unigryw y Trethdalwr ar gyfer y gymdeithas gofrestredig yn y fformat cywir
+capture-ctutr.registered_society.p1                         = Bydd i’w weld ar Ffurflenni Treth a llythyrau eraill ynghylch Treth Gorfforaeth. Efallai y cyfeirir ato gan ddefnyddio’r geiriau ‘cyfeirnod’, ‘UTR’ neu ‘defnydd swyddogol’.
+capture-ctutr.registered_society.p2                         = Gofynnwch am gopi o’ch UTR ar gyfer Treth Gorfforaeth
+capture-ctutr.registered_society.p3                         = Nid oes gan fy musnes UTR
+capture-ctutr.registered_society.label                      = Beth yw UTR eich Cymdeithas Gofrestredig?
+capture-ctutr.registered_society.hint                       = Gall eich Cyfeirnod Unigryw y Trethdalwr fod yn 10 hyd at 13 digid o hyd.
 
 ## Check Your Answers Page
 check-your-answers.title                                    = Gwirio’ch atebion

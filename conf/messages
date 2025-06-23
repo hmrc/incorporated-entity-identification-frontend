@@ -65,21 +65,22 @@ chrn.error.invalid-length                                   = The HMRC reference
 capture-ctutr.title                                         = Your Corporation Tax Unique Taxpayer Reference (UTR)
 capture-ctutr.heading                                       = Your Corporation Tax Unique Taxpayer Reference (UTR)
 capture-ctutr.registered_society_title                      = What is the registered society’s Unique Taxpayer Reference?
-capture-ctutr.registered_society_heading                    = What is the registered society’s Unique Taxpayer Reference?
+capture-ctutr.registered_society_heading                    = Your registered society’s Unique Taxpayer Reference (UTR)
 capture-ctutr.p1                                            = It will be on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’ or ‘official use’.
 capture-ctutr.p2                                            = Ask for a copy of your Corporation Tax UTR
 capture-ctutr.label                                         = What is your Corporation Tax UTR?
 capture-ctutr.hint                                          = Your UTR can be 10 to 13 digits long.
 capture-ctutr.line                                          = This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’.
 capture-ctutr.lost_utr                                      = Lost the company’s UTR number
-capture-ctutr.no_utr                                        = The business does not have a Unique Taxpayer Reference
-capture-ctutr.dropdown.line_1                               = The UTR helps us identify your business
-capture-ctutr.dropdown.link_1                               = I have lost the businesses UTR number
-capture-ctutr.dropdown.link_2                               = My business does not have a UTR
 capture-ctutr.error.limited_company_no-entry                = Enter the company’s Unique Taxpayer Reference
 capture-ctutr.error.registered_society_no-entry             = Enter the registered society’s Unique Taxpayer Reference
 capture-ctutr.error.limited_company_incorrect-format        = Enter the company’s Unique Taxpayer Reference in the correct format
 capture-ctutr.error.registered_society_incorrect-format     = Enter the registered society’s Unique Taxpayer Reference in the correct format
+capture-ctutr.registered_society.p1                         = It will be on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’ or ‘official use’.
+capture-ctutr.registered_society.p2                         = Ask for a copy of your Corporation Tax UTR
+capture-ctutr.registered_society.p3                         = My business does not have a UTR
+capture-ctutr.registered_society.label                      = What is your registered society’s UTR?
+capture-ctutr.registered_society.hint                       = Your UTR can be 10 to 13 digits long.
 
 ## Check Your Answers Page
 check-your-answers.title                                    = Check your answers
