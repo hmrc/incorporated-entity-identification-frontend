@@ -159,7 +159,7 @@ trait CaptureCtutrViewTests {
     }
 
     "have the correct first line" in {
-      doc.getParagraphs.eq(1).text mustBe messages.line
+      doc.getParagraphs.eq(1).text mustBe messages.registered_society_line
     }
 
     "have an input text field" in {
@@ -169,18 +169,13 @@ trait CaptureCtutrViewTests {
       textInputs.first.attr("type") mustBe "text"
     }
 
-    "have the correct details summary" in {
-      doc.getDetailsSummaryText mustBe messages.noCtutr
-    }
-
     "have the correct details drop down" in {
-      doc.getParagraphs.eq(2).text mustBe messages.dropdown_line_1
-      doc.getParagraphs.eq(3).text mustBe messages.dropdown_link_1
-      doc.getParagraphs.eq(4).text mustBe messages.dropdown_link_2
+      doc.getParagraphs.eq(2).text mustBe messages.registered_society_line_part2
+      doc.getParagraphs.eq(3).text mustBe messages.registered_society_line_part3
     }
 
     "have a continue and confirm button" in {
-      doc.getSubmitButton.first.text mustBe Base.saveAndContinue
+      doc.getSubmitButton.first.text mustBe Base.continue
     }
 
     "have a back link" in {
