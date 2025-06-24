@@ -28,6 +28,7 @@
         govukInput: GovukInput,
         h1: h1,
         p: p,
+        a: link,
         govukDetails: GovukDetails,
         govukButton: GovukButton,
         formWithCSRF: FormWithCSRF,
@@ -46,21 +47,21 @@
 
     @formWithCSRF(action = formAction) {
 
-    <p class="govuk-body">
-        @messages("capture-ctutr.registered_society.p1")
-    </p>
-    <p class="govuk-body">
-        @hmrcNewTabLinkHelper(NewTabLinkHelper(
+    @p(Html(messages("capture-ctutr.registered_society.p1")))
+
+    @p(hmrcNewTabLinkHelper(NewTabLinkHelper(
         text = messages("capture-ctutr.registered_society.p2"),
         href = Some("https://www.tax.service.gov.uk/ask-for-copy-of-your-corporation-tax-utr")
-        ))
-    </p>
-    <p class="govuk-inset-text">
-        <a class="govuk-link" id="noCtutr" href="@routes.CaptureCtutrController.noCtutr(journeyId)">
-            @messages("capture-ctutr.registered_society.p3")
-        </a>
-
-    </p>
+        )))
+    @p(
+        a(
+            classes = Some("govuk-link"),
+            id=Some("noCtutr"),
+            href="@routes.CaptureCtutrController.noCtutr(journeyId)",
+            key = messages("capture-ctutr.registered_society.p3")
+        ),
+        classes = "govuk-inset-text"
+    )
 
         @inputText(
             form = form,
