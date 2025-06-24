@@ -41,27 +41,28 @@
 
 @layout(pageConfig, title = title("capture-ctutr.registered_society_title", form)) {
 
-    @errorSummary(form.errors)
+        @errorSummary(form.errors)
 
-    @h1(messages("capture-ctutr.registered_society_heading"))
+        @h1(messages("capture-ctutr.registered_society_heading"))
 
-    @formWithCSRF(action = formAction) {
+        @formWithCSRF(action = formAction) {
 
-    @p(Html(messages("capture-ctutr.registered_society.p1")))
+        @p(Html(messages("capture-ctutr.registered_society.p1")))
 
-    @p(hmrcNewTabLinkHelper(NewTabLinkHelper(
-        text = messages("capture-ctutr.registered_society.p2"),
-        href = Some("https://www.tax.service.gov.uk/ask-for-copy-of-your-corporation-tax-utr")
-        )))
-    @p(
-        a(
-            classes = Some("govuk-link"),
-            id=Some("noCtutr"),
-            href="@routes.CaptureCtutrController.noCtutr(journeyId)",
-            key = messages("capture-ctutr.registered_society.p3")
-        ),
-        classes = "govuk-inset-text"
-    )
+        @p(hmrcNewTabLinkHelper(NewTabLinkHelper(
+            text = messages("capture-ctutr.registered_society.p2"),
+            href = Some("https://www.tax.service.gov.uk/ask-for-copy-of-your-corporation-tax-utr")
+            )))
+
+        @p(
+            a(
+                classes = Some("govuk-link"),
+                id = Some("noCtutr"),
+                href = routes.CaptureCtutrController.noCtutr(journeyId).url,
+                key = messages("capture-ctutr.registered_society.p3")
+            ),
+            classes = "govuk-inset-text"
+        )
 
         @inputText(
             form = form,
