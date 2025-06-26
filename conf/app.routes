@@ -5,34 +5,34 @@ GET         /assets/*file                                       controllers.Asse
 GET         /:journeyId/company-number                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCompanyNumberController.show(journeyId)
 POST        /:journeyId/company-number                          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCompanyNumberController.submit(journeyId)
 
-GET         /:journeyId/chrn                                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCHRNController.show(journeyId)
-POST        /:journeyId/chrn                                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCHRNController.submit(journeyId)
-GET         /:journeyId/no-chrn                                 uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCHRNController.noChrn(journeyId: String)
+GET         /:journeyId/chrn                                                uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCHRNController.show(journeyId)
+POST        /:journeyId/chrn                                                uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCHRNController.submit(journeyId)
+GET         /:journeyId/no-chrn                                             uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCHRNController.noChrn(journeyId: String)
 
-GET         /:journeyId/ct-utr                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.show(journeyId)
-POST        /:journeyId/ct-utr                                  uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.submit(journeyId)
-GET         /:journeyId/no-ct-utr                               uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.noCtutr(journeyId: String)
+GET         /:journeyId/ct-utr                                              uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.show(journeyId)
+POST        /:journeyId/ct-utr                                              uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.submit(journeyId)
+GET         /:journeyId/no-ct-utr                                           uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CaptureCtutrController.noCtutr(journeyId: String)
 
-GET         /:journeyId/confirm-business-name                   uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.show(journeyId)
-POST        /:journeyId/confirm-business-name                   uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.submit(journeyId)
+GET         /:journeyId/confirm-business-name                               uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.show(journeyId)
+POST        /:journeyId/confirm-business-name                               uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.ConfirmBusinessNameController.submit(journeyId)
 
-GET         /:journeyId/check-your-answers-business             uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId)
-POST        /:journeyId/check-your-answers-business             uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.submit(journeyId)
+GET         /:journeyId/check-your-answers-business                         uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.show(journeyId)
+POST        /:journeyId/check-your-answers-business                         uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.CheckYourAnswersController.submit(journeyId)
 
-GET         /:journeyId/error/could-not-confirm-business        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.show(journeyId)
-POST        /:journeyId/error/could-not-confirm-business        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.submit(journeyId)
+GET         /:journeyId/error/could-not-confirm-business                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.show(journeyId)
+GET         /:journeyId/error/could-not-confirm-business/try-again          uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrMismatchController.tryAgain(journeyId)
 
-GET         /:journeyId/error/company-name-not-found            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.show(journeyId)
-POST        /:journeyId/error/company-name-not-found            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.submit(journeyId)
+GET         /:journeyId/error/company-name-not-found                        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.show(journeyId)
+POST        /:journeyId/error/company-name-not-found                        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CompanyNumberNotFoundController.submit(journeyId)
 
-GET         /:journeyId/error/details-not-found-ctutr           uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrNotFoundController.show(journeyId)
-GET         /:journeyId/error/try-again                         uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrNotFoundController.tryAgain(journeyId)
+GET         /:journeyId/error/details-not-found-ctutr                       uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrNotFoundController.show(journeyId)
+GET         /:journeyId/error/details-not-found-ctutr/try-again             uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.CtutrNotFoundController.tryAgain(journeyId)
 
-GET         /:journeyId/start-business-verification             uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.BusinessVerificationController.startBusinessVerificationJourney(journeyId)
-GET         /:journeyId/business-verification-result            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId)
+GET         /:journeyId/start-business-verification                         uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.BusinessVerificationController.startBusinessVerificationJourney(journeyId)
+GET         /:journeyId/business-verification-result                        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.BusinessVerificationController.retrieveBusinessVerificationResult(journeyId)
 
-GET         /journey/redirect/:journeyId                        uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.JourneyRedirectController.redirectToContinueUrl(journeyId)
+GET         /journey/redirect/:journeyId                                    uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.JourneyRedirectController.redirectToContinueUrl(journeyId)
 
-GET         /:journeyId/register                                uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.RegistrationController.register(journeyId)
+GET         /:journeyId/register                                            uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.RegistrationController.register(journeyId)
 
-->          /hmrc-frontend                                      hmrcfrontend.Routes
+->          /hmrc-frontend                                                  hmrcfrontend.Routes

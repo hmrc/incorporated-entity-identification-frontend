@@ -92,9 +92,14 @@ check-your-answers.chrn                                     = Cyfeirnod CThEF
 check-your-answers.no-chrn                                  = Nid oes gan yr elusen Gyfeirnod CThEF
 
 ## CTUTR Mismatch Error Page
-ctutr-mismatch.title                                        = Doedd dim modd cadarnhau’ch busnes
-ctutr-mismatch.heading                                      = Doedd dim modd cadarnhau’ch busnes
-ctutr-mismatch.paragraph                                    = Dydy’r wybodaeth a roesoch ddim yn cyd-fynd â’r manylion sydd gennym am eich busnes.
+ctutr-mismatch.title                                       = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+ctutr-mismatch.heading                                     = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+ctutr-mismatch.line_1                                      = Nid oeddem yn gallu paru’r manylion a nodwyd gennych â’r cofnodion sydd gan CThEF. Gallwch
+ctutr-mismatch.line_1_link                                 = roi cynnig arall arni gan ddefnyddio manylion gwahanol
+ctutr-mismatch.line_2                                      = Os ydych wedi defnyddio’r manylion cywir, mae angen i chi
+ctutr-mismatch.line_2_link                                 = gysylltu â’r Tîm Treth Gorfforaeth (yn agor tab newydd)
+ctutr-mismatch.line_2b                                     = a rhoi gwybod iddynt fod problem gyda’ch Cyfeirnod Unigryw y Trethdalwr.
+ctutr-mismatch.btn                                         = Rhowch gynnig arall arni
 
 ## Company Number Not Found Page
 company-number-not-found.title                              = Doedd dim modd cadarnhau’ch cwmni
