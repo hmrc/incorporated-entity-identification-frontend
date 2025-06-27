@@ -69,7 +69,7 @@ capture-ctutr.registered_society_heading                    = Eich Cyfeirnod Uni
 capture-ctutr.p1                                            = Bydd i’w weld ar Ffurflenni Treth a llythyrau eraill ynghylch Treth Gorfforaeth. Efallai y cyfeirir ato gan ddefnyddio’r geiriau ‘cyfeirnod’, ‘UTR’ neu ‘defnydd swyddogol’.
 capture-ctutr.p2                                            = Gofynnwch am gopi o’ch UTR ar gyfer Treth Gorfforaeth
 capture-ctutr.label                                         = Beth yw eich UTR ar gyfer Treth Gorfforaeth?
-capture-ctutr.hint                                          = Gall eich Cyfeirnod Unigryw y Trethdalwr fod yn 10 hyd at 13 digid o hyd.
+capture-ctutr.hint                                          = Mae eich UTR yn rhif 10 digid o hyd.
 capture-ctutr.line                                          = Rhif 10 digid yw hwn, er enghraifft 1234567890. Bydd i’w weld ar Ffurflenni Treth a llythyrau eraill am Dreth Gorfforaeth. Efallai y cyfeirir ato gan ddefnyddio’r geiriau ‘cyfeirnod’, ‘UTR’ neu ‘defnydd swyddogol’.
 capture-ctutr.lost_utr                                      = Wedi colli UTR y cwmni
 capture-ctutr.error.limited_company_no-entry                = Nodwch Gyfeirnod Unigryw y Trethdalwr ar gyfer y cwmni
@@ -80,7 +80,7 @@ capture-ctutr.registered_society.p1                         = Bydd i’w weld ar
 capture-ctutr.registered_society.p2                         = Gofynnwch am gopi o’ch UTR ar gyfer Treth Gorfforaeth
 capture-ctutr.registered_society.p3                         = Nid oes gan fy musnes UTR
 capture-ctutr.registered_society.label                      = Beth yw UTR eich Cymdeithas Gofrestredig?
-capture-ctutr.registered_society.hint                       = Gall eich Cyfeirnod Unigryw y Trethdalwr fod yn 10 hyd at 13 digid o hyd.
+capture-ctutr.registered_society.hint                       = Mae eich UTR yn rhif 10 digid o hyd.
 
 ## Check Your Answers Page
 check-your-answers.title                                    = Gwirio’ch atebion
