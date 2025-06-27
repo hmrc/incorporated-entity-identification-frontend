@@ -96,17 +96,14 @@ ctutr-mismatch.title                                        = Doedd dim modd cad
 ctutr-mismatch.heading                                      = Doedd dim modd cadarnhau’ch busnes
 ctutr-mismatch.paragraph                                    = Dydy’r wybodaeth a roesoch ddim yn cyd-fynd â’r manylion sydd gennym am eich busnes.
 
-## Company Number Not Found Page
-company-number-not-found.title                              = Doedd dim modd cadarnhau’ch cwmni
-company-number-not-found.heading                            = Doedd dim modd cadarnhau’ch cwmni
-company-number-not-found.paragraph                          = Dydy’r rhif cwmni rydych wedi’i nodi ddim ar ein system.
+# Not Found Pages
+not-found.title                                             = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+not-found.heading                                           = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
+not-found.line_1                                            = Nid oeddem yn gallu paru’r manylion a nodwyd gennych â’r cofnodion sydd gan CThEF. Gallwch
+not-found.line_1_link                                       = roi cynnig arall arni gan ddefnyddio manylion gwahanol
+not-found.line_2                                            = Os ydych wedi defnyddio’r manylion cywir, mae angen i chi
+not-found.line_2_link                                       = gysylltu â’r Tîm Treth Gorfforaeth (yn agor tab newydd)
+not-found.line_2b                                           = a rhoi gwybod iddynt fod problem gyda’ch Cyfeirnod Unigryw y Trethdalwr.
 
-# CTUTR Not Found Page
-ctutr-not-found.title                                       = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
-ctutr-not-found.heading                                     = Nid yw’r manylion a nodwyd gennych yn cyd-fynd â’n cofnodion
-ctutr-not-found.line_1                                      = Nid oeddem yn gallu paru’r manylion a nodwyd gennych â’r cofnodion sydd gan CThEF. Gallwch
-ctutr-not-found.line_1_link                                 = roi cynnig arall arni gan ddefnyddio manylion gwahanol
-ctutr-not-found.line_2                                      = Os ydych wedi defnyddio’r manylion cywir, mae angen i chi
-ctutr-not-found.line_2_link                                 = gysylltu â’r Tîm Treth Gorfforaeth (yn agor tab newydd)
-ctutr-not-found.line_2b                                     = a rhoi gwybod iddynt fod problem gyda’ch Cyfeirnod Unigryw y Trethdalwr.
+## CTUTR Number Not Found Page
 ctutr-not-found.btn                                         = Rhowch gynnig arall arni

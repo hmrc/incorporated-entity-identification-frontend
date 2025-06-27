@@ -120,14 +120,7 @@ object MessageLookup {
     val paragraph: String = "The information you provided does not match the details we have about your business."
   }
 
-  object CompanyNumberNotFound {
-    val title = "We could not confirm your company"
-    val heading = "We could not confirm your company"
-    val line = "The company number you entered is not on our system."
-
-  }
-
-  object CtutrNotFound {
+  object NotFound {
     val title = "The details you entered did not match our records"
     val heading = "The details you entered did not match our records"
     val line1 = "We could not match the details you entered with records held by HMRC. You can "

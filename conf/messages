@@ -96,17 +96,14 @@ ctutr-mismatch.title                                        = We could not confi
 ctutr-mismatch.heading                                      = We could not confirm your business
 ctutr-mismatch.paragraph                                    = The information you provided does not match the details we have about your business.
 
-## Company Number Not Found Page
-company-number-not-found.title                              = We could not confirm your company
-company-number-not-found.heading                            = We could not confirm your company
-company-number-not-found.paragraph                          = The company number you entered is not on our system.
+# Not Found Pages
+not-found.title                                             = The details you entered did not match our records
+not-found.heading                                           = The details you entered did not match our records
+not-found.line_1                                            = We could not match the details you entered with records held by HMRC. You can
+not-found.line_1_link                                       = try again using different details
+not-found.line_2                                            = If you have used the correct details, you need to
+not-found.line_2_link                                       = contact the Corporation Tax team (opens in a new tab)
+not-found.line_2b                                           = and tell them there is an issue with your Corporation Tax Unique Tax Reference.
 
-# CTUTR Not Found Page
-ctutr-not-found.title                                       = The details you entered did not match our records
-ctutr-not-found.heading                                     = The details you entered did not match our records
-ctutr-not-found.line_1                                      = We could not match the details you entered with records held by HMRC. You can
-ctutr-not-found.line_1_link                                 = try again using different details
-ctutr-not-found.line_2                                      = If you have used the correct details, you need to
-ctutr-not-found.line_2_link                                 = contact the Corporation Tax team (opens in a new tab)
-ctutr-not-found.line_2b                                     = and tell them there is an issue with your Corporation Tax Unique Tax Reference.
+## CTUTR Number Not Found Page
 ctutr-not-found.btn                                         = Try again
