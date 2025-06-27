@@ -28,6 +28,7 @@ import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestCons
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.routes
 
 import scala.concurrent.Future
 
@@ -70,8 +71,11 @@ trait CtutrMismatchViewTests {
       doc.getH1Elements.first.text mustBe messages.heading
     }
 
-    "have the correct paragraph" in {
-      doc.getParagraphs.eq(1).text mustBe messages.paragraph
+    "have the correct content" in {
+      doc.getParagraphs.eq(1).text mustBe messages.line1 + messages.line1link + "."
+      doc.getParagraphs.eq(2).text mustBe messages.line2 + messages.line2link + messages.line2b
+      doc.getElementById("contact-corporation-tax-team").attr("href") mustBe "https://www.gov.uk/government/organisations/hm-revenue-customs/contact/corporation-tax-enquiries"
+      doc.getElementById("try-again").attr("href") mustBe routes.CtutrMismatchController.tryAgain(testJourneyId).url
     }
 
     "have a try again button" in {

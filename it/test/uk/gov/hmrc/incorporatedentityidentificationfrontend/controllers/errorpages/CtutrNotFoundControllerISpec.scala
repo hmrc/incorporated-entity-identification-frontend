@@ -84,12 +84,12 @@ class CtutrNotFoundControllerISpec extends ComponentSpecHelper
     }
   }
 
-  "GET /error/try-again" should {
+  "GET /error/details-not-found-ctutr/try-again" should {
     "delete journey data and redirect to Capture Company Number page" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
       stubRemoveAllData(testJourneyId)(NO_CONTENT)
 
-      val result = get(s"$baseUrl/$testJourneyId/error/try-again")
+      val result = get(s"$baseUrl/$testJourneyId/error/details-not-found-ctutr/try-again")
 
       result must have(
         httpStatus(SEE_OTHER),

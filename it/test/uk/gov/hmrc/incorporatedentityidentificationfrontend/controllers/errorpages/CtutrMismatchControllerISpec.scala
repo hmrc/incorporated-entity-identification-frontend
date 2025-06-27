@@ -139,10 +139,10 @@ class CtutrMismatchControllerISpec extends ComponentSpecHelper with CtutrMismatc
     }
   }
 
-  "POST /error/could-not-confirm-business" should {
+  "GET /error/could-not-confirm-business/try-again" should {
     "redirect to Capture Company Number Page" in {
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-      lazy val result = post(s"$baseUrl/$testJourneyId/error/could-not-confirm-business")()
+      lazy val result = get(s"$baseUrl/$testJourneyId/error/could-not-confirm-business/try-again")
 
       result must have(
         httpStatus(SEE_OTHER),
