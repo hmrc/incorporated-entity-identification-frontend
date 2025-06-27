@@ -85,7 +85,7 @@ object MessageLookup {
     val p1 = "It will be on tax returns and other letters about Corporation Tax. It might be called ‘reference’, ‘UTR’ or ‘official use’."
     val p2 = "Ask for a copy of your Corporation Tax UTR (opens in new tab)"
     val label = "What is your Corporation Tax UTR?"
-    val hint = "Your UTR can be 10 to 13 digits long."
+    val hint = "Your UTR is 10 digits long."
     val line = "This is 10 numbers, for example 1234567890. It will be on tax returns and other letters about Corporation Tax. It may be called ‘reference’, ‘UTR’ or ‘official use’."
     val lostUtr = "Lost the company’s UTR number"
     val registered_society_title = "What is the registered society’s Unique Taxpayer Reference?"
