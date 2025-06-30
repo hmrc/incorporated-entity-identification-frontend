@@ -115,9 +115,13 @@ object MessageLookup {
   }
 
   object CtutrMismatch {
-    val title: String = "We could not confirm your business"
+    val title: String = "The details you entered did not match our records"
     val heading: String = title
-    val paragraph: String = "The information you provided does not match the details we have about your business."
+    val line1 = "We could not match the details you entered with records held by HMRC. You can "
+    val line1link = "try again using different details"
+    val line2 = "If you have used the correct details, you need to"
+    val line2link = " contact the Corporation Tax team (opens in a new tab)"
+    val line2b = " and tell them there is an issue with your Corporation Tax Unique Tax Reference."
   }
 
   object NotFound {

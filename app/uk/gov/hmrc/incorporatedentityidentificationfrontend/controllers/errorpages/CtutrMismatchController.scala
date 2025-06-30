@@ -47,14 +47,14 @@ class CtutrMismatchController @Inject()(journeyService: JourneyService,
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
             journeyConfig =>
               implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
-              Ok(view(journeyConfig.pageConfig, routes.CtutrMismatchController.submit(journeyId), journeyId))
+              Ok(view(journeyConfig.pageConfig, routes.CtutrMismatchController.tryAgain(journeyId), journeyId))
           }
         case None =>
           throw new InternalServerException("Internal ID could not be retrieved from Auth")
       }
   }
 
-  def submit(journeyId: String): Action[AnyContent] = Action.async {
+  def tryAgain(journeyId: String): Action[AnyContent] = Action.async {
     implicit request =>
       authorised() {
         Future.successful(Redirect(appRoutes.CaptureCompanyNumberController.show(journeyId)))

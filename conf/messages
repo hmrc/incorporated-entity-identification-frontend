@@ -92,9 +92,15 @@ check-your-answers.chrn                                     = HMRC reference num
 check-your-answers.no-chrn                                  = The charity does not have a HMRC reference number
 
 ## CTUTR Mismatch Error Page
-ctutr-mismatch.title                                        = We could not confirm your business
-ctutr-mismatch.heading                                      = We could not confirm your business
-ctutr-mismatch.paragraph                                    = The information you provided does not match the details we have about your business.
+ctutr-mismatch.title                                        = The details you entered did not match our records
+ctutr-mismatch.heading                                      = The details you entered did not match our records
+ctutr-mismatch.line_1                                       = We could not match the details you entered with records held by HMRC. You can
+ctutr-mismatch.line_1_link                                  = try again using different details
+ctutr-mismatch.line_2                                       = If you have used the correct details, you need to
+ctutr-mismatch.line_2_link                                  = contact the Corporation Tax team (opens in a new tab)
+ctutr-mismatch.line_2b                                      = and tell them there is an issue with your Corporation Tax Unique Tax Reference.
+ctutr-mismatch.btn                                          = Try again
+
 
 # Not Found Pages
 not-found.title                                             = The details you entered did not match our records
