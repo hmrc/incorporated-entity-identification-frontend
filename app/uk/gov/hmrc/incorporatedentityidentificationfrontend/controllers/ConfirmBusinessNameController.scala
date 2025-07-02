@@ -24,6 +24,7 @@ import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.ConfirmBusinessNameForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, LimitedCompany, RegisteredSociety}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.CtEnrolmentService._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{CtEnrolmentService, JourneyService, StorageService}
@@ -54,7 +55,10 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
               implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
               incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).map {
                 case Some(companiesHouseInformation) =>
-                  Ok(view(journeyConfig.pageConfig, routes.ConfirmBusinessNameController.submit(journeyId), companiesHouseInformation.companyName, journeyId))
+                  Ok(view(journeyConfig.pageConfig,
+                    ConfirmBusinessNameForm.form(messages),
+                    routes.ConfirmBusinessNameController.submit(journeyId),
+                    companiesHouseInformation.companyName, journeyId))
                 case None =>
                   throw new InternalServerException("No company profile stored")
               }
@@ -64,27 +68,46 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
       }
   }
 
-  def submit(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
-      authorised().retrieve(allEnrolments and internalId) {
-        case enrolments ~ Some(authInternalId) =>
-          journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
-            journeyConfig =>
-              journeyConfig.businessEntity match {
-                case LimitedCompany | RegisteredSociety =>
-                  ctEnrolmentService.checkCtEnrolment(journeyId, enrolments, journeyConfig).map {
-                    case Enrolled =>
-                      Redirect(routes.RegistrationController.register(journeyId))
-                    case EnrolmentMismatch | NoEnrolmentFound =>
-                      Redirect(routes.CaptureCtutrController.show(journeyId))
-                  }
-                case CharitableIncorporatedOrganisation =>
-                  Future.successful(Redirect(routes.CaptureCHRNController.show(journeyId)))
-              }
-          }
-        case _ ~ None =>
-          throw new InternalServerException("Internal ID could not be retrieved from Auth")
-      }
+  def submit(journeyId: String): Action[AnyContent] = Action.async { implicit request =>
+    authorised().retrieve(allEnrolments and internalId) {
+      case enrolments ~ Some(authInternalId) =>
+        journeyService.getJourneyConfig(journeyId, authInternalId).flatMap { journeyConfig =>
+          implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
+          ConfirmBusinessNameForm.form(messages).bindFromRequest().fold(
+            formWithErrors =>
+              incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).map {
+                case Some(companiesHouseInformation) =>
+                  BadRequest(view(
+                    journeyConfig.pageConfig,
+                    formWithErrors,
+                    routes.ConfirmBusinessNameController.submit(journeyId),
+                    companiesHouseInformation.companyName,
+                    journeyId
+                  ))
+                case None =>
+                  throw new InternalServerException("No company profile stored")
+              },
+            {
+              case ConfirmBusinessNameForm.yes =>
+                journeyConfig.businessEntity match {
+                  case LimitedCompany | RegisteredSociety =>
+                    ctEnrolmentService.checkCtEnrolment(journeyId, enrolments, journeyConfig).map {
+                      case Enrolled =>
+                        Redirect(routes.RegistrationController.register(journeyId))
+                      case EnrolmentMismatch | NoEnrolmentFound =>
+                        Redirect(routes.CaptureCtutrController.show(journeyId))
+                    }
+                  case CharitableIncorporatedOrganisation =>
+                    Future.successful(Redirect(routes.CaptureCHRNController.show(journeyId)))
+                }
+              case ConfirmBusinessNameForm.no =>
+                Future.successful(Redirect(routes.CaptureCompanyNumberController.show(journeyId)))
+            }
+          )
+        }
+      case _ ~ None =>
+        throw new InternalServerException("Internal ID could not be retrieved from Auth")
+    }
   }
 
 }

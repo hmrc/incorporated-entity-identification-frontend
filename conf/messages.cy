@@ -27,6 +27,7 @@ base.continue                                               = Parhau
 ## Error
 error.summary.title                                         = Mae problem wedi codi
 error.title-prefix                                          = 'Gwall: '
+error.prefix                                                = Gwall
 
 ## Timeout
 timeout.title                                               = Rydych ar fin cael eich allgofnodi
@@ -47,8 +48,12 @@ capture-company-number.error.invalid-format                 = Nodwch rif cofrest
 
 ## Confirm Business Page
 confirm-business.title                                      = Cadarnhewch enw’r cwmni
-confirm-business.heading                                    = Cadarnhewch enw’r cwmni
+confirm-business.heading                                    = Ai dyma’ch busnes?
 confirm-business.change_company                             = Newidiwch y cwmni
+confirm-business.yes                                        = Iawn
+confirm-business.no                                         = Na
+confirm-business.hidden                                     = Dewiswch ‘Iawn’ os mai’ch busnes chi yw hwn
+confirm-business.error.required                             = Gwall — gwybodaeth ofynnol
 
 ## Capture Charity HMRC Reference number
 chrn.title                                                  = Beth yw cyfeirnod CThEF yr elusen?
