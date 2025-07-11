@@ -58,9 +58,12 @@ object MessageLookup {
   }
 
   object ConfirmBusinessName {
-    val title = "Confirm the company name"
-    val heading = "Confirm the company name"
-    val change_company = "Change company"
+    val title = "Is this your business?"
+    val heading = "Is this your business?"
+
+    object Error {
+      val errorRequired = "Select Yes if this is your business"
+    }
   }
 
   object CaptureCHRN {

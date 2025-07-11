@@ -27,6 +27,7 @@ base.continue                                               = Continue
 ## Error
 error.summary.title                                         = There is a problem
 error.title-prefix                                          = 'Error: '
+error.prefix                                                = Error
 
 ## Timeout
 timeout.title                                               = You’re about to be signed out
@@ -46,9 +47,12 @@ capture-company-number.error.invalid-length                 = The company regist
 capture-company-number.error.invalid-format                 = Enter the company registration number in the correct format
 
 ## Confirm Business Page
-confirm-business.title                                      = Confirm the company name
-confirm-business.heading                                    = Confirm the company name
-confirm-business.change_company                             = Change company
+confirm-business.title                                      = Is this your business?
+confirm-business.heading                                    = Is this your business?
+confirm-business.yes                                        = Yes
+confirm-business.no                                         = No
+confirm-business.hidden                                     = Select Yes if this is your business
+confirm-business.error.required                             = Select Yes if this is your business
 
 ## Capture Charity HMRC Reference number
 chrn.title                                                  = What is the charity’s HMRC reference number?
