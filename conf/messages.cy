@@ -112,6 +112,11 @@ not-found.line_1                                            = Nid oeddem yn gall
 not-found.line_1_link                                       = roi cynnig arall arni gan ddefnyddio manylion gwahanol
 not-found.line_2                                            = Gallwch
 not-found.line_2_link                                       = chwilio Tŷ’r Cwmnïau ar gyfer rhif cofrestru’r cwmni (yn agor tab newydd).
+not-found.line_2                                            = Os ydych wedi defnyddio’r manylion cywir, mae angen i chi
+not-found.line_2_link                                       = gysylltu â’r Tîm Treth Gorfforaeth (yn agor tab newydd)
+not-found.line_2b                                           = a rhoi gwybod iddynt fod problem gyda’ch Cyfeirnod Unigryw y Trethdalwr.
+not-found.company.line_2                                    = Gallwch
+not-found.company.line_2_link                               = chwilio Tŷ’r Cwmnïau ar gyfer rhif cofrestru’r cwmni (yn agor tab newydd).
 
 ## CTUTR Number Not Found Page
 ctutr-not-found.btn                                         = Rhowch gynnig arall arni

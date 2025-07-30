@@ -23,7 +23,7 @@ import org.jsoup.select.Elements
 import org.mongodb.scala.result.InsertOneResult
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
-import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, NotFound => messages}
+import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, NotFound => messages, CompanyNotFound}
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
@@ -75,7 +75,7 @@ trait CompanyNumberNotFoundTests {
     }
 
     "have the correct paragraph 2" in {
-      doc.getParagraphs.eq(2).text mustBe messages.line2 + messages.line2link + messages.line2b
+      doc.getParagraphs.eq(2).text mustBe CompanyNotFound.line2 + CompanyNotFound.line2link
     }
 
     "have a try again button" in {
