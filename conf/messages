@@ -115,7 +115,7 @@ not-found.line_2                                            = If you have used t
 not-found.line_2_link                                       = contact the Corporation Tax team (opens in a new tab)
 not-found.line_2b                                           = and tell them there is an issue with your Corporation Tax Unique Tax Reference.
 not-found.company.line_2                                    = You can
-not-found.company.line_2_link                               = search Companies House for the company registration number (opens in new tab).
+not-found.company.line_2_link                               = search Companies House for the company registration number (opens in new tab)
 
 ## CTUTR Number Not Found Page
 ctutr-not-found.btn                                         = Try again

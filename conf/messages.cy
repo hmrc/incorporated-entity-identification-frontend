@@ -114,7 +114,7 @@ not-found.line_2                                            = Os ydych wedi defn
 not-found.line_2_link                                       = gysylltu â’r Tîm Treth Gorfforaeth (yn agor tab newydd)
 not-found.line_2b                                           = a rhoi gwybod iddynt fod problem gyda’ch Cyfeirnod Unigryw y Trethdalwr.
 not-found.company.line_2                                    = Gallwch
-not-found.company.line_2_link                               = chwilio Tŷ’r Cwmnïau ar gyfer rhif cofrestru’r cwmni (yn agor tab newydd).
+not-found.company.line_2_link                               = chwilio Tŷ’r Cwmnïau ar gyfer rhif cofrestru’r cwmni (yn agor tab newydd)
 
 ## CTUTR Number Not Found Page
 ctutr-not-found.btn                                         = Rhowch gynnig arall arni
