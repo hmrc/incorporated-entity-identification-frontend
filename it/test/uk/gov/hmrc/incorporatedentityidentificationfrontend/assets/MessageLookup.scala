@@ -137,4 +137,9 @@ object MessageLookup {
     val line2b = " and tell them there is an issue with your Corporation Tax Unique Tax Reference."
   }
 
+  object CompanyNotFound {
+    val line2 = "You can"
+    val line2link = " search Companies House for the company registration number (opens in new tab)."
+  }
+
 }
