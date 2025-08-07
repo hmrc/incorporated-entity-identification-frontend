@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -39,6 +39,8 @@ object ViewSpecHelper {
     lazy val getFormElements: Elements = element.getElementsByClass("form-field-group")
 
     lazy val getLabelElement: Elements = element.getElementsByTag("label")
+
+    lazy val getInsetElement: Elements = element.getElementsByClass("govuk-inset-text")
 
     lazy val getLegendElement: Elements = element.getElementsByTag("legend")
 
