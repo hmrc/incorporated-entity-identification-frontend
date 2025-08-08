@@ -108,7 +108,7 @@ trait CheckYourAnswersViewTests {
       }
 
       "have a continue and confirm button" in {
-        doc.getSubmitButton.first.text mustBe Base.confirmAndContinue
+        doc.getSubmitButton.first.text mustBe Base.continue
       }
 
       "have a back link" in {
@@ -211,7 +211,7 @@ trait CheckYourAnswersViewTests {
       }
 
       "have a continue and confirm button" in {
-        doc.getSubmitButton.first.text mustBe Base.confirmAndContinue
+        doc.getSubmitButton.first.text mustBe Base.continue
       }
 
       "have a back link" in {
@@ -301,7 +301,7 @@ trait CheckYourAnswersViewTests {
       }
 
       "have a continue and confirm button" in {
-        doc.getSubmitButton.first.text mustBe Base.confirmAndContinue
+        doc.getSubmitButton.first.text mustBe Base.continue
       }
 
       "have a back link" in {
@@ -391,7 +391,7 @@ trait CheckYourAnswersViewTests {
       }
 
       "have a continue and confirm button" in {
-        doc.getSubmitButton.first.text mustBe Base.confirmAndContinue
+        doc.getSubmitButton.first.text mustBe Base.continue
       }
 
       "have a back link" in {

@@ -18,7 +18,7 @@ feedback.after                                              = (yn agor tab newyd
 ## Base
 base.back                                                   = Yn ôl
 base.save_and_continue                                      = Cadw ac yn eich blaen
-base.confirm_and_continue                                   = Cadarnhau ac yn eich blaen
+base.continue                                               = Parhau
 base.save_and_come_back                                     = Cadw a dod yn ôl yn nes ymlaen
 base.change                                                 = Newid
 base.try_again                                              = Rhowch gynnig arall arni
