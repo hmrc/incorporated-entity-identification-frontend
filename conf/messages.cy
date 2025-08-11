@@ -55,12 +55,14 @@ confirm-business.hidden                                     = Dewiswch ‘Iawn�
 confirm-business.error.required                             = Dewiswch ‘Iawn’ os mai’ch busnes chi yw hwn
 
 ## Capture Charity HMRC Reference number
-chrn.title                                                  = Beth yw cyfeirnod CThEF yr elusen?
-chrn.heading                                                = Beth yw cyfeirnod CThEF yr elusen?
-chrn.inset_text                                             = Os yw’r elusen wedi’i chofrestru ar gyfer Rhodd Cymorth, yna bydd ei chyfeirnod CThEF yr un peth â’i rhif Rhodd Cymorth. Nid yw hwn yr un peth â’r rhif elusen sydd ar gael ar y gofrestr elusennau.
-chrn.hint_text                                              = Gallai hyn fod hyd at 7 o gymeriadau, a rhaid iddo ddechrau gyda naill ai un neu ddwy lythyren ar y dechrau ac yna 1-5 rhif. Er enghraifft, A999 neu AB99999
-chrn.label_text                                             = Cyfeirnod CThEF
-chrn.no_chrn_link                                           = Nid oes gan yr elusen Gyfeirnod CThEF
+chrn.title                                                  = Cyfeirnod CThEF eich elusen
+chrn.heading                                                = Cyfeirnod CThEF eich elusen
+chrn.reg_link                                               = gofrestr elusennau
+chrn.p1                                                     = Gallwch ddod o hyd i gyfeirnod CThEF eich elusen ar y
+chrn.p2                                                     = Os yw’r elusen wedi’i chofrestru ar gyfer Rhodd Cymorth, yna bydd ei chyfeirnod CThEF yr un peth â’i rhif Rhodd Cymorth, nid yw ar gael ar y gofrestr elusennau.
+chrn.hint_text                                              = Gallai hyn fod hyd at 7 o gymeriadau, a rhaid iddo ddechrau gyda naill ai un neu ddwy lythyren ar y dechrau ac yna 1-5 rhif, megis A999 neu AB99999.
+chrn.label_text                                             = Beth yw cyfeirnod CThEF eich elusen?
+chrn.no_chrn_link                                           = Nid oes gan yr elusen gyfeirnod CThEF
 chrn.error.no-entry                                         = Nodwch gyfeirnod CThEF
 chrn.error.invalid-format                                   = Nodwch gyfeirnod CThEF yn y fformat cywir
 chrn.error.invalid-length                                   = Mae’n rhaid i gyfeirnod CThEF fod yn 7 o gymeriadau neu lai

@@ -1,5 +1,5 @@
 /*
- * Copyright 2020 HM Revenue & Customs
+ * Copyright 2025 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -84,12 +84,7 @@ trait CaptureCHRNumberViewTests {
     }
 
     "have the correct inset text" in {
-
-      val insetElements: Elements = doc.getElementsByClass("govuk-inset-text")
-
-      insetElements.size mustBe 1
-
-      insetElements.first.text mustBe messages.insetText
+      doc.getInsetElement.text mustBe messages.insetText
     }
 
     "have correct label in the form" in {
@@ -97,7 +92,15 @@ trait CaptureCHRNumberViewTests {
     }
 
     "have the correct hint text" in {
-      doc.getParagraphs.get(1).text mustBe messages.hintText
+      doc.getElementById("chrn-hint").text mustBe messages.hintText
+    }
+
+    "have the correct paragraph text" in {
+      doc.getParagraphs.get(1).text mustBe messages.p1
+    }
+
+    "have the correct second paragraph text" in {
+      doc.getParagraphs.get(2).text mustBe messages.p2
     }
 
     "have an input text box with the identifier 'chrn'" in {
@@ -120,8 +123,8 @@ trait CaptureCHRNumberViewTests {
       }
     }
 
-    "have a save and continue button" in {
-      doc.getSubmitButton.first.text mustBe Base.saveAndContinue
+    "have a continue button" in {
+      doc.getSubmitButton.first.text mustBe Base.continue
     }
 
     "have the correct technical help link and text" in {
