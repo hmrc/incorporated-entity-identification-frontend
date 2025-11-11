@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
@@ -54,6 +54,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
 
   val show: Action[AnyContent] = Action.async {
     implicit request =>
+      given Request[AnyContent] = request
       authorised() {
         Future.successful(
           Ok(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit, form(LimitedCompany).fill(defaultJourneyConfig)))
@@ -63,6 +64,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
 
   val submit: Action[AnyContent] = Action.async {
     implicit request =>
+      given Request[AnyContent] = request
       authorised() {
         form(LimitedCompany).bindFromRequest().fold(
           formWithErrors =>

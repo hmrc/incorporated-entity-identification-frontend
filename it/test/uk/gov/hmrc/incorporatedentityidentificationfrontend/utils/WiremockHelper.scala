@@ -107,7 +107,6 @@ object WiremockHelper extends Eventually with IntegrationPatience {
   }
 
   def verifyAudit(): Unit = {
-    verifyPost("/write/audit")
     verifyPost("/write/audit/merged")
   }
 

@@ -41,7 +41,8 @@ class CompanyNumberNotFoundController @Inject()(journeyService: JourneyService,
                                                  executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
+    request =>
+      given Request[AnyContent] = request
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
@@ -55,7 +56,8 @@ class CompanyNumberNotFoundController @Inject()(journeyService: JourneyService,
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
+    request =>
+      given Request[AnyContent] = request
       authorised() {
         Future.successful(Redirect(appRoutes.CaptureCompanyNumberController.show(journeyId)))
       }

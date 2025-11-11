@@ -48,7 +48,7 @@ object CompanyProfileHttpParser extends Logging {
       (__ \ companyNumberKey).read[String] and
       (__ \ dateOfIncorporationKey).readNullable[String] and
       (__ \ registeredOfficeAddressKey).read[JsObject]
-    ) (CompanyProfile.apply _)
+    ) (CompanyProfile.apply)
 
   implicit object CompanyProfileHttpReads extends HttpReads[Option[CompanyProfile]] {
     override def read(method: String, url: String, response: HttpResponse): Option[CompanyProfile] = {

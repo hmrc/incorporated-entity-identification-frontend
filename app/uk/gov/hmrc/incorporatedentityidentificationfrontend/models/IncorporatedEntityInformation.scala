@@ -19,7 +19,6 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.models
 import play.api.libs.json._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessVerificationStatus._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.IncorporatedEntityDetailsMatching.DetailsMatchedKey
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.StorageService.IdentifiersMatchKey
 
 
 case class IncorporatedEntityInformation(companyProfile: CompanyProfile,
@@ -40,6 +39,7 @@ object IncorporatedEntityInformation {
   val verificationStatusKey = "verificationStatus"
   val registrationKey = "registration"
   val businessVerificationUnchallengedKey = "UNCHALLENGED"
+  val IdentifiersMatchKey: String = "identifiersMatch"
 
   implicit val format: OFormat[IncorporatedEntityInformation] = new OFormat[IncorporatedEntityInformation] {
     override def reads(json: JsValue): JsResult[IncorporatedEntityInformation] =

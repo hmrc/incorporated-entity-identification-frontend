@@ -20,7 +20,6 @@ import uk.gov.hmrc.http.{HeaderCarrier, NotFoundException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.IncorporatedEntityInformationConnector
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.httpparsers.RemoveIncorporatedEntityDetailsHttpParser.SuccessfullyRemoved
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.StorageService._
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
@@ -31,41 +30,41 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
   def storeCompanyProfile(journeyId: String,
                           companyProfile: CompanyProfile
                          )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[CompanyProfile](journeyId, CompanyProfileKey, companyProfile)
+    connector.storeData[CompanyProfile](journeyId, StorageService.CompanyProfileKey, companyProfile)
 
   def storeCtutr(journeyId: String,
                  ctutr: String
                 )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[String](journeyId, CtutrKey, ctutr)
+    connector.storeData[String](journeyId, StorageService.CtutrKey, ctutr)
 
   def storeCHRN(journeyId: String,
                 chrn: String
                )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[String](journeyId, ChrnKey, chrn)
+    connector.storeData[String](journeyId, StorageService.ChrnKey, chrn)
 
   def storeBusinessVerificationStatus(journeyId: String,
                                       businessVerification: BusinessVerificationStatus
                                      )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[BusinessVerificationStatus](journeyId, VerificationStatusKey, businessVerification)
+    connector.storeData[BusinessVerificationStatus](journeyId, StorageService.VerificationStatusKey, businessVerification)
 
 
   def storeIdentifiersMatch(journeyId: String,
                             identifiersMatch: IncorporatedEntityDetailsMatching
                            )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[IncorporatedEntityDetailsMatching](journeyId, IdentifiersMatchKey, identifiersMatch)
+    connector.storeData[IncorporatedEntityDetailsMatching](journeyId, IncorporatedEntityInformation.IdentifiersMatchKey, identifiersMatch)
 
   def storeRegistrationStatus(journeyId: String,
                               registrationStatus: RegistrationStatus
                              )(implicit hc: HeaderCarrier): Future[StorageResult] =
-    connector.storeData[RegistrationStatus](journeyId, RegistrationKey, registrationStatus)
+    connector.storeData[RegistrationStatus](journeyId, StorageService.RegistrationKey, registrationStatus)
 
   def retrieveCompanyProfile(journeyId: String
                             )(implicit hc: HeaderCarrier): Future[Option[CompanyProfile]] =
-    connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, CompanyProfileKey)
+    connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, StorageService.CompanyProfileKey)
 
   def retrieveCompanyNumber(journeyId: String
                            )(implicit hc: HeaderCarrier, ec: ExecutionContext): Future[String] =
-    connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, CompanyProfileKey).map {
+    connector.retrieveIncorporatedEntityInformation[CompanyProfile](journeyId, StorageService.CompanyProfileKey).map {
       case Some(companyNumber) =>
         companyNumber.companyNumber
       case _ =>
@@ -74,32 +73,32 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
 
   def retrieveBusinessVerificationStatus(journeyId: String
                                         )(implicit hc: HeaderCarrier): Future[Option[BusinessVerificationStatus]] =
-    connector.retrieveIncorporatedEntityInformation[BusinessVerificationStatus](journeyId, VerificationStatusKey)
+    connector.retrieveIncorporatedEntityInformation[BusinessVerificationStatus](journeyId, StorageService.VerificationStatusKey)
 
   def retrieveCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    connector.retrieveIncorporatedEntityInformation[String](journeyId, CtutrKey)
+    connector.retrieveIncorporatedEntityInformation[String](journeyId, StorageService.CtutrKey)
 
   def retrieveCHRN(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
-    connector.retrieveIncorporatedEntityInformation[String](journeyId, ChrnKey)
+    connector.retrieveIncorporatedEntityInformation[String](journeyId, StorageService.ChrnKey)
 
   def retrieveRegistrationStatus(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[RegistrationStatus]] =
-    connector.retrieveIncorporatedEntityInformation[RegistrationStatus](journeyId, RegistrationKey)
+    connector.retrieveIncorporatedEntityInformation[RegistrationStatus](journeyId, StorageService.RegistrationKey)
 
   def retrieveIdentifiersMatch(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityDetailsMatching]] =
-    connector.retrieveIncorporatedEntityInformation[IncorporatedEntityDetailsMatching](journeyId, IdentifiersMatchKey)
+    connector.retrieveIncorporatedEntityInformation[IncorporatedEntityDetailsMatching](journeyId, IncorporatedEntityInformation.IdentifiersMatchKey)
 
   def retrieveIncorporatedEntityInformation(journeyId: String
                                            )(implicit hc: HeaderCarrier): Future[Option[IncorporatedEntityInformation]] =
     connector.retrieveIncorporatedEntityInformation(journeyId)
 
   def removeCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
-    connector.removeIncorporatedEntityDetailsField(journeyId, CtutrKey)
+    connector.removeIncorporatedEntityDetailsField(journeyId, StorageService.CtutrKey)
 
   def removeAllData(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeAllData(journeyId)
 
   def removeCHRN(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
-    connector.removeIncorporatedEntityDetailsField(journeyId, ChrnKey)
+    connector.removeIncorporatedEntityDetailsField(journeyId, StorageService.ChrnKey)
 
 }
 
@@ -107,7 +106,6 @@ object StorageService {
   val CompanyProfileKey: String = "companyProfile"
   val CtutrKey: String = "ctutr"
   val ChrnKey: String = "chrn"
-  val IdentifiersMatchKey: String = "identifiersMatch"
   val VerificationStatusKey: String = "businessVerification"
   val RegistrationKey: String = "registration"
 }

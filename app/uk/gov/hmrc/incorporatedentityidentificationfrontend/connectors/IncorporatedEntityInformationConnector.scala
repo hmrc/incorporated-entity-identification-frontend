@@ -17,6 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
 import play.api.libs.json.{Json, Reads, Writes}
+import play.api.libs.ws.JsonBodyWritables.writeableOf_JsValue
 import uk.gov.hmrc.http._
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
@@ -26,6 +27,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{Incorporated
 
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.{ExecutionContext, Future}
+import scala.reflect.ClassTag
 
 @Singleton
 class IncorporatedEntityInformationConnector @Inject()(http: HttpClientV2,
@@ -35,7 +37,7 @@ class IncorporatedEntityInformationConnector @Inject()(http: HttpClientV2,
   def retrieveIncorporatedEntityInformation[DataType](journeyId: String,
                                                       dataKey: String
                                                      )(implicit dataTypeReads: Reads[DataType],
-                                                       manifest: Manifest[DataType],
+                                                       classTag: ClassTag[DataType],
                                                        hc: HeaderCarrier): Future[Option[DataType]] =
     http.get(url"${appConfig.incorporatedEntityInformationUrl(journeyId)}/$dataKey").execute[Option[DataType]]
 

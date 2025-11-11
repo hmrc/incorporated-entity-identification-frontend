@@ -3,7 +3,7 @@ import uk.gov.hmrc.DefaultBuildSettings
 val appName = "incorporated-entity-identification-frontend"
 
 ThisBuild / majorVersion := 1
-ThisBuild / scalaVersion := "2.13.16"
+ThisBuild / scalaVersion := "3.3.6"
 
 lazy val microservice = Project(appName, file("."))
   .enablePlugins(play.sbt.PlayScala, SbtDistributablesPlugin)
@@ -15,12 +15,15 @@ lazy val microservice = Project(appName, file("."))
   .disablePlugins(JUnitXmlReportPlugin)
 PlayKeys.playDefaultPort := 9718
 scalacOptions += "-Wconf:src=routes/.*:s"
-scalacOptions += "-Wconf:cat=unused-imports&src=html/.*:s"
+scalacOptions += "-Wconf:msg=unused import&src=html/.*:s"
+scalacOptions += "-Wconf:msg=unused explicit parameter&src=html/.*:s"
+scalacOptions += "-Wconf:msg=Discarded non-Unit value&src=html/.*:s"
 
 TwirlKeys.templateImports ++= Seq(
   "uk.gov.hmrc.govukfrontend.views.html.components._"
 )
 
+ 
 
 Test / Keys.fork := true
 Test / javaOptions += "-Dlogger.resource=logback-test.xml"
@@ -31,3 +34,4 @@ lazy val it = project
   .dependsOn(microservice % "test->test") // the "test->test" allows reusing test code and test dependencies
   .settings(DefaultBuildSettings.itSettings())
   .settings(libraryDependencies ++= AppDependencies.it)
+  .settings(Test / classLoaderLayeringStrategy := ClassLoaderLayeringStrategy.Flat)

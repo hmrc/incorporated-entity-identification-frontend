@@ -71,7 +71,7 @@ class CheckYourAnswersRowBuilder @Inject()() {
       case LimitedCompany => Seq(companyNumberRow, ctutrRow())
       case RegisteredSociety => Seq(companyNumberRow, ctutrRow())
       case CharitableIncorporatedOrganisation => Seq(companyNumberRow, chrnRow())
-      case _ => throw new IllegalStateException(exceptionMessage("Business entity"))
+      case null => throw new IllegalStateException(exceptionMessage("Business entity"))
     }
 
   }

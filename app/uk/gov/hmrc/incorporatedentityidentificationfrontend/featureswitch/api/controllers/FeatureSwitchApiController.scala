@@ -18,16 +18,18 @@ package uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.c
 
 
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, InjectedController}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.api.services.FeatureSwitchService
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.models.FeatureSwitchSetting
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.models.FeatureSwitchSetting._
+import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
 
 @Singleton
-class FeatureSwitchApiController @Inject()(featureSwitchService: FeatureSwitchService) extends InjectedController with FeatureSwitching {
+class FeatureSwitchApiController @Inject()(featureSwitchService: FeatureSwitchService,
+                                            mcc: MessagesControllerComponents) extends FrontendController(mcc) with FeatureSwitching {
 
   def getFeatureSwitches(): Action[AnyContent] = Action {
     Ok(Json.toJson(featureSwitchService.getFeatureSwitches()))

@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
@@ -49,7 +49,8 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
                                            ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
+    request =>
+      given Request[AnyContent] = request
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           for {
@@ -57,9 +58,9 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
             optCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
             optCtutr <- storageService.retrieveCtutr(journeyId)
             optChrn <- storageService.retrieveCHRN(journeyId)
-            summaryRows = rowBuilder.buildSummaryListRows(journeyId, optCompanyProfile, optCtutr, optChrn, journeyConfig)
           } yield {
             implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
+            val summaryRows = rowBuilder.buildSummaryListRows(journeyId, optCompanyProfile, optCtutr, optChrn, journeyConfig)
             Ok(view(
               pageConfig = journeyConfig.pageConfig,
               formAction = routes.CheckYourAnswersController.submit(journeyId),
@@ -71,7 +72,8 @@ class CheckYourAnswersController @Inject()(journeyService: JourneyService,
   }
 
   def submit(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
+    request =>
+      given Request[AnyContent] = request
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           for {

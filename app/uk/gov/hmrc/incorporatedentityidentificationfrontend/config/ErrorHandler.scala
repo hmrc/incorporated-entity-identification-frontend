@@ -34,7 +34,9 @@ class ErrorHandler @Inject()(view: error_template,
                              val messagesApi: MessagesApi,
                              val config: Configuration,
                              val env: Environment
-                            )(implicit appConfig: AppConfig, implicit val ec: ExecutionContext) extends FrontendErrorHandler with AuthRedirects with Logging {
+                           )(implicit appConfig: AppConfig) extends FrontendErrorHandler with AuthRedirects with Logging {
+  
+  protected implicit val ec: ExecutionContext = scala.concurrent.ExecutionContext.Implicits.global
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] =
     if (play.mvc.Http.Status.BAD_REQUEST == statusCode)

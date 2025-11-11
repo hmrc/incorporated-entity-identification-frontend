@@ -47,7 +47,8 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
                                                ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions with FeatureSwitching {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
+    request =>
+      given Request[AnyContent] = request
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
@@ -68,7 +69,8 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
       }
   }
 
-  def submit(journeyId: String): Action[AnyContent] = Action.async { implicit request =>
+  def submit(journeyId: String): Action[AnyContent] = Action.async { request =>
+    given Request[AnyContent] = request
     authorised().retrieve(allEnrolments and internalId) {
       case enrolments ~ Some(authInternalId) =>
         journeyService.getJourneyConfig(journeyId, authInternalId).flatMap { journeyConfig =>

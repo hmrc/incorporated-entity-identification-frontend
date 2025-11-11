@@ -35,7 +35,7 @@ class BusinessVerificationService @Inject()(createBusinessVerificationJourneyCon
         val bvStatus = failureReason match {
           case NotEnoughEvidence => BusinessVerificationNotEnoughInformationToChallenge
           case UserLockedOut => BusinessVerificationFail
-          case _ => throw new InternalServerException(s"createBusinessVerificationJourney service failed with invalid BV status")
+          case null => throw new InternalServerException(s"createBusinessVerificationJourney service failed with invalid BV status")
         }
         storageService.storeBusinessVerificationStatus(journeyId, bvStatus).map {
           _ => None
