@@ -33,7 +33,8 @@ class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with
   def extraConfig: Map[String, String] = Map(
     "auditing.enabled" -> "true",
     "auditing.consumer.baseUri.host" -> mockHost,
-    "auditing.consumer.baseUri.port" -> mockPort
+    "auditing.consumer.baseUri.port" -> mockPort,
+    "defaultServiceName" -> "Entity Validation Service"
   )
 
   private val registrationFailure = Json.arr(Json.obj(
