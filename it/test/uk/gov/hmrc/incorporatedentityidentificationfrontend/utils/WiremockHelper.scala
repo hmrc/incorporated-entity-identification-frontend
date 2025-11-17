@@ -107,31 +107,28 @@ object WiremockHelper extends Eventually with IntegrationPatience {
   }
 
   def verifyAudit(): Unit = {
-    verifyPost("/write/audit")
     verifyPost("/write/audit/merged")
   }
 
   def verifyAuditDetail(expectedAudit: JsObject): Unit = {
-    val uriMapping = postRequestedFor(urlEqualTo("/write/audit"))
+    val uriMapping = postRequestedFor(urlPathMatching("/write/audit(?:/merged)?"))
 
-    // Remove callingService field from comparison as it varies by environment (CI vs local)
-    val expectedWithoutCallingService = expectedAudit - "callingService"
-
-    val postRequest = uriMapping.andMatching {
-      (request: Request) =>
-        Try(Json.parse(request.getBodyAsString)) match {
-          case Success(auditJson) => auditJson \ "auditType" match {
+    val postRequest = uriMapping.andMatching { (request: Request) =>
+      Try(Json.parse(request.getBodyAsString)) match {
+        case Success(auditJson) =>
+          auditJson \\ "auditType" match {
             case JsDefined(auditType) if auditType == JsString("IncorporatedEntityRegistration") =>
-              auditJson \ "detail" match {
+              auditJson \\ "detail" match {
                 case JsDefined(auditDetail) =>
-                  val actualWithoutCallingService = auditDetail.as[JsObject] - "callingService"
-                  if (actualWithoutCallingService.equals(expectedWithoutCallingService)) exactMatch() else noMatch()
+                  val actual = auditDetail.as[JsObject] - "callingService"
+                  val expected = expectedAudit - "callingService"
+                  if (actual == expected) exactMatch() else noMatch()
                 case _ => noMatch()
               }
-            case _ => exactMatch() // We only want to test audit events of type IncorporatedEntityRegistration
+            case _ => exactMatch()
           }
-          case _ => noMatch()
-        }
+        case _ => noMatch()
+      }
     }
 
     verify(postRequest)
