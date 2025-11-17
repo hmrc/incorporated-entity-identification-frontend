@@ -120,10 +120,6 @@ object WiremockHelper extends Eventually with IntegrationPatience {
             case JsDefined(auditType) if auditType == JsString("IncorporatedEntityRegistration") =>
               auditJson \ "detail" match {
                 case JsDefined(auditDetail) if auditDetail.as[JsObject].equals(expectedAudit)=> exactMatch()
-                case JsDefined(auditDetail) =>
-                  println(s"[AUDIT MISMATCH] Expected: ${Json.prettyPrint(expectedAudit)}")
-                  println(s"[AUDIT MISMATCH] Actual:   ${Json.prettyPrint(auditDetail.as[JsObject])}")
-                  noMatch()
                 case _ => noMatch()
               }
             case _ => exactMatch() // We only want to test audit events of type IncorporatedEntityRegistration

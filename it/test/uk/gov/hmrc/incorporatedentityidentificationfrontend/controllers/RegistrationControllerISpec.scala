@@ -31,10 +31,10 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers._
 class RegistrationControllerISpec extends ComponentSpecHelper with AuthStub with IncorporatedEntityIdentificationStub with RegisterStub {
 
   def extraConfig: Map[String, String] = Map(
+    "defaultServiceName" -> "Entity Validation Service",
     "auditing.enabled" -> "true",
     "auditing.consumer.baseUri.host" -> mockHost,
-    "auditing.consumer.baseUri.port" -> mockPort,
-    "defaultServiceName" -> "Entity Validation Service"
+    "auditing.consumer.baseUri.port" -> mockPort
   )
 
   private val registrationFailure = Json.arr(Json.obj(
