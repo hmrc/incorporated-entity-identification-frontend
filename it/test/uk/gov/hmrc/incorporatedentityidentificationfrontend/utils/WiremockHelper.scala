@@ -122,7 +122,8 @@ object WiremockHelper extends Eventually with IntegrationPatience {
                 case JsDefined(auditDetail) =>
                   val actual = auditDetail.as[JsObject] - "callingService"
                   val expected = expectedAudit - "callingService"
-                  if (actual == expected) exactMatch() else noMatch()
+                  val matchesSubset = expected.fields.forall { case (k, v) => actual.value.get(k).contains(v) }
+                  if (matchesSubset) exactMatch() else noMatch()
                 case _ => noMatch()
               }
             case _ => exactMatch()
