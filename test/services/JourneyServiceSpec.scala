@@ -112,6 +112,17 @@ class JourneyServiceSpec extends UnitSpec with MockJourneyConnector with MockJou
         verifyFindJourneyConfig(testJourneyId, testAuthInternalId)
       }
     }
+
+    "propagate repository errors" in {
+      val ex = new RuntimeException("db")
+      mockFindJourneyConfig(testJourneyId, testAuthInternalId)(Future.failed(ex))
+
+      intercept[RuntimeException] {
+        await(TestService.getJourneyConfig(testJourneyId, testAuthInternalId))
+      }
+
+      verifyFindJourneyConfig(testJourneyId, testAuthInternalId)
+    }
   }
 
 }

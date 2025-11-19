@@ -16,7 +16,7 @@
 
 package test.uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import play.api.http.Status.UNAUTHORIZED
+import play.api.http.Status.{UNAUTHORIZED, BAD_GATEWAY, BAD_REQUEST}
 import play.api.libs.json.Json
 import play.api.test.Helpers.{OK, await, defaultAwaitTimeout}
 import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
@@ -92,6 +92,25 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
         }
         actualException.getMessage mustBe s"Unexpected response from Register API - status = 401, body = {}"
       }
+
+      "the registration http status is 502 (Bad Gateway)" in {
+        // body shape is irrelevant for unexpected status; use placeholder json
+        stubLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)(BAD_GATEWAY, Json.obj("html" -> "downstream"))
+
+        val actualException: InternalServerException = intercept[InternalServerException] {
+          await(registrationConnector.registerLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig))
+        }
+        actualException.getMessage mustBe s"Unexpected response from Register API - status = 502, body = {\"html\":\"downstream\"}"
+      }
+
+      "the registration returns 400 with unexpected json shape" in {
+        stubLimitedCompanyRegister(testJourneyId, testLimitedCompanyJourneyConfig)(BAD_REQUEST, Json.obj("oops" -> 1))
+
+        val actualException: InternalServerException = intercept[InternalServerException] {
+          await(registrationConnector.registerLimitedCompany(testJourneyId, testLimitedCompanyJourneyConfig))
+        }
+        actualException.getMessage mustBe s"Unexpected response from Register API - status = 400, body = {\"oops\":1}"
+      }
     }
   }
 
@@ -144,8 +163,25 @@ class RegistrationConnectorISpec extends ComponentSpecHelper with RegisterStub {
         }
         actualException.getMessage mustBe s"Unexpected response from Register API - status = 401, body = {}"
       }
-    }
 
+      "the registration http status is 502 (Bad Gateway)" in {
+        stubRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)(BAD_GATEWAY, Json.obj("html" -> "downstream"))
+
+        val actualException: InternalServerException = intercept[InternalServerException] {
+          await(registrationConnector.registerRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig))
+        }
+        actualException.getMessage mustBe s"Unexpected response from Register API - status = 502, body = {\"html\":\"downstream\"}"
+      }
+
+      "the registration returns 400 with unexpected json shape" in {
+        stubRegisteredSocietyRegister(testJourneyId, testRegisteredSocietyJourneyConfig)(BAD_REQUEST, Json.obj("oops" -> 1))
+
+        val actualException: InternalServerException = intercept[InternalServerException] {
+          await(registrationConnector.registerRegisteredSociety(testJourneyId, testRegisteredSocietyJourneyConfig))
+        }
+        actualException.getMessage mustBe s"Unexpected response from Register API - status = 400, body = {\"oops\":1}"
+      }
+    }
   }
 
 }
