@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
@@ -34,9 +34,7 @@ class RegistrationController @Inject()(registrationOrchestrationService: Registr
                                        val authConnector: AuthConnector)
                                       (implicit ec: ExecutionContext) extends FrontendController(messagesControllerComponents) with AuthorisedFunctions {
 
-  def register(journeyId: String): Action[AnyContent] = Action.async {
-    request =>
-      given Request[AnyContent] = request
+  def register(journeyId: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {

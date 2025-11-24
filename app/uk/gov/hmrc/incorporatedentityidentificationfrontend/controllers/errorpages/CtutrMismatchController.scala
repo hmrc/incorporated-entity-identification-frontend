@@ -41,8 +41,7 @@ class CtutrMismatchController @Inject()(journeyService: JourneyService,
                                          executionContext: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
   def show(journeyId: String): Action[AnyContent] = Action.async {
-    request =>
-      given Request[AnyContent] = request
+    implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
@@ -56,8 +55,7 @@ class CtutrMismatchController @Inject()(journeyService: JourneyService,
   }
 
   def tryAgain(journeyId: String): Action[AnyContent] = Action.async {
-    request =>
-      given Request[AnyContent] = request
+    implicit request: MessagesRequest[AnyContent] =>
       authorised() {
         Future.successful(Redirect(appRoutes.CaptureCompanyNumberController.show(journeyId)))
       }

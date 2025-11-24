@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.i18n.Messages
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
@@ -42,9 +42,7 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
                                               (implicit val config: AppConfig,
                                                ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
-  def show(journeyId: String): Action[AnyContent] = Action.async {
-    request =>
-      given Request[AnyContent] = request
+  def show(journeyId: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
@@ -57,9 +55,7 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
       }
   }
 
-  def submit(journeyId: String): Action[AnyContent] = Action.async {
-    request =>
-      given Request[AnyContent] = request
+  def submit(journeyId: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           CaptureCompanyNumberForm.form.bindFromRequest().fold(
