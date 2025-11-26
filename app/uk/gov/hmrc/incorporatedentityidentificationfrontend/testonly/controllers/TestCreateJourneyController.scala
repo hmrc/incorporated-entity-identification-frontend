@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, Request}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
@@ -52,9 +52,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
     regime = "VATC"
   )
 
-  val show: Action[AnyContent] = Action.async {
-    implicit request =>
-      given Request[AnyContent] = request
+  val show: Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised() {
         Future.successful(
           Ok(view(defaultPageConfig, routes.TestCreateLimitedCompanyJourneyController.submit, form(LimitedCompany).fill(defaultJourneyConfig)))
@@ -62,9 +60,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
       }
   }
 
-  val submit: Action[AnyContent] = Action.async {
-    implicit request =>
-      given Request[AnyContent] = request
+  val submit: Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised() {
         form(LimitedCompany).bindFromRequest().fold(
           formWithErrors =>

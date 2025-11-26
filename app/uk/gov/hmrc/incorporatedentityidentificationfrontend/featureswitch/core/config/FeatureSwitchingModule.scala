@@ -31,7 +31,7 @@ class FeatureSwitchingModule extends Module {
 
 @Singleton
 class FeatureSwitchRegistryImpl @Inject()() extends FeatureSwitchRegistry {
-  override def switches: Seq[FeatureSwitch] = Seq(CompaniesHouseStub, BusinessVerificationStub, DesStub)
+  override def switches: Seq[FeatureSwitch] = Seq(CompaniesHouseStub, BusinessVerificationStub)
 }
 
 case object CompaniesHouseStub extends FeatureSwitch {
@@ -44,7 +44,4 @@ case object BusinessVerificationStub extends FeatureSwitch {
   override val displayName: String = "Use stub for Business Verification flow"
 }
 
-case object DesStub extends FeatureSwitch {
-  override val configName: String = "feature-switch.des-stub"
-  override val displayName: String = "Use stub for submissions to DES"
-}
+

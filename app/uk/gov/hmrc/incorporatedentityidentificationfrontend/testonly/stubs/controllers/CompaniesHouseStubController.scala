@@ -17,14 +17,13 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers
 
 import play.api.libs.json._
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, InjectedController}
 
 import javax.inject.{Inject, Singleton}
 import scala.util.matching.Regex
 
 @Singleton
-class CompaniesHouseStubController @Inject()(val controllerComponents: MessagesControllerComponents) extends FrontendBaseController {
+class CompaniesHouseStubController @Inject()(override val controllerComponents: MessagesControllerComponents) extends InjectedController {
   val CharitableIncorporatedOrganisation: Regex = "CE(.*)".r
   private val companyNameKey = "company_name"
   private val companyNumberKey = "company_number"

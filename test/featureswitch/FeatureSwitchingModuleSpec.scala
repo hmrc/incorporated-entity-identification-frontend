@@ -17,7 +17,6 @@
 package featureswitch
 
 import utils.UnitSpec
-import play.api.inject.bind
 import play.api.inject.guice.GuiceApplicationBuilder
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config._
 
@@ -35,7 +34,6 @@ class FeatureSwitchingModuleSpec extends UnitSpec {
       val switches = reg.switches
       switches must contain (CompaniesHouseStub)
       switches must contain (BusinessVerificationStub)
-      switches must contain (DesStub)
     }
 
     "have expected names for built-in switches" in {
@@ -44,9 +42,6 @@ class FeatureSwitchingModuleSpec extends UnitSpec {
 
       BusinessVerificationStub.configName mustBe "feature-switch.business-verification-stub"
       BusinessVerificationStub.displayName must include ("Business Verification")
-
-      DesStub.configName mustBe "feature-switch.des-stub"
-      DesStub.displayName must include ("DES")
     }
   }
 }

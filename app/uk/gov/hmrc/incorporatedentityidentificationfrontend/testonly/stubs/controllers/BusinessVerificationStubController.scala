@@ -17,16 +17,14 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.stubs.controllers
 
 import play.api.libs.json._
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendBaseController
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, InjectedController}
 
 import java.util.UUID
 import javax.inject.{Inject, Singleton}
 import scala.concurrent.Future
 
 @Singleton
-class BusinessVerificationStubController @Inject()(val controllerComponents: MessagesControllerComponents) extends FrontendBaseController {
-
+class BusinessVerificationStubController @Inject()(override val controllerComponents: MessagesControllerComponents) extends InjectedController {
   private val origin = "vat"
   private val businessVerificationJourneyId = UUID.randomUUID.toString
 

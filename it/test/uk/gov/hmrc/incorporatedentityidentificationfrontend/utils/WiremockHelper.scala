@@ -120,8 +120,8 @@ object WiremockHelper extends Eventually with IntegrationPatience {
             case Some("IncorporatedEntityRegistration") =>
               (auditJson \\ "detail").headOption.flatMap(_.asOpt[JsObject]) match {
                 case Some(auditDetailObj) =>
-                  val actual = auditDetailObj - "callingService"
-                  val expected = expectedAudit - "callingService"
+                  val actual = auditDetailObj
+                  val expected = expectedAudit
                   val matchesSubset = expected.fields.forall { case (k, v) => actual.value.get(k).contains(v) }
                   if (matchesSubset) exactMatch() else noMatch()
                 case None => noMatch()
