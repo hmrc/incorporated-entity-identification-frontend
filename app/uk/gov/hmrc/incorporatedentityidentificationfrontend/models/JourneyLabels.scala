@@ -34,12 +34,12 @@ object JourneyLabels {
   implicit val reads: Reads[JourneyLabels] = (
     (JsPath \ welshLabelsKey \ optServiceNameKey).readNullable[String] and
       (JsPath \ englishLabelsKey \ optServiceNameKey).readNullable[String]
-    ) (JourneyLabels.apply _)
+    ) (JourneyLabels.apply)
 
   implicit val writes: OWrites[JourneyLabels] = (
     (JsPath \ welshLabelsKey \ optServiceNameKey).writeNullable[String] and
       (JsPath \ englishLabelsKey \ optServiceNameKey).writeNullable[String]
-    ) (unlift(JourneyLabels.unapply))
+    ) (o => Tuple.fromProductTyped(o))
 
   val format: OFormat[JourneyLabels] = OFormat(reads, writes)
 }

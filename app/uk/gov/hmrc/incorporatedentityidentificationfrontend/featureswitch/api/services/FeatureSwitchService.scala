@@ -25,23 +25,20 @@ import javax.inject.{Inject, Singleton}
 class FeatureSwitchService @Inject()(featureSwitchRegistry: FeatureSwitchRegistry) extends FeatureSwitching {
 
   def getFeatureSwitches(): Seq[FeatureSwitchSetting] =
-    featureSwitchRegistry.switches.map(
-      switch =>
-        FeatureSwitchSetting(
-          switch.configName,
-          switch.displayName,
-          isEnabled(switch)
-        )
-    )
+    featureSwitchRegistry.switches.map { (switch) =>
+      FeatureSwitchSetting(
+        switch.configName,
+        switch.displayName,
+        isEnabled(switch)
+      )
+    }
 
   def updateFeatureSwitches(updatedFeatureSwitches: Seq[FeatureSwitchSetting]): Seq[FeatureSwitchSetting] = {
-    updatedFeatureSwitches.foreach(
-      featureSwitchSetting =>
-        featureSwitchRegistry.get(featureSwitchSetting.configName).foreach {
-          featureSwitch =>
-            if (featureSwitchSetting.isEnabled) enable(featureSwitch) else disable(featureSwitch)
-        }
-    )
+    updatedFeatureSwitches.foreach { (featureSwitchSetting) =>
+      featureSwitchRegistry.get(featureSwitchSetting.configName).foreach { (featureSwitch) =>
+        if (featureSwitchSetting.isEnabled) enable(featureSwitch) else disable(featureSwitch)
+      }
+    }
 
     getFeatureSwitches()
   }

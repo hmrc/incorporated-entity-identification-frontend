@@ -23,7 +23,6 @@ import play.api.libs.json._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{JourneyConfig, PageConfig}
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.repositories.JourneyConfigRepository._
 import uk.gov.hmrc.mongo.MongoComponent
 import uk.gov.hmrc.mongo.play.json.{Codecs, PlayMongoRepository}
 
@@ -38,16 +37,17 @@ class JourneyConfigRepository @Inject()(mongoComponent: MongoComponent,
   collectionName = "incorporated-entity-identification-frontend",
   mongoComponent = mongoComponent,
   domainFormat = implicitly[Format[JsObject]],
-  indexes = Seq(timeToLiveIndex(appConfig.timeToLiveSeconds)),
-  extraCodecs = Seq(Codecs.playFormatCodec(journeyConfigMongoFormat))
+  indexes = Seq(JourneyConfigRepository.timeToLiveIndex(appConfig.timeToLiveSeconds)),
+  extraCodecs = Seq(Codecs.playFormatCodec(JourneyConfigRepository.journeyConfigMongoFormat))
 ) {
 
   def insertJourneyConfig(journeyId: String, authInternalId: String, journeyConfig: JourneyConfig): Future[InsertOneResult] = {
+    import JourneyConfigRepository.journeyConfigMongoFormat
 
     val document: JsObject = Json.obj(
-      JourneyIdKey -> journeyId,
-      AuthInternalIdKey -> authInternalId,
-      CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
+      JourneyConfigRepository.JourneyIdKey -> journeyId,
+      JourneyConfigRepository.AuthInternalIdKey -> authInternalId,
+      JourneyConfigRepository.CreationTimestampKey -> Json.obj("$date" -> Instant.now.toEpochMilli)
     ) ++ Json.toJsObject(journeyConfig)
 
     collection.insertOne(document).toFuture()
@@ -57,8 +57,8 @@ class JourneyConfigRepository @Inject()(mongoComponent: MongoComponent,
 
     collection.find[JourneyConfig](
       Filters.and(
-        Filters.equal(JourneyIdKey, journeyId),
-        Filters.equal(AuthInternalIdKey, authInternalId)
+        Filters.equal(JourneyConfigRepository.JourneyIdKey, journeyId),
+        Filters.equal(JourneyConfigRepository.AuthInternalIdKey, authInternalId)
       )
     ).headOption()
 
@@ -70,8 +70,8 @@ class JourneyConfigRepository @Inject()(mongoComponent: MongoComponent,
 
     collection.deleteOne(
       Filters.and(
-        Filters.equal(JourneyIdKey, journeyId),
-        Filters.equal(AuthInternalIdKey, authInternalId)
+        Filters.equal(JourneyConfigRepository.JourneyIdKey, journeyId),
+        Filters.equal(JourneyConfigRepository.AuthInternalIdKey, authInternalId)
       )
     ).toFuture()
 
@@ -102,7 +102,7 @@ object JourneyConfigRepository {
     )
   }
 
-  implicit val partnershipTypeMongoFormat: Format[BusinessEntity] = new Format[BusinessEntity] {
+  implicit lazy val partnershipTypeMongoFormat: Format[BusinessEntity] = new Format[BusinessEntity] {
     override def reads(json: JsValue): JsResult[BusinessEntity] = json.validate[String].collect(JsonValidationError("Invalid entity type")) {
       case LtdCompanyKey => LimitedCompany
       case RegisteredSocietyKey => RegisteredSociety
@@ -116,7 +116,7 @@ object JourneyConfigRepository {
     }
   }
 
-  implicit val journeyConfigMongoFormat: OFormat[JourneyConfig] = new OFormat[JourneyConfig] {
+  implicit lazy val journeyConfigMongoFormat: OFormat[JourneyConfig] = new OFormat[JourneyConfig] {
     override def reads(json: JsValue): JsResult[JourneyConfig] =
       for {
         continueUrl <- (json \ ContinueUrlKey).validate[String]

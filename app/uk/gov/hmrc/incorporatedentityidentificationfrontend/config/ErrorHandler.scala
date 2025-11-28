@@ -34,7 +34,10 @@ class ErrorHandler @Inject()(view: error_template,
                              val messagesApi: MessagesApi,
                              val config: Configuration,
                              val env: Environment
-                            )(implicit appConfig: AppConfig, implicit val ec: ExecutionContext) extends FrontendErrorHandler with AuthRedirects with Logging {
+                           )(implicit
+                             val appConfig: AppConfig,
+                             val ec: ExecutionContext
+                           ) extends FrontendErrorHandler with AuthRedirects with Logging {
 
   override def onClientError(request: RequestHeader, statusCode: Int, message: String): Future[Result] =
     if (play.mvc.Http.Status.BAD_REQUEST == statusCode)

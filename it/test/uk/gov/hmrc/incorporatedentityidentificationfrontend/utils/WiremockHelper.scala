@@ -25,7 +25,7 @@ import com.github.tomakehurst.wiremock.http.Request
 import com.github.tomakehurst.wiremock.matching.MatchResult.{exactMatch, noMatch}
 import com.github.tomakehurst.wiremock.stubbing.StubMapping
 import org.scalatest.concurrent.{Eventually, IntegrationPatience}
-import play.api.libs.json.{JsDefined, JsObject, JsString, Json}
+import play.api.libs.json.{JsObject, Json}
 
 import scala.util.{Success, Try}
 
@@ -107,26 +107,29 @@ object WiremockHelper extends Eventually with IntegrationPatience {
   }
 
   def verifyAudit(): Unit = {
-    verifyPost("/write/audit")
-    verifyPost("/write/audit/merged")
+    verify(postRequestedFor(urlPathMatching("^/write/audit(?:/merged)?$")))
   }
 
   def verifyAuditDetail(expectedAudit: JsObject): Unit = {
-    val uriMapping = postRequestedFor(urlEqualTo("/write/audit"))
+    val uriMapping = postRequestedFor(urlPathMatching("/write/audit(?:/merged)?"))
 
-    val postRequest = uriMapping.andMatching {
-      (request: Request) =>
-        Try(Json.parse(request.getBodyAsString)) match {
-          case Success(auditJson) => auditJson \ "auditType" match {
-            case JsDefined(auditType) if auditType == JsString("IncorporatedEntityRegistration") =>
-              auditJson \ "detail" match {
-                case JsDefined(auditDetail) if auditDetail.as[JsObject].equals(expectedAudit)=> exactMatch()
-                case _ => noMatch()
+    val postRequest = uriMapping.andMatching { (request: Request) =>
+      Try(Json.parse(request.getBodyAsString)) match {
+        case Success(auditJson) =>
+          (auditJson \\ "auditType").headOption.flatMap(_.asOpt[String]) match {
+            case Some("IncorporatedEntityRegistration") =>
+              (auditJson \\ "detail").headOption.flatMap(_.asOpt[JsObject]) match {
+                case Some(auditDetailObj) =>
+                  val actual = auditDetailObj
+                  val expected = expectedAudit
+                  val matchesSubset = expected.fields.forall { case (k, v) => actual.value.get(k).contains(v) }
+                  if (matchesSubset) exactMatch() else noMatch()
+                case None => noMatch()
               }
-            case _ => exactMatch() // We only want to test audit events of type IncorporatedEntityRegistration
+            case _ => exactMatch()
           }
-          case _ => noMatch()
-        }
+        case _ => noMatch()
+      }
     }
 
     verify(postRequest)

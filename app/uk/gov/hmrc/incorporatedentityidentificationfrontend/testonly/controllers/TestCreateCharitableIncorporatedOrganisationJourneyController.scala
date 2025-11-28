@@ -16,7 +16,7 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.testonly.controllers
 
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, MessagesControllerComponents, MessagesRequest}
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.{CharitableIncorporatedOrganisation, RegisteredSociety}
@@ -52,8 +52,7 @@ class TestCreateCharitableIncorporatedOrganisationJourneyController @Inject()(me
     regime = "VATC"
   )
 
-  val show: Action[AnyContent] = Action.async {
-    implicit request =>
+  val show: Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised() {
         Future.successful(
           Ok(
@@ -67,8 +66,7 @@ class TestCreateCharitableIncorporatedOrganisationJourneyController @Inject()(me
       }
   }
 
-  val submit: Action[AnyContent] = Action.async {
-    implicit request =>
+  val submit: Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised() {
         form(RegisteredSociety).bindFromRequest().fold(
           formWithErrors =>

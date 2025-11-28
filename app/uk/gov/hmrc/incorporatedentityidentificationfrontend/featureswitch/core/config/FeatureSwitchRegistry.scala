@@ -28,6 +28,6 @@ trait FeatureSwitchRegistry {
       case None => throw new IllegalArgumentException("Invalid feature switch: " + name)
     }
 
-  def get(name: String): Option[FeatureSwitch] = switches find (_.configName == name)
+  def get(name: String): Option[FeatureSwitch] = switches.find(_.configName == name)
 
 }

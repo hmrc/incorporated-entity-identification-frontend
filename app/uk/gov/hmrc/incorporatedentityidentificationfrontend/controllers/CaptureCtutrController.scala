@@ -43,8 +43,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
                                       )(implicit val config: AppConfig,
                                         ec: ExecutionContext) extends FrontendController(mcc) with AuthorisedFunctions {
 
-  def show(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
+  def show(journeyId: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).map {
@@ -65,8 +64,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
       }
   }
 
-  def submit(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
+  def submit(journeyId: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
@@ -100,8 +98,7 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
       }
   }
 
-  def noCtutr(journeyId: String): Action[AnyContent] = Action.async {
-    implicit request =>
+  def noCtutr(journeyId: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
           for {
