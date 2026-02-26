@@ -83,6 +83,9 @@ object TestConstants {
     "premises" -> "1",
     "region" -> "test region"
   )
+  val emptyTestAddress: JsObject = Json.obj()
+  val emptyTestCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, emptyTestAddress)
+
   val testCompanyProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, testDateOfIncorporation, testAddress)
   val testCioProfile: CompanyProfile = CompanyProfile(testCompanyName, testCompanyNumber, None, Json.obj())
   private val defaultConfig: PageConfig = PageConfig(None, testDeskProServiceId, testSignOutUrl, testAccessibilityUrl, None)

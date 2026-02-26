@@ -1,5 +1,5 @@
 /*
- * Copyright 2022 HM Revenue & Customs
+ * Copyright 2026 HM Revenue & Customs
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -18,6 +18,7 @@ package test.uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers
 
 import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
+import play.api.libs.json.JsObject
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.controllers.errorpages.{routes => errorRoutes}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
@@ -223,7 +224,7 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
             )
           }
         }
-
+        
         "the company number is missing" should {
           "return a bad request" in {
             await(journeyConfigRepository.insertJourneyConfig(
@@ -316,6 +317,53 @@ class CaptureCompanyNumberControllerISpec extends ComponentSpecHelper
           stubAuth(OK, successfulAuthResponse(None))
 
           lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
+
+          result.status mustBe INTERNAL_SERVER_ERROR
+        }
+      }
+      
+      "the company has an empty registered office address" should {
+        "still store the company profile and redirect to the Confirm Business Name page" in {
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          disable(CompaniesHouseStub)
+          stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(
+            status = OK,
+            body = companyProfileJson(testCompanyNumber, testCompanyName, testDateOfIncorporation, emptyTestAddress)
+          )
+          stubStoreCompanyProfile(testJourneyId, emptyTestCompanyProfile)(status = OK)
+
+          lazy val result = post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
+
+          result must have(
+            httpStatus(SEE_OTHER),
+            redirectUri(routes.ConfirmBusinessNameController.show(testJourneyId).url)
+          )
+        }
+      }
+
+      "the company has a missing registered office address field" should {
+        "fail validation and return INTERNAL_SERVER_ERROR" in {
+          stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          disable(CompaniesHouseStub)
+
+          val baseJson =
+            companyProfileJson(
+              testCompanyNumber,
+              testCompanyName,
+              testDateOfIncorporation,
+              testAddress
+            )
+
+          val companyJsonMissingAddress =
+            baseJson - "registered_office_address"
+
+          stubRetrieveCompanyProfileFromCoHo(testCompanyNumber)(
+            status = OK,
+            body = companyJsonMissingAddress
+          )
+
+          lazy val result =
+            post(s"$baseUrl/$testJourneyId/company-number")(companyNumberKey -> testCompanyNumber)
 
           result.status mustBe INTERNAL_SERVER_ERROR
         }
