@@ -17,7 +17,7 @@
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.api.controllers
 
 import play.api.libs.json.Json
-import play.api.mvc.{Action, AnyContent, MessagesControllerComponents}
+import play.api.mvc.{Action, AnyContent, ControllerComponents}
 import uk.gov.hmrc.auth.core.retrieve.v2.Retrievals.internalId
 import uk.gov.hmrc.auth.core.{AuthConnector, AuthorisedFunctions}
 import uk.gov.hmrc.http.InternalServerException
@@ -28,18 +28,18 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntit
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.{IncorporatedEntityInformation, JourneyConfig, JourneyLabels, PageConfig}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.services.{JourneyService, StorageService}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.UrlHelper
-import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
+import uk.gov.hmrc.play.bootstrap.backend.controller.BackendController
 
 import javax.inject.Inject
 import scala.concurrent.{ExecutionContext, Future}
 
-class JourneyController @Inject()(controllerComponents: MessagesControllerComponents,
+class JourneyController @Inject()(controllerComponents: ControllerComponents,
                                   journeyService: JourneyService,
                                   incorporatedEntityInformationRetrievalService: StorageService,
                                   val authConnector: AuthConnector,
                                   appConfig: AppConfig,
                                   urlHelper: UrlHelper
-                                 )(implicit ec: ExecutionContext) extends FrontendController(controllerComponents) with AuthorisedFunctions {
+                                 )(implicit ec: ExecutionContext) extends BackendController(controllerComponents) with AuthorisedFunctions {
 
   def createLtdCompanyJourney: Action[JourneyConfig] = createJourney(LimitedCompany)
 
