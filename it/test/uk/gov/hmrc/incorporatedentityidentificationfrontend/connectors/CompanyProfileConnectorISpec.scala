@@ -16,13 +16,14 @@
 
 package test.uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
+import play.api.libs.json.Json
 import play.api.test.Helpers.{INTERNAL_SERVER_ERROR, NOT_FOUND, OK, await, defaultAwaitTimeout}
-import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
-import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
-import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
+import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants.*
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{CompaniesHouseApiStub, IncorporatedEntityIdentificationStub}
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
+import uk.gov.hmrc.http.{HeaderCarrier, InternalServerException}
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CompanyProfileConnector
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.{CompaniesHouseStub, FeatureSwitching}
 
 class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHouseApiStub with IncorporatedEntityIdentificationStub with FeatureSwitching {
 
@@ -95,6 +96,35 @@ class CompanyProfileConnectorISpec extends ComponentSpecHelper with CompaniesHou
         val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
 
         result mustBe Some(testCompanyProfile.copy(dateOfIncorporation = None))
+      }
+
+      "the companyNumber exists but the registered_office_address is missing" in {
+        enable(CompaniesHouseStub)
+        val companyProfileJsonWithoutAddress = Json.obj(
+          "company_name" -> testCompanyName,
+          "company_number" -> testCompanyNumber,
+          "date_of_creation" -> testDateOfIncorporation
+        )
+        stubRetrieveCompanyProfileFromStub(testCompanyNumber)(
+          status = OK,
+          body = companyProfileJsonWithoutAddress
+        )
+
+        val expectedEmptyAddress = Json.obj(
+          "address_line_1" -> "",
+          "address_line_2" -> "",
+          "care_of" -> "",
+          "country" -> "",
+          "locality" -> "",
+          "po_box" -> "",
+          "postal_code" -> "",
+          "premises" -> "",
+          "region" -> ""
+        )
+
+        val result = await(companyProfileConnector.getCompanyProfile(testCompanyNumber))
+
+        result mustBe Some(testCompanyProfile.copy(unsanitisedCHROAddress = expectedEmptyAddress))
       }
     }
 
