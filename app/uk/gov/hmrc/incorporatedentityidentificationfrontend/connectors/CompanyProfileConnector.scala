@@ -16,11 +16,11 @@
 
 package uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors
 
-import play.api.http.Status.{NOT_FOUND, OK}
-import play.api.libs.functional.syntax._
-import play.api.libs.json._
 import play.api.Logging
-import uk.gov.hmrc.http._
+import play.api.http.Status.{NOT_FOUND, OK}
+import play.api.libs.functional.syntax.*
+import play.api.libs.json.*
+import uk.gov.hmrc.http.*
 import uk.gov.hmrc.http.client.HttpClientV2
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.connectors.CompanyProfileHttpParser.CompanyProfileHttpReads
@@ -43,11 +43,23 @@ object CompanyProfileHttpParser extends Logging {
   private val dateOfIncorporationKey = "date_of_creation"
   private val registeredOfficeAddressKey = "registered_office_address"
 
+  private val emptyRegisteredOfficeAddress = Json.obj(
+    "address_line_1" -> "",
+    "address_line_2" -> "",
+    "care_of" -> "",
+    "country" -> "",
+    "locality" -> "",
+    "po_box" -> "",
+    "postal_code" -> "",
+    "premises" -> "",
+    "region" -> ""
+  )
+
   private val companiesHouseReads: Reads[CompanyProfile] = (
     (__ \ companyNameKey).read[String] and
       (__ \ companyNumberKey).read[String] and
       (__ \ dateOfIncorporationKey).readNullable[String] and
-      (__ \ registeredOfficeAddressKey).read[JsObject]
+      (__ \ registeredOfficeAddressKey).readNullable[JsObject].map(_.getOrElse(emptyRegisteredOfficeAddress))
     ) (CompanyProfile.apply)
 
   implicit object CompanyProfileHttpReads extends HttpReads[Option[CompanyProfile]] {

@@ -1,4 +1,3 @@
-import play.core.PlayVersion.current
 import sbt.*
 
 object AppDependencies {
@@ -9,14 +8,14 @@ object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-frontend-play-30" % bootstrapVersion,
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-30"  % bootstrapVersion,
-    "uk.gov.hmrc"                  %% "play-frontend-hmrc-play-30" % "12.20.0",
+    "uk.gov.hmrc"                  %% "play-frontend-hmrc-play-30" % "12.32.1",
     "uk.gov.hmrc.mongo"            %% "hmrc-mongo-play-30"         % mongoVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala"       % "2.21.2"
+    "com.fasterxml.jackson.module" %% "jackson-module-scala"       % "2.21.4"
   )
 
   val sharedTestDependencies: Seq[ModuleID] = {
     Seq(
-      "org.jsoup"          % "jsoup"                  % "1.22.1",
+      "org.jsoup"          % "jsoup"                  % "1.22.2",
       "uk.gov.hmrc"       %% "bootstrap-test-play-30" % bootstrapVersion
     ).map(_ % Test)
   }
