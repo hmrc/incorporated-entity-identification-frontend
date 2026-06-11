@@ -46,15 +46,26 @@ class CaptureCtutrController @Inject()(mcc: MessagesControllerComponents,
   def show(journeyId: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
-          journeyService.getJourneyConfig(journeyId, authInternalId).map {
-            journeyConfig =>
+          for {
+            journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
+            storedCtutr <- storageService.retrieveCtutr(journeyId)
+          } yield {
               val remoteMessagesApi = messagesHelper.getRemoteMessagesApi(journeyConfig)
               implicit val messages: Messages = remoteMessagesApi.preferred(request)
               journeyConfig.businessEntity match {
                 case LimitedCompany =>
-                  Ok(ctutr_view(journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form(LimitedCompany)))
+                  Ok(ctutr_view(
+                    journeyConfig.pageConfig,
+                    routes.CaptureCtutrController.submit(journeyId),
+                    storedCtutr.fold(CaptureCtutrForm.form(LimitedCompany))(CaptureCtutrForm.form(LimitedCompany).fill)
+                  ))
                 case RegisteredSociety =>
-                  Ok(optional_ctutr_view(journeyId, journeyConfig.pageConfig, routes.CaptureCtutrController.submit(journeyId), CaptureCtutrForm.form(RegisteredSociety)))
+                  Ok(optional_ctutr_view(
+                    journeyId,
+                    journeyConfig.pageConfig,
+                    routes.CaptureCtutrController.submit(journeyId),
+                    storedCtutr.fold(CaptureCtutrForm.form(RegisteredSociety))(CaptureCtutrForm.form(RegisteredSociety).fill)
+                  ))
                 case invalidEntity =>
                   throw new InternalServerException(s"Invalid entity: $invalidEntity on CTUTR page")
               }

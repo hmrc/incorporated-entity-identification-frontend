@@ -44,8 +44,16 @@
             name = "confirmBusinessName",
             legendAsHeading = false,
             items = Seq(
-                RadioItem(value = Some(yes), content = Text(messages("confirm-business.yes"))),
-                RadioItem(value = Some(no), content = Text(messages("confirm-business.no")))
+                RadioItem(
+                    value = Some(yes),
+                    content = Text(messages("confirm-business.yes")),
+                    checked = form("confirmBusinessName").value.contains(yes)
+                ),
+                RadioItem(
+                    value = Some(no),
+                    content = Text(messages("confirm-business.no")),
+                    checked = form("confirmBusinessName").value.contains(no)
+                )
             ),
             errorMessage = form("confirmBusinessName").error.map(err => err.message),
             inline = true,
