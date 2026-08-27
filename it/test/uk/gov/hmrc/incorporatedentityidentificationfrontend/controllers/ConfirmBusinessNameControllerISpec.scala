@@ -236,6 +236,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
+        stubStoreConfirmBusinessName(testJourneyId, "yes")(status = OK)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
         result must have(
@@ -257,6 +258,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         val jsonBody = Json.toJsObject(CompanyProfile(testCompanyName, testMismatchCompanyNumber, testDateOfIncorporation, testAddress))
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
         stubValidateIncorporatedEntityDetails(testMismatchCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> false))
+        stubStoreConfirmBusinessName(testJourneyId, "yes")(status = OK)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
 
@@ -283,6 +285,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
         stubStoreBusinessVerificationStatus(testJourneyId, CtEnrolled)(status = OK)
+        stubStoreConfirmBusinessName(testJourneyId, "yes")(status = OK)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
 
@@ -305,6 +308,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         stubValidateIncorporatedEntityDetails(testCompanyNumber, Some(testCtutr))(OK, Json.obj("matched" -> true))
         stubStoreIdentifiersMatch(testJourneyId, identifiersMatch = DetailsMatched)(status = OK)
         stubStoreCtutr(testJourneyId, testCtutr)(status = OK)
+        stubStoreConfirmBusinessName(testJourneyId, "yes")(status = OK)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
 
@@ -323,6 +327,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           authInternalId = testInternalId,
           journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
         ))
+        stubStoreConfirmBusinessName(testJourneyId, "yes")(status = OK)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "yes")
 
@@ -341,6 +346,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           authInternalId = testInternalId,
           journeyConfig = testLimitedCompanyJourneyConfig
         ))
+        stubStoreConfirmBusinessName(testJourneyId, "no")(status = OK)
 
         lazy val result = post(s"$baseUrl/$testJourneyId/confirm-business-name")("confirmBusinessName" -> "no")
 

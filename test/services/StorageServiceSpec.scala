@@ -77,4 +77,34 @@ class StorageServiceSpec extends UnitSpec with MockIncorporatedEntityInformation
     }
   }
 
+  "retrieveConfirmBusinessName" should {
+    "return Some(answer)" when {
+      "the confirm business name answer exists in the database for a given journey id" in {
+        mockRetrieveIncorporatedEntityInformation[String](
+          testJourneyId,
+          StorageService.ConfirmBusinessNameKey
+        )(Future.successful(Some("yes")))
+
+        val result = await(TestService.retrieveConfirmBusinessName(testJourneyId))
+
+        result mustBe Some("yes")
+        verifyRetrieveIncorporatedEntityInformation[String](testJourneyId, StorageService.ConfirmBusinessNameKey)
+      }
+    }
+
+    "return None" when {
+      "the confirm business name answer does not exist in the database for a given journey id" in {
+        mockRetrieveIncorporatedEntityInformation[String](
+          testJourneyId,
+          StorageService.ConfirmBusinessNameKey
+        )(Future.successful(None))
+
+        val result = await(TestService.retrieveConfirmBusinessName(testJourneyId))
+
+        result mustBe None
+        verifyRetrieveIncorporatedEntityInformation[String](testJourneyId, StorageService.ConfirmBusinessNameKey)
+      }
+    }
+  }
+
 }

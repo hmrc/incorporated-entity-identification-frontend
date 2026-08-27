@@ -37,6 +37,11 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
                 )(implicit hc: HeaderCarrier): Future[StorageResult] =
     connector.storeData[String](journeyId, StorageService.CtutrKey, ctutr)
 
+  def storeConfirmBusinessName(journeyId: String,
+                               answer: String
+                              )(implicit hc: HeaderCarrier): Future[StorageResult] =
+    connector.storeData[String](journeyId, StorageService.ConfirmBusinessNameKey, answer)
+
   def storeCHRN(journeyId: String,
                 chrn: String
                )(implicit hc: HeaderCarrier): Future[StorageResult] =
@@ -78,6 +83,9 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
   def retrieveCtutr(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveIncorporatedEntityInformation[String](journeyId, StorageService.CtutrKey)
 
+  def retrieveConfirmBusinessName(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
+    connector.retrieveIncorporatedEntityInformation[String](journeyId, StorageService.ConfirmBusinessNameKey)
+
   def retrieveCHRN(journeyId: String)(implicit hc: HeaderCarrier): Future[Option[String]] =
     connector.retrieveIncorporatedEntityInformation[String](journeyId, StorageService.ChrnKey)
 
@@ -105,6 +113,7 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
 object StorageService {
   val CompanyProfileKey: String = "companyProfile"
   val CtutrKey: String = "ctutr"
+  val ConfirmBusinessNameKey: String = "confirmBusinessName"
   val ChrnKey: String = "chrn"
   val VerificationStatusKey: String = "businessVerification"
   val RegistrationKey: String = "registration"

@@ -34,6 +34,7 @@ import scala.concurrent.ExecutionContext
 
 @Singleton
 class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyProfileService,
+                                               storageService: StorageService,
                                                journeyService: JourneyService,
                                                mcc: MessagesControllerComponents,
                                                view: capture_company_number_page,
@@ -45,10 +46,16 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
   def show(journeyId: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
-          journeyService.getJourneyConfig(journeyId, authInternalId).map {
-            journeyConfig =>
+          for {
+            journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
+            storedCompanyProfile <- storageService.retrieveCompanyProfile(journeyId)
+          } yield {
               implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
-              Ok(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), CaptureCompanyNumberForm.form))
+              val form = storedCompanyProfile match {
+                case Some(companyProfile) => CaptureCompanyNumberForm.form.fill(companyProfile.companyNumber)
+                case None                 => CaptureCompanyNumberForm.form
+              }
+              Ok(view(journeyConfig.pageConfig, routes.CaptureCompanyNumberController.submit(journeyId), form))
           }
         case None =>
           throw new InternalServerException("Internal ID could not be retrieved from Auth")

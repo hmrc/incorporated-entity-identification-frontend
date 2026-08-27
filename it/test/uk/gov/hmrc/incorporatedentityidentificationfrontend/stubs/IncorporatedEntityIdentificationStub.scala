@@ -58,6 +58,13 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
       status = status
     )
 
+  def stubStoreConfirmBusinessName(journeyId: String, answer: String)(status: Int): StubMapping =
+    when(method = PUT,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/confirmBusinessName", body = JsString(answer)
+    ).thenReturn(
+      status = status
+    )
+
   def stubStoreCHRN(journeyId: String, chrn: String)(status: Int): StubMapping =
     when(method = PUT,
       uri = s"/incorporated-entity-identification/journey/$journeyId/chrn", body = JsString(chrn)

@@ -52,12 +52,21 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
           journeyService.getJourneyConfig(journeyId, authInternalId).flatMap {
             journeyConfig =>
               implicit val messages: Messages = messagesHelper.getRemoteMessagesApi(journeyConfig).preferred(request)
-              incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId).map {
+              for {
+                storedCompanyProfile <- incorporatedEntityInformationRetrievalService.retrieveCompanyProfile(journeyId)
+                storedAnswer <- incorporatedEntityInformationRetrievalService.retrieveConfirmBusinessName(journeyId)
+              } yield storedCompanyProfile match {
                 case Some(companiesHouseInformation) =>
-                  Ok(view(journeyConfig.pageConfig,
-                    ConfirmBusinessNameForm.form(messages),
+                  val form = storedAnswer.fold(ConfirmBusinessNameForm.form(messages))(
+                    ConfirmBusinessNameForm.form(messages).fill
+                  )
+                  Ok(view(
+                    journeyConfig.pageConfig,
+                    form,
                     routes.ConfirmBusinessNameController.submit(journeyId),
-                    companiesHouseInformation.companyName, journeyId))
+                    companiesHouseInformation.companyName,
+                    journeyId
+                  ))
                 case None =>
                   throw new InternalServerException("No company profile stored")
               }
@@ -88,7 +97,8 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
               },
             {
               case ConfirmBusinessNameForm.yes =>
-                journeyConfig.businessEntity match {
+                incorporatedEntityInformationRetrievalService.storeConfirmBusinessName(journeyId, ConfirmBusinessNameForm.yes).flatMap { _ =>
+                  journeyConfig.businessEntity match {
                   case LimitedCompany | RegisteredSociety =>
                     ctEnrolmentService.checkCtEnrolment(journeyId, enrolments, journeyConfig).map {
                       case Enrolled =>
@@ -98,9 +108,12 @@ class ConfirmBusinessNameController @Inject()(incorporatedEntityInformationRetri
                     }
                   case CharitableIncorporatedOrganisation =>
                     Future.successful(Redirect(routes.CaptureCHRNController.show(journeyId)))
+                  }
                 }
               case ConfirmBusinessNameForm.no =>
-                Future.successful(Redirect(routes.CaptureCompanyNumberController.show(journeyId)))
+                incorporatedEntityInformationRetrievalService.storeConfirmBusinessName(journeyId, ConfirmBusinessNameForm.no).map { _ =>
+                  Redirect(routes.CaptureCompanyNumberController.show(journeyId))
+                }
             }
           )
         }
