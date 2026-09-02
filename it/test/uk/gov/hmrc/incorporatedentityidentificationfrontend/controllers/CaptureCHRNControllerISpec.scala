@@ -41,6 +41,7 @@ class CaptureCHRNControllerISpec extends ComponentSpecHelper
       )
       )
       stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+      stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
       lazy val result = get(s"$baseUrl/$testJourneyId/chrn")
 
       result.status mustBe OK
@@ -54,10 +55,11 @@ class CaptureCHRNControllerISpec extends ComponentSpecHelper
           journeyConfig = testCharitableIncorporatedOrganisationJourneyConfig
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val retrieveChrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
         lazy val result = get(s"$baseUrl/$testJourneyId/chrn")
 
-        testCaptureCHRNView(result, authStub, insertConfig)
-        testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+        testCaptureCHRNView(result, authStub, retrieveChrnStub, insertConfig)
+        testServiceName(testDefaultServiceName, result, authStub, retrieveChrnStub, insertConfig)
       }
 
       "there is a serviceName passed in the journeyConfig" should {
@@ -78,10 +80,11 @@ class CaptureCHRNControllerISpec extends ComponentSpecHelper
           )
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val retrieveChrnStub = stubRetrieveChrn(testJourneyId)(status = NOT_FOUND)
         lazy val result = get(s"$baseUrl/$testJourneyId/chrn")
 
-        testCaptureCHRNView(result, authStub, insertConfig)
-        testServiceName(testCallingServiceName, result, authStub, insertConfig)
+        testCaptureCHRNView(result, authStub, retrieveChrnStub, insertConfig)
+        testServiceName(testCallingServiceName, result, authStub, retrieveChrnStub, insertConfig)
       }
 
       "there is a serviceName passed in the journeyConfig labels object" should {
@@ -103,10 +106,11 @@ class CaptureCHRNControllerISpec extends ComponentSpecHelper
           )
         )
         lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        lazy val retrieveChrnStub = stubRetrieveChrn(testJourneyId)(status = OK, body = testCHRN)
         lazy val result = get(s"$baseUrl/$testJourneyId/chrn")
 
-        testCaptureCHRNView(result, authStub, insertConfig)
-        testServiceName(testCallingServiceNameFromLabels, result, authStub, insertConfig)
+        testCaptureCHRNView(result, authStub, retrieveChrnStub, insertConfig, true)
+        testServiceName(testCallingServiceNameFromLabels, result, authStub, retrieveChrnStub, insertConfig)
       }
     }
 

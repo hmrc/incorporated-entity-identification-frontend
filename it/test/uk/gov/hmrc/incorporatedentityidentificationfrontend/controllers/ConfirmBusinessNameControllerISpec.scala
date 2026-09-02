@@ -21,6 +21,7 @@ import play.api.libs.ws.WSResponse
 import play.api.test.Helpers._
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.featureswitch.core.config.FeatureSwitching
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.ConfirmBusinessNameForm
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models.BusinessEntity.LimitedCompany
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.models._
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.stubs.{AuthStub, IncorporatedEntityIdentificationStub}
@@ -48,6 +49,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
 
         val jsonBody = Json.toJsObject(testCompanyProfile)
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = OK, body = jsonBody)
+        stubRetrieveConfirmBusinessName(testJourneyId)(status = NOT_FOUND)
 
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
@@ -64,14 +66,17 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           )
 
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+          lazy val companyProfileStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
             status = OK,
             body = Json.toJsObject(testCompanyProfile)
           )
+          lazy val retrieveConfirmBusinessNameStub = stubRetrieveConfirmBusinessName(testJourneyId)(status = OK, body = ConfirmBusinessNameForm.yes)
+
           lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
-          testConfirmBusinessNameView(result, stub, authStub, insertConfig, testCompanyName)
-          testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+          testConfirmBusinessNameView(result, companyProfileStub, authStub, retrieveConfirmBusinessNameStub, insertConfig,
+            testCompanyName, ConfirmBusinessNameForm.yes)
+            testServiceName(testDefaultServiceName, result, companyProfileStub, authStub, retrieveConfirmBusinessNameStub, insertConfig)
         }
 
         "there is a serviceName passed in the journeyConfig" should {
@@ -94,14 +99,17 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
           )
 
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
-          lazy val stub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
+          lazy val companyProfileStub = stubRetrieveCompanyProfileFromBE(testJourneyId)(
             status = OK,
             body = Json.toJsObject(testCompanyProfile)
           )
+          lazy val retrieveConfirmBusinessNameStub = stubRetrieveConfirmBusinessName(testJourneyId)(status = OK, body = ConfirmBusinessNameForm.no)
+
           lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
-          testConfirmBusinessNameView(result, stub, authStub, insertConfig, testCompanyName)
-          testServiceName(testCallingServiceName, result, authStub, insertConfig)
+          testConfirmBusinessNameView(result, companyProfileStub, authStub, retrieveConfirmBusinessNameStub, insertConfig,
+            testCompanyName, ConfirmBusinessNameForm.no)
+          testServiceName(testCallingServiceName, result, companyProfileStub, authStub, retrieveConfirmBusinessNameStub, insertConfig)
         }
 
         "there is a serviceName passed in the journeyConfig labels object" should {
@@ -128,10 +136,13 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
             status = OK,
             body = Json.toJsObject(testCompanyProfile)
           )
+          lazy val retrieveConfirmBusinessNameStub = stubRetrieveConfirmBusinessName(testJourneyId)(status = OK, body = ConfirmBusinessNameForm.yes)
+
           lazy val result = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 
-          testConfirmBusinessNameView(result, stub, authStub, insertConfig, testCompanyName)
-          testServiceName(testCallingServiceNameFromLabels, result, authStub, insertConfig)
+          testConfirmBusinessNameView(result, stub, authStub, retrieveConfirmBusinessNameStub, insertConfig,
+            testCompanyName, ConfirmBusinessNameForm.yes)
+          testServiceName(testCallingServiceNameFromLabels, result, stub, authStub, retrieveConfirmBusinessNameStub, insertConfig)
         }
       }
     }
@@ -147,6 +158,7 @@ class ConfirmBusinessNameControllerISpec extends ComponentSpecHelper
         ))
 
         stubRetrieveCompanyProfileFromBE(testJourneyId)(status = NOT_FOUND)
+        stubRetrieveConfirmBusinessName(testJourneyId)(status = NOT_FOUND)
 
         lazy val result: WSResponse = get(s"$baseUrl/$testJourneyId/confirm-business-name")
 

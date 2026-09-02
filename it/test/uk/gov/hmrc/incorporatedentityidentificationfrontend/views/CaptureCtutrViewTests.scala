@@ -37,11 +37,14 @@ trait CaptureCtutrViewTests {
 
   def testCaptureCtutrView(result: => WSResponse,
                            authStub: => StubMapping,
-                           insertJourneyConfig: => Future[InsertOneResult]): Unit = {
+                           retrieveCtutrStub: => StubMapping,
+                           insertJourneyConfig: => Future[InsertOneResult],
+                           formFill: Boolean = false): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
+      retrieveCtutrStub
       Jsoup.parse(result.body)
     }
 
@@ -92,6 +95,8 @@ trait CaptureCtutrViewTests {
       textInputs.size() mustBe 1
 
       textInputs.first.attr("type") mustBe "text"
+
+      if(formFill) textInputs.first.attr("value") mustBe testCtutr else textInputs.first.attr("value") mustBe ""
     }
 
     "have a continue and confirm button" in {
@@ -124,11 +129,14 @@ trait CaptureCtutrViewTests {
 
   def testCaptureOptionalCtutrView(result: => WSResponse,
                                    authStub: => StubMapping,
-                                   insertJourneyConfig: => Future[InsertOneResult]): Unit = {
+                                   retrieveCtutrStub: => StubMapping,
+                                   insertJourneyConfig: => Future[InsertOneResult],
+                                   formFill: Boolean = false): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
+      retrieveCtutrStub
       Jsoup.parse(result.body)
     }
 
@@ -167,6 +175,8 @@ trait CaptureCtutrViewTests {
       textInputs.size() mustBe 1
 
       textInputs.first.attr("type") mustBe "text"
+
+      if(formFill) textInputs.first.attr("value") mustBe testCtutr else textInputs.first.attr("value") mustBe ""
     }
 
     "have the correct details drop down" in {
@@ -236,11 +246,13 @@ trait CaptureCtutrViewTests {
   def testServiceName(serviceName: String,
                       result: => WSResponse,
                       authStub: => StubMapping,
+                      retrieveCtutrStub: => StubMapping,
                       insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
+      retrieveCtutrStub
       Jsoup.parse(result.body)
     }
 
