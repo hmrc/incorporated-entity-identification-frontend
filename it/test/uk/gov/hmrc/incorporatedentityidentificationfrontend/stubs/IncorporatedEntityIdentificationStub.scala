@@ -156,9 +156,27 @@ trait IncorporatedEntityIdentificationStub extends WireMockMethods {
     )
   }
 
+  def stubRetrieveConfirmBusinessName(journeyId: String)(status: Int, body: String = ""): StubMapping = {
+    when(method = GET,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/confirmBusinessName"
+    ).thenReturn(
+      status = status,
+      body = JsString(body)
+    )
+  }
+
   def stubRetrieveChrn(journeyId: String)(status: Int, body: String = ""): StubMapping = {
     when(method = GET,
       uri = s"/incorporated-entity-identification/journey/$journeyId/chrn"
+    ).thenReturn(
+      status = status,
+      body = JsString(body)
+    )
+  }
+
+  def stubRemoveConfirmBusinessName(journeyId: String)(status: Int, body: String = ""): StubMapping = {
+    when(method = DELETE,
+      uri = s"/incorporated-entity-identification/journey/$journeyId/confirmBusinessName"
     ).thenReturn(
       status = status,
       body = JsString(body)

@@ -37,11 +37,14 @@ trait CaptureCHRNumberViewTests {
 
   def testCaptureCHRNView(result: => WSResponse,
                           authStub: => StubMapping,
-                          insertJourneyConfig: => Future[InsertOneResult]): Unit = {
+                          retrieveChrnStub: => StubMapping,
+                          insertJourneyConfig: => Future[InsertOneResult],
+                          formFill: Boolean = false): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
+      retrieveChrnStub
       Jsoup.parse(result.body)
     }
 
@@ -111,6 +114,8 @@ trait CaptureCHRNumberViewTests {
         case Some(input) => input.attr("type") mustBe "text"
         case None => fail("""Input element "chrn" cannot be found""")
       }
+
+      if(formFill) optInput.get.attr("value") mustBe testCHRN else optInput.get.attr("value") mustBe ""
     }
 
     "have a link to enable users to skip to check your answers page" in {
@@ -206,11 +211,13 @@ trait CaptureCHRNumberViewTests {
   def testServiceName(serviceName: String,
                       result: => WSResponse,
                       authStub: => StubMapping,
+                      retrieveChrnStub: => StubMapping,
                       insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
+      retrieveChrnStub
       Jsoup.parse(result.body)
     }
 

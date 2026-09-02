@@ -36,11 +36,14 @@ trait CaptureCompanyNumberTests {
 
   def testCaptureCompanyNumberView(result: => WSResponse,
                                    authStub: => StubMapping,
-                                   insertJourneyConfig: => Future[InsertOneResult]): Unit = {
+                                   retrieveCompanyProfileStub: => StubMapping,
+                                   insertJourneyConfig: => Future[InsertOneResult],
+                                   formFill: Boolean = false): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
+      retrieveCompanyProfileStub
       Jsoup.parse(result.body)
     }
 
@@ -84,6 +87,9 @@ trait CaptureCompanyNumberTests {
       textInputs.size() mustBe 1
 
       textInputs.first.attr("type") mustBe "text"
+
+      if(formFill)
+        textInputs.first.attr("value") mustBe testCompanyNumber else textInputs.first.attr("value") mustBe ""
     }
 
     "have a save and confirm button" in {
@@ -182,11 +188,13 @@ trait CaptureCompanyNumberTests {
   def testServiceName(serviceName: String,
                       result: => WSResponse,
                       authStub: => StubMapping,
+                      retrieveCompanyProfileStub: => StubMapping,
                       insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
+      retrieveCompanyProfileStub
       Jsoup.parse(result.body)
     }
 

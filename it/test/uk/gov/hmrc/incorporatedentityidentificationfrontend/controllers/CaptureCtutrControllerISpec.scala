@@ -44,6 +44,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         )
         )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
+
         lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
         result.status mustBe OK
@@ -57,10 +59,11 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
             journeyConfig = testLimitedCompanyJourneyConfig
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-          testCaptureCtutrView(result, authStub, insertConfig)
-          testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+          testCaptureCtutrView(result, authStub, retrieveCtutrStub, insertConfig)
+          testServiceName(testDefaultServiceName, result, authStub, retrieveCtutrStub, insertConfig)
         }
 
         "there is a serviceName passed in the journeyConfig" should {
@@ -81,10 +84,11 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
             )
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-          testCaptureCtutrView(result, authStub, insertConfig)
-          testServiceName(testCallingServiceName, result, authStub, insertConfig)
+          testCaptureCtutrView(result, authStub, retrieveCtutrStub, insertConfig, true)
+          testServiceName(testCallingServiceName, result, authStub, retrieveCtutrStub, insertConfig)
         }
 
         "there is a serviceName passed in the journeyConfig labels object" should {
@@ -106,10 +110,11 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
             )
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-          testCaptureCtutrView(result, authStub, insertConfig)
-          testServiceName(testCallingServiceNameFromLabels, result, authStub, insertConfig)
+          testCaptureCtutrView(result, authStub, retrieveCtutrStub, insertConfig)
+          testServiceName(testCallingServiceNameFromLabels, result, authStub, retrieveCtutrStub, insertConfig)
         }
       }
 
@@ -192,6 +197,8 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
         )
         )
         stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+        stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
+
         lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
         result.status mustBe OK
@@ -205,10 +212,11 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
             journeyConfig = testRegisteredSocietyJourneyConfig
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-          testCaptureOptionalCtutrView(result, authStub, insertConfig)
-          testServiceName(testDefaultServiceName, result, authStub, insertConfig)
+          testCaptureOptionalCtutrView(result, authStub, retrieveCtutrStub, insertConfig)
+          testServiceName(testDefaultServiceName, result, authStub, retrieveCtutrStub, insertConfig)
         }
 
         "there is a serviceName passed in the journeyConfig" should {
@@ -229,10 +237,11 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
             )
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = OK, body = testCtutr)
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-          testCaptureOptionalCtutrView(result, authStub, insertConfig)
-          testServiceName(testCallingServiceName, result, authStub, insertConfig)
+          testCaptureOptionalCtutrView(result, authStub, retrieveCtutrStub, insertConfig, true)
+          testServiceName(testCallingServiceName, result, authStub, retrieveCtutrStub, insertConfig)
         }
 
         "there is a serviceName passed in the journeyConfig labels object" should {
@@ -254,10 +263,11 @@ class CaptureCtutrControllerISpec extends ComponentSpecHelper
             )
           )
           lazy val authStub = stubAuth(OK, successfulAuthResponse(Some(testInternalId)))
+          lazy val retrieveCtutrStub = stubRetrieveCtutr(testJourneyId)(status = NOT_FOUND)
           lazy val result = get(s"$baseUrl/$testJourneyId/ct-utr")
 
-          testCaptureOptionalCtutrView(result, authStub, insertConfig)
-          testServiceName(testCallingServiceNameFromLabels, result, authStub, insertConfig)
+          testCaptureOptionalCtutrView(result, authStub, retrieveCtutrStub, insertConfig)
+          testServiceName(testCallingServiceNameFromLabels, result, authStub, retrieveCtutrStub, insertConfig)
         }
       }
 
