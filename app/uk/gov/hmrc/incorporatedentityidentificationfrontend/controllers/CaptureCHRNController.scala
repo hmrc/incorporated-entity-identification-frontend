@@ -44,15 +44,17 @@ class CaptureCHRNController @Inject()(storageService: StorageService,
   def show(journeyId: String): Action[AnyContent] = Action.async { implicit request: MessagesRequest[AnyContent] =>
       authorised().retrieve(internalId) {
         case Some(authInternalId) =>
-          journeyService.getJourneyConfig(journeyId, authInternalId).map {
-            journeyConfig =>
+          for {
+            journeyConfig <- journeyService.getJourneyConfig(journeyId, authInternalId)
+            storedCHRN <- storageService.retrieveCHRN(journeyId)
+          } yield {
               val remoteMessagesApi = messagesHelper.getRemoteMessagesApi(journeyConfig)
               implicit val messages: Messages = remoteMessagesApi.preferred(request)
               Ok(view(
                 journeyId = journeyId,
                 pageConfig = journeyConfig.pageConfig,
                 formAction = routes.CaptureCHRNController.submit(journeyId),
-                form = CaptureCHRNForm.form
+                form = storedCHRN.fold(CaptureCHRNForm.form)(CaptureCHRNForm.form.fill)
               ))
           }
         case None =>
