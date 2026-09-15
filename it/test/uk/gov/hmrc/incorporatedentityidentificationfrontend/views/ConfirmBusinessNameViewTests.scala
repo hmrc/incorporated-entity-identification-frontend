@@ -26,6 +26,7 @@ import play.api.test.Helpers._
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.MessageLookup.{Base, BetaBanner, Header, ConfirmBusinessName => messages}
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.assets.TestConstants._
 import uk.gov.hmrc.incorporatedentityidentificationfrontend.config.AppConfig
+import uk.gov.hmrc.incorporatedentityidentificationfrontend.forms.ConfirmBusinessNameForm
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ComponentSpecHelper
 import test.uk.gov.hmrc.incorporatedentityidentificationfrontend.utils.ViewSpecHelper._
 
@@ -37,13 +38,16 @@ trait ConfirmBusinessNameViewTests {
   def testConfirmBusinessNameView(result: => WSResponse,
                                   stub: => StubMapping,
                                   authStub: => StubMapping,
+                                  retrieveConfirmBusinessNameStub: => StubMapping,
                                   insertJourneyConfig: => Future[InsertOneResult],
-                                  testCompanyName: String): Unit = {
+                                  testCompanyName: String,
+                                  formValue: String): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
       stub
+      retrieveConfirmBusinessNameStub
       Jsoup.parse(result.body)
     }
 
@@ -106,8 +110,18 @@ trait ConfirmBusinessNameViewTests {
     "have yes and no radio buttons" in {
       val radioButtons = doc.getRadioButtons("confirmBusinessName")
       radioButtons must have size 2
-      radioButtons.get(0).attr("value") mustBe "yes"
-      radioButtons.get(1).attr("value") mustBe "no"
+
+      if (formValue == ConfirmBusinessNameForm.yes) {
+
+        radioButtons.get(0).hasAttr("checked") mustBe true
+        radioButtons.get(1).hasAttr("checked") mustBe false
+
+      } else if (formValue == ConfirmBusinessNameForm.no) {
+
+        radioButtons.get(0).hasAttr("checked") mustBe false
+        radioButtons.get(1).hasAttr("checked") mustBe true
+
+      }
     }
 
     "have the correct visually hidden legend text for the radio group" in {
@@ -139,12 +153,16 @@ trait ConfirmBusinessNameViewTests {
 
   def testServiceName(serviceName: String,
                       result: => WSResponse,
+                      stub: => StubMapping,
                       authStub: => StubMapping,
+                      retrieveConfirmBusinessNameStub: => StubMapping,
                       insertJourneyConfig: => Future[InsertOneResult]): Unit = {
 
     lazy val doc: Document = {
       await(insertJourneyConfig)
       authStub
+      stub
+      retrieveConfirmBusinessNameStub
       Jsoup.parse(result.body)
     }
 

@@ -30,7 +30,7 @@ import uk.gov.hmrc.incorporatedentityidentificationfrontend.views.html.capture_c
 import uk.gov.hmrc.play.bootstrap.frontend.controller.FrontendController
 
 import javax.inject.{Inject, Singleton}
-import scala.concurrent.ExecutionContext
+import scala.concurrent.{ExecutionContext, Future}
 
 @Singleton
 class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyProfileService,
@@ -74,11 +74,13 @@ class CaptureCompanyNumberController @Inject()(companyProfileService: CompanyPro
               }
             },
             companyNumber =>
-              companyProfileService.retrieveAndStoreCompanyProfile(journeyId, companyNumber).map {
+              companyProfileService.retrieveAndStoreCompanyProfile(journeyId, companyNumber).flatMap {
                 case Some(_) =>
-                  Redirect(routes.ConfirmBusinessNameController.show(journeyId))
+                  storageService.removeConfirmBusinessName(journeyId).map {_ =>
+                    Redirect(routes.ConfirmBusinessNameController.show(journeyId))
+                  }
                 case None =>
-                  Redirect(errorRoutes.CompanyNumberNotFoundController.show(journeyId))
+                  Future.successful(Redirect(errorRoutes.CompanyNumberNotFoundController.show(journeyId)))
               }
           )
         case None =>

@@ -108,6 +108,8 @@ class StorageService @Inject()(connector: IncorporatedEntityInformationConnector
   def removeCHRN(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type] =
     connector.removeIncorporatedEntityDetailsField(journeyId, StorageService.ChrnKey)
 
+  def removeConfirmBusinessName(journeyId: String)(implicit hc: HeaderCarrier): Future[SuccessfullyRemoved.type ] =
+    connector.removeIncorporatedEntityDetailsField(journeyId, StorageService.ConfirmBusinessNameKey)
 }
 
 object StorageService {
