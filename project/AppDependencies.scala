@@ -8,14 +8,14 @@ object AppDependencies {
   val compile: Seq[ModuleID] = Seq(
     "uk.gov.hmrc"                  %% "bootstrap-frontend-play-30" % bootstrapVersion,
     "uk.gov.hmrc"                  %% "bootstrap-backend-play-30"  % bootstrapVersion,
-    "uk.gov.hmrc"                  %% "play-frontend-hmrc-play-30" % "13.15.0",
+    "uk.gov.hmrc"                  %% "play-frontend-hmrc-play-30" % "13.16.0",
     "uk.gov.hmrc.mongo"            %% "hmrc-mongo-play-30"         % mongoVersion,
-    "com.fasterxml.jackson.module" %% "jackson-module-scala"       % "2.21.4"
+    "com.fasterxml.jackson.module" %% "jackson-module-scala"       % "2.22.3.1"
   )
 
   val sharedTestDependencies: Seq[ModuleID] = {
     Seq(
-      "org.jsoup"          % "jsoup"                  % "1.22.2",
+      "org.jsoup"          % "jsoup"                  % "1.23.2",
       "uk.gov.hmrc"       %% "bootstrap-test-play-30" % bootstrapVersion
     ).map(_ % Test)
   }
