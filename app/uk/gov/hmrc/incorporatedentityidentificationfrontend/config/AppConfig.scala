@@ -85,7 +85,7 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
   lazy val vatRegFeedbackUrl = s"$feedbackUrl/feedback/$vatRegExitSurveyOrigin"
 
   def betaFeedbackUrl(serviceIdentifier: String): String =
-    s"$contactHost/contact/beta-feedback?service=$serviceIdentifier"
+    s"$contactHost/contact/beta-feedback?service=$serviceIdentifier&useServiceNavigation"
 
   lazy val timeout: Int = servicesConfig.getInt("timeout.timeout")
   lazy val countdown: Int = servicesConfig.getInt("timeout.countdown")

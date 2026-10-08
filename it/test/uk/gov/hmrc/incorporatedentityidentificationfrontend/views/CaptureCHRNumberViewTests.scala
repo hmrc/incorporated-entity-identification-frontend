@@ -71,7 +71,7 @@ trait CaptureCHRNumberViewTests {
     }
 
     "have a banner link that redirects to beta feedback" in {
-      doc.getElementsByClass("govuk-link").get(1).attr("href") mustBe config.betaFeedbackUrl("vrs")
+      doc.getBannerLink mustBe config.betaFeedbackUrl("vrs")
     }
 
     "have the correct title" in {
