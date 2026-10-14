@@ -56,7 +56,7 @@ class JourneyController @Inject()(controllerComponents: ControllerComponents,
         signOutUrl <- (json \ signOutUrlKey).validate[String]
         businessVerificationCheck <- (json \ businessVerificationCheckKey).validateOpt[Boolean]
         regime <- (json \ regimeKey).validate[String]
-        accessibilityUrl <- (json \ accessibilityUrlKey).validate[String]
+        accessibilityUrl <- (json \ accessibilityUrlKey).validate[String].map(urlHelper.withUseServiceNavigation)
         labels <- (json \ labelsKey).validateOpt[JourneyLabels]
       } yield JourneyConfig(
         continueUrl,
