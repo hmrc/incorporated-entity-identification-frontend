@@ -84,6 +84,18 @@ class AppConfig @Inject()(servicesConfig: ServicesConfig, config: Configuration)
 
   lazy val vatRegFeedbackUrl = s"$feedbackUrl/feedback/$vatRegExitSurveyOrigin"
 
+  private lazy val accessibilityStatementServicePath: String = servicesConfig.getString("accessibility-statement.service-path")
+
+  private lazy val accessibilityStatementBaseUrl: String = servicesConfig.baseUrl("accessibility-statement")
+
+  private lazy val relativeUrlsEnabled: Boolean = config.get[Boolean]("relative-urls.enabled")
+
+  lazy val vatRegAccessibilityStatementUrl: String = {
+      val relativeUrl = s"/accessibility-statement$accessibilityStatementServicePath?useServiceNavigation"
+
+      if (relativeUrlsEnabled) relativeUrl else s"$accessibilityStatementBaseUrl$relativeUrl"
+  }
+
   def betaFeedbackUrl(serviceIdentifier: String): String =
     s"$contactHost/contact/beta-feedback?service=$serviceIdentifier&useServiceNavigation"
 

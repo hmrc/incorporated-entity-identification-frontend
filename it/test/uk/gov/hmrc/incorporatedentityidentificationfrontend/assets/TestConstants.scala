@@ -47,7 +47,7 @@ object TestConstants {
   val testCallingServiceName: String = "Test Service"
   val testCallingServiceNameFromLabels: String = "Test Service Name from Labels"
   val testContinueUrl: String = "/test"
-  val testAccessibilityUrl: String = "/accessibility"
+  val testAccessibilityUrl: String = "/accessibility-statement/my-service?useServiceNavigation"
   val testLocalAccessibilityUrl: String = "http://localhost:12346/accessibility-statement/vat-registration"
   val testStagingAccessibilityUrl: String = "https://www.staging.tax.service.gov.uk/accessibility-statement/vat-registration"
   val testTechnicalHelpUrl: String = "http://localhost:9250/contact/report-technical-problem?service=grs&useServiceNavigation"
@@ -214,7 +214,7 @@ object TestConstants {
       )
     ),
     "continueUrl" -> s"/identify-your-incorporated-business/$journeyId/business-verification-result",
-    "accessibilityStatementUrl" -> "/accessibility",
+    "accessibilityStatementUrl" -> testAccessibilityUrl,
     "deskproServiceName" -> "vrs",
     "pageTitle" -> "Entity Validation Service"
 

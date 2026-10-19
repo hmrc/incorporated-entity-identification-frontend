@@ -40,7 +40,7 @@ class TestCreateJourneyController @Inject()(messagesControllerComponents: Messag
     optServiceName = None,
     deskProServiceId = "vrs",
     signOutUrl = appConfig.vatRegFeedbackUrl,
-    accessibilityUrl = "/accessibility",
+    accessibilityUrl = appConfig.vatRegAccessibilityStatementUrl,
     optLabels = None
   )
 

@@ -53,5 +53,26 @@ class UrlHelperSpec extends UnitSpec with BeforeAndAfterAll {
     "return false if any URL is invalid or disallowed" in {
       urlHelper.areRelativeOrAcceptedUrls(List("/ok", "ht!tp://bad")) mustBe false
     }
+
+    "append useServiceNavigation as the first query parameter" in {
+      urlHelper.withUseServiceNavigation("/accessibility-statement/my-service") mustBe
+        "/accessibility-statement/my-service?useServiceNavigation"
+    }
+
+    "append useServiceNavigation after existing query parameters" in {
+      urlHelper.withUseServiceNavigation("/accessibility-statement/my-service?referrerUrl=%2Fstart") mustBe
+        "/accessibility-statement/my-service?referrerUrl=%2Fstart&useServiceNavigation"
+    }
+
+    "not duplicate an existing useServiceNavigation parameter" in {
+      val url = "/accessibility-statement/my-service?referrerUrl=%2Fstart&useServiceNavigation"
+
+      urlHelper.withUseServiceNavigation(url) mustBe url
+    }
+
+    "append useServiceNavigation before a URL fragment" in {
+      urlHelper.withUseServiceNavigation("/accessibility-statement/my-service#content") mustBe
+        "/accessibility-statement/my-service?useServiceNavigation#content"
+    }
   }
 }

@@ -39,4 +39,24 @@ class UrlHelper @Inject()(appConfig: AppConfig) {
     })
     !areValidUrls.contains(false)
   }
+
+  def withUseServiceNavigation(url: String): String = {
+    val (urlWithoutFragment, fragment) = url.span(_ != '#')
+    val queryStartIndex = urlWithoutFragment.indexOf('?')
+
+    val queryParameters =
+      if (queryStartIndex < 0) Seq.empty
+      else urlWithoutFragment.substring(queryStartIndex + 1).split('&').toSeq
+
+    if (queryParameters.exists(_.takeWhile(_ != '=') == "useServiceNavigation")) {
+      url
+    } else {
+      val separator =
+        if (queryStartIndex < 0) "?"
+        else if (urlWithoutFragment.endsWith("?") || urlWithoutFragment.endsWith("&")) ""
+        else "&"
+
+      s"$urlWithoutFragment${separator}useServiceNavigation$fragment"
+    }
+  }
 }
